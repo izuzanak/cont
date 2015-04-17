@@ -44,11 +44,11 @@ Containers code is generated to `.cc` file. Generated code can be read, modified
 or copied and used in another projects.
 
 ## Build container processor
-Enter build directory [cont_build](https://github.com/izuzanak/cont/tree/master/cont_build).
+Enter build directory [`cont_build`](https://github.com/izuzanak/cont/tree/master/cont_build).
 ```
 cd cont_build
 ```
-Execute build script [build.sh](https://github.com/izuzanak/cont/blob/master/cont_build/build.sh)
+Execute build script [`build.sh`](https://github.com/izuzanak/cont/blob/master/cont_build/build.sh)
 ```
 sh build.sh
 ```
