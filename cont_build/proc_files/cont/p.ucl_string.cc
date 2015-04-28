@@ -667,7 +667,9 @@ struct mc_block_rb_tree_s
    inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
 
    unsigned get_min_value_idx(unsigned a_idx);
+   unsigned get_max_value_idx(unsigned a_idx);
    unsigned get_next_idx(unsigned a_idx);
+   unsigned get_prev_idx(unsigned a_idx);
 
    inline void __rotate_left(unsigned a_idx);
    inline void __rotate_right(unsigned a_idx);

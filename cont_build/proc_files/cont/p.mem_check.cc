@@ -663,7 +663,9 @@ struct mc_block_rb_tree_s
    inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
 
    unsigned get_min_value_idx(unsigned a_idx);
+   unsigned get_max_value_idx(unsigned a_idx);
    unsigned get_next_idx(unsigned a_idx);
+   unsigned get_prev_idx(unsigned a_idx);
 
    inline void __rotate_left(unsigned a_idx);
    inline void __rotate_right(unsigned a_idx);
@@ -1646,6 +1648,22 @@ unsigned mc_block_rb_tree_s::get_min_value_idx(unsigned a_idx)
    } while(1);
 }/*}}}*/
 
+unsigned mc_block_rb_tree_s::get_max_value_idx(unsigned a_idx)
+{/*{{{*/
+   debug_assert(a_idx < used && data[a_idx].valid);
+
+   unsigned node_idx = a_idx;
+   do {
+      mc_block_rb_tree_s_node &node = data[node_idx];
+
+      if (node.right_idx == leaf_idx) {
+         return node_idx;
+      }
+
+      node_idx = node.right_idx;
+   } while(1);
+}/*}}}*/
+
 unsigned mc_block_rb_tree_s::get_next_idx(unsigned a_idx)
 {/*{{{*/
    debug_assert(a_idx < used && data[a_idx].valid);
@@ -1666,6 +1684,34 @@ unsigned mc_block_rb_tree_s::get_next_idx(unsigned a_idx)
          }
          
          if (data[node.parent_idx].right_idx != node_idx) {
+            return node.parent_idx;
+         }
+
+         node_idx = node.parent_idx;
+      } while(1);
+   }
+}/*}}}*/
+
+unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
+{/*{{{*/
+   debug_assert(a_idx < used && data[a_idx].valid);
+
+   mc_block_rb_tree_s_node &node = data[a_idx];
+
+   if (node.left_idx != leaf_idx) {
+      return get_max_value_idx(node.left_idx);
+   }
+   else {
+
+      unsigned node_idx = a_idx;
+      do {
+         mc_block_rb_tree_s_node &node = data[node_idx];
+
+         if (node.parent_idx == c_idx_not_exist) {
+            return c_idx_not_exist;
+         }
+         
+         if (data[node.parent_idx].left_idx != node_idx) {
             return node.parent_idx;
          }
 

@@ -186,6 +186,40 @@ printf(\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
+#define SAFE_RB_TREE_GET_PREV_IDX() \
+{\
+printf(\
+"unsigned %s::get_prev_idx(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
+"\n"\
+"   %s_node &node = data[a_idx];\n"\
+"\n"\
+"   if (node.left_idx != leaf_idx) {\n"\
+"      return get_max_value_idx(node.left_idx);\n"\
+"   }\n"\
+"   else {\n"\
+"\n"\
+"      unsigned node_idx = a_idx;\n"\
+"      do {\n"\
+"         %s_node &node = data[node_idx];\n"\
+"\n"\
+"         if (node.parent_idx == c_idx_not_exist) {\n"\
+"            return c_idx_not_exist;\n"\
+"         }\n"\
+"         \n"\
+"         if (data[node.parent_idx].left_idx != node_idx) {\n"\
+"            return node.parent_idx;\n"\
+"         }\n"\
+"\n"\
+"         node_idx = node.parent_idx;\n"\
+"      } while(1);\n"\
+"   }\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
 #define SAFE_RB_TREE___ROTATE_LEFT() \
 {\
 printf(\
@@ -1788,6 +1822,7 @@ printf(
 "   unsigned get_min_value_idx(unsigned a_idx);\n"
 "   unsigned get_max_value_idx(unsigned a_idx);\n"
 "   unsigned get_next_idx(unsigned a_idx);\n"
+"   unsigned get_prev_idx(unsigned a_idx);\n"
 "\n"
 "   inline void __rotate_left(unsigned a_idx);\n"
 "   inline void __rotate_right(unsigned a_idx);\n"
@@ -2133,6 +2168,8 @@ SAFE_RB_TREE_GET_STACK_NEXT_IDX();
 
    // - rb_tree get_next_idx method -
 
+   // - rb_tree get_prev_idx method -
+
    // - rb_tree __rotate_left method -
 SAFE_RB_TREE___ROTATE_LEFT();
 
@@ -2272,6 +2309,9 @@ SAFE_RB_TREE_GET_MAX_VALUE_IDX();
 
    // - rb_tree get_next_idx method -
 SAFE_RB_TREE_GET_NEXT_IDX();
+
+   // - rb_tree get_prev_idx method -
+SAFE_RB_TREE_GET_PREV_IDX();
 
    // - rb_tree __rotate_left method -
 
