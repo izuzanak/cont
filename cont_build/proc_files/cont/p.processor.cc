@@ -8271,6 +8271,28 @@ printf(\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
+#define RB_TREE_GET_MAX_VALUE_IDX() \
+{\
+printf(\
+"unsigned %s::get_max_value_idx(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   debug_assert(a_idx < used);\n"\
+"\n"\
+"   unsigned node_idx = a_idx;\n"\
+"   do {\n"\
+"      %s_node &node = data[node_idx];\n"\
+"\n"\
+"      if (node.right_idx == leaf_idx) {\n"\
+"         return node_idx;\n"\
+"      }\n"\
+"\n"\
+"      node_idx = node.right_idx;\n"\
+"   } while(1);\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
 #define RB_TREE_GET_NEXT_IDX() \
 {\
 printf(\
@@ -9874,6 +9896,7 @@ printf(
 "   inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
 "\n"
 "   unsigned get_min_value_idx(unsigned a_idx);\n"
+"   unsigned get_max_value_idx(unsigned a_idx);\n"
 "   unsigned get_next_idx(unsigned a_idx);\n"
 "\n"
 "   inline void __rotate_left(unsigned a_idx);\n"
@@ -10215,6 +10238,8 @@ RB_TREE_GET_STACK_NEXT_IDX();
 
    // - rb_tree get_min_value_idx method -
 
+   // - rb_tree get_max_value_idx method -
+
    // - rb_tree get_next_idx method -
 
    // - rb_tree __rotate_left method -
@@ -10350,6 +10375,9 @@ RB_TREE_GET_STACK_MIN_VALUE_IDX();
 
    // - rb_tree get_min_value_idx method -
 RB_TREE_GET_MIN_VALUE_IDX();
+
+   // - rb_tree get_max_value_idx method -
+RB_TREE_GET_MAX_VALUE_IDX();
 
    // - rb_tree get_next_idx method -
 RB_TREE_GET_NEXT_IDX();
@@ -11723,6 +11751,28 @@ printf(\
 "      }\n"\
 "\n"\
 "      node_idx = node.left_idx;\n"\
+"   } while(1);\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
+#define SAFE_RB_TREE_GET_MAX_VALUE_IDX() \
+{\
+printf(\
+"unsigned %s::get_max_value_idx(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
+"\n"\
+"   unsigned node_idx = a_idx;\n"\
+"   do {\n"\
+"      %s_node &node = data[node_idx];\n"\
+"\n"\
+"      if (node.right_idx == leaf_idx) {\n"\
+"         return node_idx;\n"\
+"      }\n"\
+"\n"\
+"      node_idx = node.right_idx;\n"\
 "   } while(1);\n"\
 "}/*}}}*/\n"\
 "\n"\
@@ -13363,6 +13413,7 @@ printf(
 "   inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
 "\n"
 "   unsigned get_min_value_idx(unsigned a_idx);\n"
+"   unsigned get_max_value_idx(unsigned a_idx);\n"
 "   unsigned get_next_idx(unsigned a_idx);\n"
 "\n"
 "   inline void __rotate_left(unsigned a_idx);\n"
@@ -13705,6 +13756,8 @@ SAFE_RB_TREE_GET_STACK_NEXT_IDX();
 
    // - rb_tree get_min_value_idx method -
 
+   // - rb_tree get_max_value_idx method -
+
    // - rb_tree get_next_idx method -
 
    // - rb_tree __rotate_left method -
@@ -13840,6 +13893,9 @@ SAFE_RB_TREE_GET_STACK_MIN_VALUE_IDX();
 
    // - rb_tree get_min_value_idx method -
 SAFE_RB_TREE_GET_MIN_VALUE_IDX();
+
+   // - rb_tree get_max_value_idx method -
+SAFE_RB_TREE_GET_MAX_VALUE_IDX();
 
    // - rb_tree get_next_idx method -
 SAFE_RB_TREE_GET_NEXT_IDX();
