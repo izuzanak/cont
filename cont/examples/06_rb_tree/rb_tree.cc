@@ -28,7 +28,7 @@ void print_tree(rec_rb_tree_s &rec_tree,const char *name)
   printf("%s.free_idx: %u\n",name,rec_tree.free_idx);
   printf("%s.root_idx: %u\n",name,rec_tree.root_idx);
   printf("%s.leaf_idx: %u\n",name,rec_tree.leaf_idx);
-  printf("%s:",name);
+  printf("%s: ",name);
 
   if (rec_tree.root_idx != c_idx_not_exist)
   {

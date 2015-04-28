@@ -21,7 +21,7 @@ void print_queue(rec_queue_s &rec_queue,const char *name)
   printf("%s.size:  %u\n",name,rec_queue.size);
   printf("%s.used:  %u\n",name,rec_queue.used);
   printf("%s.begin: %u\n",name,rec_queue.begin);
-  printf("%s:",name);
+  printf("%s: ",name);
 
   if (rec_queue.used > 0)
   {

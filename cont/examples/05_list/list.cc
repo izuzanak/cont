@@ -23,7 +23,7 @@ void print_list(rec_list_s &rec_list,const char *name)
   printf("%s.free_idx:  %u\n",name,rec_list.free_idx);
   printf("%s.first_idx: %u\n",name,rec_list.first_idx);
   printf("%s.last_idx:  %u\n",name,rec_list.last_idx);
-  printf("%s:",name);
+  printf("%s: ",name);
 
   if (rec_list.first_idx != c_idx_not_exist)
   {
