@@ -429,6 +429,10 @@ inline unsigned mutex_s::unlock()
 
 //#define MEM_CHECK ENABLE
 
+// - declare cmalloc/cfree functions -
+inline void *cmalloc(unsigned a_size);
+inline void cfree(void *a_location);
+
 /*
  * definition of generated structures
  */
