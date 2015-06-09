@@ -65,9 +65,9 @@ inline unsigned mutex_s::init()
    if (res != 0) {
       switch (res) {
       case EINVAL:
-	 return c_error_EINVAL;
+         return c_error_EINVAL;
       default:
-	 return c_error_UNKNOWN;
+         return c_error_UNKNOWN;
       }
    }
 #endif

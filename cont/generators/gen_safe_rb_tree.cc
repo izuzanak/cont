@@ -1630,14 +1630,14 @@ void processor_s::generate_safe_rb_tree_type()
    {
       unsigned tn_idx = 0;
       do {
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-	 
-	 unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-	 type_idxs[tn_idx] = type_idx;
+         
+         unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
+         type_idxs[tn_idx] = type_idx;
 
          // - test type options -
          if (data_types[type_idx].properties & c_type_setting_strict_dynamic) {
@@ -1648,18 +1648,18 @@ void processor_s::generate_safe_rb_tree_type()
       } while(++tn_idx < type_cnt);
    }
 
-   // vypocet velikosti jmena typu
+   // - compute length of type name -
    unsigned data_type_name_len = 0;
    {
       unsigned t_idx = 0;
       do {
-	 data_type_name_len += data_types[type_idxs[t_idx]].name.size;
+         data_type_name_len += data_types[type_idxs[t_idx]].name.size;
       } while(++t_idx < type_cnt);
 
       data_type_name_len += strlen(c_cont_postfixes[c_cont_safe_rb_tree]) - 1;
    }
 
-   // slozeni jmena typu
+   // - compose name of type -
    string_s real_name;
    real_name.init();
    real_name.create(data_type_name_len);
@@ -1668,10 +1668,10 @@ void processor_s::generate_safe_rb_tree_type()
       unsigned t_idx = 0;
       char *dtn_ptr = real_name.data;
       do {
-	 data_type_s &type = data_types[type_idxs[t_idx]];
-	 memcpy(dtn_ptr,type.name.data,type.name.size - 1);
-	 dtn_ptr += type.name.size - 1;
-	 *dtn_ptr++ = '_';
+         data_type_s &type = data_types[type_idxs[t_idx]];
+         memcpy(dtn_ptr,type.name.data,type.name.size - 1);
+         dtn_ptr += type.name.size - 1;
+         *dtn_ptr++ = '_';
       } while(++t_idx < type_cnt);
 
       memcpy(--dtn_ptr,c_cont_postfixes[c_cont_safe_rb_tree],strlen(c_cont_postfixes[c_cont_safe_rb_tree]));
@@ -1682,8 +1682,6 @@ void processor_s::generate_safe_rb_tree_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -1699,22 +1697,22 @@ void processor_s::generate_safe_rb_tree_type()
 
       // - retrieve of types pointers -
       {
-	 unsigned tn_idx = 0;
-	 do {
-	    types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 } while(++tn_idx < type_cnt);
+         unsigned tn_idx = 0;
+         do {
+            types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         } while(++tn_idx < type_cnt);
       }
 
       data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
 
       {
-	 string_array_s &dt_type_names = data_type.types;
-	 string_s *tn_ptr = type_names.data;
-	 string_s *tn_ptr_end = type_names.data + type_cnt;
+         string_array_s &dt_type_names = data_type.types;
+         string_s *tn_ptr = type_names.data;
+         string_s *tn_ptr_end = type_names.data + type_cnt;
 
-	 do {
-	    dt_type_names.push(*tn_ptr);
-	 } while(++tn_ptr < tn_ptr_end);
+         do {
+            dt_type_names.push(*tn_ptr);
+         } while(++tn_ptr < tn_ptr_end);
       }
 
       data_type.variables.swap(variables);
@@ -1722,32 +1720,31 @@ void processor_s::generate_safe_rb_tree_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"rb_tree: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"rb_tree: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury rb_tree -
+   // - definition of structure rb_tree -
 
 printf(
 "// struct %s definition\n"
@@ -2122,23 +2119,23 @@ void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_i
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: inlines: abbreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
 
-	 type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
+         types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         
       } while(++tn_idx < type_cnt);
    }
 
    unsigned t_idx;
 
-   // --- definice inline funkci ---
+   // --- definition of inline methods ---
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -2265,23 +2262,23 @@ void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_i
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
 
-	 type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
+         types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         
       } while(++tn_idx < type_cnt);
    }
 
    unsigned t_idx;
 
-   // --- definice funkci ---
+   // --- definition of methods ---
 
 printf(
 "// --- struct %s method definition ---\n"

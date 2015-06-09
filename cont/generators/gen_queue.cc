@@ -47,7 +47,7 @@ printf(\
 "      %s *ptr_end = ptr + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->clear();\n"\
+"         ptr->clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "\n"\
 ,TYPE_NAME,TYPE_NAME);\
@@ -385,7 +385,7 @@ printf(\
 "      s_ptr_end = s_ptr + sec_cnt;\n"\
 "\n"\
 "      do {\n"\
-"	 *ptr = *s_ptr;\n"\
+"         *ptr = *s_ptr;\n"\
 "      } while(++ptr,++s_ptr < s_ptr_end);\n"\
 "   }\n"\
 "\n"\
@@ -430,61 +430,61 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (_break) {\n"\
-"	 unsigned offset = size - pos;\n"\
-"	 \n"\
-"	 if (s_break) {\n"\
-"	    unsigned s_offset = second.size = s_pos;\n"\
+"         unsigned offset = size - pos;\n"\
+"         \n"\
+"         if (s_break) {\n"\
+"            unsigned s_offset = second.size = s_pos;\n"\
 "\n"\
-"	    if (offset < s_offset) {\n"\
-"	       if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"		  return false;\n"\
-"	       }\n"\
+"            if (offset < s_offset) {\n"\
+"               if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"                  return false;\n"\
+"               }\n"\
 "\n"\
-"	       s_pos += offset;\n"\
-"	       pos = 0;\n"\
-"	       _break = false;\n"\
-"	    }\n"\
-"	    else {\n"\
-"	       if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"		  return false;\n"\
-"	       }\n"\
+"               s_pos += offset;\n"\
+"               pos = 0;\n"\
+"               _break = false;\n"\
+"            }\n"\
+"            else {\n"\
+"               if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"                  return false;\n"\
+"               }\n"\
 "\n"\
-"	       if (pos += s_offset >= size) {\n"\
-"		  pos = 0;\n"\
-"		  _break = false;\n"\
-"	       }\n"\
-"	       s_pos = 0;\n"\
-"	       s_break = false;\n"\
-"	    }\n"\
-"	 }\n"\
-"	 else {\n"\
-"	    if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"	       return false;\n"\
-"	    }\n"\
-"	    s_pos += offset;\n"\
-"	    pos = 0;\n"\
-"	    _break = false;\n"\
-"	 }\n"\
+"               if (pos += s_offset >= size) {\n"\
+"                  pos = 0;\n"\
+"                  _break = false;\n"\
+"               }\n"\
+"               s_pos = 0;\n"\
+"               s_break = false;\n"\
+"            }\n"\
+"         }\n"\
+"         else {\n"\
+"            if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"               return false;\n"\
+"            }\n"\
+"            s_pos += offset;\n"\
+"            pos = 0;\n"\
+"            _break = false;\n"\
+"         }\n"\
 "      }\n"\
 "      else {\n"\
-"	 if (s_break) {\n"\
-"	    unsigned s_offset = second.size - s_pos;\n"\
+"         if (s_break) {\n"\
+"            unsigned s_offset = second.size - s_pos;\n"\
 "\n"\
-"	    if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"	       return false;\n"\
-"	    }\n"\
-"	    pos += s_offset;\n"\
-"	    s_pos = 0;\n"\
-"	    s_break = false;\n"\
-"	 }\n"\
-"	 else {\n"\
-"	    if (memcmp(data + pos,second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
-"	       return false;\n"\
-"	    }\n"\
-"	    else {\n"\
-"	       return true;\n"\
-"	    }\n"\
-"	 }\n"\
+"            if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"               return false;\n"\
+"            }\n"\
+"            pos += s_offset;\n"\
+"            s_pos = 0;\n"\
+"            s_break = false;\n"\
+"         }\n"\
+"         else {\n"\
+"            if (memcmp(data + pos,second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
+"               return false;\n"\
+"            }\n"\
+"            else {\n"\
+"               return true;\n"\
+"            }\n"\
+"         }\n"\
 "      }\n"\
 "   } while(1);\n"\
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
@@ -506,15 +506,15 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (!(*ptr == *s_ptr)) {\n"\
-"	 return false;\n"\
+"         return false;\n"\
 "      }\n"\
 "      \n"\
 "      if (++ptr >= ptr_break) {\n"\
-"	 ptr = data;\n"\
+"         ptr = data;\n"\
 "      }\n"\
 "\n"\
 "      if (++s_ptr >= s_ptr_break) {\n"\
-"	 s_ptr = second.data;\n"\
+"         s_ptr = second.data;\n"\
 "      }\n"\
 "\n"\
 "   } while(ptr != ptr_end);\n"\
@@ -568,8 +568,6 @@ void processor_s::generate_queue_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -589,32 +587,31 @@ void processor_s::generate_queue_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"queue: name of generated structure \"%s\" already exist\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"queue: abreaviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury queue -
+   // - definition of structure queue -
 
 printf(
 "// struct %s definition\n"
@@ -826,7 +823,7 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // - definice inline funkci -
+   // - definition of inline methods -
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -900,7 +897,7 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // - definice funkci -
+   // - definition of methods -
 
 printf(
 "// --- struct %s method definition ---\n"

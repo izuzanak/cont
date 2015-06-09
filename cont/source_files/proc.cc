@@ -3095,7 +3095,7 @@ bool process_s::parse_code(string_s &a_code)
             break;
          }
 
-         // - vlozi na zasobnik novy stav a pozici terminalu ve zdrojovem retezci -
+         // - push new state to stack and position of terminal in source string -
          lalr_stack.push(parse_action,old_input_idx,input_idx);
          ret_term = c_idx_not_exist;
       }
@@ -3107,10 +3107,10 @@ bool process_s::parse_code(string_s &a_code)
          // - call parse callback -
          parse_callbacks[parse_action](*this);
 
-         // - odstraneni tela pravidla z vrcholu zasobniku -
+         // - remove rule body from stack -
          lalr_stack.used -= rule_body_lengths[parse_action];
 
-         // - ulozeni noveho stavu automatu na zasobnik -
+         // - push new automata state to stack -
          unsigned goto_val = lalr_table[lalr_stack.last().lalr_state*c_terminal_plus_nonterminal_cnt + rule_head_idxs[parse_action]];
          lalr_stack.push(goto_val);
       }

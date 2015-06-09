@@ -271,7 +271,7 @@ void processor_s::generate_container_def(string_s &a_cont_name)
    unsigned idx = 0;
    do {
       if (a_cont_name.compare_char_ptr(strlen(c_cont_names[idx]),(char *)c_cont_names[idx])) {
-	 break;
+         break;
       }
    } while(++idx < c_cont_cnt);
 
@@ -359,16 +359,16 @@ void processor_s::initialize_data_types()
    {
       unsigned idx = 0;
       do {
-	 data_types.push_blank();
-	 data_type_s &data_type = data_types.last();
+         data_types.push_blank();
+         data_type_s &data_type = data_types.last();
 
-	 const char *c_basic_type = c_basic_types[idx];
+         const char *c_basic_type = c_basic_types[idx];
 
          unsigned c_basic_type_length = strlen(c_basic_type);
-	 data_type.name.set(c_basic_type_length,(char *)c_basic_type);
+         data_type.name.set(c_basic_type_length,(char *)c_basic_type);
          data_type.real_name.set(c_basic_type_length,(char *)c_basic_type);
 
-	 data_type.properties = c_basic_type_types[idx];
+         data_type.properties = c_basic_type_types[idx];
       } while(++idx < c_basic_type_cnt);
    }
 
@@ -378,12 +378,12 @@ void processor_s::initialize_data_types()
    {
       unsigned idx = 0;
       do {
-	 abbreviations.push_blank();
-	 abbreviation_s &abbreviation = abbreviations.last();
+         abbreviations.push_blank();
+         abbreviation_s &abbreviation = abbreviations.last();
 
-	 const char *c_basic_abbreviation = c_basic_abbreviations[idx];
-	 abbreviation.name.set(strlen(c_basic_abbreviation),(char *)c_basic_abbreviation);
-	 abbreviation.data_type_idx = c_basic_abbreviation_types[idx];
+         const char *c_basic_abbreviation = c_basic_abbreviations[idx];
+         abbreviation.name.set(strlen(c_basic_abbreviation),(char *)c_basic_abbreviation);
+         abbreviation.data_type_idx = c_basic_abbreviation_types[idx];
       } while(++idx < c_basic_abbreviation_cnt);
    }
 }/*}}}*/

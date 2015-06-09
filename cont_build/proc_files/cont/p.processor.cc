@@ -296,9 +296,9 @@ inline unsigned mutex_s::init()
    if (res != 0) {
       switch (res) {
       case EINVAL:
-	 return c_error_EINVAL;
+         return c_error_EINVAL;
       default:
-	 return c_error_UNKNOWN;
+         return c_error_UNKNOWN;
       }
    }
 #endif
@@ -2124,8 +2124,6 @@ inline string_s &string_array_s::last()
 #define TYPE_NUMBERS(IDX) (types[IDX]->properties)
 #define VAR_NAMES_CNT (data_type.variables.used)
 #define VAR_NAMES(IDX) (data_type.variables[IDX].data)
-#define COMP_IDX_CNT (data_type.compare_idxs.used)
-#define COMP_IDXS(IDX) (data_type.compare_idxs[IDX])
 
 // - constants describing begin and end of definition block -
 extern const char *c_begin_str;
@@ -2217,7 +2215,6 @@ struct data_type_s
    unsigned properties; //!< member - 3
    string_array_s types; //!< member - 4
    string_array_s variables; //!< member - 5
-   ui_array_s compare_idxs; //!< member - 6
 
    /*!
     * \brief __GEN initialize structure
@@ -2232,7 +2229,7 @@ struct data_type_s
    /*!
     * \brief __GEN set structure members
     */
-   inline void set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables,ui_array_s &a_compare_idxs);
+   inline void set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables);
    /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -2757,7 +2754,6 @@ inline void data_type_s::init()
    real_name.init();
    types.init();
    variables.init();
-   compare_idxs.init();
 }/*}}}*/
 
 inline void data_type_s::clear()
@@ -2766,12 +2762,11 @@ inline void data_type_s::clear()
    real_name.clear();
    types.clear();
    variables.clear();
-   compare_idxs.clear();
 
    init();
 }/*}}}*/
 
-inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables,ui_array_s &a_compare_idxs)
+inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables)
 {/*{{{*/
    cont_idx = a_cont_idx;
    name = a_name;
@@ -2779,14 +2774,12 @@ inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_re
    properties = a_properties;
    types = a_types;
    variables = a_variables;
-   compare_idxs = a_compare_idxs;
 }/*}}}*/
 
 inline void data_type_s::flush_all()
 {/*{{{*/
    types.flush_all();
    variables.flush_all();
-   compare_idxs.flush_all();
 }/*}}}*/
 
 inline void data_type_s::swap(data_type_s &second)
@@ -2806,8 +2799,6 @@ inline void data_type_s::swap(data_type_s &second)
    types.swap(second.types);
 
    variables.swap(second.variables);
-
-   compare_idxs.swap(second.compare_idxs);
 }/*}}}*/
 
 inline data_type_s &data_type_s::operator=(data_type_s &src)
@@ -2818,14 +2809,13 @@ inline data_type_s &data_type_s::operator=(data_type_s &src)
    properties = src.properties;
    types = src.types;
    variables = src.variables;
-   compare_idxs = src.compare_idxs;
 
    return *this;
 }/*}}}*/
 
 inline bool data_type_s::operator==(data_type_s &second)
 {/*{{{*/
-   return (cont_idx == second.cont_idx && name == second.name && real_name == second.real_name && properties == second.properties && types == second.types && variables == second.variables && compare_idxs == second.compare_idxs);
+   return (cont_idx == second.cont_idx && name == second.name && real_name == second.real_name && properties == second.properties && types == second.types && variables == second.variables);
 }/*}}}*/
 
 
@@ -4692,7 +4682,7 @@ printf(\
 "      %s *ptr_end = data + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->clear();\n"\
+"         ptr->clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "   }\n"\
 ,TYPE_NAME,TYPE_NAME);\
@@ -4778,7 +4768,7 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (*ptr == a_value) {\n"\
-"	 return ptr - data;\n"\
+"         return ptr - data;\n"\
 "      }\n"\
 "   } while(++ptr < ptr_end);\n"\
 "\n"\
@@ -4866,7 +4856,7 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (!(*ptr == *s_ptr)) {\n"\
-"	 return false;\n"\
+"         return false;\n"\
 "      }\n"\
 "   } while(++s_ptr,++ptr < ptr_end);\n"\
 "\n"\
@@ -4918,8 +4908,6 @@ void processor_s::generate_array_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -4940,32 +4928,31 @@ void processor_s::generate_array_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"array: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"array: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - --- definice struktury array --- -
+   // --- definition of structure array ---
 
 printf(
 "// --- struct %s definition --- \n"
@@ -5281,7 +5268,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice inline funkci ---
+   // --- definition of inline methods ---
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -5382,7 +5369,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice funkci ---
+   // --- definition of methods ---
 
 printf(
 "// --- struct %s method definition ---\n"
@@ -5505,7 +5492,7 @@ printf(\
 "      %s *ptr_end = ptr + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->clear();\n"\
+"         ptr->clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "\n"\
 ,TYPE_NAME,TYPE_NAME);\
@@ -5843,7 +5830,7 @@ printf(\
 "      s_ptr_end = s_ptr + sec_cnt;\n"\
 "\n"\
 "      do {\n"\
-"	 *ptr = *s_ptr;\n"\
+"         *ptr = *s_ptr;\n"\
 "      } while(++ptr,++s_ptr < s_ptr_end);\n"\
 "   }\n"\
 "\n"\
@@ -5888,61 +5875,61 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (_break) {\n"\
-"	 unsigned offset = size - pos;\n"\
-"	 \n"\
-"	 if (s_break) {\n"\
-"	    unsigned s_offset = second.size = s_pos;\n"\
+"         unsigned offset = size - pos;\n"\
+"         \n"\
+"         if (s_break) {\n"\
+"            unsigned s_offset = second.size = s_pos;\n"\
 "\n"\
-"	    if (offset < s_offset) {\n"\
-"	       if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"		  return false;\n"\
-"	       }\n"\
+"            if (offset < s_offset) {\n"\
+"               if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"                  return false;\n"\
+"               }\n"\
 "\n"\
-"	       s_pos += offset;\n"\
-"	       pos = 0;\n"\
-"	       _break = false;\n"\
-"	    }\n"\
-"	    else {\n"\
-"	       if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"		  return false;\n"\
-"	       }\n"\
+"               s_pos += offset;\n"\
+"               pos = 0;\n"\
+"               _break = false;\n"\
+"            }\n"\
+"            else {\n"\
+"               if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"                  return false;\n"\
+"               }\n"\
 "\n"\
-"	       if (pos += s_offset >= size) {\n"\
-"		  pos = 0;\n"\
-"		  _break = false;\n"\
-"	       }\n"\
-"	       s_pos = 0;\n"\
-"	       s_break = false;\n"\
-"	    }\n"\
-"	 }\n"\
-"	 else {\n"\
-"	    if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"	       return false;\n"\
-"	    }\n"\
-"	    s_pos += offset;\n"\
-"	    pos = 0;\n"\
-"	    _break = false;\n"\
-"	 }\n"\
+"               if (pos += s_offset >= size) {\n"\
+"                  pos = 0;\n"\
+"                  _break = false;\n"\
+"               }\n"\
+"               s_pos = 0;\n"\
+"               s_break = false;\n"\
+"            }\n"\
+"         }\n"\
+"         else {\n"\
+"            if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"               return false;\n"\
+"            }\n"\
+"            s_pos += offset;\n"\
+"            pos = 0;\n"\
+"            _break = false;\n"\
+"         }\n"\
 "      }\n"\
 "      else {\n"\
-"	 if (s_break) {\n"\
-"	    unsigned s_offset = second.size - s_pos;\n"\
+"         if (s_break) {\n"\
+"            unsigned s_offset = second.size - s_pos;\n"\
 "\n"\
-"	    if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"	       return false;\n"\
-"	    }\n"\
-"	    pos += s_offset;\n"\
-"	    s_pos = 0;\n"\
-"	    s_break = false;\n"\
-"	 }\n"\
-"	 else {\n"\
-"	    if (memcmp(data + pos,second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
-"	       return false;\n"\
-"	    }\n"\
-"	    else {\n"\
-"	       return true;\n"\
-"	    }\n"\
-"	 }\n"\
+"            if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"               return false;\n"\
+"            }\n"\
+"            pos += s_offset;\n"\
+"            s_pos = 0;\n"\
+"            s_break = false;\n"\
+"         }\n"\
+"         else {\n"\
+"            if (memcmp(data + pos,second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
+"               return false;\n"\
+"            }\n"\
+"            else {\n"\
+"               return true;\n"\
+"            }\n"\
+"         }\n"\
 "      }\n"\
 "   } while(1);\n"\
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
@@ -5964,15 +5951,15 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (!(*ptr == *s_ptr)) {\n"\
-"	 return false;\n"\
+"         return false;\n"\
 "      }\n"\
 "      \n"\
 "      if (++ptr >= ptr_break) {\n"\
-"	 ptr = data;\n"\
+"         ptr = data;\n"\
 "      }\n"\
 "\n"\
 "      if (++s_ptr >= s_ptr_break) {\n"\
-"	 s_ptr = second.data;\n"\
+"         s_ptr = second.data;\n"\
 "      }\n"\
 "\n"\
 "   } while(ptr != ptr_end);\n"\
@@ -6026,8 +6013,6 @@ void processor_s::generate_queue_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -6047,32 +6032,31 @@ void processor_s::generate_queue_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"queue: name of generated structure \"%s\" already exist\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"queue: abreaviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury queue -
+   // - definition of structure queue -
 
 printf(
 "// struct %s definition\n"
@@ -6284,7 +6268,7 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // - definice inline funkci -
+   // - definition of inline methods -
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -6358,7 +6342,7 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // - definice funkci -
+   // - definition of methods -
 
 printf(
 "// --- struct %s method definition ---\n"
@@ -6458,7 +6442,7 @@ printf(\
 "      %s_element *ptr_end = ptr + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->object.clear();\n"\
+"         ptr->object.clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -6584,7 +6568,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -6634,7 +6618,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -6686,7 +6670,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -6739,7 +6723,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -6863,7 +6847,7 @@ printf(\
 "      %s_element *ptr_end = data + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->object.clear();\n"\
+"         ptr->object.clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "   }\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -6902,7 +6886,7 @@ printf(\
 "      %s_element &element = data[idx];\n"\
 "\n"\
 "      if (element.object == a_value) {\n"\
-"	 return idx;\n"\
+"         return idx;\n"\
 "      }\n"\
 "\n"\
 "      idx = element.next_idx;\n"\
@@ -6987,7 +6971,7 @@ printf(\
 "      %s_element &s_element = second.data[s_idx];\n"\
 "\n"\
 "      if (!(element.object == s_element.object)) {\n"\
-"	 return false;\n"\
+"         return false;\n"\
 "      }\n"\
 "\n"\
 "      idx = element.next_idx;\n"\
@@ -7041,8 +7025,6 @@ void processor_s::generate_list_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -7062,32 +7044,31 @@ void processor_s::generate_list_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"list: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"list: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury list -
+   // - definition of structure list -
 
 printf(
 "// struct %s definition\n"
@@ -7384,7 +7365,7 @@ void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice inline funkci ---
+   // --- definition of inline methods ---
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -7473,7 +7454,7 @@ void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice funkci ---
+   // --- definition of methods ---
 
 printf(
 "// --- struct %s method definition ---\n"
@@ -7529,7 +7510,7 @@ LIST_OPERATOR_EQUAL();
       }
    }
 
-   // - saet operator== method -
+   // - list operator== method -
 LIST_OPERATOR_DOUBLE_EQUAL();
 
 }
@@ -7596,16 +7577,16 @@ printf(\
    if (TYPE_CNT > 1) {\
       unsigned t_idx = 1;\
       do {\
-	 if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
+         if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
 printf(\
 ",%s a_%s"\
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-	 }\
-	 else {\
+         }\
+         else {\
 printf(\
 ",%s &a_%s"\
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-	 }\
+         }\
       } while(++t_idx < TYPE_CNT);\
    }\
 printf(\
@@ -7741,14 +7722,14 @@ void processor_s::generate_struct_type()
    {
       unsigned tn_idx = 0;
       do {
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"struct: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-	 
-	 unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-	 type_idxs[tn_idx] = type_idx;
+         
+         unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
+         type_idxs[tn_idx] = type_idx;
 
          // - test type options -
          data_type_s &type = data_types[type_idx];
@@ -7759,18 +7740,18 @@ void processor_s::generate_struct_type()
       } while(++tn_idx < type_cnt);
    }
 
-   // vypocet velikosti jmena typu
+   // - compute length of type name -
    unsigned data_type_name_len = 0;
    {
       unsigned t_idx = 0;
       do {
-	 data_type_name_len += data_types[type_idxs[t_idx]].name.size;
+         data_type_name_len += data_types[type_idxs[t_idx]].name.size;
       } while(++t_idx < type_cnt);
 
       data_type_name_len += strlen(c_cont_postfixes[c_cont_struct]) - 1;
    }
 
-   // slozeni jmena typu
+   // - compose type name -
    string_s real_name;
    real_name.init();
    real_name.create(data_type_name_len);
@@ -7779,10 +7760,10 @@ void processor_s::generate_struct_type()
       unsigned t_idx = 0;
       char *dtn_ptr = real_name.data;
       do {
-	 data_type_s &type = data_types[type_idxs[t_idx]];
-	 memcpy(dtn_ptr,type.name.data,type.name.size - 1);
-	 dtn_ptr += type.name.size - 1;
-	 *dtn_ptr++ = '_';
+         data_type_s &type = data_types[type_idxs[t_idx]];
+         memcpy(dtn_ptr,type.name.data,type.name.size - 1);
+         dtn_ptr += type.name.size - 1;
+         *dtn_ptr++ = '_';
       } while(++t_idx < type_cnt);
 
       memcpy(--dtn_ptr,c_cont_postfixes[c_cont_struct],strlen(c_cont_postfixes[c_cont_struct]));
@@ -7790,25 +7771,10 @@ void processor_s::generate_struct_type()
 
    string_s &data_type_name = abbs[0];
 
-   // prevedeni indexu porovnatelnych promennych na celocidelnou reprezentaci
-   unsigned comp_idx_cnt = comp_idx_strings.used;
-   unsigned comp_idxs[comp_idx_cnt];
-   
-   if (comp_idx_cnt != 0) {
-      unsigned c_idx = 0;
-      do {
-	 unsigned comp_idx = atoi(comp_idx_strings[c_idx].data);
-	 cassert(comp_idx < type_cnt)
-	 comp_idxs[c_idx] = comp_idx;
-      } while(++c_idx < comp_idx_cnt);
-   }
-
    unsigned data_type_idx;
 
-   // pripadne vytvoreni zkratky a noveho datoveho typu
+   // - create abbreviation for new data type -
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -7824,10 +7790,10 @@ void processor_s::generate_struct_type()
 
       // - retrieve of types pointers -
       {
-	 unsigned tn_idx = 0;
-	 do {
-	    types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 } while(++tn_idx < type_cnt);
+         unsigned tn_idx = 0;
+         do {
+            types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         } while(++tn_idx < type_cnt);
       }
 
       bool dynamic = false;
@@ -7836,65 +7802,63 @@ void processor_s::generate_struct_type()
       data_type_s **t_pptr = types;
       data_type_s **t_pptr_end = types + type_cnt;
       do {
-	 if ((*t_pptr)->properties & c_type_dynamic) {
-	    dynamic = true;
-	    break;
-	 }
+         if ((*t_pptr)->properties & c_type_dynamic) {
+            dynamic = true;
+            break;
+         }
       } while(++t_pptr < t_pptr_end);
 
       t_pptr = types;
       do {
-	 if ((*t_pptr)->properties & c_type_flushable) {
-	    flushable = true;
-	    break;
-	 }
+         if ((*t_pptr)->properties & c_type_flushable) {
+            flushable = true;
+            break;
+         }
       } while(++t_pptr < t_pptr_end);
 
       data_type.properties = (c_type_static << dynamic) | (flushable << 3) | (comp_idx_strings.used != 0) << 4;
       data_type.properties |= type_settings & c_type_setting_mask;
 
       {
-	 string_array_s &dt_type_names = data_type.types;
-	 string_s *tn_ptr = type_names.data;
-	 string_s *tn_ptr_end = type_names.data + type_cnt;
+         string_array_s &dt_type_names = data_type.types;
+         string_s *tn_ptr = type_names.data;
+         string_s *tn_ptr_end = type_names.data + type_cnt;
 
-	 do {
-	    dt_type_names.push(*tn_ptr);
-	 } while(++tn_ptr < tn_ptr_end);
+         do {
+            dt_type_names.push(*tn_ptr);
+         } while(++tn_ptr < tn_ptr_end);
       }
       
       data_type.variables.swap(variables);
-      data_type.compare_idxs.set(comp_idx_cnt,comp_idxs);
 
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"struct: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"struct: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury struct -
+   // - definition of structure struct -
 
 printf(
 "// structure %s definition\n"
@@ -7965,16 +7929,16 @@ printf(
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
-	 if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+         if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 printf(
 ",%s a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
-	 }
-	 else {
+         }
+         else {
 printf(
 ",%s &a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
-	 }
+         }
       } while(++t_idx < TYPE_CNT);
    }
 printf(
@@ -8039,23 +8003,23 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"struct: inlines: abbreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
 
-	 type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
+         types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         
       } while(++tn_idx < type_cnt);
    }
 
    unsigned t_idx;
 
-   // - definice inline fuknci -
+   // - definition of inline methods -
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -8099,29 +8063,21 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
    
    unsigned type_cnt = data_type.types.used;
 
-   // FIXME set but not used
-   //unsigned type_idxs[type_cnt];
-   //data_type_s *types[type_cnt];
-
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"struct: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
-
-         // FIXME set but not used
-	 //type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 //types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         
       } while(++tn_idx < type_cnt);
    }
 
-   // - definice fuknci -
+   // - definition of methods -
 
 printf(
 "// --- struct %s method definition ---\n"
@@ -9748,14 +9704,14 @@ void processor_s::generate_rb_tree_type()
    {
       unsigned tn_idx = 0;
       do {
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-	 
-	 unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-	 type_idxs[tn_idx] = type_idx;
+         
+         unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
+         type_idxs[tn_idx] = type_idx;
 
          // - test type options -
          if (data_types[type_idx].properties & c_type_setting_strict_dynamic) {
@@ -9766,18 +9722,18 @@ void processor_s::generate_rb_tree_type()
       } while(++tn_idx < type_cnt);
    }
 
-   // vypocet velikosti jmena typu
+   // - compute length of type name -
    unsigned data_type_name_len = 0;
    {
       unsigned t_idx = 0;
       do {
-	 data_type_name_len += data_types[type_idxs[t_idx]].name.size;
+         data_type_name_len += data_types[type_idxs[t_idx]].name.size;
       } while(++t_idx < type_cnt);
 
       data_type_name_len += strlen(c_cont_postfixes[c_cont_rb_tree]) - 1;
    }
 
-   // slozeni jmena typu
+   // - compose type name -
    string_s real_name;
    real_name.init();
    real_name.create(data_type_name_len);
@@ -9786,10 +9742,10 @@ void processor_s::generate_rb_tree_type()
       unsigned t_idx = 0;
       char *dtn_ptr = real_name.data;
       do {
-	 data_type_s &type = data_types[type_idxs[t_idx]];
-	 memcpy(dtn_ptr,type.name.data,type.name.size - 1);
-	 dtn_ptr += type.name.size - 1;
-	 *dtn_ptr++ = '_';
+         data_type_s &type = data_types[type_idxs[t_idx]];
+         memcpy(dtn_ptr,type.name.data,type.name.size - 1);
+         dtn_ptr += type.name.size - 1;
+         *dtn_ptr++ = '_';
       } while(++t_idx < type_cnt);
 
       memcpy(--dtn_ptr,c_cont_postfixes[c_cont_rb_tree],strlen(c_cont_postfixes[c_cont_rb_tree]));
@@ -9800,8 +9756,6 @@ void processor_s::generate_rb_tree_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -9817,22 +9771,22 @@ void processor_s::generate_rb_tree_type()
 
       // - retrieve of types pointers -
       {
-	 unsigned tn_idx = 0;
-	 do {
-	    types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 } while(++tn_idx < type_cnt);
+         unsigned tn_idx = 0;
+         do {
+            types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         } while(++tn_idx < type_cnt);
       }
 
       data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
 
       {
-	 string_array_s &dt_type_names = data_type.types;
-	 string_s *tn_ptr = type_names.data;
-	 string_s *tn_ptr_end = type_names.data + type_cnt;
+         string_array_s &dt_type_names = data_type.types;
+         string_s *tn_ptr = type_names.data;
+         string_s *tn_ptr_end = type_names.data + type_cnt;
 
-	 do {
-	    dt_type_names.push(*tn_ptr);
-	 } while(++tn_ptr < tn_ptr_end);
+         do {
+            dt_type_names.push(*tn_ptr);
+         } while(++tn_ptr < tn_ptr_end);
       }
 
       data_type.variables.swap(variables);
@@ -9840,32 +9794,31 @@ void processor_s::generate_rb_tree_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"rb_tree: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"rb_tree: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury rb_tree -
+   // - definition of structure rb_tree -
 
 printf(
 "// struct %s definition\n"
@@ -10237,23 +10190,23 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: inlines: abbreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
 
-	 type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
+         types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         
       } while(++tn_idx < type_cnt);
    }
 
    unsigned t_idx;
 
-   // --- definice inline funkci ---
+   // --- definition of inline methods ---
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -10380,23 +10333,23 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
 
-	 type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
+         types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         
       } while(++tn_idx < type_cnt);
    }
 
    unsigned t_idx;
 
-   // --- definice funkci ---
+   // --- definition of methods ---
 
 printf(
 "// --- struct %s method definition ---\n"
@@ -10569,7 +10522,7 @@ printf(\
 "      %s_element *ptr_end = ptr + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->object.clear();\n"\
+"         ptr->object.clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -10699,7 +10652,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -10751,7 +10704,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -10805,7 +10758,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -10860,7 +10813,7 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      if (used >= size) {\n"\
-"	 copy_resize((size << 1) + c_array_add);\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
 "      new_idx = used++;\n"\
@@ -10991,7 +10944,7 @@ printf(\
 "      %s_element *ptr_end = data + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->object.clear();\n"\
+"         ptr->object.clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "   }\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -11030,7 +10983,7 @@ printf(\
 "      %s_element &element = data[idx];\n"\
 "\n"\
 "      if (element.object == a_value) {\n"\
-"	 return idx;\n"\
+"         return idx;\n"\
 "      }\n"\
 "\n"\
 "      idx = element.next_idx;\n"\
@@ -11121,7 +11074,7 @@ printf(\
 "      %s_element &s_element = second.data[s_idx];\n"\
 "\n"\
 "      if (!(element.object == s_element.object)) {\n"\
-"	 return false;\n"\
+"         return false;\n"\
 "      }\n"\
 "\n"\
 "      idx = element.next_idx;\n"\
@@ -11175,8 +11128,6 @@ void processor_s::generate_safe_list_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -11196,32 +11147,31 @@ void processor_s::generate_safe_list_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"list: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"list: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury list -
+   // - definition of structure list -
 
 printf(
 "// struct %s definition\n"
@@ -11520,7 +11470,7 @@ void processor_s::generate_safe_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice inline funkci ---
+   // --- definition of inline methods ---
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -11609,7 +11559,7 @@ void processor_s::generate_safe_list_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice funkci ---
+   // --- definition of methods ---
 
 printf(
 "// --- struct %s method definition ---\n"
@@ -11665,7 +11615,7 @@ SAFE_LIST_OPERATOR_EQUAL();
       }
    }
 
-   // - saet operator== method -
+   // - list operator== method -
 SAFE_LIST_OPERATOR_DOUBLE_EQUAL();
 
 }
@@ -13303,14 +13253,14 @@ void processor_s::generate_safe_rb_tree_type()
    {
       unsigned tn_idx = 0;
       do {
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_names[tn_idx].size - 1,type_names[tn_idx].data);
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-	 
-	 unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-	 type_idxs[tn_idx] = type_idx;
+         
+         unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
+         type_idxs[tn_idx] = type_idx;
 
          // - test type options -
          if (data_types[type_idx].properties & c_type_setting_strict_dynamic) {
@@ -13321,18 +13271,18 @@ void processor_s::generate_safe_rb_tree_type()
       } while(++tn_idx < type_cnt);
    }
 
-   // vypocet velikosti jmena typu
+   // - compute length of type name -
    unsigned data_type_name_len = 0;
    {
       unsigned t_idx = 0;
       do {
-	 data_type_name_len += data_types[type_idxs[t_idx]].name.size;
+         data_type_name_len += data_types[type_idxs[t_idx]].name.size;
       } while(++t_idx < type_cnt);
 
       data_type_name_len += strlen(c_cont_postfixes[c_cont_safe_rb_tree]) - 1;
    }
 
-   // slozeni jmena typu
+   // - compose name of type -
    string_s real_name;
    real_name.init();
    real_name.create(data_type_name_len);
@@ -13341,10 +13291,10 @@ void processor_s::generate_safe_rb_tree_type()
       unsigned t_idx = 0;
       char *dtn_ptr = real_name.data;
       do {
-	 data_type_s &type = data_types[type_idxs[t_idx]];
-	 memcpy(dtn_ptr,type.name.data,type.name.size - 1);
-	 dtn_ptr += type.name.size - 1;
-	 *dtn_ptr++ = '_';
+         data_type_s &type = data_types[type_idxs[t_idx]];
+         memcpy(dtn_ptr,type.name.data,type.name.size - 1);
+         dtn_ptr += type.name.size - 1;
+         *dtn_ptr++ = '_';
       } while(++t_idx < type_cnt);
 
       memcpy(--dtn_ptr,c_cont_postfixes[c_cont_safe_rb_tree],strlen(c_cont_postfixes[c_cont_safe_rb_tree]));
@@ -13355,8 +13305,6 @@ void processor_s::generate_safe_rb_tree_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -13372,22 +13320,22 @@ void processor_s::generate_safe_rb_tree_type()
 
       // - retrieve of types pointers -
       {
-	 unsigned tn_idx = 0;
-	 do {
-	    types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 } while(++tn_idx < type_cnt);
+         unsigned tn_idx = 0;
+         do {
+            types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         } while(++tn_idx < type_cnt);
       }
 
       data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
 
       {
-	 string_array_s &dt_type_names = data_type.types;
-	 string_s *tn_ptr = type_names.data;
-	 string_s *tn_ptr_end = type_names.data + type_cnt;
+         string_array_s &dt_type_names = data_type.types;
+         string_s *tn_ptr = type_names.data;
+         string_s *tn_ptr_end = type_names.data + type_cnt;
 
-	 do {
-	    dt_type_names.push(*tn_ptr);
-	 } while(++tn_ptr < tn_ptr_end);
+         do {
+            dt_type_names.push(*tn_ptr);
+         } while(++tn_ptr < tn_ptr_end);
       }
 
       data_type.variables.swap(variables);
@@ -13395,32 +13343,31 @@ void processor_s::generate_safe_rb_tree_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"rb_tree: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"rb_tree: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - definice struktury rb_tree -
+   // - definition of structure rb_tree -
 
 printf(
 "// struct %s definition\n"
@@ -13795,23 +13742,23 @@ void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_i
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: inlines: abbreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
 
-	 type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
+         types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         
       } while(++tn_idx < type_cnt);
    }
 
    unsigned t_idx;
 
-   // --- definice inline funkci ---
+   // --- definition of inline methods ---
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -13938,23 +13885,23 @@ void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_i
    {
       unsigned tn_idx = 0;
       do {
-	 string_s &type_abb_string = data_type.types[tn_idx];
-	 unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
+         string_s &type_abb_string = data_type.types[tn_idx];
+         unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
          if (type_abb_idx == c_idx_not_exist) {
             fprintf(stderr,"rb_tree: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
 
-	 type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
-	 types[tn_idx] = &data_types[type_idxs[tn_idx]];
-	 
+         type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
+         types[tn_idx] = &data_types[type_idxs[tn_idx]];
+         
       } while(++tn_idx < type_cnt);
    }
 
    unsigned t_idx;
 
-   // --- definice funkci ---
+   // --- definition of methods ---
 
 printf(
 "// --- struct %s method definition ---\n"
@@ -14166,7 +14113,7 @@ void processor_s::generate_container_def(string_s &a_cont_name)
    unsigned idx = 0;
    do {
       if (a_cont_name.compare_char_ptr(strlen(c_cont_names[idx]),(char *)c_cont_names[idx])) {
-	 break;
+         break;
       }
    } while(++idx < c_cont_cnt);
 
@@ -14254,16 +14201,16 @@ void processor_s::initialize_data_types()
    {
       unsigned idx = 0;
       do {
-	 data_types.push_blank();
-	 data_type_s &data_type = data_types.last();
+         data_types.push_blank();
+         data_type_s &data_type = data_types.last();
 
-	 const char *c_basic_type = c_basic_types[idx];
+         const char *c_basic_type = c_basic_types[idx];
 
          unsigned c_basic_type_length = strlen(c_basic_type);
-	 data_type.name.set(c_basic_type_length,(char *)c_basic_type);
+         data_type.name.set(c_basic_type_length,(char *)c_basic_type);
          data_type.real_name.set(c_basic_type_length,(char *)c_basic_type);
 
-	 data_type.properties = c_basic_type_types[idx];
+         data_type.properties = c_basic_type_types[idx];
       } while(++idx < c_basic_type_cnt);
    }
 
@@ -14273,12 +14220,12 @@ void processor_s::initialize_data_types()
    {
       unsigned idx = 0;
       do {
-	 abbreviations.push_blank();
-	 abbreviation_s &abbreviation = abbreviations.last();
+         abbreviations.push_blank();
+         abbreviation_s &abbreviation = abbreviations.last();
 
-	 const char *c_basic_abbreviation = c_basic_abbreviations[idx];
-	 abbreviation.name.set(strlen(c_basic_abbreviation),(char *)c_basic_abbreviation);
-	 abbreviation.data_type_idx = c_basic_abbreviation_types[idx];
+         const char *c_basic_abbreviation = c_basic_abbreviations[idx];
+         abbreviation.name.set(strlen(c_basic_abbreviation),(char *)c_basic_abbreviation);
+         abbreviation.data_type_idx = c_basic_abbreviation_types[idx];
       } while(++idx < c_basic_abbreviation_cnt);
    }
 }/*}}}*/

@@ -296,9 +296,9 @@ inline unsigned mutex_s::init()
    if (res != 0) {
       switch (res) {
       case EINVAL:
-	 return c_error_EINVAL;
+         return c_error_EINVAL;
       default:
-	 return c_error_UNKNOWN;
+         return c_error_UNKNOWN;
       }
    }
 #endif
@@ -2128,8 +2128,6 @@ inline string_s &string_array_s::last()
 #define TYPE_NUMBERS(IDX) (types[IDX]->properties)
 #define VAR_NAMES_CNT (data_type.variables.used)
 #define VAR_NAMES(IDX) (data_type.variables[IDX].data)
-#define COMP_IDX_CNT (data_type.compare_idxs.used)
-#define COMP_IDXS(IDX) (data_type.compare_idxs[IDX])
 
 // - constants describing begin and end of definition block -
 extern const char *c_begin_str;
@@ -2221,7 +2219,6 @@ struct data_type_s
    unsigned properties; //!< member - 3
    string_array_s types; //!< member - 4
    string_array_s variables; //!< member - 5
-   ui_array_s compare_idxs; //!< member - 6
 
    /*!
     * \brief __GEN initialize structure
@@ -2236,7 +2233,7 @@ struct data_type_s
    /*!
     * \brief __GEN set structure members
     */
-   inline void set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables,ui_array_s &a_compare_idxs);
+   inline void set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables);
    /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -2761,7 +2758,6 @@ inline void data_type_s::init()
    real_name.init();
    types.init();
    variables.init();
-   compare_idxs.init();
 }/*}}}*/
 
 inline void data_type_s::clear()
@@ -2770,12 +2766,11 @@ inline void data_type_s::clear()
    real_name.clear();
    types.clear();
    variables.clear();
-   compare_idxs.clear();
 
    init();
 }/*}}}*/
 
-inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables,ui_array_s &a_compare_idxs)
+inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables)
 {/*{{{*/
    cont_idx = a_cont_idx;
    name = a_name;
@@ -2783,14 +2778,12 @@ inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_re
    properties = a_properties;
    types = a_types;
    variables = a_variables;
-   compare_idxs = a_compare_idxs;
 }/*}}}*/
 
 inline void data_type_s::flush_all()
 {/*{{{*/
    types.flush_all();
    variables.flush_all();
-   compare_idxs.flush_all();
 }/*}}}*/
 
 inline void data_type_s::swap(data_type_s &second)
@@ -2810,8 +2803,6 @@ inline void data_type_s::swap(data_type_s &second)
    types.swap(second.types);
 
    variables.swap(second.variables);
-
-   compare_idxs.swap(second.compare_idxs);
 }/*}}}*/
 
 inline data_type_s &data_type_s::operator=(data_type_s &src)
@@ -2822,14 +2813,13 @@ inline data_type_s &data_type_s::operator=(data_type_s &src)
    properties = src.properties;
    types = src.types;
    variables = src.variables;
-   compare_idxs = src.compare_idxs;
 
    return *this;
 }/*}}}*/
 
 inline bool data_type_s::operator==(data_type_s &second)
 {/*{{{*/
-   return (cont_idx == second.cont_idx && name == second.name && real_name == second.real_name && properties == second.properties && types == second.types && variables == second.variables && compare_idxs == second.compare_idxs);
+   return (cont_idx == second.cont_idx && name == second.name && real_name == second.real_name && properties == second.properties && types == second.types && variables == second.variables);
 }/*}}}*/
 
 
@@ -6964,7 +6954,7 @@ bool process_s::parse_code(string_s &a_code)
             break;
          }
 
-         // - vlozi na zasobnik novy stav a pozici terminalu ve zdrojovem retezci -
+         // - push new state to stack and position of terminal in source string -
          lalr_stack.push(parse_action,old_input_idx,input_idx);
          ret_term = c_idx_not_exist;
       }
@@ -6976,10 +6966,10 @@ bool process_s::parse_code(string_s &a_code)
          // - call parse callback -
          parse_callbacks[parse_action](*this);
 
-         // - odstraneni tela pravidla z vrcholu zasobniku -
+         // - remove rule body from stack -
          lalr_stack.used -= rule_body_lengths[parse_action];
 
-         // - ulozeni noveho stavu automatu na zasobnik -
+         // - push new automata state to stack -
          unsigned goto_val = lalr_table[lalr_stack.last().lalr_state*c_terminal_plus_nonterminal_cnt + rule_head_idxs[parse_action]];
          lalr_stack.push(goto_val);
       }

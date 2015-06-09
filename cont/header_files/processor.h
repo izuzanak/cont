@@ -22,8 +22,6 @@
 #define TYPE_NUMBERS(IDX) (types[IDX]->properties)
 #define VAR_NAMES_CNT (data_type.variables.used)
 #define VAR_NAMES(IDX) (data_type.variables[IDX].data)
-#define COMP_IDX_CNT (data_type.compare_idxs.used)
-#define COMP_IDXS(IDX) (data_type.compare_idxs[IDX])
 
 // - constants describing begin and end of definition block -
 extern const char *c_begin_str;
@@ -111,7 +109,6 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    unsigned:properties
    string_array_s:types
    string_array_s:variables
-   ui_array_s:compare_idxs
    >
    data_type_s;
 @end

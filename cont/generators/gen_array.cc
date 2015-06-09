@@ -385,7 +385,7 @@ printf(\
 "      %s *ptr_end = data + size;\n"\
 "\n"\
 "      do {\n"\
-"	 ptr->clear();\n"\
+"         ptr->clear();\n"\
 "      } while(++ptr < ptr_end);\n"\
 "   }\n"\
 ,TYPE_NAME,TYPE_NAME);\
@@ -471,7 +471,7 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (*ptr == a_value) {\n"\
-"	 return ptr - data;\n"\
+"         return ptr - data;\n"\
 "      }\n"\
 "   } while(++ptr < ptr_end);\n"\
 "\n"\
@@ -559,7 +559,7 @@ printf(\
 "\n"\
 "   do {\n"\
 "      if (!(*ptr == *s_ptr)) {\n"\
-"	 return false;\n"\
+"         return false;\n"\
 "      }\n"\
 "   } while(++s_ptr,++ptr < ptr_end);\n"\
 "\n"\
@@ -611,8 +611,6 @@ void processor_s::generate_array_type()
    unsigned data_type_idx;
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
-      //abbreviations.push_blank();
-      //abbreviations.last().set(data_type_name,data_types.used);
 
       unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
       if (d_idx != c_idx_not_exist) {
@@ -633,32 +631,31 @@ void processor_s::generate_array_type()
       data_type_idx = data_types.used - 1;
    }
    else {
-      //data_type_idx = abbreviations[data_type_idx].data_type_idx;
       fprintf(stderr,"array: name of generated structure \"%s\" is already used\n",data_type_name.data);
       cassert(0);
    }
 
    real_name.clear();
 
-   // zkontrolovani a zapsani zkratek
+   // - check and write abbreviations -
    if (abbs.used != 0) {
       unsigned idx = 0;
       do {
-	 string_s &abb = abbs[idx];
+         string_s &abb = abbs[idx];
 
          if (abbreviations.get_idx_by_name(abb.size - 1,abb.data) != c_idx_not_exist) {
             fprintf(stderr,"array: abreviated name \"%s\" for generated structure is already used\n",abb.data);
             cassert(0);
          }
 
-	 abbreviations.push_blank();
-	 abbreviations.last().set(abb,data_type_idx);
+         abbreviations.push_blank();
+         abbreviations.last().set(abb,data_type_idx);
       } while(++idx < abbs.used);
    }
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   // - --- definice struktury array --- -
+   // --- definition of structure array ---
 
 printf(
 "// --- struct %s definition --- \n"
@@ -974,7 +971,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice inline funkci ---
+   // --- definition of inline methods ---
 
 printf(
 "// --- struct %s inline method definition ---\n"
@@ -1075,7 +1072,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   // --- definice funkci ---
+   // --- definition of methods ---
 
 printf(
 "// --- struct %s method definition ---\n"
