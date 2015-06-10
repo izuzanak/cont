@@ -3979,7 +3979,7 @@ unsigned lalr_stack_s::get_idx(lalr_stack_element_s &a_value)
 
    do {
       if (*ptr == a_value) {
-	 return ptr - data;
+         return ptr - data;
       }
    } while(++ptr < ptr_end);
 

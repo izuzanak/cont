@@ -3989,7 +3989,7 @@ void data_type_array_s::copy_resize(unsigned a_size)
       data_type_s *ptr_end = data + size;
 
       do {
-	 ptr->clear();
+         ptr->clear();
       } while(++ptr < ptr_end);
    }
 
@@ -4024,7 +4024,7 @@ unsigned data_type_array_s::get_idx(data_type_s &a_value)
 
    do {
       if (*ptr == a_value) {
-	 return ptr - data;
+         return ptr - data;
       }
    } while(++ptr < ptr_end);
 
@@ -4062,7 +4062,7 @@ bool data_type_array_s::operator==(data_type_array_s &second)
 
    do {
       if (!(*ptr == *s_ptr)) {
-	 return false;
+         return false;
       }
    } while(++s_ptr,++ptr < ptr_end);
 
@@ -4188,7 +4188,7 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
       abbreviation_s *ptr_end = data + size;
 
       do {
-	 ptr->clear();
+         ptr->clear();
       } while(++ptr < ptr_end);
    }
 
@@ -4223,7 +4223,7 @@ unsigned abbreviation_array_s::get_idx(abbreviation_s &a_value)
 
    do {
       if (*ptr == a_value) {
-	 return ptr - data;
+         return ptr - data;
       }
    } while(++ptr < ptr_end);
 
@@ -4261,7 +4261,7 @@ bool abbreviation_array_s::operator==(abbreviation_array_s &second)
 
    do {
       if (!(*ptr == *s_ptr)) {
-	 return false;
+         return false;
       }
    } while(++s_ptr,++ptr < ptr_end);
 

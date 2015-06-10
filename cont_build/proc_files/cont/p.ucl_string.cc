@@ -2603,7 +2603,7 @@ void string_array_s::copy_resize(unsigned a_size)
       string_s *ptr_end = data + size;
 
       do {
-	 ptr->clear();
+         ptr->clear();
       } while(++ptr < ptr_end);
    }
 
@@ -2638,7 +2638,7 @@ unsigned string_array_s::get_idx(string_s &a_value)
 
    do {
       if (*ptr == a_value) {
-	 return ptr - data;
+         return ptr - data;
       }
    } while(++ptr < ptr_end);
 
@@ -2676,7 +2676,7 @@ bool string_array_s::operator==(string_array_s &second)
 
    do {
       if (!(*ptr == *s_ptr)) {
-	 return false;
+         return false;
       }
    } while(++s_ptr,++ptr < ptr_end);
 

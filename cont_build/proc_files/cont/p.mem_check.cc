@@ -1600,7 +1600,7 @@ unsigned ui_array_s::get_idx(unsigned a_value)
 
    do {
       if (*ptr == a_value) {
-	 return ptr - data;
+         return ptr - data;
       }
    } while(++ptr < ptr_end);
 
