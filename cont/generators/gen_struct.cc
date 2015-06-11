@@ -110,7 +110,7 @@ printf(\
 #define STRUCT_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &second)\n"\
+"inline void %s::swap(%s &a_second)\n"\
 "{/*{{{*/"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    t_idx = 0;\
@@ -121,13 +121,13 @@ printf(\
       if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
 printf(\
 "   %s tmp_%s = %s;\n"\
-"   %s = second.%s;\n"\
-"   second.%s = tmp_%s;\n"\
+"   %s = a_second.%s;\n"\
+"   a_second.%s = tmp_%s;\n"\
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
       }\
       else {\
 printf(\
-"   %s.swap(second.%s);\n"\
+"   %s.swap(a_second.%s);\n"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
       }\
    } while(++t_idx < TYPE_CNT);\
@@ -140,13 +140,13 @@ printf(\
 #define STRUCT_OPERATOR_EQUAL() \
 {\
 printf(\
-"inline %s &%s::operator=(%s &src)\n"\
+"inline %s &%s::operator=(%s &a_src)\n"\
 "{/*{{{*/\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    t_idx = 0;\
    do {\
 printf(\
-"   %s = src.%s;\n"\
+"   %s = a_src.%s;\n"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
    } while(++t_idx < TYPE_CNT);\
 printf(\
@@ -160,15 +160,15 @@ printf(\
 #define STRUCT_OPERATOR_DOUBLE_EQUAL() \
 {\
 printf(\
-"inline bool %s::operator==(%s &second)\n"\
+"inline bool %s::operator==(%s &a_second)\n"\
 "{/*{{{*/\n"\
-"   return (%s == second.%s"\
+"   return (%s == a_second.%s"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,VAR_NAMES(0),VAR_NAMES(0));\
    if (TYPE_CNT > 1) {\
       t_idx = 1;\
       do {\
 printf(\
-" && %s == second.%s"\
+" && %s == a_second.%s"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
       } while(++t_idx < TYPE_CNT);\
    }\
@@ -436,7 +436,7 @@ printf(
 "   /*!\n"
 "    * \\brief __GEN swap structure members with another structure\n"
 "    */\n"
-"   inline void swap(%s &second);\n"
+"   inline void swap(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -444,20 +444,20 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy structure from another structure\n"
-"    * \\param src - reference to another structure\n"
+"    * \\param a_src - reference to another structure\n"
 "    * \\return reference to this structure\n"
 "    */\n"
-"   inline %s &operator=(%s &src);\n"
+"   inline %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
 "   /*!\n"
 "    * \\brief __GEN compare structure with another structure\n"
-"    * \\param second - reference to another structure\n"
+"    * \\param a_second - reference to another structure\n"
 "    * \\return result of comparison\n"
 "    */\n"
-"   inline bool operator==(%s &second);\n"
+"   inline bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (fun_defs.used != 0) {

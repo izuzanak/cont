@@ -716,35 +716,35 @@ printf(\
 #define SAFE_RB_TREE_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &second)\n"\
+"inline void %s::swap(%s &a_second)\n"\
 "{/*{{{*/\n"\
 "   unsigned tmp_unsigned = size;\n"\
-"   size = second.size;\n"\
-"   second.size = tmp_unsigned;\n"\
+"   size = a_second.size;\n"\
+"   a_second.size = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = used;\n"\
-"   used = second.used;\n"\
-"   second.used = tmp_unsigned;\n"\
+"   used = a_second.used;\n"\
+"   a_second.used = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = count;\n"\
-"   count = second.count;\n"\
-"   second.count = tmp_unsigned;\n"\
+"   count = a_second.count;\n"\
+"   a_second.count = tmp_unsigned;\n"\
 "\n"\
 "   %s_node *tmp_data = data;\n"\
-"   data = second.data;\n"\
-"   second.data = tmp_data;\n"\
+"   data = a_second.data;\n"\
+"   a_second.data = tmp_data;\n"\
 "\n"\
 "   tmp_unsigned = free_idx;\n"\
-"   free_idx = second.free_idx;\n"\
-"   second.free_idx = tmp_unsigned;\n"\
+"   free_idx = a_second.free_idx;\n"\
+"   a_second.free_idx = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = root_idx;\n"\
-"   root_idx = second.root_idx;\n"\
-"   second.root_idx = tmp_unsigned;\n"\
+"   root_idx = a_second.root_idx;\n"\
+"   a_second.root_idx = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = leaf_idx;\n"\
-"   leaf_idx = second.leaf_idx;\n"\
-"   second.leaf_idx = tmp_unsigned;\n"\
+"   leaf_idx = a_second.leaf_idx;\n"\
+"   a_second.leaf_idx = tmp_unsigned;\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (VAR_NAMES_CNT > 0) {\
       t_idx = 0;\
@@ -755,13 +755,13 @@ printf(\
          if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {\
 printf(\
 "   %s tmp_%s = %s;\n"\
-"   %s = second.%s;\n"\
-"   second.%s = tmp_%s;\n"\
+"   %s = a_second.%s;\n"\
+"   a_second.%s = tmp_%s;\n"\
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
          }\
          else {\
 printf(\
-"   %s.swap(second.%s);\n"\
+"   %s.swap(a_second.%s);\n"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
          }\
       } while(++t_idx < VAR_NAMES_CNT);\
@@ -1221,25 +1221,25 @@ printf(\
 {\
    if (TYPE_NUMBERS(0) & c_type_dynamic) {\
 printf(\
-"%s &%s::operator=(%s &src)\n"\
+"%s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"inline %s &%s::operator=(%s &src)\n"\
+"inline %s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
 "   clear();\n"\
 "\n"\
-"   if (src.root_idx == c_idx_not_exist) return *this;\n"\
+"   if (a_src.root_idx == c_idx_not_exist) return *this;\n"\
 "\n"\
-"   copy_resize(src.used);\n"\
+"   copy_resize(a_src.used);\n"\
 );\
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {\
 printf(\
-"   memcpy(data,src.data,src.used*sizeof(%s_node));\n"\
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"\
 ,IM_STRUCT_NAME);\
    }\
    else \
@@ -1247,8 +1247,8 @@ printf(\
 printf(\
 "\n"\
 "   %s_node *ptr = data;\n"\
-"   %s_node *s_ptr = src.data;\n"\
-"   %s_node *s_ptr_end = s_ptr + src.used;\n"\
+"   %s_node *s_ptr = a_src.data;\n"\
+"   %s_node *s_ptr_end = s_ptr + a_src.used;\n"\
 "\n"\
 "   do {\n"\
 "      ptr->object = s_ptr->object;\n"\
@@ -1262,11 +1262,11 @@ printf(\
    }\
 printf(\
 "\n"\
-"   used = src.used;\n"\
-"   count = src.count;\n"\
-"   free_idx = src.free_idx;\n"\
-"   root_idx = src.root_idx;\n"\
-"   leaf_idx = src.leaf_idx;\n"\
+"   used = a_src.used;\n"\
+"   count = a_src.count;\n"\
+"   free_idx = a_src.free_idx;\n"\
+"   root_idx = a_src.root_idx;\n"\
+"   leaf_idx = a_src.leaf_idx;\n"\
 );\
    if (VAR_NAMES_CNT > 0) {\
 printf(\
@@ -1275,7 +1275,7 @@ printf(\
       t_idx = 0;\
       do {\
 printf(\
-"   %s = src.%s;\n"\
+"   %s = a_src.%s;\n"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
       } while(++t_idx < VAR_NAMES_CNT);\
    }\
@@ -1290,38 +1290,38 @@ printf(\
 #define SAFE_RB_TREE_OPERATOR_DOUBLE_EQUAL() \
 {\
 printf(\
-"bool %s::operator==(%s &second)\n"\
+"bool %s::operator==(%s &a_second)\n"\
 "{/*{{{*/\n"\
-"   if (count != second.count)\n"\
+"   if (count != a_second.count)\n"\
 "   {\n"\
 "     return false;\n"\
 "   }\n"\
 "\n"\
 "   if (root_idx == c_idx_not_exist) {\n"\
-"      if (second.root_idx != c_idx_not_exist) {\n"\
+"      if (a_second.root_idx != c_idx_not_exist) {\n"\
 "         return false;\n"\
 "      }\n"\
 "   }\n"\
 "   else {\n"\
-"      if (second.root_idx == c_idx_not_exist) {\n"\
+"      if (a_second.root_idx == c_idx_not_exist) {\n"\
 "         return false;\n"\
 "      }\n"\
 "\n"\
 "      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned s_stack[second.get_descent_stack_size()];\n"\
+"      unsigned s_stack[a_second.get_descent_stack_size()];\n"\
 "\n"\
 "      unsigned *stack_ptr = stack;\n"\
 "      unsigned *s_stack_ptr = s_stack;\n"\
 "\n"\
 "      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      unsigned s_node_idx = second.get_stack_min_value_idx(second.root_idx,&s_stack_ptr);\n"\
+"      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"\
 "      do {\n"\
-"         if (__compare_value(data[node_idx].object,second.data[s_node_idx].object) != 0) {\n"\
+"         if (__compare_value(data[node_idx].object,a_second.data[s_node_idx].object) != 0) {\n"\
 "            return false;\n"\
 "         }\n"\
 "\n"\
 "         node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);\n"\
-"         s_node_idx = second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"\
+"         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"\
 "      } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"\
 "\n"\
 "      if (node_idx != s_node_idx) {\n"\
@@ -1332,13 +1332,13 @@ printf(\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (VAR_NAMES_CNT > 0) {\
 printf(\
-"   return (%s == second.%s"\
+"   return (%s == a_second.%s"\
 ,VAR_NAMES(0),VAR_NAMES(0));\
       if (VAR_NAMES_CNT > 1) {\
          t_idx = 1;\
          do {\
 printf(\
-" && %s == second.%s"\
+" && %s == a_second.%s"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
          } while(++t_idx < VAR_NAMES_CNT);\
       }\
@@ -1897,9 +1897,9 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of rb_tree with another rb_tree\n"
-"    * \\param second - reference to another rb_tree\n"
+"    * \\param a_second - reference to another rb_tree\n"
 "    */\n"
-"   inline void swap(%s &second);\n"
+"   inline void swap(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -2039,10 +2039,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy rb_tree from another rb_tree\n"
-"    * \\param src - reference to another rb_tree\n"
+"    * \\param a_src - reference to another rb_tree\n"
 "    * \\return reference to this rb_tree\n"
 "    */\n"
-"   inline %s &operator=(%s &src);\n"
+"   inline %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -2050,10 +2050,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy rb_tree from another rb_tree\n"
-"    * \\param src - reference to another rb_tree\n"
+"    * \\param a_src - reference to another rb_tree\n"
 "    * \\return reference to this rb_tree\n"
 "    */\n"
-"   %s &operator=(%s &src);\n"
+"   %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -2061,10 +2061,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN compare rb_tree with another rb_tree\n"
-"    * \\param second - reference to another rb_tree\n"
+"    * \\param a_second - reference to another rb_tree\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"   bool operator==(%s &second);\n"
+"   bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
 printf(

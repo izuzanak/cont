@@ -111,23 +111,23 @@ printf(\
 #define QUEUE_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &second)\n"\
+"inline void %s::swap(%s &a_second)\n"\
 "{/*{{{*/\n"\
 "   unsigned tmp_unsigned = size;\n"\
-"   size = second.size;\n"\
-"   second.size = tmp_unsigned;\n"\
+"   size = a_second.size;\n"\
+"   a_second.size = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = used;\n"\
-"   used = second.used;\n"\
-"   second.used = tmp_unsigned;\n"\
+"   used = a_second.used;\n"\
+"   a_second.used = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = begin;\n"\
-"   begin = second.begin;\n"\
-"   second.begin = tmp_unsigned;\n"\
+"   begin = a_second.begin;\n"\
+"   a_second.begin = tmp_unsigned;\n"\
 "\n"\
 "   %s *tmp_data = data;\n"\
-"   data = second.data;\n"\
-"   second.data = tmp_data;\n"\
+"   data = a_second.data;\n"\
+"   a_second.data = tmp_data;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
@@ -321,21 +321,21 @@ printf(\
 {\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"inline %s &%s::operator=(%s &src)\n"\
+"inline %s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"%s &%s::operator=(%s &src)\n"\
+"%s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
 "   clear();\n"\
 "\n"\
-"   if (src.used == 0) return *this;\n"\
+"   if (a_src.used == 0) return *this;\n"\
 "\n"\
-"   copy_resize(src.used);\n"\
+"   copy_resize(a_src.used);\n"\
 "\n"\
 );\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
@@ -343,19 +343,19 @@ printf(\
 "   unsigned fir_cnt;\n"\
 "   unsigned sec_cnt;\n"\
 "\n"\
-"   if (src.begin + src.used > src.size) {\n"\
-"      sec_cnt = src.begin + src.used - src.size;\n"\
-"      fir_cnt = src.used - sec_cnt;\n"\
+"   if (a_src.begin + a_src.used > a_src.size) {\n"\
+"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"\
+"      fir_cnt = a_src.used - sec_cnt;\n"\
 "   }\n"\
 "   else {\n"\
-"      fir_cnt = src.used;\n"\
+"      fir_cnt = a_src.used;\n"\
 "      sec_cnt = 0;\n"\
 "   }\n"\
 "\n"\
-"   memcpy(data,src.data + src.begin,fir_cnt*sizeof(%s));\n"\
+"   memcpy(data,a_src.data + a_src.begin,fir_cnt*sizeof(%s));\n"\
 "\n"\
 "   if (sec_cnt != 0) {\n"\
-"      memcpy(data + fir_cnt,src.data,sec_cnt*sizeof(%s));\n"\
+"      memcpy(data + fir_cnt,a_src.data,sec_cnt*sizeof(%s));\n"\
 "   }\n"\
 "\n"\
 ,TYPE_NAME,TYPE_NAME);\
@@ -364,15 +364,15 @@ printf(\
 printf(\
 "   unsigned sec_cnt;\n"\
 "   %s *ptr = data;\n"\
-"   %s *s_ptr = src.data + src.begin;\n"\
+"   %s *s_ptr = a_src.data + a_src.begin;\n"\
 "   %s *s_ptr_end;\n"\
 "\n"\
-"   if (src.begin + src.used > src.size) {\n"\
-"      s_ptr_end = src.data + src.size;\n"\
-"      sec_cnt = src.begin + src.used - src.size;\n"\
+"   if (a_src.begin + a_src.used > a_src.size) {\n"\
+"      s_ptr_end = a_src.data + a_src.size;\n"\
+"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"\
 "   }\n"\
 "   else {\n"\
-"      s_ptr_end = s_ptr + src.used;\n"\
+"      s_ptr_end = s_ptr + a_src.used;\n"\
 "      sec_cnt = 0;\n"\
 "   }\n"\
 "\n"\
@@ -381,7 +381,7 @@ printf(\
 "   } while(++ptr,++s_ptr < s_ptr_end);\n"\
 "\n"\
 "   if (sec_cnt != 0) {\n"\
-"      s_ptr = src.data;\n"\
+"      s_ptr = a_src.data;\n"\
 "      s_ptr_end = s_ptr + sec_cnt;\n"\
 "\n"\
 "      do {\n"\
@@ -392,7 +392,7 @@ printf(\
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    }\
 printf(\
-"   used = src.used;\n"\
+"   used = a_src.used;\n"\
 "   return *this;\n"\
 "}/*}}}*/\n"\
 "\n"\
@@ -402,9 +402,9 @@ printf(\
 #define QUEUE_OPERATOR_DOUBLE_EQUAL() \
 {\
 printf(\
-"bool %s::operator==(%s &second)\n"\
+"bool %s::operator==(%s &a_second)\n"\
 "{/*{{{*/\n"\
-"   if (used != second.used) return false;\n"\
+"   if (used != a_second.used) return false;\n"\
 "   if (used == 0) return true;\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -417,9 +417,9 @@ printf(\
 "   unsigned s_pos;\n"\
 "\n"\
 "   _break = (begin + used > size);\n"\
-"   s_break = (second.begin + second.used > second.size);\n"\
+"   s_break = (a_second.begin + a_second.used > a_second.size);\n"\
 "   pos = begin;\n"\
-"   s_pos = second.begin;\n"\
+"   s_pos = a_second.begin;\n"\
 "\n"\
 "   if (_break) {\n"\
 "      pos_end = begin + used - size;\n"\
@@ -433,10 +433,10 @@ printf(\
 "         unsigned offset = size - pos;\n"\
 "         \n"\
 "         if (s_break) {\n"\
-"            unsigned s_offset = second.size = s_pos;\n"\
+"            unsigned s_offset = a_second.size = s_pos;\n"\
 "\n"\
 "            if (offset < s_offset) {\n"\
-"               if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"               if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
 "                  return false;\n"\
 "               }\n"\
 "\n"\
@@ -445,7 +445,7 @@ printf(\
 "               _break = false;\n"\
 "            }\n"\
 "            else {\n"\
-"               if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"               if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
 "                  return false;\n"\
 "               }\n"\
 "\n"\
@@ -458,7 +458,7 @@ printf(\
 "            }\n"\
 "         }\n"\
 "         else {\n"\
-"            if (memcmp(data + pos,second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"            if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
 "               return false;\n"\
 "            }\n"\
 "            s_pos += offset;\n"\
@@ -468,9 +468,9 @@ printf(\
 "      }\n"\
 "      else {\n"\
 "         if (s_break) {\n"\
-"            unsigned s_offset = second.size - s_pos;\n"\
+"            unsigned s_offset = a_second.size - s_pos;\n"\
 "\n"\
-"            if (memcmp(data + pos,second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"            if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
 "               return false;\n"\
 "            }\n"\
 "            pos += s_offset;\n"\
@@ -478,7 +478,7 @@ printf(\
 "            s_break = false;\n"\
 "         }\n"\
 "         else {\n"\
-"            if (memcmp(data + pos,second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
+"            if (memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
 "               return false;\n"\
 "            }\n"\
 "            else {\n"\
@@ -494,8 +494,8 @@ printf(\
 "   %s *ptr = data + begin;\n"\
 "   %s *ptr_break = data + size;\n"\
 "   %s *ptr_end;\n"\
-"   %s *s_ptr = second.data + second.begin;\n"\
-"   %s *s_ptr_break = second.data + second.size;\n"\
+"   %s *s_ptr = a_second.data + a_second.begin;\n"\
+"   %s *s_ptr_break = a_second.data + a_second.size;\n"\
 "\n"\
 "   if (begin + used > size) {\n"\
 "      ptr_end = data + (begin + used - size);\n"\
@@ -514,7 +514,7 @@ printf(\
 "      }\n"\
 "\n"\
 "      if (++s_ptr >= s_ptr_break) {\n"\
-"         s_ptr = second.data;\n"\
+"         s_ptr = a_second.data;\n"\
 "      }\n"\
 "\n"\
 "   } while(ptr != ptr_end);\n"\
@@ -710,9 +710,9 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of queue with another queue\n"
-"    * \\param second - reference to another queue\n"
+"    * \\param a_second - reference to another queue\n"
 "    */\n"
-"   inline void swap(%s &second);\n"
+"   inline void swap(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -766,10 +766,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy queue from another queue\n"
-"    * \\param src - reference to another queue\n"
+"    * \\param a_src - reference to another queue\n"
 "    * \\return reference to this queue\n"
 "    */\n"
-"   inline %s &operator=(%s &src);\n"
+"   inline %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -777,10 +777,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy queue from another queue\n"
-"    * \\param src - reference to another queue\n"
+"    * \\param a_src - reference to another queue\n"
 "    * \\return reference to this queue\n"
 "    */\n"
-"   %s &operator=(%s &src);\n"
+"   %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -788,10 +788,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN compare queue with another queue\n"
-"    * \\param second - reference to another queue\n"
+"    * \\param a_second - reference to another queue\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"   bool operator==(%s &second);\n"
+"   bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (fun_defs.used != 0) {

@@ -488,9 +488,9 @@ struct ui_array_s
 
    /*!
     * \brief __GEN swap array members with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   inline void swap(ui_array_s &second);
+   inline void swap(ui_array_s &a_second);
 
    /*!
     * \brief __GEN select element of array
@@ -559,17 +559,17 @@ struct ui_array_s
 
    /*!
     * \brief __GEN copy array from another array
-    * \param src - reference to another array
+    * \param a_src - reference to another array
     * \return reference to this array
     */
-   inline ui_array_s &operator=(ui_array_s &src);
+   inline ui_array_s &operator=(ui_array_s &a_src);
 
    /*!
     * \brief __GEN comparison of array with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     * \return result of comparison
     */
-   inline bool operator==(ui_array_s &second);
+   inline bool operator==(ui_array_s &a_second);
 
 };
 
@@ -610,21 +610,21 @@ struct mc_block_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(mc_block_s &second);
+   inline void swap(mc_block_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline mc_block_s &operator=(mc_block_s &src);
+   inline mc_block_s &operator=(mc_block_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(mc_block_s &second);
+   inline bool operator==(mc_block_s &a_second);
 
 };
 
@@ -712,9 +712,9 @@ struct mc_block_rb_tree_s
 
    /*!
     * \brief __GEN swap members of rb_tree with another rb_tree
-    * \param second - reference to another rb_tree
+    * \param a_second - reference to another rb_tree
     */
-   inline void swap(mc_block_rb_tree_s &second);
+   inline void swap(mc_block_rb_tree_s &a_second);
 
    /*!
     * \brief __GEN select ode of rb_tree
@@ -780,17 +780,17 @@ struct mc_block_rb_tree_s
 
    /*!
     * \brief __GEN copy rb_tree from another rb_tree
-    * \param src - reference to another rb_tree
+    * \param a_src - reference to another rb_tree
     * \return reference to this rb_tree
     */
-   inline mc_block_rb_tree_s &operator=(mc_block_rb_tree_s &src);
+   inline mc_block_rb_tree_s &operator=(mc_block_rb_tree_s &a_src);
 
    /*!
     * \brief __GEN compare rb_tree with another rb_tree
-    * \param second - reference to another rb_tree
+    * \param a_second - reference to another rb_tree
     * \return result of comparision
     */
-   bool operator==(mc_block_rb_tree_s &second);
+   bool operator==(mc_block_rb_tree_s &a_second);
 
    /*!
     * \brief __GEN rehash tree (after invalidation by change of object value)
@@ -850,21 +850,21 @@ struct mc_struct_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(mc_struct_s &second);
+   inline void swap(mc_struct_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline mc_struct_s &operator=(mc_struct_s &src);
+   inline mc_struct_s &operator=(mc_struct_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(mc_struct_s &second);
+   inline bool operator==(mc_struct_s &a_second);
 
    
       
@@ -940,19 +940,19 @@ inline void ui_array_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void ui_array_s::swap(ui_array_s &second)
+inline void ui_array_s::swap(ui_array_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    unsigned *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 }/*}}}*/
 
 inline unsigned &ui_array_s::operator[](unsigned a_idx)
@@ -1000,25 +1000,25 @@ inline unsigned &ui_array_s::last()
    return data[used - 1];
 }/*}}}*/
 
-inline ui_array_s &ui_array_s::operator=(ui_array_s &src)
+inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 {/*{{{*/
    clear();
 
-   if (src.used == 0) return *this;
+   if (a_src.used == 0) return *this;
 
-   copy_resize(src.used);
-   memcpy(data,src.data,src.used*sizeof(unsigned));
+   copy_resize(a_src.used);
+   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
 
-   used = src.used;
+   used = a_src.used;
    return *this;
 }/*}}}*/
 
-inline bool ui_array_s::operator==(ui_array_s &second)
+inline bool ui_array_s::operator==(ui_array_s &a_second)
 {/*{{{*/
-   if (used != second.used) return false;
+   if (used != a_second.used) return false;
    if (used == 0) return true;
 
-   return (memcmp(data,second.data,used*sizeof(unsigned)) == 0);
+   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
 
 
@@ -1048,28 +1048,28 @@ inline void mc_block_s::flush_all()
 {/*{{{*/
 }/*}}}*/
 
-inline void mc_block_s::swap(mc_block_s &second)
+inline void mc_block_s::swap(mc_block_s &a_second)
 {/*{{{*/
    pointer tmp_location = location;
-   location = second.location;
-   second.location = tmp_location;
+   location = a_second.location;
+   a_second.location = tmp_location;
 
    unsigned tmp_size = size;
-   size = second.size;
-   second.size = tmp_size;
+   size = a_second.size;
+   a_second.size = tmp_size;
 }/*}}}*/
 
-inline mc_block_s &mc_block_s::operator=(mc_block_s &src)
+inline mc_block_s &mc_block_s::operator=(mc_block_s &a_src)
 {/*{{{*/
-   location = src.location;
-   size = src.size;
+   location = a_src.location;
+   size = a_src.size;
 
    return *this;
 }/*}}}*/
 
-inline bool mc_block_s::operator==(mc_block_s &second)
+inline bool mc_block_s::operator==(mc_block_s &a_second)
 {/*{{{*/
-   return (location == second.location && size == second.size);
+   return (location == a_second.location && size == a_second.size);
 }/*}}}*/
 
 
@@ -1269,35 +1269,35 @@ inline void mc_block_rb_tree_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void mc_block_rb_tree_s::swap(mc_block_rb_tree_s &second)
+inline void mc_block_rb_tree_s::swap(mc_block_rb_tree_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    tmp_unsigned = count;
-   count = second.count;
-   second.count = tmp_unsigned;
+   count = a_second.count;
+   a_second.count = tmp_unsigned;
 
    mc_block_rb_tree_s_node *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 
    tmp_unsigned = free_idx;
-   free_idx = second.free_idx;
-   second.free_idx = tmp_unsigned;
+   free_idx = a_second.free_idx;
+   a_second.free_idx = tmp_unsigned;
 
    tmp_unsigned = root_idx;
-   root_idx = second.root_idx;
-   second.root_idx = tmp_unsigned;
+   root_idx = a_second.root_idx;
+   a_second.root_idx = tmp_unsigned;
 
    tmp_unsigned = leaf_idx;
-   leaf_idx = second.leaf_idx;
-   second.leaf_idx = tmp_unsigned;
+   leaf_idx = a_second.leaf_idx;
+   a_second.leaf_idx = tmp_unsigned;
 }/*}}}*/
 
 inline mc_block_s &mc_block_rb_tree_s::operator[](unsigned a_idx)
@@ -1330,20 +1330,20 @@ inline unsigned mc_block_rb_tree_s::swap_insert(mc_block_s &a_value)
    return new_node_idx;
 }/*}}}*/
 
-inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &src)
+inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_src)
 {/*{{{*/
    clear();
 
-   if (src.root_idx == c_idx_not_exist) return *this;
+   if (a_src.root_idx == c_idx_not_exist) return *this;
 
-   copy_resize(src.used);
-   memcpy(data,src.data,src.used*sizeof(mc_block_rb_tree_s_node));
+   copy_resize(a_src.used);
+   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
-   used = src.used;
-   count = src.count;
-   free_idx = src.free_idx;
-   root_idx = src.root_idx;
-   leaf_idx = src.leaf_idx;
+   used = a_src.used;
+   count = a_src.count;
+   free_idx = a_src.free_idx;
+   root_idx = a_src.root_idx;
+   leaf_idx = a_src.leaf_idx;
 
    return *this;
 }/*}}}*/
@@ -1399,39 +1399,39 @@ inline void mc_struct_s::flush_all()
    mc_block_set.flush_all();
 }/*}}}*/
 
-inline void mc_struct_s::swap(mc_struct_s &second)
+inline void mc_struct_s::swap(mc_struct_s &a_second)
 {/*{{{*/
-   mutex.swap(second.mutex);
+   mutex.swap(a_second.mutex);
 
-   mc_block_set.swap(second.mc_block_set);
+   mc_block_set.swap(a_second.mc_block_set);
 
    unsigned tmp_alloc_size = alloc_size;
-   alloc_size = second.alloc_size;
-   second.alloc_size = tmp_alloc_size;
+   alloc_size = a_second.alloc_size;
+   a_second.alloc_size = tmp_alloc_size;
 
    unsigned tmp_max_alloc_size = max_alloc_size;
-   max_alloc_size = second.max_alloc_size;
-   second.max_alloc_size = tmp_max_alloc_size;
+   max_alloc_size = a_second.max_alloc_size;
+   a_second.max_alloc_size = tmp_max_alloc_size;
 
    unsigned tmp_act_alloc_size = act_alloc_size;
-   act_alloc_size = second.act_alloc_size;
-   second.act_alloc_size = tmp_act_alloc_size;
+   act_alloc_size = a_second.act_alloc_size;
+   a_second.act_alloc_size = tmp_act_alloc_size;
 }/*}}}*/
 
-inline mc_struct_s &mc_struct_s::operator=(mc_struct_s &src)
+inline mc_struct_s &mc_struct_s::operator=(mc_struct_s &a_src)
 {/*{{{*/
-   mutex = src.mutex;
-   mc_block_set = src.mc_block_set;
-   alloc_size = src.alloc_size;
-   max_alloc_size = src.max_alloc_size;
-   act_alloc_size = src.act_alloc_size;
+   mutex = a_src.mutex;
+   mc_block_set = a_src.mc_block_set;
+   alloc_size = a_src.alloc_size;
+   max_alloc_size = a_src.max_alloc_size;
+   act_alloc_size = a_src.act_alloc_size;
 
    return *this;
 }/*}}}*/
 
-inline bool mc_struct_s::operator==(mc_struct_s &second)
+inline bool mc_struct_s::operator==(mc_struct_s &a_second)
 {/*{{{*/
-   return (mutex == second.mutex && mc_block_set == second.mc_block_set && alloc_size == second.alloc_size && max_alloc_size == second.max_alloc_size && act_alloc_size == second.act_alloc_size);
+   return (mutex == a_second.mutex && mc_block_set == a_second.mc_block_set && alloc_size == a_second.alloc_size && max_alloc_size == a_second.max_alloc_size && act_alloc_size == a_second.act_alloc_size);
 }/*}}}*/
 
 
@@ -1585,9 +1585,9 @@ struct string_s
 
   /*!
    * \brief swap string variables with another string
-   * \param second - reference to another string
+   * \param a_second - reference to another string
    */
-  inline void swap(string_s &second);
+  inline void swap(string_s &a_second);
 
   /*!
    * \brief select one character from string
@@ -1598,17 +1598,17 @@ struct string_s
 
   /*!
    * \brief set string to value of another string
-   * \param src - reference to another string
+   * \param a_src - reference to another string
    * \return reference to this string
    */
-  inline string_s &operator=(string_s &src);
+  inline string_s &operator=(string_s &a_src);
 
   /*!
    * \brief compare value with another string
-   * \param second - reference to another string
+   * \param a_second - reference to another string
    * \return result of comparison
    */
-  inline bool operator==(string_s &second);
+  inline bool operator==(string_s &a_second);
 
   /*!
    * \brief compare string with string described by its length and its data
@@ -1638,7 +1638,7 @@ struct string_s
 
   /*!
    * \brief convert utf32 unsigned int string to utf8 string
-   * \param a_src - pointer to source utf32 unsigned integeres
+   * \param a_src - pointer to source utf32 unsigned integers
    * \param a_trg - pointer to target utf8 characters
    * \param a_size - count of integers to be converted
    * \return count of converted characters
@@ -1653,37 +1653,37 @@ struct string_s
 
   /*!
    * \brief load string from given stream
-   * \param stream - stream from which is string loaded
+   * \param a_stream - stream from which is string loaded
    */
-  bool read_line_from_stream(FILE *stream);
+  bool read_line_from_stream(FILE *a_stream);
 
   /*!
    * \brief load string from text file
-   * \param file - name of file containing string text
+   * \param a_file - name of file containing string text
    * \return true if string is successfully loaded
    */
-  inline bool load_text_file(const char *file);
+  inline bool load_text_file(const char *a_file);
 
   /*!
    * \brief save string to text file
-   * \param file - name of target file
+   * \param a_file - name of target file
    * \return true if string is successfully saved
    */
-  inline bool save_text_file(const char *file);
+  inline bool save_text_file(const char *a_file);
 
   /*!
    * \brief create string of desired format
-   * \param format - format as in printf functions family
+   * \param a_format - format as in printf functions family
    * \param ... - list of parameters desired in format
    */
-  void setf(const char *format,...);
+  void setf(const char *a_format,...);
 
   /*!
    * \brief conctenate string of desired format
-   * \param format - format as in printf functions family
+   * \param a_format - format as in printf functions family
    * \param ... - list of parameters demanded in format
    */
-  void concf(const char *format,...);
+  void concf(const char *a_format,...);
 
   /*!
    * \brief find position of given string in string from given index
@@ -1774,9 +1774,9 @@ struct string_array_s
 
    /*!
     * \brief __GEN swap array members with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   inline void swap(string_array_s &second);
+   inline void swap(string_array_s &a_second);
 
    /*!
     * \brief __GEN select element of array
@@ -1845,15 +1845,15 @@ struct string_array_s
 
    /*!
     * \brief __GEN copy array from another array
-    * \param src - reference to another array
+    * \param a_src - reference to another array
     */
-   string_array_s &operator=(string_array_s &src);
+   string_array_s &operator=(string_array_s &a_src);
 
    /*!
     * \brief __GEN comparison of array with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   bool operator==(string_array_s &second);
+   bool operator==(string_array_s &a_second);
 
 };
 
@@ -1921,15 +1921,15 @@ inline void string_s::conc_set(unsigned a_flength,const char *a_fdata,unsigned a
   size = a_flength + a_slength + 1;
 }/*}}}*/
 
-inline void string_s::swap(string_s &second)
+inline void string_s::swap(string_s &a_second)
 {/*{{{*/
   unsigned tmp_size = size;
-  size = second.size;
-  second.size = tmp_size;
+  size = a_second.size;
+  a_second.size = tmp_size;
 
   char *tmp_data = data;
-  data = second.data;
-  second.data = tmp_data;
+  data = a_second.data;
+  a_second.data = tmp_data;
 }/*}}}*/
 
 inline char &string_s::operator[](unsigned a_idx)
@@ -1938,24 +1938,24 @@ inline char &string_s::operator[](unsigned a_idx)
   return data[a_idx];
 }/*}}}*/
 
-inline string_s &string_s::operator=(string_s &src)
+inline string_s &string_s::operator=(string_s &a_src)
 {/*{{{*/
   clear();
 
-  if (src.data == &c_string_terminating_char) return *this;
-  data = (char *)cmalloc(src.size*sizeof(char));
-  memcpy(data,src.data,(src.size - 1)*sizeof(char));
-  data[src.size - 1] = '\0';
-  size = src.size;
+  if (a_src.data == &c_string_terminating_char) return *this;
+  data = (char *)cmalloc(a_src.size*sizeof(char));
+  memcpy(data,a_src.data,(a_src.size - 1)*sizeof(char));
+  data[a_src.size - 1] = '\0';
+  size = a_src.size;
 
   return *this;
 }/*}}}*/
 
-inline bool string_s::operator==(string_s &second)
+inline bool string_s::operator==(string_s &a_second)
 {/*{{{*/
-  if (size != second.size) return false;
+  if (size != a_second.size) return false;
   if (data == &c_string_terminating_char) return true;
-  return (memcmp(data,second.data,(size - 1)*sizeof(char)) == 0);
+  return (memcmp(data,a_second.data,(size - 1)*sizeof(char)) == 0);
 }/*}}}*/
 
 inline bool string_s::compare_char_ptr(unsigned a_length,const char *a_data)
@@ -1970,10 +1970,10 @@ inline unsigned string_s::print()
   return fwrite(data,size - 1,1,stdout);
 }/*}}}*/
 
-inline bool string_s::load_text_file(const char *file)
+inline bool string_s::load_text_file(const char *a_file)
 {/*{{{*/
-  if (file == NULL) return false;
-  FILE *f = fopen(file,"r");
+  if (a_file == NULL) return false;
+  FILE *f = fopen(a_file,"r");
   if (f == NULL) return false;
 
   fseek(f,0,SEEK_END);
@@ -1995,10 +1995,10 @@ inline bool string_s::load_text_file(const char *file)
   return true;
 }/*}}}*/
 
-inline bool string_s::save_text_file(const char *file)
+inline bool string_s::save_text_file(const char *a_file)
 {/*{{{*/
-  if (file == NULL) return false;
-  FILE *f = fopen(file,"w");
+  if (a_file == NULL) return false;
+  FILE *f = fopen(a_file,"w");
   if (f == NULL) return false;
 
   if (size > 1)
@@ -2044,19 +2044,19 @@ inline void string_array_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void string_array_s::swap(string_array_s &second)
+inline void string_array_s::swap(string_array_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    string_s *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 }/*}}}*/
 
 inline string_s &string_array_s::operator[](unsigned a_idx)
@@ -2242,21 +2242,21 @@ struct data_type_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(data_type_s &second);
+   inline void swap(data_type_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline data_type_s &operator=(data_type_s &src);
+   inline data_type_s &operator=(data_type_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(data_type_s &second);
+   inline bool operator==(data_type_s &a_second);
 
 };
 
@@ -2309,9 +2309,9 @@ struct data_type_array_s
 
    /*!
     * \brief __GEN swap array members with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   inline void swap(data_type_array_s &second);
+   inline void swap(data_type_array_s &a_second);
 
    /*!
     * \brief __GEN select element of array
@@ -2380,15 +2380,15 @@ struct data_type_array_s
 
    /*!
     * \brief __GEN copy array from another array
-    * \param src - reference to another array
+    * \param a_src - reference to another array
     */
-   data_type_array_s &operator=(data_type_array_s &src);
+   data_type_array_s &operator=(data_type_array_s &a_src);
 
    /*!
     * \brief __GEN comparison of array with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   bool operator==(data_type_array_s &second);
+   bool operator==(data_type_array_s &a_second);
 
    
 
@@ -2432,21 +2432,21 @@ struct abbreviation_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(abbreviation_s &second);
+   inline void swap(abbreviation_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline abbreviation_s &operator=(abbreviation_s &src);
+   inline abbreviation_s &operator=(abbreviation_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(abbreviation_s &second);
+   inline bool operator==(abbreviation_s &a_second);
 
 };
 
@@ -2499,9 +2499,9 @@ struct abbreviation_array_s
 
    /*!
     * \brief __GEN swap array members with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   inline void swap(abbreviation_array_s &second);
+   inline void swap(abbreviation_array_s &a_second);
 
    /*!
     * \brief __GEN select element of array
@@ -2570,15 +2570,15 @@ struct abbreviation_array_s
 
    /*!
     * \brief __GEN copy array from another array
-    * \param src - reference to another array
+    * \param a_src - reference to another array
     */
-   abbreviation_array_s &operator=(abbreviation_array_s &src);
+   abbreviation_array_s &operator=(abbreviation_array_s &a_src);
 
    /*!
     * \brief __GEN comparison of array with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   bool operator==(abbreviation_array_s &second);
+   bool operator==(abbreviation_array_s &a_second);
 
    
 
@@ -2625,21 +2625,21 @@ struct container_parameters_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(container_parameters_s &second);
+   inline void swap(container_parameters_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline container_parameters_s &operator=(container_parameters_s &src);
+   inline container_parameters_s &operator=(container_parameters_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(container_parameters_s &second);
+   inline bool operator==(container_parameters_s &a_second);
 
    
       inline void clean_out();
@@ -2686,21 +2686,21 @@ struct processor_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(processor_s &second);
+   inline void swap(processor_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline processor_s &operator=(processor_s &src);
+   inline processor_s &operator=(processor_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(processor_s &second);
+   inline bool operator==(processor_s &a_second);
 
    
 
@@ -2786,40 +2786,40 @@ inline void data_type_s::flush_all()
    variables.flush_all();
 }/*}}}*/
 
-inline void data_type_s::swap(data_type_s &second)
+inline void data_type_s::swap(data_type_s &a_second)
 {/*{{{*/
    unsigned tmp_cont_idx = cont_idx;
-   cont_idx = second.cont_idx;
-   second.cont_idx = tmp_cont_idx;
+   cont_idx = a_second.cont_idx;
+   a_second.cont_idx = tmp_cont_idx;
 
-   name.swap(second.name);
+   name.swap(a_second.name);
 
-   real_name.swap(second.real_name);
+   real_name.swap(a_second.real_name);
 
    unsigned tmp_properties = properties;
-   properties = second.properties;
-   second.properties = tmp_properties;
+   properties = a_second.properties;
+   a_second.properties = tmp_properties;
 
-   types.swap(second.types);
+   types.swap(a_second.types);
 
-   variables.swap(second.variables);
+   variables.swap(a_second.variables);
 }/*}}}*/
 
-inline data_type_s &data_type_s::operator=(data_type_s &src)
+inline data_type_s &data_type_s::operator=(data_type_s &a_src)
 {/*{{{*/
-   cont_idx = src.cont_idx;
-   name = src.name;
-   real_name = src.real_name;
-   properties = src.properties;
-   types = src.types;
-   variables = src.variables;
+   cont_idx = a_src.cont_idx;
+   name = a_src.name;
+   real_name = a_src.real_name;
+   properties = a_src.properties;
+   types = a_src.types;
+   variables = a_src.variables;
 
    return *this;
 }/*}}}*/
 
-inline bool data_type_s::operator==(data_type_s &second)
+inline bool data_type_s::operator==(data_type_s &a_second)
 {/*{{{*/
-   return (cont_idx == second.cont_idx && name == second.name && real_name == second.real_name && properties == second.properties && types == second.types && variables == second.variables);
+   return (cont_idx == a_second.cont_idx && name == a_second.name && real_name == a_second.real_name && properties == a_second.properties && types == a_second.types && variables == a_second.variables);
 }/*}}}*/
 
 
@@ -2850,19 +2850,19 @@ inline void data_type_array_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void data_type_array_s::swap(data_type_array_s &second)
+inline void data_type_array_s::swap(data_type_array_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    data_type_s *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 }/*}}}*/
 
 inline data_type_s &data_type_array_s::operator[](unsigned a_idx)
@@ -2937,26 +2937,26 @@ inline void abbreviation_s::flush_all()
 {/*{{{*/
 }/*}}}*/
 
-inline void abbreviation_s::swap(abbreviation_s &second)
+inline void abbreviation_s::swap(abbreviation_s &a_second)
 {/*{{{*/
-   name.swap(second.name);
+   name.swap(a_second.name);
 
    unsigned tmp_data_type_idx = data_type_idx;
-   data_type_idx = second.data_type_idx;
-   second.data_type_idx = tmp_data_type_idx;
+   data_type_idx = a_second.data_type_idx;
+   a_second.data_type_idx = tmp_data_type_idx;
 }/*}}}*/
 
-inline abbreviation_s &abbreviation_s::operator=(abbreviation_s &src)
+inline abbreviation_s &abbreviation_s::operator=(abbreviation_s &a_src)
 {/*{{{*/
-   name = src.name;
-   data_type_idx = src.data_type_idx;
+   name = a_src.name;
+   data_type_idx = a_src.data_type_idx;
 
    return *this;
 }/*}}}*/
 
-inline bool abbreviation_s::operator==(abbreviation_s &second)
+inline bool abbreviation_s::operator==(abbreviation_s &a_second)
 {/*{{{*/
-   return (name == second.name && data_type_idx == second.data_type_idx);
+   return (name == a_second.name && data_type_idx == a_second.data_type_idx);
 }/*}}}*/
 
 
@@ -2987,19 +2987,19 @@ inline void abbreviation_array_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void abbreviation_array_s::swap(abbreviation_array_s &second)
+inline void abbreviation_array_s::swap(abbreviation_array_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    abbreviation_s *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 }/*}}}*/
 
 inline abbreviation_s &abbreviation_array_s::operator[](unsigned a_idx)
@@ -3090,33 +3090,33 @@ inline void container_parameters_s::flush_all()
    names.flush_all();
 }/*}}}*/
 
-inline void container_parameters_s::swap(container_parameters_s &second)
+inline void container_parameters_s::swap(container_parameters_s &a_second)
 {/*{{{*/
-   types.swap(second.types);
+   types.swap(a_second.types);
 
-   variables.swap(second.variables);
+   variables.swap(a_second.variables);
 
-   compare.swap(second.compare);
+   compare.swap(a_second.compare);
 
-   functions.swap(second.functions);
+   functions.swap(a_second.functions);
 
-   names.swap(second.names);
+   names.swap(a_second.names);
 }/*}}}*/
 
-inline container_parameters_s &container_parameters_s::operator=(container_parameters_s &src)
+inline container_parameters_s &container_parameters_s::operator=(container_parameters_s &a_src)
 {/*{{{*/
-   types = src.types;
-   variables = src.variables;
-   compare = src.compare;
-   functions = src.functions;
-   names = src.names;
+   types = a_src.types;
+   variables = a_src.variables;
+   compare = a_src.compare;
+   functions = a_src.functions;
+   names = a_src.names;
 
    return *this;
 }/*}}}*/
 
-inline bool container_parameters_s::operator==(container_parameters_s &second)
+inline bool container_parameters_s::operator==(container_parameters_s &a_second)
 {/*{{{*/
-   return (types == second.types && variables == second.variables && compare == second.compare && functions == second.functions && names == second.names);
+   return (types == a_second.types && variables == a_second.variables && compare == a_second.compare && functions == a_second.functions && names == a_second.names);
 }/*}}}*/
 
 
@@ -3172,43 +3172,43 @@ inline void processor_s::flush_all()
    abbreviations.flush_all();
 }/*}}}*/
 
-inline void processor_s::swap(processor_s &second)
+inline void processor_s::swap(processor_s &a_second)
 {/*{{{*/
    FILE_ptr tmp_out_file = out_file;
-   out_file = second.out_file;
-   second.out_file = tmp_out_file;
+   out_file = a_second.out_file;
+   a_second.out_file = tmp_out_file;
 
-   include_dirs.swap(second.include_dirs);
+   include_dirs.swap(a_second.include_dirs);
 
-   include_names.swap(second.include_names);
+   include_names.swap(a_second.include_names);
 
-   data_types.swap(second.data_types);
+   data_types.swap(a_second.data_types);
 
-   abbreviations.swap(second.abbreviations);
+   abbreviations.swap(a_second.abbreviations);
 
    unsigned tmp_type_settings = type_settings;
-   type_settings = second.type_settings;
-   second.type_settings = tmp_type_settings;
+   type_settings = a_second.type_settings;
+   a_second.type_settings = tmp_type_settings;
 
-   cont_params.swap(second.cont_params);
+   cont_params.swap(a_second.cont_params);
 }/*}}}*/
 
-inline processor_s &processor_s::operator=(processor_s &src)
+inline processor_s &processor_s::operator=(processor_s &a_src)
 {/*{{{*/
-   out_file = src.out_file;
-   include_dirs = src.include_dirs;
-   include_names = src.include_names;
-   data_types = src.data_types;
-   abbreviations = src.abbreviations;
-   type_settings = src.type_settings;
-   cont_params = src.cont_params;
+   out_file = a_src.out_file;
+   include_dirs = a_src.include_dirs;
+   include_names = a_src.include_names;
+   data_types = a_src.data_types;
+   abbreviations = a_src.abbreviations;
+   type_settings = a_src.type_settings;
+   cont_params = a_src.cont_params;
 
    return *this;
 }/*}}}*/
 
-inline bool processor_s::operator==(processor_s &second)
+inline bool processor_s::operator==(processor_s &a_second)
 {/*{{{*/
-   return (out_file == second.out_file && include_dirs == second.include_dirs && include_names == second.include_names && data_types == second.data_types && abbreviations == second.abbreviations && type_settings == second.type_settings && cont_params == second.cont_params);
+   return (out_file == a_second.out_file && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
 }/*}}}*/
 
 
@@ -3255,21 +3255,21 @@ struct lalr_stack_element_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(lalr_stack_element_s &second);
+   inline void swap(lalr_stack_element_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline lalr_stack_element_s &operator=(lalr_stack_element_s &src);
+   inline lalr_stack_element_s &operator=(lalr_stack_element_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(lalr_stack_element_s &second);
+   inline bool operator==(lalr_stack_element_s &a_second);
 
 };
 
@@ -3322,9 +3322,9 @@ struct lalr_stack_s
 
    /*!
     * \brief __GEN swap array members with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   inline void swap(lalr_stack_s &second);
+   inline void swap(lalr_stack_s &a_second);
 
    /*!
     * \brief __GEN select element of array
@@ -3393,17 +3393,17 @@ struct lalr_stack_s
 
    /*!
     * \brief __GEN copy array from another array
-    * \param src - reference to another array
+    * \param a_src - reference to another array
     * \return reference to this array
     */
-   inline lalr_stack_s &operator=(lalr_stack_s &src);
+   inline lalr_stack_s &operator=(lalr_stack_s &a_src);
 
    /*!
     * \brief __GEN comparison of array with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     * \return result of comparison
     */
-   inline bool operator==(lalr_stack_s &second);
+   inline bool operator==(lalr_stack_s &a_second);
 
    
 
@@ -3450,21 +3450,21 @@ struct process_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(process_s &second);
+   inline void swap(process_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline process_s &operator=(process_s &src);
+   inline process_s &operator=(process_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(process_s &second);
+   inline bool operator==(process_s &a_second);
 
    
 
@@ -3528,33 +3528,33 @@ inline void lalr_stack_element_s::flush_all()
 {/*{{{*/
 }/*}}}*/
 
-inline void lalr_stack_element_s::swap(lalr_stack_element_s &second)
+inline void lalr_stack_element_s::swap(lalr_stack_element_s &a_second)
 {/*{{{*/
    unsigned tmp_lalr_state = lalr_state;
-   lalr_state = second.lalr_state;
-   second.lalr_state = tmp_lalr_state;
+   lalr_state = a_second.lalr_state;
+   a_second.lalr_state = tmp_lalr_state;
 
    unsigned tmp_terminal_start = terminal_start;
-   terminal_start = second.terminal_start;
-   second.terminal_start = tmp_terminal_start;
+   terminal_start = a_second.terminal_start;
+   a_second.terminal_start = tmp_terminal_start;
 
    unsigned tmp_terminal_end = terminal_end;
-   terminal_end = second.terminal_end;
-   second.terminal_end = tmp_terminal_end;
+   terminal_end = a_second.terminal_end;
+   a_second.terminal_end = tmp_terminal_end;
 }/*}}}*/
 
-inline lalr_stack_element_s &lalr_stack_element_s::operator=(lalr_stack_element_s &src)
+inline lalr_stack_element_s &lalr_stack_element_s::operator=(lalr_stack_element_s &a_src)
 {/*{{{*/
-   lalr_state = src.lalr_state;
-   terminal_start = src.terminal_start;
-   terminal_end = src.terminal_end;
+   lalr_state = a_src.lalr_state;
+   terminal_start = a_src.terminal_start;
+   terminal_end = a_src.terminal_end;
 
    return *this;
 }/*}}}*/
 
-inline bool lalr_stack_element_s::operator==(lalr_stack_element_s &second)
+inline bool lalr_stack_element_s::operator==(lalr_stack_element_s &a_second)
 {/*{{{*/
-   return (lalr_state == second.lalr_state && terminal_start == second.terminal_start && terminal_end == second.terminal_end);
+   return (lalr_state == a_second.lalr_state && terminal_start == a_second.terminal_start && terminal_end == a_second.terminal_end);
 }/*}}}*/
 
 
@@ -3606,19 +3606,19 @@ inline void lalr_stack_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void lalr_stack_s::swap(lalr_stack_s &second)
+inline void lalr_stack_s::swap(lalr_stack_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    lalr_stack_element_s *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 }/*}}}*/
 
 inline lalr_stack_element_s &lalr_stack_s::operator[](unsigned a_idx)
@@ -3666,25 +3666,25 @@ inline lalr_stack_element_s &lalr_stack_s::last()
    return data[used - 1];
 }/*}}}*/
 
-inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &src)
+inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
 {/*{{{*/
    clear();
 
-   if (src.used == 0) return *this;
+   if (a_src.used == 0) return *this;
 
-   copy_resize(src.used);
-   memcpy(data,src.data,src.used*sizeof(lalr_stack_element_s));
+   copy_resize(a_src.used);
+   memcpy(data,a_src.data,a_src.used*sizeof(lalr_stack_element_s));
 
-   used = src.used;
+   used = a_src.used;
    return *this;
 }/*}}}*/
 
-inline bool lalr_stack_s::operator==(lalr_stack_s &second)
+inline bool lalr_stack_s::operator==(lalr_stack_s &a_second)
 {/*{{{*/
-   if (used != second.used) return false;
+   if (used != a_second.used) return false;
    if (used == 0) return true;
 
-   return (memcmp(data,second.data,used*sizeof(lalr_stack_element_s)) == 0);
+   return (memcmp(data,a_second.data,used*sizeof(lalr_stack_element_s)) == 0);
 }/*}}}*/
 
 
@@ -3745,32 +3745,32 @@ inline void process_s::flush_all()
    lalr_stack.flush_all();
 }/*}}}*/
 
-inline void process_s::swap(process_s &second)
+inline void process_s::swap(process_s &a_second)
 {/*{{{*/
    processor_s_ptr tmp_processor_ptr = processor_ptr;
-   processor_ptr = second.processor_ptr;
-   second.processor_ptr = tmp_processor_ptr;
+   processor_ptr = a_second.processor_ptr;
+   a_second.processor_ptr = tmp_processor_ptr;
 
-   source_string.swap(second.source_string);
+   source_string.swap(a_second.source_string);
 
-   code.swap(second.code);
+   code.swap(a_second.code);
 
-   lalr_stack.swap(second.lalr_stack);
+   lalr_stack.swap(a_second.lalr_stack);
 }/*}}}*/
 
-inline process_s &process_s::operator=(process_s &src)
+inline process_s &process_s::operator=(process_s &a_src)
 {/*{{{*/
-   processor_ptr = src.processor_ptr;
-   source_string = src.source_string;
-   code = src.code;
-   lalr_stack = src.lalr_stack;
+   processor_ptr = a_src.processor_ptr;
+   source_string = a_src.source_string;
+   code = a_src.code;
+   lalr_stack = a_src.lalr_stack;
 
    return *this;
 }/*}}}*/
 
-inline bool process_s::operator==(process_s &second)
+inline bool process_s::operator==(process_s &a_second)
 {/*{{{*/
-   return (processor_ptr == second.processor_ptr && source_string == second.source_string && code == second.code && lalr_stack == second.lalr_stack);
+   return (processor_ptr == a_second.processor_ptr && source_string == a_second.source_string && code == a_second.code && lalr_stack == a_second.lalr_stack);
 }/*}}}*/
 
 

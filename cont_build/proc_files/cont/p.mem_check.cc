@@ -484,9 +484,9 @@ struct ui_array_s
 
    /*!
     * \brief __GEN swap array members with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     */
-   inline void swap(ui_array_s &second);
+   inline void swap(ui_array_s &a_second);
 
    /*!
     * \brief __GEN select element of array
@@ -555,17 +555,17 @@ struct ui_array_s
 
    /*!
     * \brief __GEN copy array from another array
-    * \param src - reference to another array
+    * \param a_src - reference to another array
     * \return reference to this array
     */
-   inline ui_array_s &operator=(ui_array_s &src);
+   inline ui_array_s &operator=(ui_array_s &a_src);
 
    /*!
     * \brief __GEN comparison of array with another array
-    * \param second - reference to another array
+    * \param a_second - reference to another array
     * \return result of comparison
     */
-   inline bool operator==(ui_array_s &second);
+   inline bool operator==(ui_array_s &a_second);
 
 };
 
@@ -606,21 +606,21 @@ struct mc_block_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(mc_block_s &second);
+   inline void swap(mc_block_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline mc_block_s &operator=(mc_block_s &src);
+   inline mc_block_s &operator=(mc_block_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(mc_block_s &second);
+   inline bool operator==(mc_block_s &a_second);
 
 };
 
@@ -708,9 +708,9 @@ struct mc_block_rb_tree_s
 
    /*!
     * \brief __GEN swap members of rb_tree with another rb_tree
-    * \param second - reference to another rb_tree
+    * \param a_second - reference to another rb_tree
     */
-   inline void swap(mc_block_rb_tree_s &second);
+   inline void swap(mc_block_rb_tree_s &a_second);
 
    /*!
     * \brief __GEN select ode of rb_tree
@@ -776,17 +776,17 @@ struct mc_block_rb_tree_s
 
    /*!
     * \brief __GEN copy rb_tree from another rb_tree
-    * \param src - reference to another rb_tree
+    * \param a_src - reference to another rb_tree
     * \return reference to this rb_tree
     */
-   inline mc_block_rb_tree_s &operator=(mc_block_rb_tree_s &src);
+   inline mc_block_rb_tree_s &operator=(mc_block_rb_tree_s &a_src);
 
    /*!
     * \brief __GEN compare rb_tree with another rb_tree
-    * \param second - reference to another rb_tree
+    * \param a_second - reference to another rb_tree
     * \return result of comparision
     */
-   bool operator==(mc_block_rb_tree_s &second);
+   bool operator==(mc_block_rb_tree_s &a_second);
 
    /*!
     * \brief __GEN rehash tree (after invalidation by change of object value)
@@ -846,21 +846,21 @@ struct mc_struct_s
    /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(mc_struct_s &second);
+   inline void swap(mc_struct_s &a_second);
 
    /*!
     * \brief __GEN copy structure from another structure
-    * \param src - reference to another structure
+    * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline mc_struct_s &operator=(mc_struct_s &src);
+   inline mc_struct_s &operator=(mc_struct_s &a_src);
 
    /*!
     * \brief __GEN compare structure with another structure
-    * \param second - reference to another structure
+    * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(mc_struct_s &second);
+   inline bool operator==(mc_struct_s &a_second);
 
    
       
@@ -936,19 +936,19 @@ inline void ui_array_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void ui_array_s::swap(ui_array_s &second)
+inline void ui_array_s::swap(ui_array_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    unsigned *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 }/*}}}*/
 
 inline unsigned &ui_array_s::operator[](unsigned a_idx)
@@ -996,25 +996,25 @@ inline unsigned &ui_array_s::last()
    return data[used - 1];
 }/*}}}*/
 
-inline ui_array_s &ui_array_s::operator=(ui_array_s &src)
+inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 {/*{{{*/
    clear();
 
-   if (src.used == 0) return *this;
+   if (a_src.used == 0) return *this;
 
-   copy_resize(src.used);
-   memcpy(data,src.data,src.used*sizeof(unsigned));
+   copy_resize(a_src.used);
+   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
 
-   used = src.used;
+   used = a_src.used;
    return *this;
 }/*}}}*/
 
-inline bool ui_array_s::operator==(ui_array_s &second)
+inline bool ui_array_s::operator==(ui_array_s &a_second)
 {/*{{{*/
-   if (used != second.used) return false;
+   if (used != a_second.used) return false;
    if (used == 0) return true;
 
-   return (memcmp(data,second.data,used*sizeof(unsigned)) == 0);
+   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
 
 
@@ -1044,28 +1044,28 @@ inline void mc_block_s::flush_all()
 {/*{{{*/
 }/*}}}*/
 
-inline void mc_block_s::swap(mc_block_s &second)
+inline void mc_block_s::swap(mc_block_s &a_second)
 {/*{{{*/
    pointer tmp_location = location;
-   location = second.location;
-   second.location = tmp_location;
+   location = a_second.location;
+   a_second.location = tmp_location;
 
    unsigned tmp_size = size;
-   size = second.size;
-   second.size = tmp_size;
+   size = a_second.size;
+   a_second.size = tmp_size;
 }/*}}}*/
 
-inline mc_block_s &mc_block_s::operator=(mc_block_s &src)
+inline mc_block_s &mc_block_s::operator=(mc_block_s &a_src)
 {/*{{{*/
-   location = src.location;
-   size = src.size;
+   location = a_src.location;
+   size = a_src.size;
 
    return *this;
 }/*}}}*/
 
-inline bool mc_block_s::operator==(mc_block_s &second)
+inline bool mc_block_s::operator==(mc_block_s &a_second)
 {/*{{{*/
-   return (location == second.location && size == second.size);
+   return (location == a_second.location && size == a_second.size);
 }/*}}}*/
 
 
@@ -1265,35 +1265,35 @@ inline void mc_block_rb_tree_s::flush_all()
    copy_resize(used);
 }/*}}}*/
 
-inline void mc_block_rb_tree_s::swap(mc_block_rb_tree_s &second)
+inline void mc_block_rb_tree_s::swap(mc_block_rb_tree_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
-   size = second.size;
-   second.size = tmp_unsigned;
+   size = a_second.size;
+   a_second.size = tmp_unsigned;
 
    tmp_unsigned = used;
-   used = second.used;
-   second.used = tmp_unsigned;
+   used = a_second.used;
+   a_second.used = tmp_unsigned;
 
    tmp_unsigned = count;
-   count = second.count;
-   second.count = tmp_unsigned;
+   count = a_second.count;
+   a_second.count = tmp_unsigned;
 
    mc_block_rb_tree_s_node *tmp_data = data;
-   data = second.data;
-   second.data = tmp_data;
+   data = a_second.data;
+   a_second.data = tmp_data;
 
    tmp_unsigned = free_idx;
-   free_idx = second.free_idx;
-   second.free_idx = tmp_unsigned;
+   free_idx = a_second.free_idx;
+   a_second.free_idx = tmp_unsigned;
 
    tmp_unsigned = root_idx;
-   root_idx = second.root_idx;
-   second.root_idx = tmp_unsigned;
+   root_idx = a_second.root_idx;
+   a_second.root_idx = tmp_unsigned;
 
    tmp_unsigned = leaf_idx;
-   leaf_idx = second.leaf_idx;
-   second.leaf_idx = tmp_unsigned;
+   leaf_idx = a_second.leaf_idx;
+   a_second.leaf_idx = tmp_unsigned;
 }/*}}}*/
 
 inline mc_block_s &mc_block_rb_tree_s::operator[](unsigned a_idx)
@@ -1326,20 +1326,20 @@ inline unsigned mc_block_rb_tree_s::swap_insert(mc_block_s &a_value)
    return new_node_idx;
 }/*}}}*/
 
-inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &src)
+inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_src)
 {/*{{{*/
    clear();
 
-   if (src.root_idx == c_idx_not_exist) return *this;
+   if (a_src.root_idx == c_idx_not_exist) return *this;
 
-   copy_resize(src.used);
-   memcpy(data,src.data,src.used*sizeof(mc_block_rb_tree_s_node));
+   copy_resize(a_src.used);
+   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
-   used = src.used;
-   count = src.count;
-   free_idx = src.free_idx;
-   root_idx = src.root_idx;
-   leaf_idx = src.leaf_idx;
+   used = a_src.used;
+   count = a_src.count;
+   free_idx = a_src.free_idx;
+   root_idx = a_src.root_idx;
+   leaf_idx = a_src.leaf_idx;
 
    return *this;
 }/*}}}*/
@@ -1395,39 +1395,39 @@ inline void mc_struct_s::flush_all()
    mc_block_set.flush_all();
 }/*}}}*/
 
-inline void mc_struct_s::swap(mc_struct_s &second)
+inline void mc_struct_s::swap(mc_struct_s &a_second)
 {/*{{{*/
-   mutex.swap(second.mutex);
+   mutex.swap(a_second.mutex);
 
-   mc_block_set.swap(second.mc_block_set);
+   mc_block_set.swap(a_second.mc_block_set);
 
    unsigned tmp_alloc_size = alloc_size;
-   alloc_size = second.alloc_size;
-   second.alloc_size = tmp_alloc_size;
+   alloc_size = a_second.alloc_size;
+   a_second.alloc_size = tmp_alloc_size;
 
    unsigned tmp_max_alloc_size = max_alloc_size;
-   max_alloc_size = second.max_alloc_size;
-   second.max_alloc_size = tmp_max_alloc_size;
+   max_alloc_size = a_second.max_alloc_size;
+   a_second.max_alloc_size = tmp_max_alloc_size;
 
    unsigned tmp_act_alloc_size = act_alloc_size;
-   act_alloc_size = second.act_alloc_size;
-   second.act_alloc_size = tmp_act_alloc_size;
+   act_alloc_size = a_second.act_alloc_size;
+   a_second.act_alloc_size = tmp_act_alloc_size;
 }/*}}}*/
 
-inline mc_struct_s &mc_struct_s::operator=(mc_struct_s &src)
+inline mc_struct_s &mc_struct_s::operator=(mc_struct_s &a_src)
 {/*{{{*/
-   mutex = src.mutex;
-   mc_block_set = src.mc_block_set;
-   alloc_size = src.alloc_size;
-   max_alloc_size = src.max_alloc_size;
-   act_alloc_size = src.act_alloc_size;
+   mutex = a_src.mutex;
+   mc_block_set = a_src.mc_block_set;
+   alloc_size = a_src.alloc_size;
+   max_alloc_size = a_src.max_alloc_size;
+   act_alloc_size = a_src.act_alloc_size;
 
    return *this;
 }/*}}}*/
 
-inline bool mc_struct_s::operator==(mc_struct_s &second)
+inline bool mc_struct_s::operator==(mc_struct_s &a_second)
 {/*{{{*/
-   return (mutex == second.mutex && mc_block_set == second.mc_block_set && alloc_size == second.alloc_size && max_alloc_size == second.max_alloc_size && act_alloc_size == second.act_alloc_size);
+   return (mutex == a_second.mutex && mc_block_set == a_second.mc_block_set && alloc_size == a_second.alloc_size && max_alloc_size == a_second.max_alloc_size && act_alloc_size == a_second.act_alloc_size);
 }/*}}}*/
 
 
@@ -2189,38 +2189,38 @@ void mc_block_rb_tree_s::get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array)
    return;
 }/*}}}*/
 
-bool mc_block_rb_tree_s::operator==(mc_block_rb_tree_s &second)
+bool mc_block_rb_tree_s::operator==(mc_block_rb_tree_s &a_second)
 {/*{{{*/
-   if (count != second.count)
+   if (count != a_second.count)
    {
      return false;
    }
 
    if (root_idx == c_idx_not_exist) {
-      if (second.root_idx != c_idx_not_exist) {
+      if (a_second.root_idx != c_idx_not_exist) {
          return false;
       }
    }
    else {
-      if (second.root_idx == c_idx_not_exist) {
+      if (a_second.root_idx == c_idx_not_exist) {
          return false;
       }
 
       unsigned stack[get_descent_stack_size()];
-      unsigned s_stack[second.get_descent_stack_size()];
+      unsigned s_stack[a_second.get_descent_stack_size()];
 
       unsigned *stack_ptr = stack;
       unsigned *s_stack_ptr = s_stack;
 
       unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);
-      unsigned s_node_idx = second.get_stack_min_value_idx(second.root_idx,&s_stack_ptr);
+      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);
       do {
-         if (__compare_value(data[node_idx].object,second.data[s_node_idx].object) != 0) {
+         if (__compare_value(data[node_idx].object,a_second.data[s_node_idx].object) != 0) {
             return false;
          }
 
          node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);
-         s_node_idx = second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);
+         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);
       } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);
 
       if (node_idx != s_node_idx) {

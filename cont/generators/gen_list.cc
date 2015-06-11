@@ -111,31 +111,31 @@ printf(\
 #define LIST_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &second)\n"\
+"inline void %s::swap(%s &a_second)\n"\
 "{/*{{{*/\n"\
 "   unsigned tmp_unsigned = size;\n"\
-"   size = second.size;\n"\
-"   second.size = tmp_unsigned;\n"\
+"   size = a_second.size;\n"\
+"   a_second.size = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = used;\n"\
-"   used = second.used;\n"\
-"   second.used = tmp_unsigned;\n"\
+"   used = a_second.used;\n"\
+"   a_second.used = tmp_unsigned;\n"\
 "\n"\
 "   %s_element *tmp_data = data;\n"\
-"   data = second.data;\n"\
-"   second.data = tmp_data;\n"\
+"   data = a_second.data;\n"\
+"   a_second.data = tmp_data;\n"\
 "\n"\
 "   tmp_unsigned = free_idx;\n"\
-"   free_idx = second.free_idx;\n"\
-"   second.free_idx = tmp_unsigned;\n"\
+"   free_idx = a_second.free_idx;\n"\
+"   a_second.free_idx = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = first_idx;\n"\
-"   first_idx = second.first_idx;\n"\
-"   second.first_idx = tmp_unsigned;\n"\
+"   first_idx = a_second.first_idx;\n"\
+"   a_second.first_idx = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = last_idx;\n"\
-"   last_idx = second.last_idx;\n"\
-"   second.last_idx = tmp_unsigned;\n"\
+"   last_idx = a_second.last_idx;\n"\
+"   a_second.last_idx = tmp_unsigned;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -509,33 +509,33 @@ printf(\
 {\
    if (TYPE_NUMBER & c_type_dynamic) {\
 printf(\
-"%s &%s::operator=(%s &src)\n"\
+"%s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"inline %s &%s::operator=(%s &src)\n"\
+"inline %s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
 "   clear();\n"\
 "\n"\
-"   if (src.used == 0) return *this;\n"\
+"   if (a_src.used == 0) return *this;\n"\
 "\n"\
-"   copy_resize(src.used);\n"\
+"   copy_resize(a_src.used);\n"\
 );\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"   memcpy(data,src.data,src.used*sizeof(%s_element));\n"\
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"\
 ,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
 "\n"\
 "   %s_element *ptr = data;\n"\
-"   %s_element *s_ptr = src.data;\n"\
-"   %s_element *s_ptr_end = s_ptr + src.used;\n"\
+"   %s_element *s_ptr = a_src.data;\n"\
+"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"\
 "\n"\
 "   do {\n"\
 "      ptr->object = s_ptr->object;\n"\
@@ -546,10 +546,10 @@ printf(\
    }\
 printf(\
 "\n"\
-"   used = src.used;\n"\
-"   free_idx = src.free_idx;\n"\
-"   first_idx = src.first_idx;\n"\
-"   last_idx = src.last_idx;\n"\
+"   used = a_src.used;\n"\
+"   free_idx = a_src.free_idx;\n"\
+"   first_idx = a_src.first_idx;\n"\
+"   last_idx = a_src.last_idx;\n"\
 "\n"\
 "   return *this;\n"\
 "}/*}}}*/\n"\
@@ -560,22 +560,22 @@ printf(\
 #define LIST_OPERATOR_DOUBLE_EQUAL() \
 {\
 printf(\
-"bool %s::operator==(%s &second)\n"\
+"bool %s::operator==(%s &a_second)\n"\
 "{/*{{{*/\n"\
 "   if (first_idx == c_idx_not_exist) {\n"\
-"      return second.first_idx == c_idx_not_exist;\n"\
+"      return a_second.first_idx == c_idx_not_exist;\n"\
 "   }\n"\
 "\n"\
-"   if (second.first_idx == c_idx_not_exist) {\n"\
+"   if (a_second.first_idx == c_idx_not_exist) {\n"\
 "      return false;\n"\
 "   }\n"\
 "\n"\
 "   unsigned idx = first_idx;\n"\
-"   unsigned s_idx = second.first_idx;\n"\
+"   unsigned s_idx = a_second.first_idx;\n"\
 "\n"\
 "   do {\n"\
 "      %s_element &element = data[idx];\n"\
-"      %s_element &s_element = second.data[s_idx];\n"\
+"      %s_element &s_element = a_second.data[s_idx];\n"\
 "\n"\
 "      if (!(element.object == s_element.object)) {\n"\
 "         return false;\n"\
@@ -787,9 +787,9 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of list with another list\n"
-"    * \\param second - reference to another list\n"
+"    * \\param a_second - reference to another list\n"
 "    */\n"
-"   inline void swap(%s &second);\n"
+"   inline void swap(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -915,10 +915,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy list from another list\n"
-"    * \\param src - reference to another list\n"
+"    * \\param a_src - reference to another list\n"
 "    * \\return reference to this list\n"
 "    */\n"
-"   inline %s &operator=(%s &src);\n"
+"   inline %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -926,10 +926,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy list from another list\n"
-"    * \\param src - reference to another list\n"
+"    * \\param a_src - reference to another list\n"
 "    * \\return reference to this list\n"
 "    */\n"
-"   %s &operator=(%s &src);\n"
+"   %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -937,10 +937,10 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN compare list with another list\n"
-"    * \\param second - reference to another list\n"
+"    * \\param a_second - reference to another list\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"   bool operator==(%s &second);\n"
+"   bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (fun_defs.used != 0) {

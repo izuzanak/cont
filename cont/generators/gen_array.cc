@@ -153,19 +153,19 @@ printf(\
 #define ARRAY_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &second)\n"\
+"inline void %s::swap(%s &a_second)\n"\
 "{/*{{{*/\n"\
 "   unsigned tmp_unsigned = size;\n"\
-"   size = second.size;\n"\
-"   second.size = tmp_unsigned;\n"\
+"   size = a_second.size;\n"\
+"   a_second.size = tmp_unsigned;\n"\
 "\n"\
 "   tmp_unsigned = used;\n"\
-"   used = second.used;\n"\
-"   second.used = tmp_unsigned;\n"\
+"   used = a_second.used;\n"\
+"   a_second.used = tmp_unsigned;\n"\
 "\n"\
 "   %s *tmp_data = data;\n"\
-"   data = second.data;\n"\
-"   second.data = tmp_data;\n"\
+"   data = a_second.data;\n"\
+"   a_second.data = tmp_data;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
@@ -485,33 +485,33 @@ printf(\
 {\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"inline %s &%s::operator=(%s &src)\n"\
+"inline %s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"%s &%s::operator=(%s &src)\n"\
+"%s &%s::operator=(%s &a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
 "   clear();\n"\
 "\n"\
-"   if (src.used == 0) return *this;\n"\
+"   if (a_src.used == 0) return *this;\n"\
 "\n"\
-"   copy_resize(src.used);\n"\
+"   copy_resize(a_src.used);\n"\
 );\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"   memcpy(data,src.data,src.used*sizeof(%s));\n"\
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s));\n"\
 ,TYPE_NAME);\
    }\
    else {\
 printf(\
 "\n"\
 "   %s *ptr = data;\n"\
-"   %s *s_ptr = src.data;\n"\
-"   %s *s_ptr_end = s_ptr + src.used;\n"\
+"   %s *s_ptr = a_src.data;\n"\
+"   %s *s_ptr_end = s_ptr + a_src.used;\n"\
 "\n"\
 "   do {\n"\
 "      *ptr = *s_ptr;\n"\
@@ -520,7 +520,7 @@ printf(\
    }\
 printf(\
 "\n"\
-"   used = src.used;\n"\
+"   used = a_src.used;\n"\
 "   return *this;\n"\
 "}/*}}}*/\n"\
 "\n"\
@@ -531,23 +531,23 @@ printf(\
 {\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"inline bool %s::operator==(%s &second)\n"\
+"inline bool %s::operator==(%s &a_second)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"bool %s::operator==(%s &second)\n"\
+"bool %s::operator==(%s &a_second)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   if (used != second.used) return false;\n"\
+"   if (used != a_second.used) return false;\n"\
 "   if (used == 0) return true;\n"\
 );\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
 "\n"\
-"   return (memcmp(data,second.data,used*sizeof(%s)) == 0);\n"\
+"   return (memcmp(data,a_second.data,used*sizeof(%s)) == 0);\n"\
 ,TYPE_NAME);\
    }\
    else {\
@@ -555,7 +555,7 @@ printf(\
 "\n"\
 "   %s *ptr = data;\n"\
 "   %s *ptr_end = ptr + used;\n"\
-"   %s *s_ptr = second.data;\n"\
+"   %s *s_ptr = a_second.data;\n"\
 "\n"\
 "   do {\n"\
 "      if (!(*ptr == *s_ptr)) {\n"\
@@ -771,9 +771,9 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap array members with another array\n"
-"    * \\param second - reference to another array\n"
+"    * \\param a_second - reference to another array\n"
 "    */\n"
-"   inline void swap(%s &second);\n"
+"   inline void swap(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -905,20 +905,20 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
-"    * \\param src - reference to another array\n"
+"    * \\param a_src - reference to another array\n"
 "    * \\return reference to this array\n"
 "    */\n"
-"   inline %s &operator=(%s &src);\n"
+"   inline %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
 printf(
 "   /*!\n"
 "    * \\brief __GEN comparison of array with another array\n"
-"    * \\param second - reference to another array\n"
+"    * \\param a_second - reference to another array\n"
 "    * \\return result of comparison\n"
 "    */\n"
-"   inline bool operator==(%s &second);\n"
+"   inline bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -927,18 +927,18 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
-"    * \\param src - reference to another array\n"
+"    * \\param a_src - reference to another array\n"
 "    */\n"
-"   %s &operator=(%s &src);\n"
+"   %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
 printf(
 "   /*!\n"
 "    * \\brief __GEN comparison of array with another array\n"
-"    * \\param second - reference to another array\n"
+"    * \\param a_second - reference to another array\n"
 "    */\n"
-"   bool operator==(%s &second);\n"
+"   bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
