@@ -728,8 +728,8 @@ elif configuration.compiler_type == configuration.C_COMPILER_MS_VS:
 else:
   assert False
 
-# xml_parser project
-cfg_ref = c_cfg[C_XML_PARSER_PROG]
+# allocator project
+cfg_ref = c_cfg[C_ALLOCATOR_PROG]
 cfg_ref[CFG_MODULE] = project_c(#{{{
   configuration,
   cfg_ref[CFG_DIR],
