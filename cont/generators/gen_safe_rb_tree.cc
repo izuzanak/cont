@@ -1787,7 +1787,7 @@ printf(
 "/*!\n"
 " * \\brief __GEN rb_tree of type %s\n"
 " */\n"
-"struct %s\n\n"
+"struct %s\n"
 "{\n"
 "   unsigned size;\n"
 "   unsigned used;\n"

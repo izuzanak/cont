@@ -651,7 +651,6 @@ struct mc_block_rb_tree_s_node
  * \brief __GEN rb_tree of type mc_block_s
  */
 struct mc_block_rb_tree_s
-
 {
    unsigned size;
    unsigned used;
@@ -9860,7 +9859,7 @@ printf(
 "/*!\n"
 " * \\brief __GEN rb_tree of type %s\n"
 " */\n"
-"struct %s\n\n"
+"struct %s\n"
 "{\n"
 "   unsigned size;\n"
 "   unsigned used;\n"
@@ -13410,7 +13409,7 @@ printf(
 "/*!\n"
 " * \\brief __GEN rb_tree of type %s\n"
 " */\n"
-"struct %s\n\n"
+"struct %s\n"
 "{\n"
 "   unsigned size;\n"
 "   unsigned used;\n"

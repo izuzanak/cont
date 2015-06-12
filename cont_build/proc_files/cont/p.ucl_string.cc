@@ -651,7 +651,6 @@ struct mc_block_rb_tree_s_node
  * \brief __GEN rb_tree of type mc_block_s
  */
 struct mc_block_rb_tree_s
-
 {
    unsigned size;
    unsigned used;
