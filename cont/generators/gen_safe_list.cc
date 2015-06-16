@@ -757,7 +757,7 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize list of requested size\n"
-"    * \\param a_size - desired size of list\n"
+"    * \\param a_size - requested size of list\n"
 "    */\n"
 "   inline void init_size(unsigned a_size);\n"
 "\n"
