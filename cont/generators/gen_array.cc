@@ -436,7 +436,7 @@ printf(\
 
 #define ARRAY_FILL() \
 {\
-   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char){\
+   if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char){\
 printf(\
 "inline void %s_fill(%s *this,%s a_value)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
@@ -458,7 +458,7 @@ printf(\
 "   if (this->size == 0) return;\n"\
 "\n"\
 );\
-   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {\
+   if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {\
 printf(\
 "   memset(this->data,a_value,this->size);\n"\
 );\
@@ -714,30 +714,25 @@ printf(
 "\n"
 ,STRUCT_NAME);
 
-   if (abbs.used > 1) {
-      unsigned idx = 1;
-      do {
+    unsigned idx = 0;
+    do {
 printf(
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
-      } while(++idx < abbs.used);
+    } while(++idx < abbs.used);
 printf(
 "\n"
 );
-   }
 
 printf(
-"/*!\n"
-" * \\brief __GEN array of type %s\n"
-" */\n"
-"typedef struct %s\n"
+"struct %s\n"
 "{\n"
 "   unsigned size; //!< actual size of allocated space in array\n"
 "   unsigned used; //!< count of used space in array\n"
 "   %s *data; //!< pointer to array elements\n"
-"} %s;\n"
+"};\n"
 "\n"
-,TYPE_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME);
+,STRUCT_NAME,TYPE_NAME);
    if (!(data_type.properties & c_type_setting_not_generate_init)) {
 printf(
 "inline void %s_init(%s *this);\n"
@@ -868,10 +863,13 @@ printf(
       unsigned f_idx = 0;
       do {
 printf(
-"   %s\n"
+"%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
+printf(
+"\n"
+);
 };
 
 void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -892,7 +890,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
    // --- definition of inline methods ---
 
 printf(
-"// --- struct %s inline function definition ---\n"
+"// --- struct %s inline method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -954,7 +952,7 @@ ARRAY_LAST();
    // - array copy_resize method -
 
    // - array fill method -
-   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
+   if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
 ARRAY_FILL();   
    }
 
@@ -993,7 +991,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
    // --- definition of methods ---
 
 printf(
-"// --- struct %s function definition ---\n"
+"// --- struct %s method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1044,7 +1042,7 @@ ARRAY_PUSH_BLANKS();
 ARRAY_COPY_RESIZE();
 
    // - array fill method -
-   if (type_idx != c_bt_bool && type_idx != c_bt_char && type_idx != c_bt_unsigned_char) {
+   if (type_idx != c_bt_char && type_idx != c_bt_unsigned_char) {
 ARRAY_FILL();   
    }
 

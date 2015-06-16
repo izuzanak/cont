@@ -14,7 +14,6 @@ const char *c_end_str = "@""end";
 
 // - names of basic data types -
 const char *c_basic_types[c_basic_type_cnt] = {
-   "bb",
    "bc",
    "sc",
    "uc",
@@ -46,12 +45,10 @@ unsigned c_basic_type_types[c_basic_type_cnt] = {
    c_type_basic,
    c_type_basic,
    c_type_basic,
-   c_type_basic,
 };
 
 // - abbreviations of basic data types -
 const char *c_basic_abbreviations[c_basic_abbreviation_cnt] = {
-   "bb","bool",
    "bc","char",
    "sc","signed_char",
    "uc","unsigned_char",
@@ -72,18 +69,17 @@ const int c_basic_abbreviation_types[c_basic_abbreviation_cnt] = {
    0,0,
    1,1,
    2,2,
-   3,3,
+   3,3,3,
    4,4,4,
-   5,5,5,
-   6,6,
+   5,5,
+   6,6,6,
    7,7,7,
    8,8,8,
    9,9,9,
    10,10,10,
-   11,11,11,
+   11,11,
    12,12,
    13,13,
-   14,14,
 };
 
 // - constant describing containers -
@@ -399,7 +395,6 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 
    fprintf(out_file,
 "\n"
-"typedef bool bb;\n"
 "typedef char bc;\n"
 "typedef unsigned char uc;\n"
 "typedef short int si;\n"

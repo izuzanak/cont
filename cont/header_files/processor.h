@@ -52,8 +52,7 @@ enum {
 
 // - names of basic data types -
 enum {
-   c_bt_bool = 0,
-   c_bt_char,
+   c_bt_char = 0,
    c_bt_unsigned_char,
    c_bt_short,
    c_bt_unsigned_short,
@@ -68,13 +67,13 @@ enum {
    c_bt_long_double,
 };
 
-const unsigned c_basic_type_cnt = 15;
+const unsigned c_basic_type_cnt = 14;
 extern const char *c_basic_types[c_basic_type_cnt];
 
 extern unsigned c_basic_type_types[c_basic_type_cnt];
 
 // - abbreviations of basic data types -
-const unsigned c_basic_abbreviation_cnt = 37;
+const unsigned c_basic_abbreviation_cnt = 35;
 extern const char *c_basic_abbreviations[c_basic_abbreviation_cnt];
 
 extern const int c_basic_abbreviation_types[c_basic_abbreviation_cnt];

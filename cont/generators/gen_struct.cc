@@ -2,15 +2,15 @@
 #define STRUCT_INIT() \
 {\
 printf(\
-"inline void %s::init()\n"\
+"inline void %s_init(%s *this)\n"\
 "{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    t_idx = 0;\
    do {\
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
 printf(\
-"   %s.init();\n"\
-,VAR_NAMES(t_idx));\
+"   %s_init(&this->%s);\n"\
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
       }\
    } while(++t_idx < TYPE_CNT);\
 printf(\
@@ -22,30 +22,30 @@ printf(\
 #define STRUCT_CLEAR() \
 {\
 printf(\
-"inline void %s::clear()\n"\
+"inline void %s_clear(%s *this)\n"\
 "{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    t_idx = 0;\
    do {\
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
 printf(\
-"   %s.clear();\n"\
-,VAR_NAMES(t_idx));\
+"   %s_clear(&this->%s);\n"\
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
       }\
    } while(++t_idx < TYPE_CNT);\
 printf(\
 "\n"\
-"   init();\n"\
+"   %s_init(this);\n"\
 "}/*}}}*/\n"\
 "\n"\
-);\
+,IM_STRUCT_NAME);\
 }
 
 #define STRUCT_SET() \
 {\
 printf(\
-"inline void %s::set("\
-,IM_STRUCT_NAME);\
+"inline void %s_set(%s *this,"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
 "%s a_%s"\
@@ -53,7 +53,7 @@ printf(\
    }\
    else {\
 printf(\
-"%s &a_%s"\
+"%s *a_%s"\
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));\
    }\
    if (TYPE_CNT > 1) {\
@@ -66,7 +66,7 @@ printf(\
          }\
          else {\
 printf(\
-",%s &a_%s"\
+",%s *a_%s"\
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
          }\
       } while(++t_idx < TYPE_CNT);\
@@ -77,9 +77,16 @@ printf(\
 );\
    t_idx = 0;\
    do {\
+       if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
 printf(\
-"   %s = a_%s;\n"\
+"   this->%s = a_%s;\n"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
+       }\
+       else {\
+printf(\
+"   %s_copy(&this->%s,a_%s);\n"\
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
+       }\
    } while(++t_idx < TYPE_CNT);\
 printf(\
 "}/*}}}*/\n"\
@@ -90,15 +97,15 @@ printf(\
 #define STRUCT_FLUSH_ALL() \
 {\
 printf(\
-"inline void %s::flush_all()\n"\
+"inline void %s_flush_all(%s *this)\n"\
 "{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    t_idx = 0;\
    do {\
       if (TYPE_NUMBERS(t_idx) & c_type_flushable) {\
 printf(\
-"   %s.flush_all();\n"\
-,VAR_NAMES(t_idx));\
+"   %s_flush_all(&this->%s);\n"\
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
       }\
    } while(++t_idx < TYPE_CNT);\
 printf(\
@@ -110,9 +117,9 @@ printf(\
 #define STRUCT_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &a_second)\n"\
+"inline void %s_swap(%s *this,%s *a_second)\n"\
 "{/*{{{*/"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    t_idx = 0;\
    do {\
 printf(\
@@ -120,15 +127,15 @@ printf(\
 );\
       if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
 printf(\
-"   %s tmp_%s = %s;\n"\
-"   %s = a_second.%s;\n"\
-"   a_second.%s = tmp_%s;\n"\
+"   %s tmp_%s = this->%s;\n"\
+"   this->%s = a_second->%s;\n"\
+"   a_second->%s = tmp_%s;\n"\
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
       }\
       else {\
 printf(\
-"   %s.swap(a_second.%s);\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
+"   %s_swap(&this->%s,&a_second->%s);\n"\
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
       }\
    } while(++t_idx < TYPE_CNT);\
 printf(\
@@ -140,18 +147,23 @@ printf(\
 #define STRUCT_OPERATOR_EQUAL() \
 {\
 printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
+"inline void %s_copy(%s *this,%s *a_src)\n"\
 "{/*{{{*/\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    t_idx = 0;\
    do {\
+       if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
 printf(\
-"   %s = a_src.%s;\n"\
+"   this->%s = a_src->%s;\n"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
+       }\
+       else {\
+printf(\
+"   %s_copy(&this->%s,&a_src->%s);\n"\
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
+       }\
    } while(++t_idx < TYPE_CNT);\
 printf(\
-"\n"\
-"   return *this;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -160,16 +172,32 @@ printf(\
 #define STRUCT_OPERATOR_DOUBLE_EQUAL() \
 {\
 printf(\
-"inline bool %s::operator==(%s &a_second)\n"\
+"inline int %s_compare(%s *this,%s *a_second)\n"\
 "{/*{{{*/\n"\
-"   return (%s == a_second.%s"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,VAR_NAMES(0),VAR_NAMES(0));\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
+printf(\
+"   return (this->%s == a_second->%s"\
+,VAR_NAMES(0),VAR_NAMES(0));\
+   }\
+   else {\
+printf(\
+"   return (%s_compare(&this->%s,&a_second->%s)"\
+,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));\
+   }\
    if (TYPE_CNT > 1) {\
       t_idx = 1;\
       do {\
+   if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
 printf(\
-" && %s == a_second.%s"\
+" && this->%s == a_second->%s"\
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
+   }\
+   else {\
+printf(\
+" && %s_compare(&this->%s,&a_second->%s)"\
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
+   }\
       } while(++t_idx < TYPE_CNT);\
    }\
 printf(\
@@ -347,22 +375,17 @@ printf(
 "\n"
 ,STRUCT_NAME);
 
-   if (abbs.used > 1) {
-      unsigned idx = 1;
-      do {
+    unsigned idx = 0;
+    do {
 printf(
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
-      } while(++idx < abbs.used);
+    } while(++idx < abbs.used);
 printf(
 "\n"
 );
-   }
 
 printf(
-"/*!\n"
-" * \\brief __GEN structure\n"
-" */\n"
 "struct %s\n"
 "{\n"
 ,STRUCT_NAME);
@@ -372,32 +395,23 @@ printf(
 "   %s %s; //!< member - %u\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
-
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
 printf(
-"\n"
-"   /*!\n"
-"    * \\brief __GEN initialize structure\n"
-"    */\n"
-"   inline void init();\n"
+"};\n"
 "\n"
 );
+   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+printf(
+"inline void %s_init(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(data_type.properties & c_type_setting_not_generate_clear)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN release memory used by structure\n"
-"    */\n"
-"   inline void clear();\n"
-"\n"
-);
+"inline void %s_clear(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN set structure members\n"
-"    */\n"
-"   inline void set("
-);
+"inline void %s_set(%s *this,"
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 printf(
 "%s a_%s"
@@ -405,7 +419,7 @@ printf(
    }
    else {
 printf(
-"%s &a_%s"
+"%s *a_%s"
 ,TYPE_NAMES(0),VAR_NAMES(0));
    }
    if (TYPE_CNT > 1) {
@@ -418,58 +432,37 @@ printf(
          }
          else {
 printf(
-",%s &a_%s"
+",%s *a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
 printf(
 ");\n"
-"   /*!\n"
-"    * \\brief __GEN flush structure memory usage, recursive on members\n"
-"    */\n"
-"   inline void flush_all();\n"
-"\n"
-);
+"inline void %s_flush_all(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (!(data_type.properties & c_type_setting_not_generate_swap)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN swap structure members with another structure\n"
-"    */\n"
-"   inline void swap(%s &a_second);\n"
-"\n"
-,STRUCT_NAME);
+"inline void %s_swap(%s *this,%s *a_second);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN copy structure from another structure\n"
-"    * \\param a_src - reference to another structure\n"
-"    * \\return reference to this structure\n"
-"    */\n"
-"   inline %s &operator=(%s &a_src);\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
+"inline void %s_copy(%s *this,%s *a_src);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN compare structure with another structure\n"
-"    * \\param a_second - reference to another structure\n"
-"    * \\return result of comparison\n"
-"    */\n"
-"   inline bool operator==(%s &a_second);\n"
-"\n"
-,STRUCT_NAME);
+"inline int %s_compare(%s *this,%s *a_second);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
 printf(
-"   %s\n"
+"%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
 printf(
-"};\n"
 "\n"
 );
 };

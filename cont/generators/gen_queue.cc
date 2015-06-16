@@ -2,105 +2,105 @@
 #define QUEUE_INIT() \
 {\
 printf(\
-"inline void %s::init()\n"\
+"inline void %s_init(%s *this)\n"\
 "{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   begin = 0;\n"\
-"   data = NULL;\n"\
+"   this->size = 0;\n"\
+"   this->used = 0;\n"\
+"   this->begin = 0;\n"\
+"   this->data = NULL;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define QUEUE_INIT_SIZE() \
 {\
 printf(\
-"inline void %s::init_size(unsigned a_size)\n"\
+"inline void %s_init_size(%s *this,unsigned a_size)\n"\
 "{/*{{{*/\n"\
-"   init();\n"\
-"   copy_resize(a_size);\n"\
+"   %s_init(this);\n"\
+"   %s_copy_resize(this,a_size);\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define QUEUE_CLEAR() \
 {\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
+"inline void %s_clear(%s *this)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
+"void %s_clear(%s *this)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
+"   if (this->data != NULL) {\n"\
 );\
    if (TYPE_NUMBER & c_type_dynamic) {\
 printf(\
-"      %s *ptr = data;\n"\
-"      %s *ptr_end = ptr + size;\n"\
+"      %s *ptr = this->data;\n"\
+"      %s *ptr_end = ptr + this->size;\n"\
 "\n"\
 "      do {\n"\
-"         ptr->clear();\n"\
+"         %s_clear(ptr);\n"\
 "      } while(++ptr < ptr_end);\n"\
 "\n"\
-,TYPE_NAME,TYPE_NAME);\
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    }\
 printf(\
-"      cfree(data);\n"\
+"      cfree(this->data);\n"\
 "   }\n"\
 "\n"\
-"   init();\n"\
+"   %s_init(this);\n"\
 "}/*}}}*/\n"\
 "\n"\
-);\
+,IM_STRUCT_NAME);\
 }
 
 #define QUEUE_FLUSH() \
 {\
 printf(\
-"inline void %s::flush()\n"\
+"inline void %s_flush(%s *this)\n"\
 "{/*{{{*/\n"\
-"   copy_resize(used);\n"\
+"   %s_copy_resize(this,this->used);\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define QUEUE_FLUSH_ALL() \
 {\
    if (!(TYPE_NUMBER & c_type_flushable)) {\
 printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
+"inline void %s_flush_all(%s *this)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
+"void %s_flush_all(%s *this)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-);\
+"   %s_copy_resize(this,this->used);\n"\
+,IM_STRUCT_NAME);\
    if (TYPE_NUMBER & c_type_flushable) {\
 printf(\
 "\n"\
-"   if (used == 0) return;\n"\
+"   if (this->used == 0) return;\n"\
 "\n"\
-"   %s *ptr = data;\n"\
-"   %s *ptr_end = ptr + used;\n"\
+"   %s *ptr = this->data;\n"\
+"   %s *ptr_end = ptr + this->used;\n"\
 "\n"\
 "   do {\n"\
-"      ptr->flush_all();\n"\
+"      %s_flush_all(ptr);\n"\
 "   } while(++ptr < ptr_end);\n"\
-,TYPE_NAME,TYPE_NAME);\
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    }\
 printf(\
 "}/*}}}*/\n"\
@@ -111,54 +111,78 @@ printf(\
 #define QUEUE_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &a_second)\n"\
+"inline void %s_swap(%s *this,%s *a_second)\n"\
 "{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
+"   unsigned tmp_unsigned = this->size;\n"\
+"   this->size = a_second->size;\n"\
+"   a_second->size = tmp_unsigned;\n"\
 "\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
+"   tmp_unsigned = this->used;\n"\
+"   this->used = a_second->used;\n"\
+"   a_second->used = tmp_unsigned;\n"\
 "\n"\
-"   tmp_unsigned = begin;\n"\
-"   begin = a_second.begin;\n"\
-"   a_second.begin = tmp_unsigned;\n"\
+"   tmp_unsigned = this->begin;\n"\
+"   this->begin = a_second->begin;\n"\
+"   a_second->begin = tmp_unsigned;\n"\
 "\n"\
-"   %s *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
+"   %s *tmp_data = this->data;\n"\
+"   this->data = a_second->data;\n"\
+"   a_second->data = tmp_data;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
 }
 
 #define QUEUE_INSERT() \
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline void %s::insert(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline void %s_insert(%s *this,%s a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"inline void %s::insert(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline void %s_insert(%s *this,%s *a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   if (used >= size) {\n"\
-"      copy_resize((size << 1) + c_array_add);\n"\
+"   if (this->used >= this->size) {\n"\
+"      %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   if (begin + used >= size) {\n"\
-"      data[begin + used - size] = a_value;\n"\
+,IM_STRUCT_NAME);\
+printf(\
+"   if (this->begin + this->used >= this->size) {\n"\
+);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"      this->data[this->begin + this->used - this->size] = a_value;\n"\
+);\
+   }\
+   else {\
+printf(\
+"      %s_copy(this->data + this->begin + this->used - this->size,a_value);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "   }\n"\
 "   else {\n"\
-"      data[begin + used] = a_value;\n"\
+);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"      this->data[this->begin + this->used] = a_value;\n"\
+);\
+   }\
+   else {\
+printf(\
+"      %s_copy(this->data + this->begin + this->used,a_value);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "   }\n"\
 "\n"\
-"   used++;\n"\
+"   this->used++;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -167,63 +191,83 @@ printf(\
 #define QUEUE_INSERT_BLANK() \
 {\
 printf(\
-"inline void %s::insert_blank()\n"\
+"inline void %s_insert_blank(%s *this)\n"\
 "{/*{{{*/\n"\
-"   if (used >= size) {\n"\
-"      copy_resize((size << 1) + c_array_add);\n"\
+"   if (this->used >= this->size) {\n"\
+"      %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   used++;\n"\
+"   this->used++;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define QUEUE_NEXT() \
 {\
+   if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline %s &%s::next()\n"\
+"inline %s %s_next(%s *this)\n"\
+,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   }\
+   else {\
+printf(\
+"inline %s *%s_next(%s *this)\n"\
+,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   }\
+printf(\
 "{/*{{{*/\n"\
-"   debug_assert(used > 0);\n"\
+"   debug_assert(this->used > 0);\n"\
 "\n"\
-"   unsigned ret_idx = begin;\n"\
+"   unsigned ret_idx = this->begin;\n"\
 "\n"\
-"   if (++begin >= size) {\n"\
-"      begin = 0;\n"\
+"   if (++this->begin >= this->size) {\n"\
+"      this->begin = 0;\n"\
 "   }\n"\
 "\n"\
-"   used--;\n"\
+"   this->used--;\n"\
 "   \n"\
-"   return data[ret_idx];\n"\
+);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"   return this->data[ret_idx];\n"\
+);\
+   }\
+   else {\
+printf(\
+"   return this->data + ret_idx;\n"\
+);\
+   }\
+printf(\
 "}/*}}}*/\n"\
 "\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
+);\
 }
 
 #define QUEUE_LAST() \
 {\
 printf(\
-"inline %s &%s::last()\n"\
+"inline %s *%s_last(%s *this)\n"\
 "{/*{{{*/\n"\
-"   debug_assert(used > 0);\n"\
+"   debug_assert(this->used > 0);\n"\
 "\n"\
-"   if (begin + (used - 1) >= size) {\n"\
-"      return data[begin + (used - 1) - size];\n"\
+"   if (this->begin + (this->used - 1) >= this->size) {\n"\
+"      return this->data + this->begin + (this->used - 1) - this->size;\n"\
 "   }\n"\
 "   else {\n"\
-"      return data[begin + (used - 1)];\n"\
+"      return this->data + this->begin + (this->used - 1);\n"\
 "   }\n"\
 "}/*}}}*/\n"\
 "\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
+,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define QUEUE_COPY_RESIZE() \
 {\
 printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
+"void %s_copy_resize(%s *this,unsigned a_size)\n"\
 "{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
+"   debug_assert(a_size >= this->used);\n"\
 "\n"\
 "   %s *n_data;\n"\
 "\n"\
@@ -232,86 +276,86 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"\
-,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    if (TYPE_NUMBER & c_type_dynamic) {\
 printf(\
 "\n"\
-"      if (a_size > used) {\n"\
-"         %s *ptr = n_data + used;\n"\
+"      if (a_size > this->used) {\n"\
+"         %s *ptr = n_data + this->used;\n"\
 "         %s *ptr_end = n_data + a_size;\n"\
 "\n"\
 "         do {\n"\
-"            ptr->init();\n"\
+"            %s_init(ptr);\n"\
 "         } while(++ptr < ptr_end);\n"\
 "      }\n"\
-,TYPE_NAME,TYPE_NAME);\
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    }\
 printf(\
 "   }\n"\
 "\n"\
-"   if (used != 0) {\n"\
+"   if (this->used != 0) {\n"\
 "      unsigned fir_cnt;\n"\
 "      unsigned sec_cnt;\n"\
 "\n"\
-"      if (begin + used > size) {\n"\
-"         sec_cnt = begin + used - size;\n"\
-"         fir_cnt = used - sec_cnt;\n"\
+"      if (this->begin + this->used > this->size) {\n"\
+"         sec_cnt = this->begin + this->used - this->size;\n"\
+"         fir_cnt = this->used - sec_cnt;\n"\
 "      }\n"\
 "      else {\n"\
-"         fir_cnt = used;\n"\
+"         fir_cnt = this->used;\n"\
 "         sec_cnt = 0;\n"\
 "      }\n"\
 "\n"\
-"      memcpy(n_data,data + begin,fir_cnt*sizeof(%s));\n"\
+"      memcpy(n_data,this->data + this->begin,fir_cnt*sizeof(%s));\n"\
 "\n"\
 "      if (sec_cnt != 0) {\n"\
-"         memcpy(n_data + fir_cnt,data,sec_cnt*sizeof(%s));\n"\
+"         memcpy(n_data + fir_cnt,this->data,sec_cnt*sizeof(%s));\n"\
 "      }\n"\
 "   }\n"\
 "\n"\
 ,TYPE_NAME,TYPE_NAME);\
    if (TYPE_NUMBER & c_type_dynamic) {\
 printf(\
-"   if (size > used) {\n"\
+"   if (this->size > this->used) {\n"\
 "      %s *ptr;\n"\
 "      %s *ptr_end;\n"\
 "      %s *s_ptr;\n"\
 "\n"\
-"      if (begin + used >= size) {\n"\
-"         ptr = data + (begin + used - size);\n"\
-"         ptr_end = data + begin;\n"\
+"      if (this->begin + this->used >= this->size) {\n"\
+"         ptr = this->data + (this->begin + this->used - this->size);\n"\
+"         ptr_end = this->data + this->begin;\n"\
 "         s_ptr = NULL;\n"\
 "      }\n"\
 "      else {\n"\
-"         ptr = data;\n"\
-"         ptr_end = data + begin;\n"\
-"         s_ptr = ptr_end + used;\n"\
+"         ptr = this->data;\n"\
+"         ptr_end = this->data + this->begin;\n"\
+"         s_ptr = ptr_end + this->used;\n"\
 "      }\n"\
 "\n"\
 "      if (ptr < ptr_end) {\n"\
 "         do {\n"\
-"            ptr->clear();\n"\
+"            %s_clear(ptr);\n"\
 "         } while(++ptr < ptr_end);\n"\
 "      }\n"\
 "\n"\
 "      if (s_ptr != NULL) {\n"\
-"         %s *s_ptr_end = data + size;\n"\
+"         %s *s_ptr_end = this->data + this->size;\n"\
 "         do {\n"\
-"            s_ptr->clear();\n"\
+"            %s_clear(s_ptr);\n"\
 "         } while(++s_ptr < s_ptr_end);\n"\
 "      }\n"\
 "   }\n"\
 "\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    }\
 printf(\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
+"   if (this->size != 0) {\n"\
+"      cfree(this->data);\n"\
 "   }\n"\
 "\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"   begin = 0;\n"\
+"   this->data = n_data;\n"\
+"   this->size = a_size;\n"\
+"   this->begin = 0;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -321,41 +365,41 @@ printf(\
 {\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
+"inline void %s_copy(%s *this,%s *a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"%s &%s::operator=(%s &a_src)\n"\
+"void %s_copy(%s *this,%s *a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   clear();\n"\
+"   %s_clear(this);\n"\
 "\n"\
-"   if (a_src.used == 0) return *this;\n"\
+"   if (a_src->used == 0) return;\n"\
 "\n"\
-"   copy_resize(a_src.used);\n"\
+"   %s_copy_resize(this,a_src->used);\n"\
 "\n"\
-);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
 "   unsigned fir_cnt;\n"\
 "   unsigned sec_cnt;\n"\
 "\n"\
-"   if (a_src.begin + a_src.used > a_src.size) {\n"\
-"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"\
-"      fir_cnt = a_src.used - sec_cnt;\n"\
+"   if (a_src->begin + a_src->used > a_src->size) {\n"\
+"      sec_cnt = a_src->begin + a_src->used - a_src->size;\n"\
+"      fir_cnt = a_src->used - sec_cnt;\n"\
 "   }\n"\
 "   else {\n"\
-"      fir_cnt = a_src.used;\n"\
+"      fir_cnt = a_src->used;\n"\
 "      sec_cnt = 0;\n"\
 "   }\n"\
 "\n"\
-"   memcpy(data,a_src.data + a_src.begin,fir_cnt*sizeof(%s));\n"\
+"   memcpy(this->data,a_src->data + a_src->begin,fir_cnt*sizeof(%s));\n"\
 "\n"\
 "   if (sec_cnt != 0) {\n"\
-"      memcpy(data + fir_cnt,a_src.data,sec_cnt*sizeof(%s));\n"\
+"      memcpy(this->data + fir_cnt,a_src->data,sec_cnt*sizeof(%s));\n"\
 "   }\n"\
 "\n"\
 ,TYPE_NAME,TYPE_NAME);\
@@ -363,37 +407,36 @@ printf(\
    else {\
 printf(\
 "   unsigned sec_cnt;\n"\
-"   %s *ptr = data;\n"\
-"   %s *s_ptr = a_src.data + a_src.begin;\n"\
+"   %s *ptr = this->data;\n"\
+"   %s *s_ptr = a_src->data + a_src->begin;\n"\
 "   %s *s_ptr_end;\n"\
 "\n"\
-"   if (a_src.begin + a_src.used > a_src.size) {\n"\
-"      s_ptr_end = a_src.data + a_src.size;\n"\
-"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"\
+"   if (a_src->begin + a_src->used > a_src->size) {\n"\
+"      s_ptr_end = a_src->data + a_src->size;\n"\
+"      sec_cnt = a_src->begin + a_src->used - a_src->size;\n"\
 "   }\n"\
 "   else {\n"\
-"      s_ptr_end = s_ptr + a_src.used;\n"\
+"      s_ptr_end = s_ptr + a_src->used;\n"\
 "      sec_cnt = 0;\n"\
 "   }\n"\
 "\n"\
 "   do {\n"\
-"      *ptr = *s_ptr; \n"\
+"      %s_copy(ptr,s_ptr); \n"\
 "   } while(++ptr,++s_ptr < s_ptr_end);\n"\
 "\n"\
 "   if (sec_cnt != 0) {\n"\
-"      s_ptr = a_src.data;\n"\
+"      s_ptr = a_src->data;\n"\
 "      s_ptr_end = s_ptr + sec_cnt;\n"\
 "\n"\
 "      do {\n"\
-"         *ptr = *s_ptr;\n"\
+"         %s_copy(ptr,s_ptr);\n"\
 "      } while(++ptr,++s_ptr < s_ptr_end);\n"\
 "   }\n"\
 "\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    }\
 printf(\
-"   used = a_src.used;\n"\
-"   return *this;\n"\
+"   this->used = a_src->used;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -402,87 +445,87 @@ printf(\
 #define QUEUE_OPERATOR_DOUBLE_EQUAL() \
 {\
 printf(\
-"bool %s::operator==(%s &a_second)\n"\
+"int %s_compare(%s *this,%s *a_second)\n"\
 "{/*{{{*/\n"\
-"   if (used != a_second.used) return false;\n"\
-"   if (used == 0) return true;\n"\
+"   if (this->used != a_second->used) return 0;\n"\
+"   if (this->used == 0) return 1;\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"   bool _break;\n"\
-"   bool s_break;\n"\
+"   int _break;\n"\
+"   int s_break;\n"\
 "   unsigned pos;\n"\
 "   unsigned pos_end;\n"\
 "   unsigned s_pos;\n"\
 "\n"\
-"   _break = (begin + used > size);\n"\
-"   s_break = (a_second.begin + a_second.used > a_second.size);\n"\
-"   pos = begin;\n"\
-"   s_pos = a_second.begin;\n"\
+"   _break = (this->begin + this->used > this->size);\n"\
+"   s_break = (a_second->begin + a_second->used > a_second->size);\n"\
+"   pos = this->begin;\n"\
+"   s_pos = a_second->begin;\n"\
 "\n"\
 "   if (_break) {\n"\
-"      pos_end = begin + used - size;\n"\
+"      pos_end = this->begin + this->used - this->size;\n"\
 "   }\n"\
 "   else {\n"\
-"      pos_end = begin + used;\n"\
+"      pos_end = this->begin + this->used;\n"\
 "   }\n"\
 "\n"\
 "   do {\n"\
 "      if (_break) {\n"\
-"         unsigned offset = size - pos;\n"\
+"         unsigned offset = this->size - pos;\n"\
 "         \n"\
 "         if (s_break) {\n"\
-"            unsigned s_offset = a_second.size = s_pos;\n"\
+"            unsigned s_offset = a_second->size = s_pos;\n"\
 "\n"\
 "            if (offset < s_offset) {\n"\
-"               if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"                  return false;\n"\
+"               if (memcmp(this->data + pos,a_second->data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"                  return 0;\n"\
 "               }\n"\
 "\n"\
 "               s_pos += offset;\n"\
 "               pos = 0;\n"\
-"               _break = false;\n"\
+"               _break = 0;\n"\
 "            }\n"\
 "            else {\n"\
-"               if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"                  return false;\n"\
+"               if (memcmp(this->data + pos,a_second->data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"                  return 0;\n"\
 "               }\n"\
 "\n"\
-"               if (pos += s_offset >= size) {\n"\
+"               if (pos += s_offset >= this->size) {\n"\
 "                  pos = 0;\n"\
-"                  _break = false;\n"\
+"                  _break = 0;\n"\
 "               }\n"\
 "               s_pos = 0;\n"\
-"               s_break = false;\n"\
+"               s_break = 0;\n"\
 "            }\n"\
 "         }\n"\
 "         else {\n"\
-"            if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"               return false;\n"\
+"            if (memcmp(this->data + pos,a_second->data + s_pos,offset*sizeof(%s)) != 0) {\n"\
+"               return 0;\n"\
 "            }\n"\
 "            s_pos += offset;\n"\
 "            pos = 0;\n"\
-"            _break = false;\n"\
+"            _break = 0;\n"\
 "         }\n"\
 "      }\n"\
 "      else {\n"\
 "         if (s_break) {\n"\
-"            unsigned s_offset = a_second.size - s_pos;\n"\
+"            unsigned s_offset = a_second->size - s_pos;\n"\
 "\n"\
-"            if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"               return false;\n"\
+"            if (memcmp(this->data + pos,a_second->data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
+"               return 0;\n"\
 "            }\n"\
 "            pos += s_offset;\n"\
 "            s_pos = 0;\n"\
-"            s_break = false;\n"\
+"            s_break = 0;\n"\
 "         }\n"\
 "         else {\n"\
-"            if (memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
-"               return false;\n"\
+"            if (memcmp(this->data + pos,a_second->data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
+"               return 0;\n"\
 "            }\n"\
 "            else {\n"\
-"               return true;\n"\
+"               return 1;\n"\
 "            }\n"\
 "         }\n"\
 "      }\n"\
@@ -491,36 +534,36 @@ printf(\
    }\
    else {\
 printf(\
-"   %s *ptr = data + begin;\n"\
-"   %s *ptr_break = data + size;\n"\
+"   %s *ptr = this->data + this->begin;\n"\
+"   %s *ptr_break = this->data + this->size;\n"\
 "   %s *ptr_end;\n"\
-"   %s *s_ptr = a_second.data + a_second.begin;\n"\
-"   %s *s_ptr_break = a_second.data + a_second.size;\n"\
+"   %s *s_ptr = a_second->data + a_second->begin;\n"\
+"   %s *s_ptr_break = a_second->data + a_second->size;\n"\
 "\n"\
-"   if (begin + used > size) {\n"\
-"      ptr_end = data + (begin + used - size);\n"\
+"   if (this->begin + this->used > this->size) {\n"\
+"      ptr_end = this->data + (this->begin + this->used - this->size);\n"\
 "   }\n"\
 "   else {\n"\
-"      ptr_end = ptr + used;\n"\
+"      ptr_end = ptr + this->used;\n"\
 "   }\n"\
 "\n"\
 "   do {\n"\
-"      if (!(*ptr == *s_ptr)) {\n"\
-"         return false;\n"\
+"      if (!%s_compare(ptr,s_ptr)) {\n"\
+"         return 0;\n"\
 "      }\n"\
 "      \n"\
 "      if (++ptr >= ptr_break) {\n"\
-"         ptr = data;\n"\
+"         ptr = this->data;\n"\
 "      }\n"\
 "\n"\
 "      if (++s_ptr >= s_ptr_break) {\n"\
-"         s_ptr = a_second.data;\n"\
+"         s_ptr = a_second->data;\n"\
 "      }\n"\
 "\n"\
 "   } while(ptr != ptr_end);\n"\
 "\n"\
-"   return true;\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
+"   return 1;\n"\
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    }\
 printf(\
 "}/*}}}*/\n"\
@@ -618,192 +661,117 @@ printf(
 "\n"
 ,STRUCT_NAME);
 
-   if (abbs.used > 1) {
-      unsigned idx = 1;
-      do {
+    unsigned idx = 0;
+    do {
 printf(
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
-      } while(++idx < abbs.used);
+    } while(++idx < abbs.used);
 printf(
 "\n"
 );
-   }
 
 printf(
-"/*!\n"
-" * \\brief __GEN queue of type %s\n"
-" */\n"
 "struct %s\n"
 "{\n"
 "   unsigned size; //!< actual size of allocated space (element count)\n"
 "   unsigned used; //!< count of stored elements\n"
 "   unsigned begin; //!< position of first element\n"
 "   %s *data; //!< pointer to queue elements\n"
+"};\n"
 "\n"
-,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,TYPE_NAME);
    if (!(data_type.properties & c_type_setting_not_generate_init)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN initialize queue\n"
-"    */\n"
-"   inline void init();\n"
-"\n"
-);
+"inline void %s_init(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN initialize queue of requested size\n"
-"    * \\param a_size - requested size of queue\n"
-"    */\n"
-"   inline void init_size(unsigned a_size);\n"
-"\n"
-);
+"inline void %s_init_size(%s *this,unsigned a_size);\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_setting_not_generate_clear)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN release memory used by queue\n"
-"    */\n"
-"   inline void clear();\n"
-"\n"
-);
+"inline void %s_clear(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
       }
    }
    else {
       if (!(data_type.properties & c_type_setting_not_generate_clear)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN release memory used by queue\n"
-"    */\n"
-"   void clear();\n"
-"\n"
-);
+"void %s_clear(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
       }
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN flush queue memory usage\n"
-"    */\n"
-"   inline void flush();\n"
-"\n"
-);
+"inline void %s_flush(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_flushable)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN flush queue memory usage, recursive on elements\n"
-"    */\n"
-"   inline void flush_all();\n"
-"\n"
-);
+"inline void %s_flush_all(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 printf(
-"   /*!\n"
-"    * \\brief __GEN flush queue memory usage, recursive on elements\n"
-"    */\n"
-"   void flush_all();\n"
-"\n"
-);
+"void %s_flush_all(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(data_type.properties & c_type_setting_not_generate_swap)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN swap members of queue with another queue\n"
-"    * \\param a_second - reference to another queue\n"
-"    */\n"
-"   inline void swap(%s &a_second);\n"
-"\n"
-,STRUCT_NAME);
+"inline void %s_swap(%s *this,%s *a_second);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN insert element to end of queue\n"
-"    * \\param a_value - value inserted to end of queue\n"
-"    */\n"
-"   inline void insert(%s a_value);\n"
-"\n"
-,TYPE_NAME);
+"inline void %s_insert(%s *this,%s a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"   /*!\n"
-"    * \\brief __GEN insert element to end of queue\n"
-"    * \\param a_value - value inserted to end of queue\n"
-"    */\n"
-"   inline void insert(%s &a_value);\n"
-"\n"
-,TYPE_NAME);
+"inline void %s_insert(%s *this,%s *a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN insert blank element to the end of queue\n"
-"    */\n"
-"   inline void insert_blank();\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN return value of next element in queue, and remove it\n"
-"    * \\return reference to next element\n"
-"    */\n"
-"   inline %s &next();\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN return value of last element in queue\n"
-"    * \\return reference to last element\n"
-"    */\n"
-"   inline %s &last();\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN change queue capacity\n"
-"    * \\param a_size - requested queue capacity\n"
-"    */\n"
-"   void copy_resize(unsigned a_size);\n"
-"\n"
-,TYPE_NAME,TYPE_NAME);
+"inline void %s_insert_blank(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline %s %s_next(%s *this);\n"
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
+   }
+   else {
+printf(
+"inline %s *%s_next(%s *this);\n"
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
+   }
+printf(
+"inline %s *%s_last(%s *this);\n"
+"void %s_copy_resize(%s *this,unsigned a_size);\n"
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN copy queue from another queue\n"
-"    * \\param a_src - reference to another queue\n"
-"    * \\return reference to this queue\n"
-"    */\n"
-"   inline %s &operator=(%s &a_src);\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
+"inline void %s_copy(%s *this,%s *a_src);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {
 printf(
-"   /*!\n"
-"    * \\brief __GEN copy queue from another queue\n"
-"    * \\param a_src - reference to another queue\n"
-"    * \\return reference to this queue\n"
-"    */\n"
-"   %s &operator=(%s &a_src);\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
+"void %s_copy(%s *this,%s *a_src);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN compare queue with another queue\n"
-"    * \\param a_second - reference to another queue\n"
-"    * \\return result of comparision\n"
-"    */\n"
-"   bool operator==(%s &a_second);\n"
-"\n"
-,STRUCT_NAME);
+"int %s_compare(%s *this,%s *a_second);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
 printf(
-"   %s\n"
+"%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
 printf(
-"};\n"
 "\n"
 );
 };
