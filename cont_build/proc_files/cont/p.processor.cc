@@ -4701,7 +4701,7 @@ printf(\
 
 #define ARRAY_FILL() \
 {\
-   if (type_idx == c_bt_char){\
+   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char){\
 printf(\
 "inline void %s::fill(%s a_value)\n"\
 ,IM_STRUCT_NAME,TYPE_NAME);\
@@ -5144,7 +5144,7 @@ printf(
 "   void copy_resize(unsigned a_size);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
-   if (type_idx == c_bt_char) {
+   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN set all elements of array to given value\n"
@@ -5332,7 +5332,7 @@ ARRAY_LAST();
    // - array copy_resize method -
 
    // - array fill method -
-   if (type_idx == c_bt_char) {
+   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
 ARRAY_FILL();   
    }
 
@@ -5422,7 +5422,7 @@ ARRAY_PUSH_BLANKS();
 ARRAY_COPY_RESIZE();
 
    // - array fill method -
-   if (type_idx != c_bt_char) {
+   if (type_idx != c_bt_bool && type_idx != c_bt_char && type_idx != c_bt_unsigned_char) {
 ARRAY_FILL();   
    }
 
