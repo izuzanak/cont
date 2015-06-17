@@ -5651,11 +5651,12 @@ printf(\
 "{/*{{{*/\n"\
 "   debug_assert(used > 0);\n"\
 "\n"\
-"   if (begin + (used - 1) >= size) {\n"\
-"      return data[begin + (used - 1) - size];\n"\
+"   unsigned last_idx = begin + (used - 1);\n"\
+"   if (last_idx >= size) {\n"\
+"      return data[last_idx - size];\n"\
 "   }\n"\
 "   else {\n"\
-"      return data[begin + (used - 1)];\n"\
+"      return data[last_idx];\n"\
 "   }\n"\
 "}/*}}}*/\n"\
 "\n"\
@@ -8482,115 +8483,115 @@ printf(\
 }
 
 #define RB_TREE___REMOVE_BLACK_BLACK()  \
-{ \
-printf( \
-"void %s::__remove_black_black(unsigned a_idx)\n" \
-"{/*{{{*/\n" \
-"   unsigned node_idx = a_idx;\n" \
-"   do {\n" \
-"      %s_node &node = data[node_idx];\n" \
-"      \n" \
-"      if (node.parent_idx == c_idx_not_exist) {\n" \
-"         return;\n" \
-"      }\n" \
-"\n" \
-"      unsigned parent_idx = node.parent_idx;\n" \
-"      %s_node &parent = data[parent_idx];\n" \
-"\n" \
-"      {\n" \
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n" \
-"         %s_node &sibling = data[sibling_idx];\n" \
-"\n" \
-"         if (!sibling.color) {\n" \
-"            parent.color = false;\n" \
-"            sibling.color = true;\n" \
-"\n" \
-"            if (node_idx == parent.left_idx) {\n" \
-"               __rotate_left(parent_idx);\n" \
-"            }\n" \
-"            else {\n" \
-"               __rotate_right(parent_idx);\n" \
-"            }\n" \
-"         }\n" \
-"      }\n" \
-"\n" \
-"      {\n" \
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n" \
-"         %s_node& sibling = data[sibling_idx];\n" \
-"\n" \
-"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n" \
-"            sibling.color = false;\n" \
-"            node_idx = parent_idx;\n" \
-"            continue;\n" \
-"         }\n" \
-"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n" \
-"            sibling.color = false;\n" \
-"            parent.color = true;\n" \
-"            return;\n" \
-"         }\n" \
-"         else if (sibling.color) {\n" \
-"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n" \
-"               sibling.color = false;\n" \
-"               data[sibling.left_idx].color = true;\n" \
-"               __rotate_right(sibling_idx);\n" \
-"            }\n" \
-"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n" \
-"               sibling.color = false;\n" \
-"               data[sibling.right_idx].color = true;\n" \
-"               __rotate_left(sibling_idx);\n" \
-"            }\n" \
-"         }\n" \
-"\n" \
-"         {\n" \
-"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n" \
-"            %s_node &sibling = data[sibling_idx];\n" \
-"\n" \
-"            sibling.color = parent.color;\n" \
-"            parent.color = true;\n" \
-"\n" \
-"            if (node_idx == parent.left_idx) {\n" \
-"               data[sibling.right_idx].color = true;\n" \
-"               __rotate_left(parent_idx);\n" \
-"            }\n" \
-"            else {\n" \
-"               data[sibling.left_idx].color = true;\n" \
-"               __rotate_right(parent_idx);\n" \
-"            }\n" \
-"         }\n" \
-"\n" \
-"         return;\n" \
-"      }\n" \
-"\n" \
-"   } while(1);\n" \
-"}/*}}}*/\n" \
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME); \
+{\
+printf(\
+"void %s::__remove_black_black(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   unsigned node_idx = a_idx;\n"\
+"   do {\n"\
+"      %s_node &node = data[node_idx];\n"\
+"      \n"\
+"      if (node.parent_idx == c_idx_not_exist) {\n"\
+"         return;\n"\
+"      }\n"\
+"\n"\
+"      unsigned parent_idx = node.parent_idx;\n"\
+"      %s_node &parent = data[parent_idx];\n"\
+"\n"\
+"      {\n"\
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
+"         %s_node &sibling = data[sibling_idx];\n"\
+"\n"\
+"         if (!sibling.color) {\n"\
+"            parent.color = false;\n"\
+"            sibling.color = true;\n"\
+"\n"\
+"            if (node_idx == parent.left_idx) {\n"\
+"               __rotate_left(parent_idx);\n"\
+"            }\n"\
+"            else {\n"\
+"               __rotate_right(parent_idx);\n"\
+"            }\n"\
+"         }\n"\
+"      }\n"\
+"\n"\
+"      {\n"\
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
+"         %s_node& sibling = data[sibling_idx];\n"\
+"\n"\
+"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
+"            sibling.color = false;\n"\
+"            node_idx = parent_idx;\n"\
+"            continue;\n"\
+"         }\n"\
+"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
+"            sibling.color = false;\n"\
+"            parent.color = true;\n"\
+"            return;\n"\
+"         }\n"\
+"         else if (sibling.color) {\n"\
+"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"\
+"               sibling.color = false;\n"\
+"               data[sibling.left_idx].color = true;\n"\
+"               __rotate_right(sibling_idx);\n"\
+"            }\n"\
+"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"\
+"               sibling.color = false;\n"\
+"               data[sibling.right_idx].color = true;\n"\
+"               __rotate_left(sibling_idx);\n"\
+"            }\n"\
+"         }\n"\
+"\n"\
+"         {\n"\
+"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
+"            %s_node &sibling = data[sibling_idx];\n"\
+"\n"\
+"            sibling.color = parent.color;\n"\
+"            parent.color = true;\n"\
+"\n"\
+"            if (node_idx == parent.left_idx) {\n"\
+"               data[sibling.right_idx].color = true;\n"\
+"               __rotate_left(parent_idx);\n"\
+"            }\n"\
+"            else {\n"\
+"               data[sibling.left_idx].color = true;\n"\
+"               __rotate_right(parent_idx);\n"\
+"            }\n"\
+"         }\n"\
+"\n"\
+"         return;\n"\
+"      }\n"\
+"\n"\
+"   } while(1);\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define RB_TREE___REMOVE_ONE_CHILD()  \
-{ \
-printf( \
-"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n" \
-"{/*{{{*/\n" \
-"   %s_node &node = data[a_idx];\n" \
-"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n" \
-"\n" \
-"   node.parent_idx = free_idx;\n" \
-"   free_idx = a_idx;\n" \
-"\n" \
-"   if (node.color) {\n" \
-"      %s_node &child_node = data[a_ch_idx];\n" \
-"\n" \
-"      if (!child_node.color) {\n" \
-"         child_node.color = true;\n" \
-"      }\n" \
-"      else {\n" \
-"         __remove_black_black(a_ch_idx);\n" \
-"      }\n" \
-"   }\n" \
-"}/*}}}*/\n" \
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME); \
+{\
+printf(\
+"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"\
+"{/*{{{*/\n"\
+"   %s_node &node = data[a_idx];\n"\
+"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"\
+"\n"\
+"   node.parent_idx = free_idx;\n"\
+"   free_idx = a_idx;\n"\
+"\n"\
+"   if (node.color) {\n"\
+"      %s_node &child_node = data[a_ch_idx];\n"\
+"\n"\
+"      if (!child_node.color) {\n"\
+"         child_node.color = true;\n"\
+"      }\n"\
+"      else {\n"\
+"         __remove_black_black(a_ch_idx);\n"\
+"      }\n"\
+"   }\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define RB_TREE___INSERT_OPERATION() \
@@ -8912,102 +8913,102 @@ printf(\
 }
 
 #define RB_TREE_REMOVE()  \
-{ \
-printf( \
-"void %s::remove(unsigned a_idx)\n" \
-"{/*{{{*/\n" \
+{\
+printf(\
+"void %s::remove(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
 "   debug_assert(a_idx < used);\n"\
 "\n"\
-"   %s_node &del_node = data[a_idx];\n" \
-"\n" \
-"   if (del_node.left_idx != leaf_idx) {\n" \
-"      if (del_node.right_idx != leaf_idx) {\n" \
-"         \n" \
-"         unsigned found_idx = del_node.right_idx;\n" \
-"         do {\n" \
-"            %s_node &node = data[found_idx];\n" \
-"\n" \
-"            if (node.left_idx == leaf_idx) {\n" \
-"               break;\n" \
-"            }\n" \
-"\n" \
-"            found_idx = node.left_idx;\n" \
-"         } while(1);\n" \
-"\n" \
-"         %s_node &found_node = data[found_idx];\n" \
-"\n" \
-"         /* - process del_node parent_idx - */\n" \
-"         if (del_node.parent_idx != c_idx_not_exist) {\n" \
-"            %s_node &del_node_parent = data[del_node.parent_idx];\n" \
-"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n" \
-"         }\n" \
-"         else {\n" \
-"            root_idx = found_idx;\n" \
-"         }\n" \
-"\n" \
-"         /* - process del_node left_idx - */\n" \
-"         data[del_node.left_idx].parent_idx = found_idx;\n" \
-"\n" \
-"         /* - process found_node right_idx - */\n" \
-"         if (found_node.right_idx != leaf_idx) {\n" \
-"            data[found_node.right_idx].parent_idx = a_idx;\n" \
-"         }\n" \
-"\n" \
-"         if (del_node.right_idx == found_idx) {\n" \
-"            \n" \
-"            /* - found node is right child of deleted node - */\n" \
-"            del_node.right_idx = found_node.right_idx;\n" \
-"            found_node.right_idx = a_idx;\n" \
-"\n" \
-"            found_node.parent_idx = del_node.parent_idx;\n" \
-"            del_node.parent_idx = found_idx;\n" \
-"\n" \
-"            found_node.left_idx = del_node.left_idx;\n" \
-"            del_node.left_idx = leaf_idx;\n" \
-"\n" \
-"            bool tmp_bool = found_node.color;\n" \
-"            found_node.color = del_node.color;\n" \
-"            del_node.color = tmp_bool;\n" \
-"         }\n" \
-"         else {\n" \
-"            \n" \
-"            /* - process found_node parent - */\n" \
-"            %s_node &found_node_parent = data[found_node.parent_idx];\n" \
-"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n" \
-"\n" \
-"            /* - process del_node right_idx - */\n" \
-"            data[del_node.right_idx].parent_idx = found_idx;\n" \
-"\n" \
-"            /* - swap index pointers between nodes - */\n" \
-"            unsigned tmp_unsigned = found_node.parent_idx;\n" \
-"            found_node.parent_idx = del_node.parent_idx;\n" \
-"            del_node.parent_idx = tmp_unsigned;\n" \
-"\n" \
-"            found_node.left_idx = del_node.left_idx;\n" \
-"            del_node.left_idx = leaf_idx;\n" \
-"\n" \
-"            tmp_unsigned = found_node.right_idx;\n" \
-"            found_node.right_idx = del_node.right_idx;\n" \
-"            del_node.right_idx = tmp_unsigned;\n" \
-"\n" \
-"            bool tmp_bool = found_node.color;\n" \
-"            found_node.color = del_node.color;\n" \
-"            del_node.color = tmp_bool;\n" \
-"         }\n" \
-"\n" \
-"         __remove_one_child(a_idx,del_node.right_idx);\n" \
-"      }\n" \
-"      else {\n" \
-"         __remove_one_child(a_idx,del_node.left_idx);\n" \
-"      }\n" \
-"   }\n" \
-"   else {\n" \
-"      __remove_one_child(a_idx,del_node.right_idx);\n" \
-"   }\n" \
-"\n" \
-"}/*}}}*/\n" \
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME); \
+"   %s_node &del_node = data[a_idx];\n"\
+"\n"\
+"   if (del_node.left_idx != leaf_idx) {\n"\
+"      if (del_node.right_idx != leaf_idx) {\n"\
+"         \n"\
+"         unsigned found_idx = del_node.right_idx;\n"\
+"         do {\n"\
+"            %s_node &node = data[found_idx];\n"\
+"\n"\
+"            if (node.left_idx == leaf_idx) {\n"\
+"               break;\n"\
+"            }\n"\
+"\n"\
+"            found_idx = node.left_idx;\n"\
+"         } while(1);\n"\
+"\n"\
+"         %s_node &found_node = data[found_idx];\n"\
+"\n"\
+"         /* - process del_node parent_idx - */\n"\
+"         if (del_node.parent_idx != c_idx_not_exist) {\n"\
+"            %s_node &del_node_parent = data[del_node.parent_idx];\n"\
+"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"\
+"         }\n"\
+"         else {\n"\
+"            root_idx = found_idx;\n"\
+"         }\n"\
+"\n"\
+"         /* - process del_node left_idx - */\n"\
+"         data[del_node.left_idx].parent_idx = found_idx;\n"\
+"\n"\
+"         /* - process found_node right_idx - */\n"\
+"         if (found_node.right_idx != leaf_idx) {\n"\
+"            data[found_node.right_idx].parent_idx = a_idx;\n"\
+"         }\n"\
+"\n"\
+"         if (del_node.right_idx == found_idx) {\n"\
+"            \n"\
+"            /* - found node is right child of deleted node - */\n"\
+"            del_node.right_idx = found_node.right_idx;\n"\
+"            found_node.right_idx = a_idx;\n"\
+"\n"\
+"            found_node.parent_idx = del_node.parent_idx;\n"\
+"            del_node.parent_idx = found_idx;\n"\
+"\n"\
+"            found_node.left_idx = del_node.left_idx;\n"\
+"            del_node.left_idx = leaf_idx;\n"\
+"\n"\
+"            bool tmp_bool = found_node.color;\n"\
+"            found_node.color = del_node.color;\n"\
+"            del_node.color = tmp_bool;\n"\
+"         }\n"\
+"         else {\n"\
+"            \n"\
+"            /* - process found_node parent - */\n"\
+"            %s_node &found_node_parent = data[found_node.parent_idx];\n"\
+"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"\
+"\n"\
+"            /* - process del_node right_idx - */\n"\
+"            data[del_node.right_idx].parent_idx = found_idx;\n"\
+"\n"\
+"            /* - swap index pointers between nodes - */\n"\
+"            unsigned tmp_unsigned = found_node.parent_idx;\n"\
+"            found_node.parent_idx = del_node.parent_idx;\n"\
+"            del_node.parent_idx = tmp_unsigned;\n"\
+"\n"\
+"            found_node.left_idx = del_node.left_idx;\n"\
+"            del_node.left_idx = leaf_idx;\n"\
+"\n"\
+"            tmp_unsigned = found_node.right_idx;\n"\
+"            found_node.right_idx = del_node.right_idx;\n"\
+"            del_node.right_idx = tmp_unsigned;\n"\
+"\n"\
+"            bool tmp_bool = found_node.color;\n"\
+"            found_node.color = del_node.color;\n"\
+"            del_node.color = tmp_bool;\n"\
+"         }\n"\
+"\n"\
+"         __remove_one_child(a_idx,del_node.right_idx);\n"\
+"      }\n"\
+"      else {\n"\
+"         __remove_one_child(a_idx,del_node.left_idx);\n"\
+"      }\n"\
+"   }\n"\
+"   else {\n"\
+"      __remove_one_child(a_idx,del_node.right_idx);\n"\
+"   }\n"\
+"\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define RB_TREE_COPY_RESIZE() \
@@ -9156,7 +9157,7 @@ printf(\
 ,IM_STRUCT_NAME);\
 }
 
-#define SAFE_RB_TREE_GET_GRE_IDX() \
+#define RB_TREE_GET_GRE_IDX() \
 {\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
@@ -9199,7 +9200,7 @@ printf(\
 ,IM_STRUCT_NAME);\
 }
 
-#define SAFE_RB_TREE_GET_LEE_IDX() \
+#define RB_TREE_GET_LEE_IDX() \
 {\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
@@ -10436,10 +10437,10 @@ RB_TREE_GET_IDX();
 RB_TREE_GET_IDX_LEFT();
 
    // - rb_tree get_gre_idx method -
-SAFE_RB_TREE_GET_GRE_IDX();
+RB_TREE_GET_GRE_IDX();
 
    // - rb_tree get_lee_idx method -
-SAFE_RB_TREE_GET_LEE_IDX();
+RB_TREE_GET_LEE_IDX();
 
    // - rb_tree get_idxs method -
 RB_TREE_GET_IDXS();
@@ -11228,7 +11229,7 @@ printf(
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize list of requested size\n"
-"    * \\param a_size - desired size of list\n"
+"    * \\param a_size - requested size of list\n"
 "    */\n"
 "   inline void init_size(unsigned a_size);\n"
 "\n"
@@ -12016,118 +12017,118 @@ printf(\
 }
 
 #define SAFE_RB_TREE___REMOVE_BLACK_BLACK()  \
-{ \
-printf( \
-"void %s::__remove_black_black(unsigned a_idx)\n" \
-"{/*{{{*/\n" \
-"   unsigned node_idx = a_idx;\n" \
-"   do {\n" \
-"      %s_node &node = data[node_idx];\n" \
-"      \n" \
-"      if (node.parent_idx == c_idx_not_exist) {\n" \
-"         return;\n" \
-"      }\n" \
-"\n" \
-"      unsigned parent_idx = node.parent_idx;\n" \
-"      %s_node &parent = data[parent_idx];\n" \
-"\n" \
-"      {\n" \
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n" \
-"         %s_node &sibling = data[sibling_idx];\n" \
-"\n" \
-"         if (!sibling.color) {\n" \
-"            parent.color = false;\n" \
-"            sibling.color = true;\n" \
-"\n" \
-"            if (node_idx == parent.left_idx) {\n" \
-"               __rotate_left(parent_idx);\n" \
-"            }\n" \
-"            else {\n" \
-"               __rotate_right(parent_idx);\n" \
-"            }\n" \
-"         }\n" \
-"      }\n" \
-"\n" \
-"      {\n" \
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n" \
-"         %s_node& sibling = data[sibling_idx];\n" \
-"\n" \
-"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n" \
-"            sibling.color = false;\n" \
-"            node_idx = parent_idx;\n" \
-"            continue;\n" \
-"         }\n" \
-"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n" \
-"            sibling.color = false;\n" \
-"            parent.color = true;\n" \
-"            return;\n" \
-"         }\n" \
-"         else if (sibling.color) {\n" \
-"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n" \
-"               sibling.color = false;\n" \
-"               data[sibling.left_idx].color = true;\n" \
-"               __rotate_right(sibling_idx);\n" \
-"            }\n" \
-"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n" \
-"               sibling.color = false;\n" \
-"               data[sibling.right_idx].color = true;\n" \
-"               __rotate_left(sibling_idx);\n" \
-"            }\n" \
-"         }\n" \
-"\n" \
-"         {\n" \
-"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n" \
-"            %s_node &sibling = data[sibling_idx];\n" \
-"\n" \
-"            sibling.color = parent.color;\n" \
-"            parent.color = true;\n" \
-"\n" \
-"            if (node_idx == parent.left_idx) {\n" \
-"               data[sibling.right_idx].color = true;\n" \
-"               __rotate_left(parent_idx);\n" \
-"            }\n" \
-"            else {\n" \
-"               data[sibling.left_idx].color = true;\n" \
-"               __rotate_right(parent_idx);\n" \
-"            }\n" \
-"         }\n" \
-"\n" \
-"         return;\n" \
-"      }\n" \
-"\n" \
-"   } while(1);\n" \
-"}/*}}}*/\n" \
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME); \
+{\
+printf(\
+"void %s::__remove_black_black(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   unsigned node_idx = a_idx;\n"\
+"   do {\n"\
+"      %s_node &node = data[node_idx];\n"\
+"      \n"\
+"      if (node.parent_idx == c_idx_not_exist) {\n"\
+"         return;\n"\
+"      }\n"\
+"\n"\
+"      unsigned parent_idx = node.parent_idx;\n"\
+"      %s_node &parent = data[parent_idx];\n"\
+"\n"\
+"      {\n"\
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
+"         %s_node &sibling = data[sibling_idx];\n"\
+"\n"\
+"         if (!sibling.color) {\n"\
+"            parent.color = false;\n"\
+"            sibling.color = true;\n"\
+"\n"\
+"            if (node_idx == parent.left_idx) {\n"\
+"               __rotate_left(parent_idx);\n"\
+"            }\n"\
+"            else {\n"\
+"               __rotate_right(parent_idx);\n"\
+"            }\n"\
+"         }\n"\
+"      }\n"\
+"\n"\
+"      {\n"\
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
+"         %s_node& sibling = data[sibling_idx];\n"\
+"\n"\
+"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
+"            sibling.color = false;\n"\
+"            node_idx = parent_idx;\n"\
+"            continue;\n"\
+"         }\n"\
+"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
+"            sibling.color = false;\n"\
+"            parent.color = true;\n"\
+"            return;\n"\
+"         }\n"\
+"         else if (sibling.color) {\n"\
+"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"\
+"               sibling.color = false;\n"\
+"               data[sibling.left_idx].color = true;\n"\
+"               __rotate_right(sibling_idx);\n"\
+"            }\n"\
+"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"\
+"               sibling.color = false;\n"\
+"               data[sibling.right_idx].color = true;\n"\
+"               __rotate_left(sibling_idx);\n"\
+"            }\n"\
+"         }\n"\
+"\n"\
+"         {\n"\
+"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
+"            %s_node &sibling = data[sibling_idx];\n"\
+"\n"\
+"            sibling.color = parent.color;\n"\
+"            parent.color = true;\n"\
+"\n"\
+"            if (node_idx == parent.left_idx) {\n"\
+"               data[sibling.right_idx].color = true;\n"\
+"               __rotate_left(parent_idx);\n"\
+"            }\n"\
+"            else {\n"\
+"               data[sibling.left_idx].color = true;\n"\
+"               __rotate_right(parent_idx);\n"\
+"            }\n"\
+"         }\n"\
+"\n"\
+"         return;\n"\
+"      }\n"\
+"\n"\
+"   } while(1);\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_RB_TREE___REMOVE_ONE_CHILD()  \
-{ \
-printf( \
-"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n" \
-"{/*{{{*/\n" \
-"   %s_node &node = data[a_idx];\n" \
-"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n" \
-"\n" \
-"   node.parent_idx = free_idx;\n" \
-"   free_idx = a_idx;\n" \
-"\n" \
-"   node.valid = false;\n" \
-"   count--;\n" \
-"\n" \
-"   if (node.color) {\n" \
-"      %s_node &child_node = data[a_ch_idx];\n" \
-"\n" \
-"      if (!child_node.color) {\n" \
-"         child_node.color = true;\n" \
-"      }\n" \
-"      else {\n" \
-"         __remove_black_black(a_ch_idx);\n" \
-"      }\n" \
-"   }\n" \
-"}/*}}}*/\n" \
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME); \
+{\
+printf(\
+"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"\
+"{/*{{{*/\n"\
+"   %s_node &node = data[a_idx];\n"\
+"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"\
+"\n"\
+"   node.parent_idx = free_idx;\n"\
+"   free_idx = a_idx;\n"\
+"\n"\
+"   node.valid = false;\n"\
+"   count--;\n"\
+"\n"\
+"   if (node.color) {\n"\
+"      %s_node &child_node = data[a_ch_idx];\n"\
+"\n"\
+"      if (!child_node.color) {\n"\
+"         child_node.color = true;\n"\
+"      }\n"\
+"      else {\n"\
+"         __remove_black_black(a_ch_idx);\n"\
+"      }\n"\
+"   }\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_RB_TREE___INSERT_OPERATION() \
@@ -12454,102 +12455,102 @@ printf(\
 }
 
 #define SAFE_RB_TREE_REMOVE()  \
-{ \
-printf( \
-"void %s::remove(unsigned a_idx)\n" \
-"{/*{{{*/\n" \
+{\
+printf(\
+"void %s::remove(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
 "   debug_assert(a_idx < used && data[a_idx].valid);\n"\
 "\n"\
-"   %s_node &del_node = data[a_idx];\n" \
-"\n" \
-"   if (del_node.left_idx != leaf_idx) {\n" \
-"      if (del_node.right_idx != leaf_idx) {\n" \
-"         \n" \
-"         unsigned found_idx = del_node.right_idx;\n" \
-"         do {\n" \
-"            %s_node &node = data[found_idx];\n" \
-"\n" \
-"            if (node.left_idx == leaf_idx) {\n" \
-"               break;\n" \
-"            }\n" \
-"\n" \
-"            found_idx = node.left_idx;\n" \
-"         } while(1);\n" \
-"\n" \
-"         %s_node &found_node = data[found_idx];\n" \
-"\n" \
-"         /* - process del_node parent_idx - */\n" \
-"         if (del_node.parent_idx != c_idx_not_exist) {\n" \
-"            %s_node &del_node_parent = data[del_node.parent_idx];\n" \
-"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n" \
-"         }\n" \
-"         else {\n" \
-"            root_idx = found_idx;\n" \
-"         }\n" \
-"\n" \
-"         /* - process del_node left_idx - */\n" \
-"         data[del_node.left_idx].parent_idx = found_idx;\n" \
-"\n" \
-"         /* - process found_node right_idx - */\n" \
-"         if (found_node.right_idx != leaf_idx) {\n" \
-"            data[found_node.right_idx].parent_idx = a_idx;\n" \
-"         }\n" \
-"\n" \
-"         if (del_node.right_idx == found_idx) {\n" \
-"            \n" \
-"            /* - found node is right child of deleted node - */\n" \
-"            del_node.right_idx = found_node.right_idx;\n" \
-"            found_node.right_idx = a_idx;\n" \
-"\n" \
-"            found_node.parent_idx = del_node.parent_idx;\n" \
-"            del_node.parent_idx = found_idx;\n" \
-"\n" \
-"            found_node.left_idx = del_node.left_idx;\n" \
-"            del_node.left_idx = leaf_idx;\n" \
-"\n" \
-"            bool tmp_bool = found_node.color;\n" \
-"            found_node.color = del_node.color;\n" \
-"            del_node.color = tmp_bool;\n" \
-"         }\n" \
-"         else {\n" \
-"            \n" \
-"            /* - process found_node parent - */\n" \
-"            %s_node &found_node_parent = data[found_node.parent_idx];\n" \
-"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n" \
-"\n" \
-"            /* - process del_node right_idx - */\n" \
-"            data[del_node.right_idx].parent_idx = found_idx;\n" \
-"\n" \
-"            /* - swap index pointers between nodes - */\n" \
-"            unsigned tmp_unsigned = found_node.parent_idx;\n" \
-"            found_node.parent_idx = del_node.parent_idx;\n" \
-"            del_node.parent_idx = tmp_unsigned;\n" \
-"\n" \
-"            found_node.left_idx = del_node.left_idx;\n" \
-"            del_node.left_idx = leaf_idx;\n" \
-"\n" \
-"            tmp_unsigned = found_node.right_idx;\n" \
-"            found_node.right_idx = del_node.right_idx;\n" \
-"            del_node.right_idx = tmp_unsigned;\n" \
-"\n" \
-"            bool tmp_bool = found_node.color;\n" \
-"            found_node.color = del_node.color;\n" \
-"            del_node.color = tmp_bool;\n" \
-"         }\n" \
-"\n" \
-"         __remove_one_child(a_idx,del_node.right_idx);\n" \
-"      }\n" \
-"      else {\n" \
-"         __remove_one_child(a_idx,del_node.left_idx);\n" \
-"      }\n" \
-"   }\n" \
-"   else {\n" \
-"      __remove_one_child(a_idx,del_node.right_idx);\n" \
-"   }\n" \
-"\n" \
-"}/*}}}*/\n" \
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME); \
+"   %s_node &del_node = data[a_idx];\n"\
+"\n"\
+"   if (del_node.left_idx != leaf_idx) {\n"\
+"      if (del_node.right_idx != leaf_idx) {\n"\
+"         \n"\
+"         unsigned found_idx = del_node.right_idx;\n"\
+"         do {\n"\
+"            %s_node &node = data[found_idx];\n"\
+"\n"\
+"            if (node.left_idx == leaf_idx) {\n"\
+"               break;\n"\
+"            }\n"\
+"\n"\
+"            found_idx = node.left_idx;\n"\
+"         } while(1);\n"\
+"\n"\
+"         %s_node &found_node = data[found_idx];\n"\
+"\n"\
+"         /* - process del_node parent_idx - */\n"\
+"         if (del_node.parent_idx != c_idx_not_exist) {\n"\
+"            %s_node &del_node_parent = data[del_node.parent_idx];\n"\
+"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"\
+"         }\n"\
+"         else {\n"\
+"            root_idx = found_idx;\n"\
+"         }\n"\
+"\n"\
+"         /* - process del_node left_idx - */\n"\
+"         data[del_node.left_idx].parent_idx = found_idx;\n"\
+"\n"\
+"         /* - process found_node right_idx - */\n"\
+"         if (found_node.right_idx != leaf_idx) {\n"\
+"            data[found_node.right_idx].parent_idx = a_idx;\n"\
+"         }\n"\
+"\n"\
+"         if (del_node.right_idx == found_idx) {\n"\
+"            \n"\
+"            /* - found node is right child of deleted node - */\n"\
+"            del_node.right_idx = found_node.right_idx;\n"\
+"            found_node.right_idx = a_idx;\n"\
+"\n"\
+"            found_node.parent_idx = del_node.parent_idx;\n"\
+"            del_node.parent_idx = found_idx;\n"\
+"\n"\
+"            found_node.left_idx = del_node.left_idx;\n"\
+"            del_node.left_idx = leaf_idx;\n"\
+"\n"\
+"            bool tmp_bool = found_node.color;\n"\
+"            found_node.color = del_node.color;\n"\
+"            del_node.color = tmp_bool;\n"\
+"         }\n"\
+"         else {\n"\
+"            \n"\
+"            /* - process found_node parent - */\n"\
+"            %s_node &found_node_parent = data[found_node.parent_idx];\n"\
+"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"\
+"\n"\
+"            /* - process del_node right_idx - */\n"\
+"            data[del_node.right_idx].parent_idx = found_idx;\n"\
+"\n"\
+"            /* - swap index pointers between nodes - */\n"\
+"            unsigned tmp_unsigned = found_node.parent_idx;\n"\
+"            found_node.parent_idx = del_node.parent_idx;\n"\
+"            del_node.parent_idx = tmp_unsigned;\n"\
+"\n"\
+"            found_node.left_idx = del_node.left_idx;\n"\
+"            del_node.left_idx = leaf_idx;\n"\
+"\n"\
+"            tmp_unsigned = found_node.right_idx;\n"\
+"            found_node.right_idx = del_node.right_idx;\n"\
+"            del_node.right_idx = tmp_unsigned;\n"\
+"\n"\
+"            bool tmp_bool = found_node.color;\n"\
+"            found_node.color = del_node.color;\n"\
+"            del_node.color = tmp_bool;\n"\
+"         }\n"\
+"\n"\
+"         __remove_one_child(a_idx,del_node.right_idx);\n"\
+"      }\n"\
+"      else {\n"\
+"         __remove_one_child(a_idx,del_node.left_idx);\n"\
+"      }\n"\
+"   }\n"\
+"   else {\n"\
+"      __remove_one_child(a_idx,del_node.right_idx);\n"\
+"   }\n"\
+"\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_RB_TREE_COPY_RESIZE() \

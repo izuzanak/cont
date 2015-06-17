@@ -207,11 +207,12 @@ printf(\
 "{/*{{{*/\n"\
 "   debug_assert(used > 0);\n"\
 "\n"\
-"   if (begin + (used - 1) >= size) {\n"\
-"      return data[begin + (used - 1) - size];\n"\
+"   unsigned last_idx = begin + (used - 1);\n"\
+"   if (last_idx >= size) {\n"\
+"      return data[last_idx - size];\n"\
 "   }\n"\
 "   else {\n"\
-"      return data[begin + (used - 1)];\n"\
+"      return data[last_idx];\n"\
 "   }\n"\
 "}/*}}}*/\n"\
 "\n"\
