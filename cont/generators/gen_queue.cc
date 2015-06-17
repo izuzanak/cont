@@ -226,7 +226,7 @@ printf(\
 "   }\n"\
 "\n"\
 "   this->used--;\n"\
-"   \n"\
+"\n"\
 );\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
@@ -475,7 +475,7 @@ printf(\
 "   do {\n"\
 "      if (_break) {\n"\
 "         unsigned offset = this->size - pos;\n"\
-"         \n"\
+"\n"\
 "         if (s_break) {\n"\
 "            unsigned s_offset = a_second->size = s_pos;\n"\
 "\n"\
@@ -552,7 +552,7 @@ printf(\
 "      if (!%s_compare(ptr,s_ptr)) {\n"\
 "         return 0;\n"\
 "      }\n"\
-"      \n"\
+"\n"\
 "      if (++ptr >= ptr_break) {\n"\
 "         ptr = this->data;\n"\
 "      }\n"\

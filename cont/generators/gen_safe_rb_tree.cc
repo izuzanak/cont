@@ -105,7 +105,7 @@ printf(\
 "   if (*a_s_ptr > a_stack_base) {\n"\
 "      return *(--(*a_s_ptr));\n"\
 "   }\n"\
-"   \n"\
+"\n"\
 "   return c_idx_not_exist;\n"\
 "}/*}}}*/\n"\
 "\n"\
@@ -177,7 +177,7 @@ printf(\
 "         if (node->parent_idx == c_idx_not_exist) {\n"\
 "            return c_idx_not_exist;\n"\
 "         }\n"\
-"         \n"\
+"\n"\
 "         if (this->data[node->parent_idx].right_idx != node_idx) {\n"\
 "            return node->parent_idx;\n"\
 "         }\n"\
@@ -211,7 +211,7 @@ printf(\
 "         if (node->parent_idx == c_idx_not_exist) {\n"\
 "            return c_idx_not_exist;\n"\
 "         }\n"\
-"         \n"\
+"\n"\
 "         if (this->data[node->parent_idx].left_idx != node_idx) {\n"\
 "            return node->parent_idx;\n"\
 "         }\n"\
@@ -429,7 +429,7 @@ printf(\
 "   unsigned node_idx = a_idx;\n"\
 "   do {\n"\
 "      %s_node *node = this->data + node_idx;\n"\
-"      \n"\
+"\n"\
 "      if (node->parent_idx == c_idx_not_exist) {\n"\
 "         return;\n"\
 "      }\n"\
@@ -894,7 +894,7 @@ printf(\
 "\n"\
 "   if (del_node->left_idx != this->leaf_idx) {\n"\
 "      if (del_node->right_idx != this->leaf_idx) {\n"\
-"         \n"\
+"\n"\
 "         unsigned found_idx = del_node->right_idx;\n"\
 "         do {\n"\
 "            %s_node *node = this->data + found_idx;\n"\
@@ -934,7 +934,7 @@ printf(\
 "         }\n"\
 "\n"\
 "         if (del_node->right_idx == found_idx) {\n"\
-"            \n"\
+"\n"\
 "            /* - found node is right child of deleted node - */\n"\
 "            del_node->right_idx = found_node->right_idx;\n"\
 "            found_node->right_idx = a_idx;\n"\
@@ -950,7 +950,7 @@ printf(\
 "            del_node->color = tmp_char;\n"\
 "         }\n"\
 "         else {\n"\
-"            \n"\
+"\n"\
 "            /* - process found_node parent - */\n"\
 "            %s_node *found_node_parent = this->data + found_node->parent_idx;\n"\
 "\n"\
@@ -1521,7 +1521,7 @@ printf(\
 "\n"\
 "   ui_array_s indexes;\n"\
 "   ui_array_s_init(&indexes);\n"\
-"   \n"\
+"\n"\
 "   {\n"\
 "      unsigned stack[%s_get_descent_stack_size(this)];\n"\
 "      unsigned *stack_ptr = stack;\n"\
@@ -1655,7 +1655,7 @@ printf(\
 "   }\n"\
 "\n"\
 "   if (this->root_idx != c_idx_not_exist) {\n"\
-"      \n"\
+"\n"\
 "      /* - check if root node is black - */\n"\
 "      %s_node *r_node = this->data + this->root_idx;\n"\
 "      if (!r_node->color) {\n"\

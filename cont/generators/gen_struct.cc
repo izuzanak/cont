@@ -261,7 +261,7 @@ void processor_s::generate_struct_type()
       data_type_name_len += strlen(c_cont_postfixes[c_cont_struct]) - 1;
    }
 
-   // - compose type name -
+   // - compose name of type -
    string_s real_name;
    real_name.init();
    real_name.create(data_type_name_len);

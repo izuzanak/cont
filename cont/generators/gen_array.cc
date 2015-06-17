@@ -77,7 +77,7 @@ printf(\
 "{/*{{{*/\n"\
 "   %s_clear(this);\n"\
 "   if (a_used == 0) return;\n"\
-"   \n"\
+"\n"\
 "   debug_assert(a_data != NULL);\n"\
 "   %s_copy_resize(this,a_used);\n"\
 "\n"\

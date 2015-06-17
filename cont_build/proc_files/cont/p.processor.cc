@@ -7334,7 +7334,6 @@ LIST_OPERATOR_DOUBLE_EQUAL();
 }
 
 
-
 #define STRUCT_INIT() \
 {\
 printf(\
@@ -10299,439 +10298,483 @@ RB_TREE_CHECK_RB_TREE_PROPERTIES();
 #define SAFE_LIST_INIT() \
 {\
 printf(\
-"inline void %s::init()\n"\
+"inline void %s_init(%s *this)\n"\
 "{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   count = 0;\n"\
-"   data = NULL;\n"\
-"   free_idx = c_idx_not_exist;\n"\
-"   first_idx = c_idx_not_exist;\n"\
-"   last_idx = c_idx_not_exist;\n"\
+"   this->size = 0;\n"\
+"   this->used = 0;\n"\
+"   this->count = 0;\n"\
+"   this->data = NULL;\n"\
+"   this->free_idx = c_idx_not_exist;\n"\
+"   this->first_idx = c_idx_not_exist;\n"\
+"   this->last_idx = c_idx_not_exist;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_INIT_SIZE() \
 {\
 printf(\
-"inline void %s::init_size(unsigned a_size)\n"\
+"inline void %s_init_size(%s *this,unsigned a_size)\n"\
 "{/*{{{*/\n"\
-"   init();\n"\
-"   copy_resize(a_size);\n"\
+"   %s_init(this);\n"\
+"   %s_copy_resize(this,a_size);\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_CLEAR() \
 {\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
+"inline void %s_clear(%s *this)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"      %s_element *ptr = data;\n"\
-"      %s_element *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
+"void %s_clear(%s *this)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
-"      cfree(data);\n"\
+"{/*{{{*/\n"\
+"   if (this->data != NULL) {\n"\
+);\
+   if (TYPE_NUMBER & c_type_dynamic) {\
+printf(\
+"      %s_element *ptr = this->data;\n"\
+"      %s_element *ptr_end = ptr + this->size;\n"\
+"\n"\
+"      do {\n"\
+"         %s_clear(&ptr->object);\n"\
+"      } while(++ptr < ptr_end);\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
+   }\
+printf(\
+"      cfree(this->data);\n"\
 "   }\n"\
 "\n"\
-"   init();\n"\
+"   %s_init(this);\n"\
 "}/*}}}*/\n"\
 "\n"\
-);\
+,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_FLUSH() \
 {\
 printf(\
-"inline void %s::flush()\n"\
+"inline void %s_flush(%s *this)\n"\
 "{/*{{{*/\n"\
-"   copy_resize(used);\n"\
+"   %s_copy_resize(this,this->used);\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_FLUSH_ALL() \
 {\
    if (!(TYPE_NUMBER & c_type_flushable)) {\
 printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
+"inline void %s_flush_all(%s *this)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
+"void %s_flush_all(%s *this)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
 );\
    if (TYPE_NUMBER & c_type_flushable) {\
 printf(\
-"   %s_element *ptr = data;\n"\
-"   %s_element *ptr_end = ptr + used;\n"\
+"   %s_element *ptr = this->data;\n"\
+"   %s_element *ptr_end = ptr + this->used;\n"\
 "\n"\
 "   do {\n"\
-"      ptr->object.flush_all();\n"\
+"      %s_flush_all(&ptr->object);\n"\
 "   } while(++ptr < ptr_end);\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
-"   copy_resize(used);\n"\
+"   %s_copy_resize(this,this->used);\n"\
 "}/*}}}*/\n"\
 "\n"\
-);\
+,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_SWAP() \
 {\
 printf(\
-"inline void %s::swap(%s &a_second)\n"\
+"inline void %s_swap(%s *this,%s *a_second)\n"\
 "{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
+"   unsigned tmp_unsigned = this->size;\n"\
+"   this->size = a_second->size;\n"\
+"   a_second->size = tmp_unsigned;\n"\
 "\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
+"   tmp_unsigned = this->used;\n"\
+"   this->used = a_second->used;\n"\
+"   a_second->used = tmp_unsigned;\n"\
 "\n"\
-"   tmp_unsigned = count;\n"\
-"   count = a_second.count;\n"\
-"   a_second.count = tmp_unsigned;\n"\
+"   tmp_unsigned = this->count;\n"\
+"   this->count = a_second->count;\n"\
+"   a_second->count = tmp_unsigned;\n"\
 "\n"\
-"   %s_element *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
+"   %s_element *tmp_data = this->data;\n"\
+"   this->data = a_second->data;\n"\
+"   a_second->data = tmp_data;\n"\
 "\n"\
-"   tmp_unsigned = free_idx;\n"\
-"   free_idx = a_second.free_idx;\n"\
-"   a_second.free_idx = tmp_unsigned;\n"\
+"   tmp_unsigned = this->free_idx;\n"\
+"   this->free_idx = a_second->free_idx;\n"\
+"   a_second->free_idx = tmp_unsigned;\n"\
 "\n"\
-"   tmp_unsigned = first_idx;\n"\
-"   first_idx = a_second.first_idx;\n"\
-"   a_second.first_idx = tmp_unsigned;\n"\
+"   tmp_unsigned = this->first_idx;\n"\
+"   this->first_idx = a_second->first_idx;\n"\
+"   a_second->first_idx = tmp_unsigned;\n"\
 "\n"\
-"   tmp_unsigned = last_idx;\n"\
-"   last_idx = a_second.last_idx;\n"\
-"   a_second.last_idx = tmp_unsigned;\n"\
+"   tmp_unsigned = this->last_idx;\n"\
+"   this->last_idx = a_second->last_idx;\n"\
+"   a_second->last_idx = tmp_unsigned;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_OPERATOR_LE_BR_RE_BR() \
 {\
 printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
+"inline %s *%s_at(%s *this,unsigned a_idx)\n"\
 "{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"   return data[a_idx].object;\n"\
+"   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"\
+"   return &this->data[a_idx].object;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
+,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_PREPEND() \
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline unsigned %s::prepend(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_prepend(%s *this,%s a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"inline unsigned %s::prepend(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_prepend(%s *this,%s *a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
 "   unsigned new_idx;\n"\
 "\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
-"      new_idx = used++;\n"\
+"      new_idx = this->used++;\n"\
 "   }\n"\
 "\n"\
-"   %s_element &new_element = data[new_idx];\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
 "\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = first_idx;\n"\
-"   new_element.prev_idx = c_idx_not_exist;\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = this->first_idx;\n"\
+"   new_element->prev_idx = c_idx_not_exist;\n"\
 "\n"\
-"   if (first_idx != c_idx_not_exist) {\n"\
-"      data[first_idx].prev_idx = new_idx;\n"\
+"   if (this->first_idx != c_idx_not_exist) {\n"\
+"      this->data[this->first_idx].prev_idx = new_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      last_idx = new_idx;\n"\
+"      this->last_idx = new_idx;\n"\
 "   }\n"\
 "\n"\
-"   count++;\n"\
-"   first_idx = new_idx;\n"\
+"   this->count++;\n"\
+"   this->first_idx = new_idx;\n"\
 "\n"\
-"   new_element.object = a_value;\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"   new_element->object = a_value;\n"\
+);\
+   }\
+   else {\
+printf(\
+"   %s_copy(&new_element->object,a_value);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "\n"\
 "   return new_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+);\
 }
 
 #define SAFE_LIST_APPEND() \
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline unsigned %s::append(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_append(%s *this,%s a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"inline unsigned %s::append(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_append(%s *this,%s *a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
 "   unsigned new_idx;\n"\
 "\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
-"      new_idx = used++;\n"\
+"      new_idx = this->used++;\n"\
 "   }\n"\
 "\n"\
-"   %s_element &new_element = data[new_idx];\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
 "\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = c_idx_not_exist;\n"\
-"   new_element.prev_idx = last_idx;\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = c_idx_not_exist;\n"\
+"   new_element->prev_idx = this->last_idx;\n"\
 "\n"\
-"   if (last_idx != c_idx_not_exist) {\n"\
-"      data[last_idx].next_idx = new_idx;\n"\
+"   if (this->last_idx != c_idx_not_exist) {\n"\
+"      this->data[this->last_idx].next_idx = new_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      first_idx = new_idx;\n"\
+"      this->first_idx = new_idx;\n"\
 "   }\n"\
 "\n"\
-"   count++;\n"\
-"   last_idx = new_idx;\n"\
+"   this->count++;\n"\
+"   this->last_idx = new_idx;\n"\
 "\n"\
-"   new_element.object = a_value;\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"   new_element->object = a_value;\n"\
+);\
+   }\
+   else {\
+printf(\
+"   %s_copy(&new_element->object,a_value);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "\n"\
 "   return new_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+);\
 }
 
 #define SAFE_LIST_INSERT_BEFORE() \
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s *a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
+"   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"\
 "\n"\
 "   unsigned new_idx;\n"\
 "\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
-"      new_idx = used++;\n"\
+"      new_idx = this->used++;\n"\
 "   }\n"\
 "\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
+"   %s_element *idx_element = this->data + a_idx;\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
 "\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = a_idx;\n"\
-"   new_element.prev_idx = idx_element.prev_idx;\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = a_idx;\n"\
+"   new_element->prev_idx = idx_element->prev_idx;\n"\
 "\n"\
-"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
+"   if (idx_element->prev_idx != c_idx_not_exist) {\n"\
+"      this->data[idx_element->prev_idx].next_idx = new_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      first_idx = new_idx;\n"\
+"      this->first_idx = new_idx;\n"\
 "   }\n"\
 "\n"\
-"   count++;\n"\
-"   idx_element.prev_idx = new_idx;\n"\
+"   this->count++;\n"\
+"   idx_element->prev_idx = new_idx;\n"\
 "\n"\
-"   new_element.object = a_value;\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"   new_element->object = a_value;\n"\
+);\
+   }\
+   else {\
+printf(\
+"   %s_copy(&new_element->object,a_value);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "\n"\
 "   return new_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+);\
 }
 
 #define SAFE_LIST_INSERT_AFTER() \
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s *a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
+"   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"\
 "\n"\
 "   unsigned new_idx;\n"\
 "\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "      }\n"\
 "\n"\
-"      new_idx = used++;\n"\
+"      new_idx = this->used++;\n"\
 "   }\n"\
 "\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
+"   %s_element *idx_element = this->data + a_idx;\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
 "\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = idx_element.next_idx;\n"\
-"   new_element.prev_idx = a_idx;\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = idx_element->next_idx;\n"\
+"   new_element->prev_idx = a_idx;\n"\
 "\n"\
-"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
+"   if (idx_element->next_idx != c_idx_not_exist) {\n"\
+"      this->data[idx_element->next_idx].prev_idx = new_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      last_idx = new_idx;\n"\
+"      this->last_idx = new_idx;\n"\
 "   }\n"\
 "\n"\
-"   count++;\n"\
-"   idx_element.next_idx = new_idx;\n"\
+"   this->count++;\n"\
+"   idx_element->next_idx = new_idx;\n"\
 "\n"\
-"   new_element.object = a_value;\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"   new_element->object = a_value;\n"\
+);\
+   }\
+   else {\
+printf(\
+"   %s_copy(&new_element->object,a_value);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "\n"\
 "   return new_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+);\
 }
 
 #define SAFE_LIST_REMOVE() \
 {\
 printf(\
-"inline void %s::remove(unsigned a_idx)\n"\
+"inline void %s_remove(%s *this,unsigned a_idx)\n"\
 "{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
+"   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"\
 "\n"\
-"   %s_element &rm_element = data[a_idx];\n"\
+"   %s_element *rm_element = this->data + a_idx;\n"\
 "\n"\
-"   if (rm_element.next_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"\
+"   if (rm_element->next_idx != c_idx_not_exist) {\n"\
+"      this->data[rm_element->next_idx].prev_idx = rm_element->prev_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      last_idx = rm_element.prev_idx;\n"\
+"      this->last_idx = rm_element->prev_idx;\n"\
 "   }\n"\
 "\n"\
-"   if (rm_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"\
+"   if (rm_element->prev_idx != c_idx_not_exist) {\n"\
+"      this->data[rm_element->prev_idx].next_idx = rm_element->next_idx;\n"\
 "   }\n"\
 "   else {\n"\
-"      first_idx = rm_element.next_idx;\n"\
+"      this->first_idx = rm_element->next_idx;\n"\
 "   }\n"\
 "\n"\
-"   rm_element.valid = false;\n"\
-"   rm_element.next_idx = free_idx;\n"\
+"   rm_element->valid = 0;\n"\
+"   rm_element->next_idx = this->free_idx;\n"\
 "\n"\
-"   count--;\n"\
-"   free_idx = a_idx;\n"\
+"   this->count--;\n"\
+"   this->free_idx = a_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_NEXT_IDX() \
 {\
 printf(\
-"inline unsigned %s::next_idx(unsigned a_idx)\n"\
+"inline unsigned %s_next_idx(%s *this,unsigned a_idx)\n"\
 "{/*{{{*/\n"\
-"   debug_assert(data[a_idx].valid);\n"\
-"   return data[a_idx].next_idx;\n"\
+"   debug_assert(this->data[a_idx].valid);\n"\
+"   return this->data[a_idx].next_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_PREV_IDX() \
 {\
 printf(\
-"inline unsigned %s::prev_idx(unsigned a_idx)\n"\
+"inline unsigned %s_prev_idx(%s *this,unsigned a_idx)\n"\
 "{/*{{{*/\n"\
-"   debug_assert(data[a_idx].valid);\n"\
-"   return data[a_idx].prev_idx;\n"\
+"   debug_assert(this->data[a_idx].valid);\n"\
+"   return this->data[a_idx].prev_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
 #define SAFE_LIST_COPY_RESIZE() \
 {\
 printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
+"void %s_copy_resize(%s *this,unsigned a_size)\n"\
 "{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
+"   debug_assert(a_size >= this->used);\n"\
 "\n"\
 "   %s_element *n_data;\n"\
 "\n"\
@@ -10740,48 +10783,48 @@ printf(\
 "   }\n"\
 "   else {\n"\
 "      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (TYPE_NUMBER & c_type_dynamic) {\
 printf(\
 "\n"\
-"      if (a_size > used) {\n"\
-"         %s_element *ptr = n_data + used;\n"\
+"      if (a_size > this->used) {\n"\
+"         %s_element *ptr = n_data + this->used;\n"\
 "         %s_element *ptr_end = n_data + a_size;\n"\
 "\n"\
 "         do {\n"\
-"            ptr->object.init();\n"\
+"            %s_init(&ptr->object);\n"\
 "         } while(++ptr < ptr_end);\n"\
 "      }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "   }\n"\
 "\n"\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s_element));\n"\
+"   if (this->used != 0) {\n"\
+"      memcpy(n_data,this->data,this->used*sizeof(%s_element));\n"\
 "   }\n"\
 ,IM_STRUCT_NAME);\
    if (TYPE_NUMBER & c_type_dynamic) {\
 printf(\
 "\n"\
-"   if (size > used) {\n"\
-"      %s_element *ptr = data + used;\n"\
-"      %s_element *ptr_end = data + size;\n"\
+"   if (this->size > this->used) {\n"\
+"      %s_element *ptr = this->data + this->used;\n"\
+"      %s_element *ptr_end = this->data + this->size;\n"\
 "\n"\
 "      do {\n"\
-"         ptr->object.clear();\n"\
+"         %s_clear(&ptr->object);\n"\
 "      } while(++ptr < ptr_end);\n"\
 "   }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
+"   if (this->size != 0) {\n"\
+"      cfree(this->data);\n"\
 "   }\n"\
 "\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
+"   this->data = n_data;\n"\
+"   this->size = a_size;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -10791,84 +10834,104 @@ printf(\
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"unsigned %s_get_idx(%s *this,%s a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
+"unsigned %s_get_idx(%s *this,%s *a_value)\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"\
+"   if (this->first_idx == c_idx_not_exist) return c_idx_not_exist;\n"\
 "\n"\
-"   unsigned idx = first_idx;\n"\
+"   unsigned idx = this->first_idx;\n"\
 "   do {\n"\
-"      %s_element &element = data[idx];\n"\
+"      %s_element *element = this->data + idx;\n"\
 "\n"\
-"      if (element.object == a_value) {\n"\
+,IM_STRUCT_NAME);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"      if (element->object == a_value) {\n"\
+);\
+   }\
+   else {\
+printf(\
+"      if (%s_compare(&element->object,a_value)) {\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "         return idx;\n"\
 "      }\n"\
 "\n"\
-"      idx = element.next_idx;\n"\
+"      idx = element->next_idx;\n"\
 "   } while(idx != c_idx_not_exist);\n"\
 "\n"\
 "   return c_idx_not_exist;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+);\
 }
 
 #define SAFE_LIST_OPERATOR_EQUAL() \
 {\
-   if (TYPE_NUMBER & c_type_dynamic) {\
+   if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"%s &%s::operator=(%s &a_src)\n"\
+"inline void %s_copy(%s *this,%s *a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
+"void %s_copy(%s *this,%s *a_src)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    }\
 printf(\
 "{/*{{{*/\n"\
-"   clear();\n"\
+"   %s_clear(this);\n"\
 "\n"\
-"   if (a_src.used == 0) return *this;\n"\
+"   if (a_src->used == 0) return;\n"\
 "\n"\
-"   copy_resize(a_src.used);\n"\
-);\
+"   %s_copy_resize(this,a_src->used);\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (!(TYPE_NUMBER & c_type_dynamic)) {\
 printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"\
+"   memcpy(this->data,a_src->data,a_src->used*sizeof(%s_element));\n"\
 ,IM_STRUCT_NAME);\
    }\
    else {\
 printf(\
 "\n"\
-"   %s_element *ptr = data;\n"\
-"   %s_element *s_ptr = a_src.data;\n"\
-"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"\
+"   %s_element *ptr = this->data;\n"\
+"   %s_element *s_ptr = a_src->data;\n"\
+"   %s_element *s_ptr_end = s_ptr + a_src->used;\n"\
 "\n"\
 "   do {\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
 "      ptr->object = s_ptr->object;\n"\
+);\
+   }\
+   else {\
+printf(\
+"      %s_copy(&ptr->object,&s_ptr->object);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
 "      ptr->valid = s_ptr->valid;\n"\
 "      ptr->next_idx = s_ptr->next_idx;\n"\
 "      ptr->prev_idx = s_ptr->prev_idx;\n"\
 "   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+);\
    }\
 printf(\
 "\n"\
-"   used = a_src.used;\n"\
-"   count = a_src.count;\n"\
-"   free_idx = a_src.free_idx;\n"\
-"   first_idx = a_src.first_idx;\n"\
-"   last_idx = a_src.last_idx;\n"\
-"\n"\
-"   return *this;\n"\
+"   this->used = a_src->used;\n"\
+"   this->count = a_src->count;\n"\
+"   this->free_idx = a_src->free_idx;\n"\
+"   this->first_idx = a_src->first_idx;\n"\
+"   this->last_idx = a_src->last_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -10877,40 +10940,51 @@ printf(\
 #define SAFE_LIST_OPERATOR_DOUBLE_EQUAL() \
 {\
 printf(\
-"bool %s::operator==(%s &a_second)\n"\
+"int %s_compare(%s *this,%s *a_second)\n"\
 "{/*{{{*/\n"\
-"   if (count != a_second.count) {\n"\
-"      return false;\n"\
+"   if (this->count != a_second->count) {\n"\
+"      return 0;\n"\
 "   }\n"\
 "\n"\
-"   if (first_idx == c_idx_not_exist) {\n"\
-"      return a_second.first_idx == c_idx_not_exist;\n"\
+"   if (this->first_idx == c_idx_not_exist) {\n"\
+"      return a_second->first_idx == c_idx_not_exist;\n"\
 "   }\n"\
 "\n"\
-"   if (a_second.first_idx == c_idx_not_exist) {\n"\
-"      return false;\n"\
+"   if (a_second->first_idx == c_idx_not_exist) {\n"\
+"      return 0;\n"\
 "   }\n"\
 "\n"\
-"   unsigned idx = first_idx;\n"\
-"   unsigned s_idx = a_second.first_idx;\n"\
+"   unsigned idx = this->first_idx;\n"\
+"   unsigned s_idx = a_second->first_idx;\n"\
 "\n"\
 "   do {\n"\
-"      %s_element &element = data[idx];\n"\
-"      %s_element &s_element = a_second.data[s_idx];\n"\
+"      %s_element *element = this->data + idx;\n"\
+"      %s_element *s_element = a_second->data + s_idx;\n"\
 "\n"\
-"      if (!(element.object == s_element.object)) {\n"\
-"         return false;\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"      if (element->object != s_element->object) {\n"\
+);\
+   }\
+   else {\
+printf(\
+"      if (!%s_compare(&element->object,&s_element->object)) {\n"\
+,TYPE_NAME);\
+   }\
+printf(\
+"         return 0;\n"\
 "      }\n"\
 "\n"\
-"      idx = element.next_idx;\n"\
-"      s_idx = s_element.next_idx;\n"\
+"      idx = element->next_idx;\n"\
+"      s_idx = s_element->next_idx;\n"\
 "\n"\
 "   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);\n"\
 "\n"\
 "   return idx == s_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+);\
 }
 
 void processor_s::generate_safe_list_type()
@@ -11001,36 +11075,28 @@ void processor_s::generate_safe_list_type()
 printf(
 "// struct %s definition\n"
 "\n"
-,STRUCT_NAME);
+"typedef struct %s_element %s_element;\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 
-   if (abbs.used > 1) {
-      unsigned idx = 1;
-      do {
+    unsigned idx = 0;
+    do {
 printf(
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
-      } while(++idx < abbs.used);
+    } while(++idx < abbs.used);
 printf(
 "\n"
 );
-   }
 
 printf(
-"/*!\n"
-" * \\brief __GEN element of list of type %s\n"
-" */\n"
-"\n"
 "struct %s_element\n"
 "{\n"
 "   %s object;\n"
-"   bool valid;\n"
+"   char valid;\n"
 "   unsigned next_idx;\n"
 "   unsigned prev_idx;\n"
 "};\n"
 "\n"
-"/*!\n"
-" * \\brief __GEN list of type %s\n"
-" */\n"
 "struct %s\n"
 "{\n"
 "   unsigned size; //!< actual size of allocated space (element count)\n"
@@ -11040,242 +11106,114 @@ printf(
 "   unsigned free_idx; //!< index of first free element\n"
 "   unsigned first_idx; //!< index of first element\n"
 "   unsigned last_idx; //!< index of last element\n"
+"};\n"
 "\n"
-,TYPE_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(data_type.properties & c_type_setting_not_generate_init)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN initialize list\n"
-"    */\n"
-"   inline void init();\n"
-"\n"
-);
+"inline void %s_init(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN initialize list of requested size\n"
-"    * \\param a_size - requested size of list\n"
-"    */\n"
-"   inline void init_size(unsigned a_size);\n"
-"\n"
-);
+"inline void %s_init_size(%s *this,unsigned a_size);\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_setting_not_generate_clear)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN release memory used by list\n"
-"    */\n"
-"   inline void clear();\n"
-"\n"
-);
+"inline void %s_clear(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
       }
    }
    else {
       if (!(data_type.properties & c_type_setting_not_generate_clear)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN release memory used by list\n"
-"    */\n"
-"   void clear();\n"
-"\n"
-);
+"void %s_clear(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
       }
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN flush list memory usage\n"
-"    */\n"
-"   inline void flush();\n"
-"\n"
-);
+"inline void %s_flush(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_flushable)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN flush list memory usage, recursive on elements\n"
-"    */\n"
-"   inline void flush_all();\n"
-"\n"
-);
+"inline void %s_flush_all(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 printf(
-"   /*!\n"
-"    * \\brief __GEN flush list memory usage, recursive on elements\n"
-"    */\n"
-"   void flush_all();\n"
-"\n"
-);
+"void %s_flush_all(%s *this);\n"
+,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(data_type.properties & c_type_setting_not_generate_swap)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN swap members of list with another list\n"
-"    * \\param a_second - reference to another list\n"
-"    */\n"
-"   inline void swap(%s &a_second);\n"
-"\n"
-,STRUCT_NAME);
+"inline void %s_swap(%s *this,%s *a_second);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN select element of list\n"
-"    * \\param a_idx - index of element in list\n"
-"    * \\return reference to element of list\n"
-"    */\n"
-"   inline %s &operator[](unsigned a_idx);\n"
-"\n"
-,TYPE_NAME);
+"inline %s *%s_at(%s *this,unsigned a_idx);\n"
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN prepend element to list\n"
-"    * \\param a_value - value prepended to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned prepend(%s a_value);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN append element to list\n"
-"    * \\param a_value - value appended to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned append(%s a_value);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN insert before element to list\n"
-"    * \\param a_value - value inserted to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned insert_before(unsigned a_idx,%s a_value);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN insert after element to list\n"
-"    * \\param a_value - value inserted to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned insert_after(unsigned a_idx,%s a_value);\n"
-"\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+"inline unsigned %s_prepend(%s *this,%s a_value);\n"
+"inline unsigned %s_append(%s *this,%s a_value);\n"
+"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s a_value);\n"
+"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"   /*!\n"
-"    * \\brief __GEN prepend element to list\n"
-"    * \\param a_value - reference to value prepended to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned prepend(%s &a_value);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN append element to list\n"
-"    * \\param a_value - reference to value append to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned append(%s &a_value);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN insert before element to list\n"
-"    * \\param a_value - value inserted to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned insert_before(unsigned a_idx,%s &a_value);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN insert after element to list\n"
-"    * \\param a_value - value inserted to list\n"
-"    * \\return - position of element in list\n"
-"    */\n"
-"   inline unsigned insert_after(unsigned a_idx,%s &a_value);\n"
-"\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+"inline unsigned %s_prepend(%s *this,%s *a_value);\n"
+"inline unsigned %s_append(%s *this,%s *a_value);\n"
+"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s *a_value);\n"
+"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s *a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN remove element at index from list\n"
-"    * \\param a_idx - index of element to remove\n"
-"    */\n"
-"   inline void remove(unsigned a_idx);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN return index of next element in list\n"
-"    * \\param a_idx - index of element\n"
-"    */\n"
-"   inline unsigned next_idx(unsigned a_idx);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN return index of previous element in list\n"
-"    * \\param a_idx - index of element\n"
-"    */\n"
-"   inline unsigned prev_idx(unsigned a_idx);\n"
-"\n"
-"   /*!\n"
-"    * \\brief __GEN resize list capacity\n"
-"    * \\param a_size - desired list capacity\n"
-"    */\n"
-"   void copy_resize(unsigned a_size);\n"
-"\n"
-);
+"inline void %s_remove(%s *this,unsigned a_idx);\n"
+"inline unsigned %s_next_idx(%s *this,unsigned a_idx);\n"
+"inline unsigned %s_prev_idx(%s *this,unsigned a_idx);\n"
+"void %s_copy_resize(%s *this,unsigned a_size);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN search for index of element\n"
-"    * \\param a_value - value which index is searched\n"
-"    */\n"
-"   unsigned get_idx(%s a_value);\n"
-,TYPE_NAME);
+"unsigned %s_get_idx(%s *this,%s a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"   /*!\n"
-"    * \\brief __GEN search for index of element\n"
-"    * \\param a_value - value which index is searched\n"
-"    */\n"
-"   unsigned get_idx(%s &a_value);\n"
-,TYPE_NAME);
+"unsigned %s_get_idx(%s *this,%s *a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"   /*!\n"
-"    * \\brief __GEN copy list from another list\n"
-"    * \\param a_src - reference to another list\n"
-"    * \\return reference to this list\n"
-"    */\n"
-"   inline %s &operator=(%s &a_src);\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
+"inline void %s_copy(%s *this,%s *a_src);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {
 printf(
-"   /*!\n"
-"    * \\brief __GEN copy list from another list\n"
-"    * \\param a_src - reference to another list\n"
-"    * \\return reference to this list\n"
-"    */\n"
-"   %s &operator=(%s &a_src);\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
+"void %s_copy(%s *this,%s *a_src);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
 printf(
-"   /*!\n"
-"    * \\brief __GEN compare list with another list\n"
-"    * \\param a_second - reference to another list\n"
-"    * \\return result of comparision\n"
-"    */\n"
-"   bool operator==(%s &a_second);\n"
-"\n"
-,STRUCT_NAME);
+"int %s_compare(%s *this,%s *a_second);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
 printf(
-"   %s\n"
+"%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
 printf(
-"};\n"
 "\n"
 );
 }
@@ -11444,7 +11382,6 @@ SAFE_LIST_OPERATOR_EQUAL();
 SAFE_LIST_OPERATOR_DOUBLE_EQUAL();
 
 }
-
 
 
 // FIXME TODO comment
