@@ -3086,6 +3086,7 @@ bool process_s::parse_code(string_s &a_code)
          fprintf(stderr,
 "ERROR: Cannot find proper parse action\n"
 "SOURCE CODE: %s\n",a_code.data);
+         return false;
       }
 
       // - SHIFT action -
