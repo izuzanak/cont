@@ -147,7 +147,7 @@ printf(\
 "inline %s *%s_at(%s *this,unsigned a_idx)\n"\
 "{/*{{{*/\n"\
 "   debug_assert(a_idx < this->used);\n"\
-"   return &(this->data + a_idx)->object;\n"\
+"   return &this->data[a_idx].object;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
