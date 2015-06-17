@@ -9,12 +9,12 @@ all: base
 # -- LINKING --
 
 base: p.base.o
-	$(CPP) $(DEFS) $(OPT) $^ -o base -Wall -fno-strict-aliasing $(LIBS)
+	$(CPP) $(DEFS) $(OPT) $^ -o base -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.base.o: p.base.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.base.o -Wall -fno-strict-aliasing
+	$(CPP) $(DEFS) $(OPT) -c $^ -o p.base.o -Wall
 
 # -- PROCESS --
 

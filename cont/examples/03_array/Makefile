@@ -9,12 +9,12 @@ all: array
 # -- LINKING --
 
 array: p.array.o
-	$(CPP) $(DEFS) $(OPT) $^ -o array -Wall -fno-strict-aliasing $(LIBS)
+	$(CPP) $(DEFS) $(OPT) $^ -o array -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.array.o: p.array.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.array.o -Wall -fno-strict-aliasing
+	$(CPP) $(DEFS) $(OPT) -c $^ -o p.array.o -Wall
 
 # -- PROCESS --
 

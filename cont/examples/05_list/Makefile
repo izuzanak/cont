@@ -9,12 +9,12 @@ all: list
 # -- LINKING --
 
 list: p.list.o
-	$(CPP) $(DEFS) $(OPT) $^ -o list -Wall -fno-strict-aliasing $(LIBS)
+	$(CPP) $(DEFS) $(OPT) $^ -o list -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.list.o: p.list.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.list.o -Wall -fno-strict-aliasing
+	$(CPP) $(DEFS) $(OPT) -c $^ -o p.list.o -Wall
 
 # -- PROCESS --
 

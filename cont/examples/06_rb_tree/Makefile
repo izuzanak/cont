@@ -9,12 +9,12 @@ all: rb_tree
 # -- LINKING --
 
 rb_tree: p.rb_tree.o
-	$(CPP) $(DEFS) $(OPT) $^ -o rb_tree -Wall -fno-strict-aliasing $(LIBS)
+	$(CPP) $(DEFS) $(OPT) $^ -o rb_tree -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.rb_tree.o: p.rb_tree.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.rb_tree.o -Wall -fno-strict-aliasing
+	$(CPP) $(DEFS) $(OPT) -c $^ -o p.rb_tree.o -Wall
 
 # -- PROCESS --
 
