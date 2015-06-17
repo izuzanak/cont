@@ -5606,11 +5606,12 @@ printf(\
 "{/*{{{*/\n"\
 "   debug_assert(this->used > 0);\n"\
 "\n"\
-"   if (this->begin + (this->used - 1) >= this->size) {\n"\
-"      return this->data + this->begin + (this->used - 1) - this->size;\n"\
+"   unsigned last_idx = this->begin + (this->used - 1);\n"\
+"   if (last_idx >= this->size) {\n"\
+"      return this->data + last_idx - this->size;\n"\
 "   }\n"\
 "   else {\n"\
-"      return this->data + this->begin + (this->used - 1);\n"\
+"      return this->data + last_idx;\n"\
 "   }\n"\
 "}/*}}}*/\n"\
 "\n"\
