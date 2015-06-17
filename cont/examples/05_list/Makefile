@@ -2,24 +2,24 @@
 LIBS =
 DEFS = -D_REENTRANT
 OPT = -O2
-CPP = g++
+CPP = gcc
 
 all: list
 
 # -- LINKING --
 
 list: p.list.o
-	$(CPP) $(DEFS) $(OPT) $^ -o list -Wall -fno-strict-aliasing $(LIBS)
+	$(CPP) $(DEFS) $(OPT) $^ -o list -Wall $(LIBS)
 
 # -- COMPILE --
 
-p.list.o: p.list.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.list.o -Wall -fno-strict-aliasing
+p.list.o: p.list.c
+	$(CPP) $(DEFS) $(OPT) -c $^ -o p.list.o -Wall
 
 # -- PROCESS --
 
-p.list.cc: list.h list.cc
-	process list.cc ../* > p.list.cc
+p.list.c: list.h list.c
+	process_c list.c ../* > p.list.c
 
 clean:
 	rm -f p.* *.o

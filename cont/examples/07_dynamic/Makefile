@@ -2,24 +2,24 @@
 LIBS =
 DEFS = -D_REENTRANT
 OPT = -g
-CPP = g++
+CPP = gcc
 
 all: dynamic
 
 # -- LINKING --
 
 dynamic: p.dynamic.o
-	$(CPP) $(DEFS) $(OPT) $^ -o dynamic -Wall -fno-strict-aliasing $(LIBS)
+	$(CPP) $(DEFS) $(OPT) $^ -o dynamic -Wall $(LIBS)
 
 # -- COMPILE --
 
-p.dynamic.o: p.dynamic.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.dynamic.o -Wall -fno-strict-aliasing
+p.dynamic.o: p.dynamic.c
+	$(CPP) $(DEFS) $(OPT) -c $^ -o p.dynamic.o -Wall
 
 # -- PROCESS --
 
-p.dynamic.cc: dynamic.h dynamic.cc
-	process dynamic.cc ../* > p.dynamic.cc
+p.dynamic.c: dynamic.h dynamic.c
+	process_c dynamic.c ../* > p.dynamic.c
 
 clean:
 	rm -f p.* *.o

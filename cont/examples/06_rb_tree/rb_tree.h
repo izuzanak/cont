@@ -34,10 +34,10 @@ include "struct.h"
    inlines rec_rb_tree_s
 @end
 
-inline int rec_rb_tree_s::__compare_value(record_s &a_first,record_s &a_second)
+inline int rec_rb_tree_s___compare_value(rec_rb_tree_s *this,record_s *a_first,record_s *a_second)
 {
-  unsigned &fi = a_first.index;
-  unsigned &si = a_second.index;
+  register unsigned fi = a_first->index;
+  register unsigned si = a_second->index;
 
   return fi < si ? -1 : fi > si ? 1 : 0;
 }
@@ -46,7 +46,7 @@ inline int rec_rb_tree_s::__compare_value(record_s &a_first,record_s &a_second)
  * definition of global methods
  */
 
-void print_tree(rec_rb_tree_s &rec_tree,const char *name);
+void print_tree(rec_rb_tree_s *rec_tree,const char *name);
 
 #endif
 

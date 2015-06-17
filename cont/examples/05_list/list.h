@@ -28,7 +28,7 @@ include "struct.h"
  * definition of global methods
  */
 
-void print_list(rec_list_s &rec_list,const char *name);
+void print_list(rec_list_s *rec_list,const char *name);
 
 #endif
 

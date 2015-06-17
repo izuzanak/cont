@@ -18,7 +18,7 @@ const unsigned c_array_add = 64;
 const unsigned c_idx_not_exist = 0xffffffff;
 
 // - logarithm of two (needed by red-black tree container) -
-const float c_log_of_2 = logf(2.0f);
+const float c_log_of_2 = 0.6931471805599453;
 
 /*
  * definition of generated structures

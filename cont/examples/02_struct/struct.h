@@ -20,8 +20,8 @@ unsigned:value
 
 additions
 {
-  inline unsigned get_index();
-  inline unsigned get_value();
+inline unsigned record_s_get_index();
+inline unsigned record_s_get_value();
 }
 
 record_s;
@@ -36,14 +36,14 @@ record_s;
 inlines record_s
 @end
 
-inline unsigned record_s::get_index()
+inline unsigned record_s_get_index(record_s *this)
 {
-  return index;
+  return this->index;
 }
 
-inline unsigned record_s::get_value()
+inline unsigned record_s_get_value(record_s *this)
 {
-  return value;
+  return this->value;
 }
 
 /*

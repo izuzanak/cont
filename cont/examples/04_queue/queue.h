@@ -28,7 +28,7 @@ include "struct.h"
  * definition of global methods
  */
 
-void print_queue(rec_queue_s &rec_queue,const char *name);
+void print_queue(rec_queue_s *rec_queue,const char *name);
 
 #endif
 
