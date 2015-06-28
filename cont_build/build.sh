@@ -4,7 +4,7 @@
 python mf_gen.py > Makefile
 
 # - compile container generator -
-make -s -j 3
+make -s -j $(nproc)
 
 # - rename executable -
 cp cont process
