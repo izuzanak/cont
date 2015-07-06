@@ -14164,14 +14164,22 @@ bool processor_s::find_include_file(const char *a_file, string_s &a_file_path)
   string_s *d_ptr_end = d_ptr + include_dirs.used;
   do {
     
-    // - create comlete file path -
+    // - if include directory is empty -
+    if (d_ptr->size < 2)
+    {
+      file_path.set(strlen(a_file),a_file);
+    }
+    else
+    {
+      // - create comlete file path -
 #if SYSTEM_TYPE == SYSTEM_TYPE_UNIX
-    file_path.setf(d_ptr->data[d_ptr->size - 2] == '/' ? "%s%s" : "%s/%s", d_ptr->data, a_file);
+      file_path.setf(d_ptr->data[d_ptr->size - 2] == '/' ? "%s%s" : "%s/%s", d_ptr->data, a_file);
 #elif SYSTEM_TYPE == SYSTEM_TYPE_WINDOWS
-    file_path.setf(d_ptr->data[d_ptr->size - 2] == '\\' ? "%s%s" : "%s\\%s", d_ptr->data, a_file);
+      file_path.setf(d_ptr->data[d_ptr->size - 2] == '\\' ? "%s%s" : "%s\\%s", d_ptr->data, a_file);
 #else
-    cassert(0);
+      cassert(0);
 #endif
+    }
 
     // - brute file existence test -
     FILE *f = fopen(file_path.data,"rb");
@@ -14237,7 +14245,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 
   include_dirs.swap(a_include_dirs);
   include_dirs.push_blank();
-  include_dirs.last().set(1, ".");
+  include_dirs.last().set(0,"");
 
    fprintf(out_file,
 "\n"
