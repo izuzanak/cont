@@ -357,12 +357,10 @@ inline void string_s_create(string_s *this,unsigned a_length)
 inline void string_s_set(string_s *this,unsigned a_length,const char *a_data)
 {/*{{{*/
   string_s_clear(this);
-  this->data = (char *)cmalloc((a_length + 1)*sizeof(char));
+  if (a_length == 0) return;
 
-  if (a_length != 0)
-  {
-    memcpy(this->data,a_data,a_length*sizeof(char));
-  }
+  this->data = (char *)cmalloc((a_length + 1)*sizeof(char));
+  memcpy(this->data,a_data,a_length*sizeof(char));
 
   this->data[a_length] = '\0';
   this->size = a_length + 1;
