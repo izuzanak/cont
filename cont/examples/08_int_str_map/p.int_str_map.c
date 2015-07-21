@@ -348,6 +348,8 @@ inline void string_s_clear(string_s *this)
 inline void string_s_create(string_s *this,unsigned a_length)
 {/*{{{*/
   string_s_clear(this);
+  if (a_length == 0) return;
+
   this->data = (char *)cmalloc((a_length + 1)*sizeof(char));
 
   this->data[a_length] = '\0';
