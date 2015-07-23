@@ -1456,7 +1456,7 @@ printf(\
 "      unsigned node_idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"\
 "      unsigned s_node_idx = %s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);\n"\
 "      do {\n"\
-"         if (%s___compare_value(this,&this->data[node_idx].object,&a_second->data[s_node_idx].object) != 0) {\n"\
+"         if (!%s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object)) {\n"\
 "            return 0;\n"\
 "         }\n"\
 "\n"\
@@ -1470,7 +1470,7 @@ printf(\
 "   }\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (VAR_NAMES_CNT > 0) {\
       if (TYPE_NUMBERS(1) & c_type_basic) {\
 printf(\

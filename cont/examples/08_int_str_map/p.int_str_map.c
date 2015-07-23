@@ -1614,7 +1614,7 @@ int int_string_map_s_compare(int_string_map_s *this,int_string_map_s *a_second)
       unsigned node_idx = int_string_map_s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);
       unsigned s_node_idx = int_string_map_s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);
       do {
-         if (int_string_map_s___compare_value(this,&this->data[node_idx].object,&a_second->data[s_node_idx].object) != 0) {
+         if (!int_string_s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object)) {
             return 0;
          }
 
