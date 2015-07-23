@@ -1316,7 +1316,7 @@ printf(\
 "      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
 "      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"\
 "      do {\n"\
-"         if (__compare_value(data[node_idx].object,a_second.data[s_node_idx].object) != 0) {\n"\
+"         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"\
 "            return false;\n"\
 "         }\n"\
 "\n"\
