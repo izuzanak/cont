@@ -2132,7 +2132,7 @@ inline string_s &string_array_s::last()
 extern const char *c_begin_str;
 extern const char *c_end_str;
 
-const unsigned c_end_str_len = strlen(c_end_str);
+extern const unsigned c_end_str_len;
 
 // - data type settings -
 enum {

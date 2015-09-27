@@ -12,6 +12,8 @@
 const char *c_begin_str = "@""begin";
 const char *c_end_str = "@""end";
 
+const unsigned c_end_str_len = strlen(c_end_str);
+
 // - names of basic data types -
 const char *c_basic_types[c_basic_type_cnt] = {
    "bb",

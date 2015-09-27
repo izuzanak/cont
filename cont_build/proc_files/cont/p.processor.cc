@@ -2128,7 +2128,7 @@ inline string_s &string_array_s::last()
 extern const char *c_begin_str;
 extern const char *c_end_str;
 
-const unsigned c_end_str_len = strlen(c_end_str);
+extern const unsigned c_end_str_len;
 
 // - data type settings -
 enum {
@@ -3785,6 +3785,8 @@ inline bool process_s::operator==(process_s &a_second)
 
 const char *c_begin_str = "@""begin";
 const char *c_end_str = "@""end";
+
+const unsigned c_end_str_len = strlen(c_end_str);
 
 // - names of basic data types -
 const char *c_basic_types[c_basic_type_cnt] = {
