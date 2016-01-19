@@ -149,53 +149,7 @@ unsigned string_s::utf32_to_utf8(unsigned *a_src,char *a_trg,unsigned a_size)
   return t_ptr - (unsigned char *)a_trg;
 }/*}}}*/
 
-bool string_s::read_line_from_stream(FILE *stream)
-{/*{{{*/
-  clear();
-
-  const unsigned c_buffer_size = 256;
-  char buffer[c_buffer_size];
-
-  if (fgets(buffer,c_buffer_size,stream) == NULL)
-  {
-    return false;
-  }
-
-  unsigned b_str_size = strlen(buffer) + 1;
-  set(b_str_size - 1,buffer);
-
-  if (buffer[b_str_size - 2] == '\n')
-  {
-    return true;
-  }
-
-  string_s tmp_str;
-  tmp_str.init();
-
-  do
-  {
-    if (fgets(buffer,c_buffer_size,stream) == NULL)
-    {
-      break;
-    }
-
-    unsigned b_str_size = strlen(buffer) + 1;
-    tmp_str.conc_set(size - 1,data,b_str_size - 1,buffer);
-    swap(tmp_str);
-
-    if (buffer[b_str_size - 2] == '\n')
-    {
-      break;
-    }
-  }
-  while(1);
-
-  tmp_str.clear();
-
-  return true;
-}/*}}}*/
-
-void string_s::setf(const char *format,...)
+void string_s::setf(const char *a_format,...)
 {/*{{{*/
   clear();
 
@@ -208,13 +162,13 @@ void string_s::setf(const char *format,...)
   {
     data = (char *)cmalloc(alloc_size*sizeof(char));
 
-    va_start(ap,format);
+    va_start(ap,a_format);
 
 #if SYSTEM_TYPE == SYSTEM_TYPE_DSP
     // DSP FIXME
-    int cnt = vsprintf(data,format,ap);
+    int cnt = vsprintf(data,a_format,ap);
 #else
-    int cnt = vsnprintf(data,alloc_size,format,ap);
+    int cnt = vsnprintf(data,alloc_size,a_format,ap);
 #endif
     va_end(ap);
 
@@ -231,7 +185,7 @@ void string_s::setf(const char *format,...)
   while(1);
 }/*}}}*/
 
-void string_s::concf(const char *format,...)
+void string_s::concf(const char *a_format,...)
 {/*{{{*/
   const int init_size = 256;
   int alloc_size = init_size;
@@ -246,13 +200,13 @@ void string_s::concf(const char *format,...)
   {
     fmt_str.data = (char *)cmalloc(alloc_size*sizeof(char));
 
-    va_start(ap,format);
+    va_start(ap,a_format);
 
 #if SYSTEM_TYPE == SYSTEM_TYPE_DSP
     // DSP FIXME
-    int cnt = vsprintf(fmt_str.data,format,ap);
+    int cnt = vsprintf(fmt_str.data,a_format,ap);
 #else
-    int cnt = vsnprintf(fmt_str.data,alloc_size,format,ap);
+    int cnt = vsnprintf(fmt_str.data,alloc_size,a_format,ap);
 #endif
     va_end(ap);
 
@@ -325,6 +279,7 @@ unsigned string_s::get_print_size_between(unsigned f_idx,unsigned s_idx)
   unsigned utf32_data[char_cnt];
 
   int utf32_cnt = utf8_to_utf32(data + f_idx,utf32_data,char_cnt);
+  if (utf32_cnt < 0) return 0;
 
   unsigned *c_ptr = utf32_data;
   unsigned *c_ptr_end = c_ptr + utf32_cnt;
@@ -387,14 +342,15 @@ unsigned string_s::get_character_line_end(unsigned c_idx)
   char *e_ptr = data + c_idx;
   char *e_ptr_end = data + size - 1;
 
-  do
+  while(e_ptr < e_ptr_end)
   {
     if (*e_ptr == '\n')
     {
       break;
     }
+
+    ++e_ptr;
   }
-  while(++e_ptr < e_ptr_end);
 
   return e_ptr - data;
 }/*}}}*/

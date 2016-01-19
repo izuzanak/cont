@@ -1651,12 +1651,6 @@ struct string_s
   inline unsigned print();
 
   /*!
-   * \brief load string from given stream
-   * \param a_stream - stream from which is string loaded
-   */
-  bool read_line_from_stream(FILE *a_stream);
-
-  /*!
    * \brief load string from text file
    * \param a_file - name of file containing string text
    * \return true if string is successfully loaded
@@ -1678,7 +1672,7 @@ struct string_s
   void setf(const char *a_format,...);
 
   /*!
-   * \brief conctenate string of desired format
+   * \brief concatenate string of desired format
    * \param a_format - format as in printf functions family
    * \param ... - list of parameters demanded in format
    */
