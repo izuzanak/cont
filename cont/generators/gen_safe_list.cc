@@ -416,6 +416,177 @@ printf(\
 );\
 }
 
+#define SAFE_LIST_PREPEND_BLANK() \
+{\
+printf(\
+"inline unsigned %s_prepend_blank(%s *this)\n"\
+"{/*{{{*/\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = this->used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
+"\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = this->first_idx;\n"\
+"   new_element->prev_idx = c_idx_not_exist;\n"\
+"\n"\
+"   if (this->first_idx != c_idx_not_exist) {\n"\
+"      this->data[this->first_idx].prev_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      this->last_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   this->count++;\n"\
+"   this->first_idx = new_idx;\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
+#define SAFE_LIST_APPEND_BLANK() \
+{\
+printf(\
+"inline unsigned %s_append_blank(%s *this)\n"\
+"{/*{{{*/\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = this->used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
+"\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = c_idx_not_exist;\n"\
+"   new_element->prev_idx = this->last_idx;\n"\
+"\n"\
+"   if (this->last_idx != c_idx_not_exist) {\n"\
+"      this->data[this->last_idx].next_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      this->first_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   this->count++;\n"\
+"   this->last_idx = new_idx;\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
+#define SAFE_LIST_INSERT_BLANK_BEFORE() \
+{\
+printf(\
+"inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"\
+"\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = this->used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element *idx_element = this->data + a_idx;\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
+"\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = a_idx;\n"\
+"   new_element->prev_idx = idx_element->prev_idx;\n"\
+"\n"\
+"   if (idx_element->prev_idx != c_idx_not_exist) {\n"\
+"      this->data[idx_element->prev_idx].next_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      this->first_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   this->count++;\n"\
+"   idx_element->prev_idx = new_idx;\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
+#define SAFE_LIST_INSERT_BLANK_AFTER() \
+{\
+printf(\
+"inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"\
+"\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (this->free_idx != c_idx_not_exist) {\n"\
+"      new_idx = this->free_idx;\n"\
+"      this->free_idx = this->data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (this->used >= this->size) {\n"\
+"         %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = this->used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element *idx_element = this->data + a_idx;\n"\
+"   %s_element *new_element = this->data + new_idx;\n"\
+"\n"\
+"   new_element->valid = 1;\n"\
+"   new_element->next_idx = idx_element->next_idx;\n"\
+"   new_element->prev_idx = a_idx;\n"\
+"\n"\
+"   if (idx_element->next_idx != c_idx_not_exist) {\n"\
+"      this->data[idx_element->next_idx].prev_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      this->last_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   this->count++;\n"\
+"   idx_element->next_idx = new_idx;\n"\
+"\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
 #define SAFE_LIST_REMOVE() \
 {\
 printf(\
@@ -879,6 +1050,15 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 printf(
+"inline unsigned %s_prepend_blank(%s *this);\n"
+"inline unsigned %s_append_blank(%s *this);\n"
+"inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx);\n"
+"inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx);\n"
+,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME);
+printf(
 "inline void %s_remove(%s *this,unsigned a_idx);\n"
 "inline unsigned %s_next_idx(%s *this,unsigned a_idx);\n"
 "inline unsigned %s_prev_idx(%s *this,unsigned a_idx);\n"
@@ -986,6 +1166,18 @@ SAFE_LIST_INSERT_BEFORE();
 
    // - list insert_after method -
 SAFE_LIST_INSERT_AFTER();
+
+   // - list prepend_blank method -
+SAFE_LIST_PREPEND_BLANK();
+
+   // - list append_blank method -
+SAFE_LIST_APPEND_BLANK();
+
+   // - list insert_blank_before method -
+SAFE_LIST_INSERT_BLANK_BEFORE();
+
+   // - list insert_blank_after method -
+SAFE_LIST_INSERT_BLANK_AFTER();
 
    // - list remove method -
 SAFE_LIST_REMOVE();

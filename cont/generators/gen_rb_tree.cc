@@ -1,10 +1,6 @@
 
-// FIXME TODO comment
-#define RB_TREE_GENERATE_PRINT_DOT_CODE
-#define RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
-
-// FIXME TODO remove
-// s_second\.\(\<size\>\|\<used\>\|\<data\>\|\<free_idx\>\|\<root_idx\>\|\<leaf_idx\>\)
+//#define RB_TREE_GENERATE_PRINT_DOT_CODE
+//#define RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
 
 #define RB_TREE___GET_GRANDPARENT_IDX() \
 {\

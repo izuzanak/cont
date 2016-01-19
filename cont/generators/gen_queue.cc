@@ -137,12 +137,12 @@ printf(\
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline void %s_insert(%s *this,%s a_value)\n"\
+"inline unsigned %s_insert(%s *this,%s a_value)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"inline void %s_insert(%s *this,%s *a_value)\n"\
+"inline unsigned %s_insert(%s *this,%s *a_value)\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
@@ -182,7 +182,7 @@ printf(\
 printf(\
 "   }\n"\
 "\n"\
-"   this->used++;\n"\
+"   return this->used++;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -191,13 +191,13 @@ printf(\
 #define QUEUE_INSERT_BLANK() \
 {\
 printf(\
-"inline void %s_insert_blank(%s *this)\n"\
+"inline unsigned %s_insert_blank(%s *this)\n"\
 "{/*{{{*/\n"\
 "   if (this->used >= this->size) {\n"\
 "      %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   this->used++;\n"\
+"   return this->used++;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -724,16 +724,16 @@ printf(
    }
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline void %s_insert(%s *this,%s a_value);\n"
+"inline unsigned %s_insert(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline void %s_insert(%s *this,%s *a_value);\n"
+"inline unsigned %s_insert(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 printf(
-"inline void %s_insert_blank(%s *this);\n"
+"inline unsigned %s_insert_blank(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
