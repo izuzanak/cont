@@ -359,6 +359,168 @@ printf(\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
+#define LIST_PREPEND_BLANK() \
+{\
+printf(\
+"inline unsigned %s::prepend_blank()\n"\
+"{/*{{{*/\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (free_idx != c_idx_not_exist) {\n"\
+"      new_idx = free_idx;\n"\
+"      free_idx = data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (used >= size) {\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element &new_element = data[new_idx];\n"\
+"\n"\
+"   new_element.next_idx = first_idx;\n"\
+"   new_element.prev_idx = c_idx_not_exist;\n"\
+"\n"\
+"   if (first_idx != c_idx_not_exist) {\n"\
+"      data[first_idx].prev_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      last_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   first_idx = new_idx;\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
+#define LIST_APPEND_BLANK() \
+{\
+printf(\
+"inline unsigned %s::append_blank()\n"\
+"{/*{{{*/\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (free_idx != c_idx_not_exist) {\n"\
+"      new_idx = free_idx;\n"\
+"      free_idx = data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (used >= size) {\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element &new_element = data[new_idx];\n"\
+"\n"\
+"   new_element.next_idx = c_idx_not_exist;\n"\
+"   new_element.prev_idx = last_idx;\n"\
+"\n"\
+"   if (last_idx != c_idx_not_exist) {\n"\
+"      data[last_idx].next_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      first_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   last_idx = new_idx;\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
+#define LIST_INSERT_BLANK_BEFORE() \
+{\
+printf(\
+"inline unsigned %s::insert_blank_before(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   debug_assert(a_idx < used);\n"\
+"\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (free_idx != c_idx_not_exist) {\n"\
+"      new_idx = free_idx;\n"\
+"      free_idx = data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (used >= size) {\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element &idx_element = data[a_idx];\n"\
+"   %s_element &new_element = data[new_idx];\n"\
+"\n"\
+"   new_element.next_idx = a_idx;\n"\
+"   new_element.prev_idx = idx_element.prev_idx;\n"\
+"\n"\
+"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
+"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      first_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   idx_element.prev_idx = new_idx;\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
+#define LIST_INSERT_BLANK_AFTER() \
+{\
+printf(\
+"inline unsigned %s::insert_blank_after(unsigned a_idx)\n"\
+"{/*{{{*/\n"\
+"   debug_assert(a_idx < used);\n"\
+"\n"\
+"   unsigned new_idx;\n"\
+"\n"\
+"   if (free_idx != c_idx_not_exist) {\n"\
+"      new_idx = free_idx;\n"\
+"      free_idx = data[new_idx].next_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      if (used >= size) {\n"\
+"         copy_resize((size << 1) + c_array_add);\n"\
+"      }\n"\
+"\n"\
+"      new_idx = used++;\n"\
+"   }\n"\
+"\n"\
+"   %s_element &idx_element = data[a_idx];\n"\
+"   %s_element &new_element = data[new_idx];\n"\
+"\n"\
+"   new_element.next_idx = idx_element.next_idx;\n"\
+"   new_element.prev_idx = a_idx;\n"\
+"\n"\
+"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
+"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
+"   }\n"\
+"   else {\n"\
+"      last_idx = new_idx;\n"\
+"   }\n"\
+"\n"\
+"   idx_element.next_idx = new_idx;\n"\
+"\n"\
+"   return new_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+}
+
 #define LIST_REMOVE() \
 {\
 printf(\
@@ -867,6 +1029,13 @@ printf(
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 printf(
+"   inline unsigned prepend_blank();\n"
+"   inline unsigned append_blank();\n"
+"   inline unsigned insert_blank_before(unsigned a_idx);\n"
+"   inline unsigned insert_blank_after(unsigned a_idx);\n"
+"\n"
+);
+printf(
 "   /*!\n"
 "    * \\brief __GEN remove element at index from list\n"
 "    * \\param a_idx - index of element to remove\n"
@@ -1021,6 +1190,18 @@ LIST_INSERT_BEFORE();
 
    // - list insert_after method -
 LIST_INSERT_AFTER();
+
+   // - list prepend_blank method -
+LIST_PREPEND_BLANK();
+
+   // - list append_blank method -
+LIST_APPEND_BLANK();
+
+   // - list insert_blank_before method -
+LIST_INSERT_BLANK_BEFORE();
+
+   // - list insert_blank_after method -
+LIST_INSERT_BLANK_AFTER();
 
    // - list remove method -
 LIST_REMOVE();

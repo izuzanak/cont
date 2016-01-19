@@ -137,12 +137,12 @@ printf(\
 {\
    if (TYPE_NUMBER & c_type_basic) {\
 printf(\
-"inline void %s::insert(%s a_value)\n"\
+"inline unsigned %s::insert(%s a_value)\n"\
 ,IM_STRUCT_NAME,TYPE_NAME);\
    }\
    else {\
 printf(\
-"inline void %s::insert(%s &a_value)\n"\
+"inline unsigned %s::insert(%s &a_value)\n"\
 ,IM_STRUCT_NAME,TYPE_NAME);\
    }\
 printf(\
@@ -158,7 +158,7 @@ printf(\
 "      data[begin + used] = a_value;\n"\
 "   }\n"\
 "\n"\
-"   used++;\n"\
+"   return used++;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -167,13 +167,13 @@ printf(\
 #define QUEUE_INSERT_BLANK() \
 {\
 printf(\
-"inline void %s::insert_blank()\n"\
+"inline unsigned %s::insert_blank()\n"\
 "{/*{{{*/\n"\
 "   if (used >= size) {\n"\
 "      copy_resize((size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   used++;\n"\
+"   return used++;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME);\
@@ -722,8 +722,9 @@ printf(
 "   /*!\n"
 "    * \\brief __GEN insert element to end of queue\n"
 "    * \\param a_value - value inserted to end of queue\n"
+"    * \\return index of inserted element\n"
 "    */\n"
-"   inline void insert(%s a_value);\n"
+"   inline unsigned insert(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -732,16 +733,18 @@ printf(
 "   /*!\n"
 "    * \\brief __GEN insert element to end of queue\n"
 "    * \\param a_value - value inserted to end of queue\n"
+"    * \\return index of inserted element\n"
 "    */\n"
-"   inline void insert(%s &a_value);\n"
+"   inline unsigned insert(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
 printf(
 "   /*!\n"
 "    * \\brief __GEN insert blank element to the end of queue\n"
+"    * \\return index of inserted element\n"
 "    */\n"
-"   inline void insert_blank();\n"
+"   inline unsigned insert_blank();\n"
 "\n"
 "   /*!\n"
 "    * \\brief __GEN return value of next element in queue, and remove it\n"
