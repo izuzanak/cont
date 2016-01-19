@@ -3,8 +3,8 @@
 #define __UCL_STRING_H
 
 @begin
-   include "basic.h"
-   include "mem_check.h"
+include "basic.h"
+include "mem_check.h"
 @end
 
 /*
@@ -22,7 +22,7 @@ const unsigned c_tabulator_size = 8;
  */
 
 @begin
-   define string_s dynamic
+define string_s dynamic
 @end
 
 struct string_s
@@ -136,12 +136,6 @@ struct string_s
   inline unsigned print();
 
   /*!
-   * \brief load string from given stream
-   * \param a_stream - stream from which is string loaded
-   */
-  bool read_line_from_stream(FILE *a_stream);
-
-  /*!
    * \brief load string from text file
    * \param a_file - name of file containing string text
    * \return true if string is successfully loaded
@@ -163,7 +157,7 @@ struct string_s
   void setf(const char *a_format,...);
 
   /*!
-   * \brief conctenate string of desired format
+   * \brief concatenate string of desired format
    * \param a_format - format as in printf functions family
    * \param ... - list of parameters demanded in format
    */
