@@ -4067,7 +4067,7 @@ bool data_type_array_s::operator==(data_type_array_s &a_second)
 
 
 unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
-{
+{/*{{{*/
    if (used == 0) return c_idx_not_exist;
 
    data_type_s *ptr = data;
@@ -4079,7 +4079,7 @@ unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
    } while(++ptr < ptr_end);
 
    return c_idx_not_exist;
-}
+}/*}}}*/
 
 // -- abbreviation_s --
 // --- struct abbreviation_s method definition ---
@@ -5251,7 +5251,7 @@ printf(
 void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -5352,10 +5352,10 @@ ARRAY_OPERATOR_DOUBLE_EQUAL();
 void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
-   
+
    if (type_abb_idx == c_idx_not_exist) {
       fprintf(stderr,"array: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
       cassert(0);
@@ -5591,14 +5591,14 @@ printf(\
 "      copy_resize((size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   if (begin + used >= size) {\n"\
-"      data[begin + used - size] = a_value;\n"\
-"   }\n"\
-"   else {\n"\
-"      data[begin + used] = a_value;\n"\
+"   unsigned inserted_idx = begin + used++;\n"\
+"   if (inserted_idx >= size) {\n"\
+"      inserted_idx -= size;\n"\
 "   }\n"\
 "\n"\
-"   return used++;\n"\
+"   data[inserted_idx] = a_value;\n"\
+"\n"\
+"   return inserted_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -5613,7 +5613,12 @@ printf(\
 "      copy_resize((size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   return used++;\n"\
+"   unsigned inserted_idx = begin + used++;\n"\
+"   if (inserted_idx >= size) {\n"\
+"      inserted_idx -= size;\n"\
+"   }\n"\
+"\n"\
+"   return inserted_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME);\
@@ -6255,7 +6260,7 @@ printf(
 void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -6329,7 +6334,7 @@ QUEUE_OPERATOR_EQUAL();
 void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -7521,7 +7526,7 @@ printf(
 void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -7622,7 +7627,7 @@ LIST_OPERATOR_EQUAL();
 void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -7907,7 +7912,7 @@ void processor_s::generate_struct_type()
             fprintf(stderr,"struct: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-         
+
          unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
          type_idxs[tn_idx] = type_idx;
 
@@ -8008,7 +8013,7 @@ void processor_s::generate_struct_type()
             dt_type_names.push(*tn_ptr);
          } while(++tn_ptr < tn_ptr_end);
       }
-      
+
       data_type.variables.swap(variables);
 
       data_type_idx = data_types.used - 1;
@@ -8175,7 +8180,7 @@ printf(
 void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -8193,7 +8198,7 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -8240,7 +8245,7 @@ STRUCT_OPERATOR_DOUBLE_EQUAL();
 void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
 
    {
@@ -8253,7 +8258,7 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
             fprintf(stderr,"struct: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -9620,7 +9625,7 @@ printf(\
 "\n"\
 "   ui_array_s indexes;\n"\
 "   indexes.init();\n"\
-"   \n"\
+"\n"\
 "   {\n"\
 "      unsigned stack[get_descent_stack_size()];\n"\
 "      unsigned *stack_ptr = stack;\n"\
@@ -9889,7 +9894,7 @@ void processor_s::generate_rb_tree_type()
             fprintf(stderr,"rb_tree: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-         
+
          unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
          type_idxs[tn_idx] = type_idx;
 
@@ -10362,7 +10367,7 @@ printf(
 void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -10380,7 +10385,7 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -10505,7 +10510,7 @@ RB_TREE_OPERATOR_EQUAL();
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -10523,7 +10528,7 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -11815,7 +11820,7 @@ printf(
 void processor_s::generate_safe_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -11916,7 +11921,7 @@ SAFE_LIST_OPERATOR_EQUAL();
 void processor_s::generate_safe_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -13284,8 +13289,7 @@ printf(\
 printf(\
 "bool %s::operator==(%s &a_second)\n"\
 "{/*{{{*/\n"\
-"   if (count != a_second.count)\n"\
-"   {\n"\
+"   if (count != a_second.count) {\n"\
 "     return false;\n"\
 "   }\n"\
 "\n"\
@@ -13358,7 +13362,7 @@ printf(\
 "\n"\
 "   ui_array_s indexes;\n"\
 "   indexes.init();\n"\
-"   \n"\
+"\n"\
 "   {\n"\
 "      unsigned stack[get_descent_stack_size()];\n"\
 "      unsigned *stack_ptr = stack;\n"\
@@ -13627,7 +13631,7 @@ void processor_s::generate_safe_rb_tree_type()
             fprintf(stderr,"rb_tree: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-         
+
          unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
          type_idxs[tn_idx] = type_idx;
 
@@ -14103,7 +14107,7 @@ printf(
 void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -14121,7 +14125,7 @@ void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_i
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -14246,7 +14250,7 @@ SAFE_RB_TREE_OPERATOR_EQUAL();
 void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -14264,7 +14268,7 @@ void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_i
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -14612,9 +14616,9 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
    out_file = a_file;
    type_settings = 0;
 
-  include_dirs.swap(a_include_dirs);
-  include_dirs.push_blank();
-  include_dirs.last().set(0,"");
+   include_dirs.swap(a_include_dirs);
+   include_dirs.push_blank();
+   include_dirs.last().set(0,"");
 
    fprintf(out_file,
 "\n"

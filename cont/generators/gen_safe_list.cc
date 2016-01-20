@@ -1163,7 +1163,7 @@ printf(
 void processor_s::generate_safe_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -1264,7 +1264,7 @@ SAFE_LIST_OPERATOR_EQUAL();
 void processor_s::generate_safe_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 

@@ -209,7 +209,7 @@ void processor_s::generate_struct_type()
             fprintf(stderr,"struct: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-         
+
          unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
          type_idxs[tn_idx] = type_idx;
 
@@ -310,7 +310,7 @@ void processor_s::generate_struct_type()
             dt_type_names.push(*tn_ptr);
          } while(++tn_ptr < tn_ptr_end);
       }
-      
+
       data_type.variables.swap(variables);
 
       data_type_idx = data_types.used - 1;
@@ -477,7 +477,7 @@ printf(
 void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -495,7 +495,7 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -542,7 +542,7 @@ STRUCT_OPERATOR_DOUBLE_EQUAL();
 void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
 
    {
@@ -555,7 +555,7 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
             fprintf(stderr,"struct: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
             cassert(0);
          }
-         
+
       } while(++tn_idx < type_cnt);
    }
 

@@ -2190,8 +2190,7 @@ void mc_block_rb_tree_s::get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array)
 
 bool mc_block_rb_tree_s::operator==(mc_block_rb_tree_s &a_second)
 {/*{{{*/
-   if (count != a_second.count)
-   {
+   if (count != a_second.count) {
      return false;
    }
 
@@ -2236,7 +2235,7 @@ void mc_block_rb_tree_s::rehash_tree()
 
    ui_array_s indexes;
    indexes.init();
-   
+
    {
       unsigned stack[get_descent_stack_size()];
       unsigned *stack_ptr = stack;

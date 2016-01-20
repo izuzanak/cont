@@ -1337,7 +1337,7 @@ printf(\
 "\n"\
 "   ui_array_s indexes;\n"\
 "   indexes.init();\n"\
-"   \n"\
+"\n"\
 "   {\n"\
 "      unsigned stack[get_descent_stack_size()];\n"\
 "      unsigned *stack_ptr = stack;\n"\
@@ -1606,7 +1606,7 @@ void processor_s::generate_rb_tree_type()
             fprintf(stderr,"rb_tree: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-         
+
          unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
          type_idxs[tn_idx] = type_idx;
 
@@ -2079,7 +2079,7 @@ printf(
 void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -2097,7 +2097,7 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -2222,7 +2222,7 @@ RB_TREE_OPERATOR_EQUAL();
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -2240,7 +2240,7 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 

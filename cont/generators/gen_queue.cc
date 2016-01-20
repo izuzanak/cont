@@ -151,14 +151,14 @@ printf(\
 "      copy_resize((size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   if (begin + used >= size) {\n"\
-"      data[begin + used - size] = a_value;\n"\
-"   }\n"\
-"   else {\n"\
-"      data[begin + used] = a_value;\n"\
+"   unsigned inserted_idx = begin + used++;\n"\
+"   if (inserted_idx >= size) {\n"\
+"      inserted_idx -= size;\n"\
 "   }\n"\
 "\n"\
-"   return used++;\n"\
+"   data[inserted_idx] = a_value;\n"\
+"\n"\
+"   return inserted_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -173,7 +173,12 @@ printf(\
 "      copy_resize((size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   return used++;\n"\
+"   unsigned inserted_idx = begin + used++;\n"\
+"   if (inserted_idx >= size) {\n"\
+"      inserted_idx -= size;\n"\
+"   }\n"\
+"\n"\
+"   return inserted_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME);\
@@ -815,7 +820,7 @@ printf(
 void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -889,7 +894,7 @@ QUEUE_OPERATOR_EQUAL();
 void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 

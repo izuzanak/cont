@@ -125,7 +125,7 @@ const char *c_cont_postfixes[c_cont_cnt] = {
 @end
 
 unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
-{
+{/*{{{*/
    if (used == 0) return c_idx_not_exist;
 
    data_type_s *ptr = data;
@@ -137,7 +137,7 @@ unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
    } while(++ptr < ptr_end);
 
    return c_idx_not_exist;
-}
+}/*}}}*/
 
 // -- abbreviation_s --
 @begin
@@ -403,9 +403,9 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
    out_file = a_file;
    type_settings = 0;
 
-  include_dirs.swap(a_include_dirs);
-  include_dirs.push_blank();
-  include_dirs.last().set(0,"");
+   include_dirs.swap(a_include_dirs);
+   include_dirs.push_blank();
+   include_dirs.last().set(0,"");
 
    fprintf(out_file,
 "\n"
