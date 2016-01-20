@@ -235,12 +235,10 @@ printf(\
 "   else {\n"\
 "      %s_node *rp = this->data + root->parent_idx;\n"\
 "\n"\
-"      if (rp->right_idx == a_idx)\n"\
-"      {\n"\
+"      if (rp->right_idx == a_idx) {\n"\
 "         rp->right_idx = root->right_idx;\n"\
 "      }\n"\
-"      else\n"\
-"      {\n"\
+"      else {\n"\
 "         rp->left_idx = root->right_idx;\n"\
 "      }\n"\
 "\n"\
@@ -273,12 +271,10 @@ printf(\
 "   else {\n"\
 "      %s_node *rp = this->data + root->parent_idx;\n"\
 "\n"\
-"      if (rp->right_idx == a_idx)\n"\
-"      {\n"\
+"      if (rp->right_idx == a_idx) {\n"\
 "         rp->right_idx = root->left_idx;\n"\
 "      }\n"\
-"      else\n"\
-"      {\n"\
+"      else {\n"\
 "         rp->left_idx = root->left_idx;\n"\
 "      }\n"\
 "\n"\
@@ -397,12 +393,10 @@ printf(\
 "   if (node->parent_idx != c_idx_not_exist) {\n"\
 "      %s_node *parent = this->data + node->parent_idx;\n"\
 "\n"\
-"      if (parent->left_idx == a_idx)\n"\
-"      {\n"\
+"      if (parent->left_idx == a_idx) {\n"\
 "         parent->left_idx = a_ch_idx;\n"\
 "      }\n"\
-"      else\n"\
-"      {\n"\
+"      else {\n"\
 "         parent->right_idx = a_ch_idx;\n"\
 "      }\n"\
 "\n"\
@@ -908,12 +902,10 @@ printf(\
 "         if (del_node->parent_idx != c_idx_not_exist) {\n"\
 "            %s_node *del_node_parent = this->data + del_node->parent_idx;\n"\
 "\n"\
-"            if (del_node_parent->left_idx == a_idx)\n"\
-"            {\n"\
+"            if (del_node_parent->left_idx == a_idx) {\n"\
 "               del_node_parent->left_idx = found_idx;\n"\
 "            }\n"\
-"            else\n"\
-"            {\n"\
+"            else {\n"\
 "               del_node_parent->right_idx = found_idx;\n"\
 "            }\n"\
 "         }\n"\
@@ -950,12 +942,10 @@ printf(\
 "            /* - process found_node parent - */\n"\
 "            %s_node *found_node_parent = this->data + found_node->parent_idx;\n"\
 "\n"\
-"            if (found_node_parent->left_idx == found_idx)\n"\
-"            {\n"\
+"            if (found_node_parent->left_idx == found_idx) {\n"\
 "               found_node_parent->left_idx = a_idx;\n"\
 "            }\n"\
-"            else\n"\
-"            {\n"\
+"            else {\n"\
 "               found_node_parent->right_idx = a_idx;\n"\
 "            }\n"\
 "\n"\
@@ -1428,8 +1418,7 @@ printf(\
 printf(\
 "int %s_compare(%s *this,%s *a_second)\n"\
 "{/*{{{*/\n"\
-"   if (this->count != a_second->count)\n"\
-"   {\n"\
+"   if (this->count != a_second->count) {\n"\
 "     return 0;\n"\
 "   }\n"\
 "\n"\
@@ -1506,6 +1495,38 @@ printf(\
 "}/*}}}*/\n"\
 "\n"\
 );\
+}
+
+#define SAFE_RB_TREE_TO_STRING() \
+{\
+printf(\
+"#if OPTION_TO_STRING == ENABLED\n"\
+"void %s_to_string(%s *this,bc_array_s *a_trg)\n"\
+"{/*{{{*/\n"\
+"   bc_array_s_push(a_trg,'[');\n"\
+"\n"\
+"   if (this->root_idx != c_idx_not_exist) {\n"\
+"      unsigned stack[%s_get_descent_stack_size(this)];\n"\
+"      unsigned *stack_ptr = stack;\n"\
+"\n"\
+"      unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"\
+"      do {\n"\
+"         %s_to_string(&(this->data + idx)->object,a_trg);\n"\
+"\n"\
+"         idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"\
+"         if (idx == c_idx_not_exist)\n"\
+"            break;\n"\
+"\n"\
+"         bc_array_s_push(a_trg,',');\n"\
+"      } while(1);\n"\
+"   }\n"\
+"\n"\
+"   bc_array_s_push(a_trg,']');\n"\
+"}/*}}}*/\n"\
+"#endif\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME\
+,IM_TYPE_NAMES(0),IM_STRUCT_NAME);\
 }
 
 #define SAFE_RB_TREE_REHASH_TREE() \
@@ -1788,7 +1809,7 @@ void processor_s::generate_safe_rb_tree_type()
             fprintf(stderr,"rb_tree: contained type \"%s\" does not exist\n",type_names[tn_idx].data);
             cassert(0);
          }
-         
+
          unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
          type_idxs[tn_idx] = type_idx;
 
@@ -2092,6 +2113,11 @@ printf(
 "int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string(%s *this,bc_array_s *a_trg);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+printf(
 "void %s_rehash_tree(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
 #ifdef SAFE_RB_TREE_GENERATE_PRINT_DOT_CODE
@@ -2120,7 +2146,7 @@ printf(
 void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -2138,7 +2164,7 @@ void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_i
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -2263,7 +2289,7 @@ SAFE_RB_TREE_OPERATOR_EQUAL();
 void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    unsigned type_cnt = data_type.types.used;
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
@@ -2281,7 +2307,7 @@ void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_i
 
          type_idxs[tn_idx] = abbreviations[type_abb_idx].data_type_idx;
          types[tn_idx] = &data_types[type_idxs[tn_idx]];
-         
+
       } while(++tn_idx < type_cnt);
    }
 
@@ -2392,6 +2418,9 @@ SAFE_RB_TREE_OPERATOR_EQUAL();
 
    // - rb_tree operator== method -
 SAFE_RB_TREE_OPERATOR_DOUBLE_EQUAL();
+
+   // - rb_tree to_string method -
+SAFE_RB_TREE_TO_STRING();
 
    // - rb_tree rehash_tree -
 SAFE_RB_TREE_REHASH_TREE();

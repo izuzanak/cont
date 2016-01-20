@@ -153,36 +153,28 @@ printf(\
 "\n"\
 ,IM_STRUCT_NAME);\
 printf(\
-"   if (this->begin + this->used >= this->size) {\n"\
+"   unsigned inserted_idx = this->begin + this->used++;\n"\
+"\n"\
+"   if (inserted_idx >= this->size) {\n"\
+"      inserted_idx -= this->size;\n"\
 );\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"      this->data[this->begin + this->used - this->size] = a_value;\n"\
-);\
-   }\
-   else {\
-printf(\
-"      %s_copy(this->data + this->begin + this->used - this->size,a_value);\n"\
-,TYPE_NAME);\
-   }\
-printf(\
-"   }\n"\
-"   else {\n"\
-);\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"      this->data[this->begin + this->used] = a_value;\n"\
-);\
-   }\
-   else {\
-printf(\
-"      %s_copy(this->data + this->begin + this->used,a_value);\n"\
-,TYPE_NAME);\
-   }\
 printf(\
 "   }\n"\
 "\n"\
-"   return this->used++;\n"\
+);\
+   if (TYPE_NUMBER & c_type_basic) {\
+printf(\
+"   this->data[inserted_idx] = a_value;\n"\
+);\
+   }\
+   else {\
+printf(\
+"   %s_copy(this->data + inserted_idx,a_value);\n"\
+,TYPE_NAME);\
+   }\
+printf(\
+"\n"\
+"   return inserted_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -197,7 +189,13 @@ printf(\
 "      %s_copy_resize(this,(this->size << 1) + c_array_add);\n"\
 "   }\n"\
 "\n"\
-"   return this->used++;\n"\
+"   unsigned inserted_idx = this->begin + this->used++;\n"\
+"\n"\
+"   if (inserted_idx >= this->size) {\n"\
+"      inserted_idx -= this->size;\n"\
+"   }\n"\
+"\n"\
+"   return inserted_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -572,6 +570,53 @@ printf(\
 );\
 }
 
+#define QUEUE_TO_STRING() \
+{\
+printf(\
+"#if OPTION_TO_STRING == ENABLED\n"\
+"void %s_to_string(%s *this,bc_array_s *a_trg)\n"\
+"{/*{{{*/\n"\
+"   bc_array_s_push(a_trg,'[');\n"\
+"\n"\
+"   unsigned sec_cnt;\n"\
+"   %s *ptr = this->data + this->begin;\n"\
+"   %s *ptr_end;\n"\
+"\n"\
+"   if (this->begin + this->used > this->size) {\n"\
+"      ptr_end = this->data + this->size;\n"\
+"      sec_cnt = this->begin + this->used - this->size;\n"\
+"   }\n"\
+"   else {\n"\
+"      ptr_end = ptr + this->used;\n"\
+"      sec_cnt = 0;\n"\
+"   }\n"\
+"\n"\
+"   do {\n"\
+"      %s_to_string(ptr,a_trg);\n"\
+"\n"\
+"      if (++ptr >= ptr_end)\n"\
+"         break;\n"\
+"\n"\
+"      bc_array_s_push(a_trg,',');\n"\
+"   } while(1);\n"\
+"\n"\
+"   if (sec_cnt != 0) {\n"\
+"      ptr = this->data;\n"\
+"      ptr_end = ptr + sec_cnt;\n"\
+"\n"\
+"      do {\n"\
+"         bc_array_s_push(a_trg,',');\n"\
+"         %s_to_string(ptr,a_trg);\n"\
+"      } while(++ptr < ptr_end);\n"\
+"   }\n"\
+"\n"\
+"   bc_array_s_push(a_trg,']');\n"\
+"}/*}}}*/\n"\
+"#endif\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
+}
+
 void processor_s::generate_queue_type()
 {
    string_array_s &type_names = cont_params.types;
@@ -764,6 +809,11 @@ printf(
 printf(
 "int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+printf(
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string(%s *this,bc_array_s *a_trg);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -780,7 +830,7 @@ printf(
 void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -854,7 +904,7 @@ QUEUE_OPERATOR_EQUAL();
 void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -913,5 +963,8 @@ QUEUE_OPERATOR_EQUAL();
 
    // - queue operator== method -
 QUEUE_OPERATOR_DOUBLE_EQUAL();
+
+   // - queue to_string method -
+QUEUE_TO_STRING();
 }
 

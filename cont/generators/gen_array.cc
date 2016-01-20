@@ -624,6 +624,35 @@ printf(\
 );\
 }
 
+#define ARRAY_TO_STRING() \
+{\
+printf(\
+"#if OPTION_TO_STRING == ENABLED\n"\
+"void %s_to_string(%s *this,bc_array_s *a_trg)\n"\
+"{/*{{{*/\n"\
+"   bc_array_s_push(a_trg,'[');\n"\
+"\n"\
+"   if (this->used != 0) {\n"\
+"      %s *ptr = this->data;\n"\
+"      %s *ptr_end = this->data + this->used;\n"\
+"\n"\
+"      do {\n"\
+"         %s_to_string(ptr,a_trg);\n"\
+"\n"\
+"         if (++ptr >= ptr_end)\n"\
+"            break;\n"\
+"         \n"\
+"         bc_array_s_push(a_trg,',');\n"\
+"      } while(1);\n"\
+"   }\n"\
+"\n"\
+"   bc_array_s_push(a_trg,']');\n"\
+"}/*}}}*/\n"\
+"#endif\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
+}
+
 void processor_s::generate_array_type()
 {
    string_array_s &type_names = cont_params.types;
@@ -859,6 +888,11 @@ printf(
 "int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
+printf(
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string(%s *this,bc_array_s *a_trg);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -875,7 +909,7 @@ printf(
 void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -953,7 +987,7 @@ ARRAY_LAST();
 
    // - array fill method -
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
-ARRAY_FILL();   
+ARRAY_FILL();
    }
 
    // - array get_idx method -
@@ -976,10 +1010,10 @@ ARRAY_OPERATOR_DOUBLE_EQUAL();
 void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
-   
+
    if (type_abb_idx == c_idx_not_exist) {
       fprintf(stderr,"array: methods: abreviated type name \"%s\" does not exist\n",type_abb_string.data);
       cassert(0);
@@ -1043,7 +1077,7 @@ ARRAY_COPY_RESIZE();
 
    // - array fill method -
    if (type_idx != c_bt_char && type_idx != c_bt_unsigned_char) {
-ARRAY_FILL();   
+ARRAY_FILL();
    }
 
    // - array get_idx method -
@@ -1060,5 +1094,8 @@ ARRAY_OPERATOR_EQUAL();
    if (TYPE_NUMBER & c_type_dynamic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL();
    }
+
+   // - array to_string method -
+ARRAY_TO_STRING();
 }
 

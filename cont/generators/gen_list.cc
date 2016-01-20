@@ -829,6 +829,35 @@ printf(\
 );\
 }
 
+#define LIST_TO_STRING() \
+{\
+printf(\
+"#if OPTION_TO_STRING == ENABLED\n"\
+"void %s_to_string(%s *this,bc_array_s *a_trg)\n"\
+"{/*{{{*/\n"\
+"   bc_array_s_push(a_trg,'[');\n"\
+"\n"\
+"   if (this->first_idx != c_idx_not_exist) {\n"\
+"      unsigned idx = this->first_idx;\n"\
+"\n"\
+"      do {\n"\
+"         %s_element *element = this->data + idx;\n"\
+"         %s_to_string(&element->object,a_trg);\n"\
+"\n"\
+"         if ((idx = element->next_idx) == c_idx_not_exist)\n"\
+"            break;\n"\
+"\n"\
+"         bc_array_s_push(a_trg,',');\n"\
+"      } while(1);\n"\
+"   }\n"\
+"\n"\
+"   bc_array_s_push(a_trg,']');\n"\
+"}/*}}}*/\n"\
+"#endif\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
+}
+
 void processor_s::generate_list_type()
 {
    string_array_s &type_names = cont_params.types;
@@ -1054,6 +1083,11 @@ printf(
 printf(
 "int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+printf(
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string(%s *this,bc_array_s *a_trg);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1070,7 +1104,7 @@ printf(
 void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -1171,7 +1205,7 @@ LIST_OPERATOR_EQUAL();
 void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 {
    data_type_s &data_type = data_types[a_dt_idx];
-   
+
    string_s &type_abb_string = data_type.types[0];
    unsigned type_abb_idx = abbreviations.get_idx_by_name(type_abb_string.size - 1,type_abb_string.data);
 
@@ -1208,7 +1242,7 @@ LIST_CLEAR();
 LIST_FLUSH_ALL();
    }
 
-   // - list swap method - 
+   // - list swap method -
 
    // - list operator[] method -
 
@@ -1241,6 +1275,9 @@ LIST_OPERATOR_EQUAL();
 
    // - list operator== method -
 LIST_OPERATOR_DOUBLE_EQUAL();
+
+   // - list to_string method -
+LIST_TO_STRING();
 
 }
 
