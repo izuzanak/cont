@@ -66,11 +66,7 @@
    static void pa_reduce_gen_container(process_s &proc);
    static void pa_reduce_type(process_s &proc);
    static void pa_reduce_type_and_name(process_s &proc);
-   static void pa_reduce_not_generate_init(process_s &proc);
-   static void pa_reduce_not_generate_clear(process_s &proc);
-   static void pa_reduce_not_generate_swap(process_s &proc);
-   static void pa_reduce_not_generate_operator_equal(process_s &proc);
-   static void pa_reduce_option_strict_dynamic(process_s &proc);
+   static void pa_reduce_option(process_s &proc);
    static void pa_reduce_additions_body(process_s &proc);
    static void pa_reduce_name(process_s &proc);
 
