@@ -323,7 +323,7 @@ printf(\
 #define SAFE_RB_TREE___BINARY_TREE_INSERT() \
 {\
 printf(\
-"int %s___binary_tree_insert(%s *this,unsigned a_new_idx,%s *a_value,int a_unique)\n"\
+"unsigned %s___binary_tree_insert(%s *this,unsigned a_new_idx,%s *a_value,int a_unique)\n"\
 "{/*{{{*/\n"\
 "   if (this->root_idx == c_idx_not_exist) {\n"\
 "      if (this->leaf_idx == c_idx_not_exist) {\n"\
@@ -358,7 +358,7 @@ printf(\
 "         }\n"\
 "         else {\n"\
 "            if (a_unique && comp_result == 0) {\n"\
-"               return 0;\n"\
+"               return node_idx;\n"\
 "            }\n"\
 "\n"\
 "            if (node->right_idx == this->leaf_idx) {\n"\
@@ -377,7 +377,7 @@ printf(\
 "   new_node->right_idx = this->leaf_idx;\n"\
 "   new_node->color = 0;\n"\
 "\n"\
-"   return 1;\n"\
+"   return c_idx_not_exist;\n"\
 "}/*}}}*/\n"\
 "\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
@@ -804,17 +804,17 @@ printf(\
 ,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);\
 }
 
-#define SAFE_RB_TREE_INSERT() \
-{\
+#define TEMPLATE_SAFE_RB_TREE_INSERT(FUN_NAME,VALUE_SET_CODE) \
+{/*{{{*/\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
-"inline unsigned %s_insert(%s *this,%s a_value)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+"inline unsigned %s_%s(%s *this,%s a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
    else {\
 printf(\
-"inline unsigned %s_insert(%s *this,%s *a_value)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+"inline unsigned %s_%s(%s *this,%s *a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
 printf(\
 "{/*{{{*/\n"\
@@ -835,6 +835,17 @@ printf(\
 "   %s___insert_operation(this,new_node_idx);\n"\
 "\n"\
 ,IM_STRUCT_NAME);\
+  VALUE_SET_CODE;\
+printf(\
+"\n"\
+"   return new_node_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+);\
+}/*}}}*/
+
+#define SAFE_RB_TREE_INSERT() \
+TEMPLATE_SAFE_RB_TREE_INSERT(insert,\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
 "   this->data[new_node_idx].object = a_value;\n"\
@@ -845,35 +856,93 @@ printf(\
 "   %s_copy(&this->data[new_node_idx].object,a_value);\n"\
 ,IM_TYPE_NAMES(0));\
    }\
+)
+
+#define SAFE_RB_TREE_SWAP_INSERT() \
+   if (!(TYPE_NUMBERS(0) & c_type_basic)) {\
+TEMPLATE_SAFE_RB_TREE_INSERT(swap_insert,\
+printf(\
+"   %s_swap(&this->data[new_node_idx].object,a_value);\n"\
+,IM_TYPE_NAMES(0));\
+)\
+   }\
+
+#define TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(FUN_NAME,VALUE_SET_CODE) \
+{/*{{{*/\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
+printf(\
+"inline unsigned %s_%s(%s *this,%s a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+   }\
+   else {\
+printf(\
+"inline unsigned %s_%s(%s *this,%s *a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+   }\
+printf(\
+"{/*{{{*/\n"\
+"   unsigned new_node_idx = %s___get_new_index(this);\n"\
+,IM_STRUCT_NAME);\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
+printf(\
+"   unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,&a_value,1);\n"\
+,IM_STRUCT_NAME);\
+   }\
+   else {\
+printf(\
+"   unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,a_value,1);\n"\
+,IM_STRUCT_NAME);\
+   }\
 printf(\
 "\n"\
-"   return new_node_idx;\n"\
+"   if (old_node_idx != c_idx_not_exist) {\n"\
+"      %s_node *new_node = this->data + new_node_idx;\n"\
+"\n"\
+"      new_node->parent_idx = this->free_idx;\n"\
+"      this->free_idx = new_node_idx;\n"\
+"\n"\
+"      new_node->valid = 0;\n"\
+"      this->count--;\n"\
+"\n"\
+"      return old_node_idx;\n"\
+"   }\n"\
+"\n"\
+"   %s___insert_operation(this,new_node_idx);\n"\
+"\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   VALUE_SET_CODE;\
+printf(\
+"\n"\
+"  return new_node_idx;\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
-}
+}/*}}}*/
 
-#define SAFE_RB_TREE_SWAP_INSERT() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_basic)) {\
+#define SAFE_RB_TREE_UNIQUE_INSERT() \
+TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(unique_insert,\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
-"inline unsigned %s_swap_insert(%s *this,%s *a_value)\n"\
-"{/*{{{*/\n"\
-"   unsigned new_node_idx = %s___get_new_index(this);\n"\
-"\n"\
-"   %s___binary_tree_insert(this,new_node_idx,a_value,0);\n"\
-"   %s___insert_operation(this,new_node_idx);\n"\
-"\n"\
-"   %s_swap(&this->data[new_node_idx].object,a_value);\n"\
-"\n"\
-"   return new_node_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+"   this->data[new_node_idx].object = a_value;\n"\
+);\
    }\
-}
+   else {\
+printf(\
+"   %s_copy(&this->data[new_node_idx].object,a_value);\n"\
+,IM_TYPE_NAMES(0));\
+   }\
+)
 
-#define SAFE_RB_TREE_REMOVE()  \
+#define SAFE_RB_TREE_UNIQUE_SWAP_INSERT() \
+   if (!(TYPE_NUMBERS(0) & c_type_basic)) {\
+TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,\
+printf(\
+"   %s_swap(&this->data[new_node_idx].object,a_value);\n"\
+,IM_TYPE_NAMES(0));\
+)\
+   }
+
+#define SAFE_RB_TREE_REMOVE() \
 {\
 printf(\
 "void %s_remove(%s *this,unsigned a_idx)\n"\
@@ -1441,7 +1510,18 @@ printf(\
 "      unsigned node_idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"\
 "      unsigned s_node_idx = %s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);\n"\
 "      do {\n"\
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
+printf(\
+"         if (this->data[node_idx].object != a_second->data[s_node_idx].object) {\n"\
+);\
+   }\
+   else {\
+printf(\
 "         if (!%s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object)) {\n"\
+,IM_TYPE_NAMES(0));\
+   }\
+printf(\
 "            return 0;\n"\
 "         }\n"\
 "\n"\
@@ -1454,8 +1534,7 @@ printf(\
 "      }\n"\
 "   }\n"\
 "\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);\
+,IM_STRUCT_NAME,IM_STRUCT_NAME);\
    if (VAR_NAMES_CNT > 0) {\
       if (TYPE_NUMBERS(1) & c_type_basic) {\
 printf(\
@@ -1814,7 +1893,7 @@ void processor_s::generate_safe_rb_tree_type()
          type_idxs[tn_idx] = type_idx;
 
          // - test type options -
-         if (data_types[type_idx].properties & c_type_setting_strict_dynamic) {
+         if (data_types[type_idx].properties & c_type_option_strict_dynamic) {
             fprintf(stderr,"rb_tree: container have not implemented processing of types with option strict_dynamic\n");
             cassert(0);
          }
@@ -1877,7 +1956,7 @@ void processor_s::generate_safe_rb_tree_type()
          } while(++tn_idx < type_cnt);
       }
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
 
       {
          string_array_s &dt_type_names = data_type.types;
@@ -1995,7 +2074,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
 "inline unsigned %s___get_new_index(%s *this);\n"
-"int %s___binary_tree_insert(%s *this,unsigned a_new_idx,%s *a_value,int a_unique);\n"
+"unsigned %s___binary_tree_insert(%s *this,unsigned a_new_idx,%s *a_value,int a_unique);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
 printf(
 "inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
@@ -2006,20 +2085,20 @@ printf(
 printf(
 "inline int %s___compare_value(%s *this,%s *a_first,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -2038,7 +2117,7 @@ printf(
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -2049,17 +2128,20 @@ printf(
    if (TYPE_NUMBERS(0) & c_type_basic) {
 printf(
 "inline unsigned %s_insert(%s *this,%s a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+"inline unsigned %s_unique_insert(%s *this,%s a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
 printf(
 "inline unsigned %s_insert(%s *this,%s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+"inline unsigned %s_unique_insert(%s *this,%s *a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
 printf(
 "inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+"inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"
+,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
 printf(
 "void %s_remove(%s *this,unsigned a_idx);\n"
@@ -2097,7 +2179,7 @@ printf(
 "void %s_get_idxs(%s *this,%s *a_value,ui_array_s *a_idxs_array);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "inline void %s_copy(%s *this,%s *a_src);\n"
@@ -2228,7 +2310,7 @@ SAFE_RB_TREE_INIT();
 
    // - rb_tree clear method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 SAFE_RB_TREE_CLEAR();
       }
    }
@@ -2242,7 +2324,7 @@ SAFE_RB_TREE_FLUSH_ALL();
    }
 
    // - rb_tree swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 SAFE_RB_TREE_SWAP();
    }
 
@@ -2254,6 +2336,12 @@ SAFE_RB_TREE_INSERT();
 
    // - rb_tree swap_insert method -
 SAFE_RB_TREE_SWAP_INSERT();
+
+   // - rb_tree unique_insert method -
+SAFE_RB_TREE_UNIQUE_INSERT();
+
+   // - rb_tree unique_swap_insert method -
+SAFE_RB_TREE_UNIQUE_SWAP_INSERT();
 
    // - rb_tree remove method -
 
@@ -2271,7 +2359,7 @@ SAFE_RB_TREE_SWAP_INSERT();
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_RB_TREE_OPERATOR_EQUAL();
       }
    }
@@ -2368,7 +2456,7 @@ SAFE_RB_TREE___INSERT_OPERATION();
 
    // - rb_tree clear method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 SAFE_RB_TREE_CLEAR();
       }
    }
@@ -2411,7 +2499,7 @@ SAFE_RB_TREE_GET_IDXS();
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_RB_TREE_OPERATOR_EQUAL();
       }
    }

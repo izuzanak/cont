@@ -2406,19 +2406,24 @@ void process_s::pa_reduce_option(process_s &proc)
    code[lse.terminal_end] = '\0';
 
    if (strcmp("no_init",code.data + lse.terminal_start) == 0)
-      proc.processor_ptr->type_settings |= c_type_setting_not_generate_init;
+      proc.processor_ptr->type_settings |= c_type_option_nogen_init;
 
    else if (strcmp("no_clear",code.data + lse.terminal_start) == 0)
-      proc.processor_ptr->type_settings |= c_type_setting_not_generate_clear;
+      proc.processor_ptr->type_settings |= c_type_option_nogen_clear;
 
    else if (strcmp("no_swap",code.data + lse.terminal_start) == 0)
-      proc.processor_ptr->type_settings |= c_type_setting_not_generate_swap;
+      proc.processor_ptr->type_settings |= c_type_option_nogen_swap;
 
    else if (strcmp("no_copy",code.data + lse.terminal_start) == 0)
-      proc.processor_ptr->type_settings |= c_type_setting_not_generate_operator_equal;
+      proc.processor_ptr->type_settings |= c_type_option_nogen_copy;
 
    else if (strcmp("strict_dynamic",code.data + lse.terminal_start) == 0)
-      proc.processor_ptr->type_settings |= c_type_setting_strict_dynamic;
+      proc.processor_ptr->type_settings |= c_type_option_strict_dynamic;
+
+   else {
+      fprintf(stderr,"ERROR: Unrecognized option %s.\n",code.data + lse.terminal_start);
+      cassert(0);
+   }
 
    code[lse.terminal_end] = tmp_char;
 }/*}}}*/

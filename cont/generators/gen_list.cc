@@ -884,7 +884,7 @@ void processor_s::generate_list_type()
    data_type_s &type = data_types[type_idx];
 
    // - test type options -
-   if (type.properties & c_type_setting_strict_dynamic) {
+   if (type.properties & c_type_option_strict_dynamic) {
       fprintf(stderr,"list: container have not implemented processing of types with option strict_dynamic\n");
       cassert(0);
    }
@@ -911,7 +911,7 @@ void processor_s::generate_list_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -978,7 +978,7 @@ printf(
 "};\n"
 "\n"
 ,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -987,14 +987,14 @@ printf(
 "inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -1013,7 +1013,7 @@ printf(
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -1068,7 +1068,7 @@ printf(
 "unsigned %s_get_idx(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "inline void %s_copy(%s *this,%s *a_src);\n"
@@ -1124,7 +1124,7 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - list init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 LIST_INIT();
    }
 
@@ -1133,7 +1133,7 @@ LIST_INIT_SIZE();
 
    // - list clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 LIST_CLEAR();
       }
    }
@@ -1147,7 +1147,7 @@ LIST_FLUSH_ALL();
    }
 
    // - list swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 LIST_SWAP();
    }
 
@@ -1193,7 +1193,7 @@ LIST_PREV_IDX();
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 LIST_OPERATOR_EQUAL();
       }
    }
@@ -1230,7 +1230,7 @@ printf(
 
    // - list clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 LIST_CLEAR();
       }
    }
@@ -1268,7 +1268,7 @@ LIST_GET_IDX();
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 LIST_OPERATOR_EQUAL();
       }
    }

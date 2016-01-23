@@ -273,7 +273,7 @@ void processor_s::generate_struct_type()
 
          // - test type options -
          data_type_s &type = data_types[type_idx];
-         if (type.properties & c_type_setting_strict_dynamic) {
+         if (type.properties & c_type_option_strict_dynamic) {
             cassert(type.properties & c_type_dynamic);
          }
 
@@ -357,7 +357,7 @@ void processor_s::generate_struct_type()
       } while(++t_pptr < t_pptr_end);
 
       data_type.properties = (c_type_static << dynamic) | (flushable << 3) | (comp_idx_strings.used != 0) << 4;
-      data_type.properties |= type_settings & c_type_setting_mask;
+      data_type.properties |= type_settings & c_type_option_mask;
 
       {
          string_array_s &dt_type_names = data_type.types;
@@ -429,12 +429,12 @@ printf(
 "};\n"
 "\n"
 );
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+   if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -471,12 +471,12 @@ printf(
 ");\n"
 "inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -537,12 +537,12 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - struct init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 STRUCT_INIT();
    }
 
    // - struct clear method -
-   if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+   if (!(data_type.properties & c_type_option_nogen_clear)) {
 STRUCT_CLEAR();
    }
 
@@ -553,12 +553,12 @@ STRUCT_SET();
 STRUCT_FLUSH_ALL();
 
    // - struct swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 STRUCT_SWAP();
    }
 
    // - struct operator= method -
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
 STRUCT_OPERATOR_EQUAL();
    }
 

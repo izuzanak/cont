@@ -359,7 +359,7 @@ printf(\
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"\
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
    if (TYPE_NUMBER & c_type_dynamic) {\
-      if (TYPE_NUMBER & c_type_setting_strict_dynamic) {\
+      if (TYPE_NUMBER & c_type_option_strict_dynamic) {\
 printf(\
 "\n"\
 "      %s *ptr = n_data;\n"\
@@ -388,7 +388,7 @@ printf(\
 "   }\n"\
 "\n"\
 );\
-   if (TYPE_NUMBER & c_type_setting_strict_dynamic) {\
+   if (TYPE_NUMBER & c_type_option_strict_dynamic) {\
 printf(\
 "   if (this->used > 0) {\n"\
 "      %s *ptr = this->data;\n"\
@@ -679,7 +679,7 @@ void processor_s::generate_array_type()
    data_type_s &type = data_types[type_idx];
 
    // - test type options -
-   if (type.properties & c_type_setting_strict_dynamic) {
+   if (type.properties & c_type_option_strict_dynamic) {
       cassert(type.properties & c_type_dynamic);
    }
 
@@ -705,7 +705,7 @@ void processor_s::generate_array_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
 
       data_type.types.push(abbreviations[type_abb_idx].name);
 
@@ -762,7 +762,7 @@ printf(
 "};\n"
 "\n"
 ,STRUCT_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -771,7 +771,7 @@ printf(
 "inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -781,7 +781,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -803,7 +803,7 @@ printf(
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -869,7 +869,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -879,7 +879,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -929,7 +929,7 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - array init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 ARRAY_INIT();
    }
 
@@ -938,7 +938,7 @@ ARRAY_INIT_SIZE();
 
    // - array clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 ARRAY_CLEAR();
       }
    }
@@ -957,7 +957,7 @@ ARRAY_FLUSH_ALL();
    }
 
    // - array swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 ARRAY_SWAP();
    }
 
@@ -996,7 +996,7 @@ ARRAY_FILL();
 
    // - array operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL();
       }
    }
@@ -1035,7 +1035,7 @@ printf(
 
    // - array clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 ARRAY_CLEAR();
       }
    }
@@ -1085,7 +1085,7 @@ ARRAY_GET_IDX();
 
    // - array operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL();
       }
    }
