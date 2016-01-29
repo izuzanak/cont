@@ -1,244 +1,247 @@
 
-#define STRUCT_INIT() \
-{\
-printf(\
-"inline void %s_init(%s *this)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
-printf(\
-"   %s_init(&this->%s);\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+#define STRUCT_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
+#define STRUCT_GEN_VALUES abbreviations,abb_idx,type_cnt,data_type,types
 
-#define STRUCT_CLEAR() \
-{\
-printf(\
-"inline void %s_clear(%s *this)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
-printf(\
-"   %s_clear(&this->%s);\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"\n"\
-"   %s_init(this);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void STRUCT_INIT(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s_init(%s *this)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+printf(
+"   %s_init(&this->%s);\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_SET() \
-{\
-printf(\
-"inline void %s_set(%s *this,"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"%s a_%s"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0));\
-   }\
-   else {\
-printf(\
-"%s *a_%s"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0));\
-   }\
-   if (TYPE_CNT > 1) {\
-      unsigned t_idx = 1;\
-      do {\
-         if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-",%s a_%s"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-         else {\
-printf(\
-",%s *a_%s"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < TYPE_CNT);\
-   }\
-printf(\
-")\n"\
-"{/*{{{*/\n"\
-);\
-   t_idx = 0;\
-   do {\
-       if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-"   this->%s = a_%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-       }\
-       else {\
-printf(\
-"   %s_copy(&this->%s,a_%s);\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-       }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s_clear(%s *this)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+printf(
+"   %s_clear(&this->%s);\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"\n"
+"   %s_init(this);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define STRUCT_FLUSH_ALL() \
-{\
-printf(\
-"inline void %s_flush_all(%s *this)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_flushable) {\
-printf(\
-"   %s_flush_all(&this->%s);\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_SET(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s_set(%s *this,"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"%s a_%s"
+,IM_TYPE_NAMES(0),VAR_NAMES(0));
+   }
+   else {
+printf(
+"%s *a_%s"
+,IM_TYPE_NAMES(0),VAR_NAMES(0));
+   }
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+         if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+",%s a_%s"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+         else {
+printf(
+",%s *a_%s"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < TYPE_CNT);
+   }
+printf(
+")\n"
+"{/*{{{*/\n"
+);
+   unsigned t_idx = 0;
+   do {
+       if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+"   this->%s = a_%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+       }
+       else {
+printf(
+"   %s_copy(&this->%s,a_%s);\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+       }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_SWAP() \
-{\
-printf(\
-"inline void %s_swap(%s *this,%s *a_second)\n"\
-"{/*{{{*/"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-printf(\
-"\n"\
-);\
-      if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-"   %s tmp_%s = this->%s;\n"\
-"   this->%s = a_second->%s;\n"\
-"   a_second->%s = tmp_%s;\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-      else {\
-printf(\
-"   %s_swap(&this->%s,&a_second->%s);\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s_flush_all(%s *this)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
+printf(
+"   %s_flush_all(&this->%s);\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_OPERATOR_EQUAL() \
-{\
-printf(\
-"inline void %s_copy(%s *this,%s *a_src)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-       if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-"   this->%s = a_src->%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-       }\
-       else {\
-printf(\
-"   %s_copy(&this->%s,&a_src->%s);\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-       }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_SWAP(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s_swap(%s *this,%s *a_second)\n"
+"{/*{{{*/"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+printf(
+"\n"
+);
+      if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+"   %s tmp_%s = this->%s;\n"
+"   this->%s = a_second->%s;\n"
+"   a_second->%s = tmp_%s;\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+      else {
+printf(
+"   %s_swap(&this->%s,&a_second->%s);\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"inline int %s_compare(%s *this,%s *a_second)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"   return (this->%s == a_second->%s"\
-,VAR_NAMES(0),VAR_NAMES(0));\
-   }\
-   else {\
-printf(\
-"   return (%s_compare(&this->%s,&a_second->%s)"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));\
-   }\
-   if (TYPE_CNT > 1) {\
-      t_idx = 1;\
-      do {\
-   if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-" && this->%s == a_second->%s"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-   }\
-   else {\
-printf(\
-" && %s_compare(&this->%s,&a_second->%s)"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-   }\
-      } while(++t_idx < TYPE_CNT);\
-   }\
-printf(\
-");\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s_copy(%s *this,%s *a_src)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+       if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+"   this->%s = a_src->%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+       }
+       else {
+printf(
+"   %s_copy(&this->%s,&a_src->%s);\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+       }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_TO_STRING() \
-{\
-printf(\
-"#if OPTION_TO_STRING == ENABLED\n"\
-"inline void %s_to_string(%s *this,bc_array_s *a_trg)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-printf(\
-"   bc_array_s_push(a_trg,'{');\n"\
-"   %s_to_string(&this->%s,a_trg);\n"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0));\
-   if (TYPE_CNT > 1) {\
-      t_idx = 1;\
-      do {\
-printf(\
-"   bc_array_s_push(a_trg,',');\n"\
-"   %s_to_string(&this->%s,a_trg);\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-      } while(++t_idx < TYPE_CNT);\
-   }\
-printf(\
-"   bc_array_s_push(a_trg,'}');\n"\
-);\
-printf(\
-"}/*}}}*/\n"\
-"#endif\n"\
-"\n"\
-);\
-}
+void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline int %s_compare(%s *this,%s *a_second)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"   return (this->%s == a_second->%s"
+,VAR_NAMES(0),VAR_NAMES(0));
+   }
+   else {
+printf(
+"   return (%s_compare(&this->%s,&a_second->%s)"
+,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
+   }
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+   if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+" && this->%s == a_second->%s"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+   }
+   else {
+printf(
+" && %s_compare(&this->%s,&a_second->%s)"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+   }
+      } while(++t_idx < TYPE_CNT);
+   }
+printf(
+");\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void STRUCT_TO_STRING(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"#if OPTION_TO_STRING == ENABLED\n"
+"inline void %s_to_string(%s *this,bc_array_s *a_trg)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+printf(
+"   bc_array_s_push(a_trg,'{');\n"
+"   %s_to_string(&this->%s,a_trg);\n"
+,IM_TYPE_NAMES(0),VAR_NAMES(0));
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+printf(
+"   bc_array_s_push(a_trg,',');\n"
+"   %s_to_string(&this->%s,a_trg);\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < TYPE_CNT);
+   }
+printf(
+"   bc_array_s_push(a_trg,'}');\n"
+);
+printf(
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
 
 void processor_s::generate_struct_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
    string_array_s &comp_idx_strings = cont_params.compare;
@@ -500,10 +503,10 @@ printf(
 printf(
 "\n"
 );
-};
+}/*}}}*/
 
 void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -527,8 +530,6 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // - definition of inline methods -
 
 printf(
@@ -538,40 +539,40 @@ printf(
 
    // - struct init method -
    if (!(data_type.properties & c_type_option_nogen_init)) {
-STRUCT_INIT();
+STRUCT_INIT(STRUCT_GEN_VALUES);
    }
 
    // - struct clear method -
    if (!(data_type.properties & c_type_option_nogen_clear)) {
-STRUCT_CLEAR();
+STRUCT_CLEAR(STRUCT_GEN_VALUES);
    }
 
    // - struct set method -
-STRUCT_SET();
+STRUCT_SET(STRUCT_GEN_VALUES);
 
    // - struct flush_all method  -
-STRUCT_FLUSH_ALL();
+STRUCT_FLUSH_ALL(STRUCT_GEN_VALUES);
 
    // - struct swap method -
    if (!(data_type.properties & c_type_option_nogen_swap)) {
-STRUCT_SWAP();
+STRUCT_SWAP(STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
    if (!(data_type.properties & c_type_option_nogen_copy)) {
-STRUCT_OPERATOR_EQUAL();
+STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
    }
 
    // - struct operator== method -
-STRUCT_OPERATOR_DOUBLE_EQUAL();
+STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
 
    // - struct to_string method -
-STRUCT_TO_STRING();
+STRUCT_TO_STRING(STRUCT_GEN_VALUES);
 
-}
+}/*}}}*/
 
 void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -612,5 +613,5 @@ printf(
    // - struct operator== method -
 
    // - struct part_compare method -
-}
+}/*}}}*/
 
