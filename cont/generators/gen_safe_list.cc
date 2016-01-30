@@ -1239,6 +1239,8 @@ SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
 
    // - list operator== method -
 
+   // - list to_string method -
+
 }/*}}}*/
 
 void processor_s::generate_safe_list_methods(unsigned abb_idx,unsigned a_dt_idx)

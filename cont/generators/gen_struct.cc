@@ -612,6 +612,7 @@ printf(
 
    // - struct operator== method -
 
-   // - struct part_compare method -
+   // - struct to_string method -
+
 }/*}}}*/
 

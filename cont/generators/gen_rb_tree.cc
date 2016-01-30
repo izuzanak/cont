@@ -2350,6 +2350,8 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
 
    // - rb_tree operator== method -
 
+   // - rb_tree to_string method -
+
    // - rb_tree rehash_tree -
 
    // - rb_tree print_dot_code -

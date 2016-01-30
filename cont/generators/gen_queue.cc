@@ -902,6 +902,9 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
    }
 
    // - queue operator== method -
+
+   // - queue to_string method -
+
 }/*}}}*/
 
 void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)

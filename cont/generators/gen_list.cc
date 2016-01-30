@@ -1203,6 +1203,8 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
 
    // - list operator== method -
 
+   // - list to_string method -
+
 }/*}}}*/
 
 void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
