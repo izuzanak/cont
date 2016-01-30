@@ -2250,7 +2250,7 @@ void mc_block_rb_tree_s::rehash_tree()
 
    root_idx = c_idx_not_exist;
 
-   bool processed[indexes.used];
+   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));
    memset(processed,false,indexes.used*sizeof(bool));
 
    unsigned step = indexes.used >> 1;
@@ -2274,6 +2274,7 @@ void mc_block_rb_tree_s::rehash_tree()
    __binary_tree_insert(node_idx,data[node_idx].object,false);
    __insert_operation(node_idx);
 
+   cfree(processed);
    indexes.clear();
 }/*}}}*/
 

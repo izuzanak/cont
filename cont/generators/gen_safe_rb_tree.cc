@@ -1380,7 +1380,7 @@ printf(\
 "\n"\
 "   root_idx = c_idx_not_exist;\n"\
 "\n"\
-"   bool processed[indexes.used];\n"\
+"   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"\
 "   memset(processed,false,indexes.used*sizeof(bool));\n"\
 "\n"\
 "   unsigned step = indexes.used >> 1;\n"\
@@ -1404,6 +1404,7 @@ printf(\
 "   __binary_tree_insert(node_idx,data[node_idx].object,false);\n"\
 "   __insert_operation(node_idx);\n"\
 "\n"\
+"   cfree(processed);\n"\
 "   indexes.clear();\n"\
 "}/*}}}*/\n"\
 "\n"\
