@@ -2133,15 +2133,15 @@ enum {
 
 const unsigned c_type_byte_neg_mod_mask = 0xf8;
 const unsigned c_type_flushable = 0x00000010;
-const unsigned c_type_setting_mask = 0xffffff00;
+const unsigned c_type_option_mask = 0xffffff00;
 
 enum {
-   c_type_setting_not_generate_init = 0x00000100,
-   c_type_setting_not_generate_clear = 0x00000200,
-   c_type_setting_not_generate_swap = 0x00000400,
-   c_type_setting_not_generate_operator_equal = 0x00000800,
+   c_type_option_nogen_init           = 0x100,
+   c_type_option_nogen_clear          = 0x100 << 1,
+   c_type_option_nogen_swap           = 0x100 << 2,
+   c_type_option_nogen_operator_equal = 0x100 << 3,
 
-   c_type_setting_strict_dynamic = 0x00001000,
+   c_type_option_strict_dynamic       = 0x100 << 4,
 };
 
 
@@ -4291,581 +4291,584 @@ unsigned abbreviation_array_s::get_idx_by_name(unsigned a_length,const char *a_d
 
 
 
-#define ARRAY_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   data = NULL;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+#define ARRAY_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type
+#define ARRAY_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type
 
-#define ARRAY_INIT_SIZE() \
-{\
-printf(\
-"inline void %s::init_size(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   init();\n"\
-"   copy_resize(a_size);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void ARRAY_INIT(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   data = NULL;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_CLEAR() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"      %s *ptr = data;\n"\
-"      %s *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_INIT_SIZE(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init_size(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   init();\n"
+"   copy_resize(a_size);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_SET() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline void %s::set(unsigned a_used,%s *a_data)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::set(unsigned a_used,%s *a_data)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"   if (a_used == 0) return;\n"\
-"   \n"\
-"   debug_assert(a_data != NULL);\n"\
-"   copy_resize(a_used);\n"\
-"\n"\
-);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_data,a_used*sizeof(%s));\n"\
-,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"   %s *ptr = data;\n"\
-"   %s *ptr_end = ptr + a_used;\n"\
-"   %s *a_ptr = a_data;\n"\
-"\n"\
-"   do {\n"\
-"      *ptr = *a_ptr;\n"\
-"   } while(++a_ptr,++ptr < ptr_end);\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"   used = a_used;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_CLEAR(ARRAY_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"      %s *ptr = data;\n"
+"      %s *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define ARRAY_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void ARRAY_SET(ARRAY_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s::set(unsigned a_used,%s *a_data)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"void %s::set(unsigned a_used,%s *a_data)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"   if (a_used == 0) return;\n"
+"   \n"
+"   debug_assert(a_data != NULL);\n"
+"   copy_resize(a_used);\n"
+"\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_data,a_used*sizeof(%s));\n"
+,TYPE_NAME);
+   }
+   else {
+printf(
+"   %s *ptr = data;\n"
+"   %s *ptr_end = ptr + a_used;\n"
+"   %s *a_ptr = a_data;\n"
+"\n"
+"   do {\n"
+"      *ptr = *a_ptr;\n"
+"   } while(++a_ptr,++ptr < ptr_end);\n"
+"\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"   used = a_used;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define ARRAY_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBER & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-);\
-   if (TYPE_NUMBER & c_type_flushable) {\
-printf(\
-"   %s *ptr = data;\n"\
-"   %s *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_FLUSH(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   %s *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
-}
+void ARRAY_FLUSH_ALL(ARRAY_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+);
+   if (TYPE_NUMBER & c_type_flushable) {
+printf(
+"   %s *ptr = data;\n"
+"   %s *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define ARRAY_OPERATOR_LE_BR_RE_BR() \
-{\
-printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"   return data[a_idx];\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void ARRAY_SWAP(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   %s *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+}/*}}}*/
 
-#define ARRAY_PUSH() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline void %s::push(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline void %s::push(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (used >= size) {\n"\
-"      copy_resize((size << 1) + c_array_add);\n"\
-"   }\n"\
-"\n"\
-"   data[used++] = a_value;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_OPERATOR_LE_BR_RE_BR(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator[](unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"   return data[a_idx];\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_PUSH_BLANK() \
-{\
-printf(\
-"inline void %s::push_blank()\n"\
-"{/*{{{*/\n"\
-"   if (used >= size) {\n"\
-"      copy_resize((size << 1) + c_array_add);\n"\
-"   }\n"\
-"\n"\
-"   used++;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void ARRAY_PUSH(ARRAY_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline void %s::push(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline void %s::push(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (used >= size) {\n"
+"      copy_resize((size << 1) + c_array_add);\n"
+"   }\n"
+"\n"
+"   data[used++] = a_value;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define ARRAY_RESERVE() \
-{\
-printf(\
-"void %s::reserve(unsigned a_cnt)\n"\
-"{/*{{{*/\n"\
-"   unsigned required_cnt = used + a_cnt;\n"\
-"   if (required_cnt > size) {\n"\
-"      unsigned r_size = size;\n"\
-"      do {\n"\
-"         r_size = (r_size << 1) + c_array_add;\n"\
-"      } while(r_size < required_cnt);\n"\
-"\n"\
-"      copy_resize(r_size);\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::push_blank()\n"
+"{/*{{{*/\n"
+"   if (used >= size) {\n"
+"      copy_resize((size << 1) + c_array_add);\n"
+"   }\n"
+"\n"
+"   used++;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_PUSH_BLANKS() \
-{\
-printf(\
-"void %s::push_blanks(unsigned a_cnt)\n"\
-"{/*{{{*/\n"\
-"   unsigned required_cnt = used + a_cnt;\n"\
-"   if (required_cnt > size) {\n"\
-"      unsigned r_size = size;\n"\
-"      do {\n"\
-"         r_size = (r_size << 1) + c_array_add;\n"\
-"      } while(r_size < required_cnt);\n"\
-"\n"\
-"      copy_resize(r_size);\n"\
-"   }\n"\
-"\n"\
-"   used += a_cnt;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void ARRAY_RESERVE(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::reserve(unsigned a_cnt)\n"
+"{/*{{{*/\n"
+"   unsigned required_cnt = used + a_cnt;\n"
+"   if (required_cnt > size) {\n"
+"      unsigned r_size = size;\n"
+"      do {\n"
+"         r_size = (r_size << 1) + c_array_add;\n"
+"      } while(r_size < required_cnt);\n"
+"\n"
+"      copy_resize(r_size);\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_PUSH_CLEAR() \
-{\
-printf(\
-"inline void %s::push_clear()\n"\
-"{/*{{{*/\n"\
-"   if (used >= size) {\n"\
-"      copy_resize((size << 1) + c_array_add);\n"\
-"   }\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   used++;\n"\
-);\
-   }\
-   else {\
-printf(\
-"   data[used++].clear();\n"\
-);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_PUSH_BLANKS(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::push_blanks(unsigned a_cnt)\n"
+"{/*{{{*/\n"
+"   unsigned required_cnt = used + a_cnt;\n"
+"   if (required_cnt > size) {\n"
+"      unsigned r_size = size;\n"
+"      do {\n"
+"         r_size = (r_size << 1) + c_array_add;\n"
+"      } while(r_size < required_cnt);\n"
+"\n"
+"      copy_resize(r_size);\n"
+"   }\n"
+"\n"
+"   used += a_cnt;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_POP() \
-{\
-printf(\
-"inline %s &%s::pop()\n"\
-"{/*{{{*/\n"\
-"   debug_assert(used > 0);\n"\
-"   return data[--used];\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::push_clear()\n"
+"{/*{{{*/\n"
+"   if (used >= size) {\n"
+"      copy_resize((size << 1) + c_array_add);\n"
+"   }\n"
+"\n"
+,IM_STRUCT_NAME);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   used++;\n"
+);
+   }
+   else {
+printf(
+"   data[used++].clear();\n"
+);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define ARRAY_LAST() \
-{\
-printf(\
-"inline %s &%s::last()\n"\
-"{/*{{{*/\n"\
-"   debug_assert(used > 0);\n"\
-"   return data[used - 1];\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void ARRAY_POP(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::pop()\n"
+"{/*{{{*/\n"
+"   debug_assert(used > 0);\n"
+"   return data[--used];\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"\
-,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-      if (TYPE_NUMBER & c_type_setting_strict_dynamic) {\
-printf(\
-"\n"\
-"      %s *ptr = n_data;\n"\
-"      %s *ptr_end = n_data + a_size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->init();\n"\
-"      } while(++ptr < ptr_end);\n"\
-,TYPE_NAME,TYPE_NAME);\
-      }\
-      else {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s *ptr = n_data + used;\n"\
-"         %s *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,TYPE_NAME,TYPE_NAME);\
-      }\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-);\
-   if (TYPE_NUMBER & c_type_setting_strict_dynamic) {\
-printf(\
-"   if (used > 0) {\n"\
-"      %s *ptr = data;\n"\
-"      %s *ptr_end = ptr + used;\n"\
-"      %s *n_ptr = n_data;\n"\
-"\n"\
-"      do {\n"\
-"         n_ptr->swap(*ptr);\n"\
-"      } while(++n_ptr,++ptr < ptr_end);\n"\
-"   }\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s));\n"\
-"   }\n"\
-,TYPE_NAME);\
-   }\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"   if (size > used) {\n"\
-"      %s *ptr = data + used;\n"\
-"      %s *ptr_end = data + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"   }\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_LAST(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::last()\n"
+"{/*{{{*/\n"
+"   debug_assert(used > 0);\n"
+"   return data[used - 1];\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define ARRAY_FILL() \
-{\
-   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char){\
-printf(\
-"inline void %s::fill(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-      if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"void %s::fill(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-      }\
-      else {\
-printf(\
-"void %s::fill(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-      }\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (size == 0) return;\n"\
-"\n"\
-);\
-   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {\
-printf(\
-"   memset(data,a_value,size);\n"\
-);\
-   }\
-   else {\
-printf(\
-"   %s *ptr = data;\n"\
-"   %s *ptr_end = data + size;\n"\
-"\n"\
-"   do {\n"\
-"      *ptr = a_value;\n"\
-"   } while(++ptr < ptr_end);\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_COPY_RESIZE(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
+,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+      if (TYPE_NUMBER & c_type_option_strict_dynamic) {
+printf(
+"\n"
+"      %s *ptr = n_data;\n"
+"      %s *ptr_end = n_data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->init();\n"
+"      } while(++ptr < ptr_end);\n"
+,TYPE_NAME,TYPE_NAME);
+      }
+      else {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s *ptr = n_data + used;\n"
+"         %s *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,TYPE_NAME,TYPE_NAME);
+      }
+   }
+printf(
+"   }\n"
+"\n"
+);
+   if (TYPE_NUMBER & c_type_option_strict_dynamic) {
+printf(
+"   if (used > 0) {\n"
+"      %s *ptr = data;\n"
+"      %s *ptr_end = ptr + used;\n"
+"      %s *n_ptr = n_data;\n"
+"\n"
+"      do {\n"
+"         n_ptr->swap(*ptr);\n"
+"      } while(++n_ptr,++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"   if (used != 0) {\n"
+"      memcpy(n_data,data,used*sizeof(%s));\n"
+"   }\n"
+,TYPE_NAME);
+   }
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"   if (size > used) {\n"
+"      %s *ptr = data + used;\n"
+"      %s *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define ARRAY_GET_IDX() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (used == 0) return c_idx_not_exist;\n"\
-"\n"\
-"   %s *ptr = data;\n"\
-"   %s *ptr_end = data + used;\n"\
-"\n"\
-"   do {\n"\
-"      if (*ptr == a_value) {\n"\
-"         return ptr - data;\n"\
-"      }\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME);\
-}
+void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)
+{/*{{{*/
+   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char){
+printf(
+"inline void %s::fill(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+      if (TYPE_NUMBER & c_type_basic) {
+printf(
+"void %s::fill(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+      }
+      else {
+printf(
+"void %s::fill(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+      }
+   }
+printf(
+"{/*{{{*/\n"
+"   if (size == 0) return;\n"
+"\n"
+);
+   if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
+printf(
+"   memset(data,a_value,size);\n"
+);
+   }
+   else {
+printf(
+"   %s *ptr = data;\n"
+"   %s *ptr_end = data + size;\n"
+"\n"
+"   do {\n"
+"      *ptr = a_value;\n"
+"   } while(++ptr < ptr_end);\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"\n"
+"   used = size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define ARRAY_OPERATOR_EQUAL() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.used == 0) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s));\n"\
-,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"\n"\
-"   %s *ptr = data;\n"\
-"   %s *s_ptr = a_src.data;\n"\
-"   %s *s_ptr_end = s_ptr + a_src.used;\n"\
-"\n"\
-"   do {\n"\
-"      *ptr = *s_ptr;\n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = a_src.used;\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_GET_IDX(ARRAY_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"unsigned %s::get_idx(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"unsigned %s::get_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (used == 0) return c_idx_not_exist;\n"
+"\n"
+"   %s *ptr = data;\n"
+"   %s *ptr_end = data + used;\n"
+"\n"
+"   do {\n"
+"      if (*ptr == a_value) {\n"
+"         return ptr - data;\n"
+"      }\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
 
-#define ARRAY_OPERATOR_DOUBLE_EQUAL() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline bool %s::operator==(%s &a_second)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (used != a_second.used) return false;\n"\
-"   if (used == 0) return true;\n"\
-);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"\n"\
-"   return (memcmp(data,a_second.data,used*sizeof(%s)) == 0);\n"\
-,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"\n"\
-"   %s *ptr = data;\n"\
-"   %s *ptr_end = ptr + used;\n"\
-"   %s *s_ptr = a_second.data;\n"\
-"\n"\
-"   do {\n"\
-"      if (!(*ptr == *s_ptr)) {\n"\
-"         return false;\n"\
-"      }\n"\
-"   } while(++s_ptr,++ptr < ptr_end);\n"\
-"\n"\
-"   return true;\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void ARRAY_OPERATOR_EQUAL(ARRAY_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.used == 0) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s));\n"
+,TYPE_NAME);
+   }
+   else {
+printf(
+"\n"
+"   %s *ptr = data;\n"
+"   %s *s_ptr = a_src.data;\n"
+"   %s *s_ptr_end = s_ptr + a_src.used;\n"
+"\n"
+"   do {\n"
+"      *ptr = *s_ptr;\n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"\n"
+"   used = a_src.used;\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline bool %s::operator==(%s &a_second)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"bool %s::operator==(%s &a_second)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (used != a_second.used) return false;\n"
+"   if (used == 0) return true;\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"\n"
+"   return (memcmp(data,a_second.data,used*sizeof(%s)) == 0);\n"
+,TYPE_NAME);
+   }
+   else {
+printf(
+"\n"
+"   %s *ptr = data;\n"
+"   %s *ptr_end = ptr + used;\n"
+"   %s *s_ptr = a_second.data;\n"
+"\n"
+"   do {\n"
+"      if (!(*ptr == *s_ptr)) {\n"
+"         return false;\n"
+"      }\n"
+"   } while(++s_ptr,++ptr < ptr_end);\n"
+"\n"
+"   return true;\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
 void processor_s::generate_array_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &fun_defs = cont_params.functions;
    string_array_s &abbs = cont_params.names;
@@ -4890,7 +4893,7 @@ void processor_s::generate_array_type()
    data_type_s &type = data_types[type_idx];
 
    // - test type options -
-   if (type.properties & c_type_setting_strict_dynamic) {
+   if (type.properties & c_type_option_strict_dynamic) {
       cassert(type.properties & c_type_dynamic);
    }
 
@@ -4916,7 +4919,7 @@ void processor_s::generate_array_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
 
       data_type.types.push(abbreviations[type_abb_idx].name);
 
@@ -4977,7 +4980,7 @@ printf(
 "   %s *data; //!< pointer to array elements\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize array\n"
@@ -4995,7 +4998,7 @@ printf(
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by array\n"
@@ -5015,7 +5018,7 @@ printf(
 ,TYPE_NAME);
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by array\n"
@@ -5059,7 +5062,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap array members with another array\n"
@@ -5193,7 +5196,7 @@ printf(
 ,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
@@ -5215,7 +5218,7 @@ printf(
 ,STRUCT_NAME);
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
@@ -5246,10 +5249,10 @@ printf(
 "};\n"
 "\n"
 );
-};
+}/*}}}*/
 
 void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -5271,65 +5274,65 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - array init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
-ARRAY_INIT();
+   if (!(data_type.properties & c_type_option_nogen_init)) {
+ARRAY_INIT(ARRAY_GEN_VALUES);
    }
 
    // - array init_size method -
-ARRAY_INIT_SIZE();
+ARRAY_INIT_SIZE(ARRAY_GEN_VALUES);
 
    // - array clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-ARRAY_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+ARRAY_CLEAR(ARRAY_GEN_VALUES);
       }
    }
 
    // - array set method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-ARRAY_SET();
+ARRAY_SET(ARRAY_GEN_VALUES);
    }
 
    // - array_flush_method -
-ARRAY_FLUSH();
+ARRAY_FLUSH(ARRAY_GEN_VALUES);
 
    // - array flush_all method -
    if (!(TYPE_NUMBER & c_type_flushable)) {
-ARRAY_FLUSH_ALL();
+ARRAY_FLUSH_ALL(ARRAY_GEN_VALUES);
    }
 
    // - array swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-ARRAY_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+ARRAY_SWAP(ARRAY_GEN_VALUES);
    }
 
    // - array operator[] method -
-ARRAY_OPERATOR_LE_BR_RE_BR();
+ARRAY_OPERATOR_LE_BR_RE_BR(ARRAY_GEN_VALUES);
 
    // - array push method -
-ARRAY_PUSH();
+ARRAY_PUSH(ARRAY_GEN_VALUES);
 
    // - array push_blank method -
-ARRAY_PUSH_BLANK();
+ARRAY_PUSH_BLANK(ARRAY_GEN_VALUES);
 
    // - array reserve method -
 
    // - array push_blanks method -
 
    // - array push_clear method -
-ARRAY_PUSH_CLEAR();
+ARRAY_PUSH_CLEAR(ARRAY_GEN_VALUES);
 
    // - array pop method -
-ARRAY_POP();
+ARRAY_POP(ARRAY_GEN_VALUES);
 
    // - array last method -
-ARRAY_LAST();
+ARRAY_LAST(ARRAY_GEN_VALUES);
 
    // - array copy_resize method -
 
    // - array fill method -
    if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
-ARRAY_FILL();   
+ARRAY_FILL(ARRAY_GEN_VALUES,type_idx);
    }
 
    // - array get_idx method -
@@ -5338,19 +5341,19 @@ ARRAY_FILL();
 
    // - array operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-ARRAY_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }
 
    // - array operator== method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-ARRAY_OPERATOR_DOUBLE_EQUAL();
+ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
-}
+}/*}}}*/
 
 void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -5377,21 +5380,21 @@ printf(
 
    // - array clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-ARRAY_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+ARRAY_CLEAR(ARRAY_GEN_VALUES);
       }
    }
 
    // - array set method -
    if (TYPE_NUMBER & c_type_dynamic) {
-ARRAY_SET();
+ARRAY_SET(ARRAY_GEN_VALUES);
    }
 
    // - array_flush_method -
 
    // - array flush_all method -
    if (TYPE_NUMBER & c_type_flushable) {
-ARRAY_FLUSH_ALL();
+ARRAY_FLUSH_ALL(ARRAY_GEN_VALUES);
    }
 
    // - array swap method -
@@ -5403,10 +5406,10 @@ ARRAY_FLUSH_ALL();
    // - array push_blank method -
 
    // - array reserve method -
-ARRAY_RESERVE();
+ARRAY_RESERVE(ARRAY_GEN_VALUES);
 
    // - array push_blanks method -
-ARRAY_PUSH_BLANKS();
+ARRAY_PUSH_BLANKS(ARRAY_GEN_VALUES);
 
    // - array push_clear method -
 
@@ -5415,567 +5418,570 @@ ARRAY_PUSH_BLANKS();
    // - array last method -
 
    // - array copy_resize method -
-ARRAY_COPY_RESIZE();
+ARRAY_COPY_RESIZE(ARRAY_GEN_VALUES);
 
    // - array fill method -
    if (type_idx != c_bt_bool && type_idx != c_bt_char && type_idx != c_bt_unsigned_char) {
-ARRAY_FILL();   
+ARRAY_FILL(ARRAY_GEN_VALUES,type_idx);
    }
 
    // - array get_idx method -
-ARRAY_GET_IDX();
+ARRAY_GET_IDX(ARRAY_GEN_VALUES);
 
    // - array operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-ARRAY_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }
 
    // - array operator== method -
    if (TYPE_NUMBER & c_type_dynamic) {
-ARRAY_OPERATOR_DOUBLE_EQUAL();
+ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
-}
+}/*}}}*/
 
 
-#define QUEUE_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   begin = 0;\n"\
-"   data = NULL;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+#define QUEUE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type
+#define QUEUE_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type
 
-#define QUEUE_INIT_SIZE() \
-{\
-printf(\
-"inline void %s::init_size(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   init();\n"\
-"   copy_resize(a_size);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void  QUEUE_INIT(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   begin = 0;\n"
+"   data = NULL;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define QUEUE_CLEAR() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"      %s *ptr = data;\n"\
-"      %s *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void  QUEUE_INIT_SIZE(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init_size(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   init();\n"
+"   copy_resize(a_size);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define QUEUE_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void  QUEUE_CLEAR(QUEUE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"      %s *ptr = data;\n"
+"      %s *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define QUEUE_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBER & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-);\
-   if (TYPE_NUMBER & c_type_flushable) {\
-printf(\
-"\n"\
-"   if (used == 0) return;\n"\
-"\n"\
-"   %s *ptr = data;\n"\
-"   %s *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void  QUEUE_FLUSH(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define QUEUE_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = begin;\n"\
-"   begin = a_second.begin;\n"\
-"   a_second.begin = tmp_unsigned;\n"\
-"\n"\
-"   %s *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);\
-}
+void  QUEUE_FLUSH_ALL(QUEUE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+);
+   if (TYPE_NUMBER & c_type_flushable) {
+printf(
+"\n"
+"   if (used == 0) return;\n"
+"\n"
+"   %s *ptr = data;\n"
+"   %s *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define QUEUE_INSERT() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (used >= size) {\n"\
-"      copy_resize((size << 1) + c_array_add);\n"\
-"   }\n"\
-"\n"\
-"   unsigned inserted_idx = begin + used++;\n"\
-"   if (inserted_idx >= size) {\n"\
-"      inserted_idx -= size;\n"\
-"   }\n"\
-"\n"\
-"   data[inserted_idx] = a_value;\n"\
-"\n"\
-"   return inserted_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void  QUEUE_SWAP(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = begin;\n"
+"   begin = a_second.begin;\n"
+"   a_second.begin = tmp_unsigned;\n"
+"\n"
+"   %s *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+}/*}}}*/
 
-#define QUEUE_INSERT_BLANK() \
-{\
-printf(\
-"inline unsigned %s::insert_blank()\n"\
-"{/*{{{*/\n"\
-"   if (used >= size) {\n"\
-"      copy_resize((size << 1) + c_array_add);\n"\
-"   }\n"\
-"\n"\
-"   unsigned inserted_idx = begin + used++;\n"\
-"   if (inserted_idx >= size) {\n"\
-"      inserted_idx -= size;\n"\
-"   }\n"\
-"\n"\
-"   return inserted_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void  QUEUE_INSERT(QUEUE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::insert(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::insert(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (used >= size) {\n"
+"      copy_resize((size << 1) + c_array_add);\n"
+"   }\n"
+"\n"
+"   unsigned inserted_idx = begin + used++;\n"
+"   if (inserted_idx >= size) {\n"
+"      inserted_idx -= size;\n"
+"   }\n"
+"\n"
+"   data[inserted_idx] = a_value;\n"
+"\n"
+"   return inserted_idx;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define QUEUE_NEXT() \
-{\
-printf(\
-"inline %s &%s::next()\n"\
-"{/*{{{*/\n"\
-"   debug_assert(used > 0);\n"\
-"\n"\
-"   unsigned ret_idx = begin;\n"\
-"\n"\
-"   if (++begin >= size) {\n"\
-"      begin = 0;\n"\
-"   }\n"\
-"\n"\
-"   used--;\n"\
-"   \n"\
-"   return data[ret_idx];\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void  QUEUE_INSERT_BLANK(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::insert_blank()\n"
+"{/*{{{*/\n"
+"   if (used >= size) {\n"
+"      copy_resize((size << 1) + c_array_add);\n"
+"   }\n"
+"\n"
+"   unsigned inserted_idx = begin + used++;\n"
+"   if (inserted_idx >= size) {\n"
+"      inserted_idx -= size;\n"
+"   }\n"
+"\n"
+"   return inserted_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define QUEUE_LAST() \
-{\
-printf(\
-"inline %s &%s::last()\n"\
-"{/*{{{*/\n"\
-"   debug_assert(used > 0);\n"\
-"\n"\
-"   unsigned last_idx = begin + (used - 1);\n"\
-"   if (last_idx >= size) {\n"\
-"      return data[last_idx - size];\n"\
-"   }\n"\
-"   else {\n"\
-"      return data[last_idx];\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void  QUEUE_NEXT(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::next()\n"
+"{/*{{{*/\n"
+"   debug_assert(used > 0);\n"
+"\n"
+"   unsigned ret_idx = begin;\n"
+"\n"
+"   if (++begin >= size) {\n"
+"      begin = 0;\n"
+"   }\n"
+"\n"
+"   used--;\n"
+"   \n"
+"   return data[ret_idx];\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define QUEUE_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"\
-,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s *ptr = n_data + used;\n"\
-"         %s *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-"   if (used != 0) {\n"\
-"      unsigned fir_cnt;\n"\
-"      unsigned sec_cnt;\n"\
-"\n"\
-"      if (begin + used > size) {\n"\
-"         sec_cnt = begin + used - size;\n"\
-"         fir_cnt = used - sec_cnt;\n"\
-"      }\n"\
-"      else {\n"\
-"         fir_cnt = used;\n"\
-"         sec_cnt = 0;\n"\
-"      }\n"\
-"\n"\
-"      memcpy(n_data,data + begin,fir_cnt*sizeof(%s));\n"\
-"\n"\
-"      if (sec_cnt != 0) {\n"\
-"         memcpy(n_data + fir_cnt,data,sec_cnt*sizeof(%s));\n"\
-"      }\n"\
-"   }\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"   if (size > used) {\n"\
-"      %s *ptr;\n"\
-"      %s *ptr_end;\n"\
-"      %s *s_ptr;\n"\
-"\n"\
-"      if (begin + used >= size) {\n"\
-"         ptr = data + (begin + used - size);\n"\
-"         ptr_end = data + begin;\n"\
-"         s_ptr = NULL;\n"\
-"      }\n"\
-"      else {\n"\
-"         ptr = data;\n"\
-"         ptr_end = data + begin;\n"\
-"         s_ptr = ptr_end + used;\n"\
-"      }\n"\
-"\n"\
-"      if (ptr < ptr_end) {\n"\
-"         do {\n"\
-"            ptr->clear();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-"\n"\
-"      if (s_ptr != NULL) {\n"\
-"         %s *s_ptr_end = data + size;\n"\
-"         do {\n"\
-"            s_ptr->clear();\n"\
-"         } while(++s_ptr < s_ptr_end);\n"\
-"      }\n"\
-"   }\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"   begin = 0;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void  QUEUE_LAST(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::last()\n"
+"{/*{{{*/\n"
+"   debug_assert(used > 0);\n"
+"\n"
+"   unsigned last_idx = begin + (used - 1);\n"
+"   if (last_idx >= size) {\n"
+"      return data[last_idx - size];\n"
+"   }\n"
+"   else {\n"
+"      return data[last_idx];\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define QUEUE_OPERATOR_EQUAL() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.used == 0) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-"\n"\
-);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   unsigned fir_cnt;\n"\
-"   unsigned sec_cnt;\n"\
-"\n"\
-"   if (a_src.begin + a_src.used > a_src.size) {\n"\
-"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"\
-"      fir_cnt = a_src.used - sec_cnt;\n"\
-"   }\n"\
-"   else {\n"\
-"      fir_cnt = a_src.used;\n"\
-"      sec_cnt = 0;\n"\
-"   }\n"\
-"\n"\
-"   memcpy(data,a_src.data + a_src.begin,fir_cnt*sizeof(%s));\n"\
-"\n"\
-"   if (sec_cnt != 0) {\n"\
-"      memcpy(data + fir_cnt,a_src.data,sec_cnt*sizeof(%s));\n"\
-"   }\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"   unsigned sec_cnt;\n"\
-"   %s *ptr = data;\n"\
-"   %s *s_ptr = a_src.data + a_src.begin;\n"\
-"   %s *s_ptr_end;\n"\
-"\n"\
-"   if (a_src.begin + a_src.used > a_src.size) {\n"\
-"      s_ptr_end = a_src.data + a_src.size;\n"\
-"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"\
-"   }\n"\
-"   else {\n"\
-"      s_ptr_end = s_ptr + a_src.used;\n"\
-"      sec_cnt = 0;\n"\
-"   }\n"\
-"\n"\
-"   do {\n"\
-"      *ptr = *s_ptr; \n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-"\n"\
-"   if (sec_cnt != 0) {\n"\
-"      s_ptr = a_src.data;\n"\
-"      s_ptr_end = s_ptr + sec_cnt;\n"\
-"\n"\
-"      do {\n"\
-"         *ptr = *s_ptr;\n"\
-"      } while(++ptr,++s_ptr < s_ptr_end);\n"\
-"   }\n"\
-"\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"   used = a_src.used;\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void  QUEUE_COPY_RESIZE(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
+,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s *ptr = n_data + used;\n"
+"         %s *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"   }\n"
+"\n"
+"   if (used != 0) {\n"
+"      unsigned fir_cnt;\n"
+"      unsigned sec_cnt;\n"
+"\n"
+"      if (begin + used > size) {\n"
+"         sec_cnt = begin + used - size;\n"
+"         fir_cnt = used - sec_cnt;\n"
+"      }\n"
+"      else {\n"
+"         fir_cnt = used;\n"
+"         sec_cnt = 0;\n"
+"      }\n"
+"\n"
+"      memcpy(n_data,data + begin,fir_cnt*sizeof(%s));\n"
+"\n"
+"      if (sec_cnt != 0) {\n"
+"         memcpy(n_data + fir_cnt,data,sec_cnt*sizeof(%s));\n"
+"      }\n"
+"   }\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"   if (size > used) {\n"
+"      %s *ptr;\n"
+"      %s *ptr_end;\n"
+"      %s *s_ptr;\n"
+"\n"
+"      if (begin + used >= size) {\n"
+"         ptr = data + (begin + used - size);\n"
+"         ptr_end = data + begin;\n"
+"         s_ptr = NULL;\n"
+"      }\n"
+"      else {\n"
+"         ptr = data;\n"
+"         ptr_end = data + begin;\n"
+"         s_ptr = ptr_end + used;\n"
+"      }\n"
+"\n"
+"      if (ptr < ptr_end) {\n"
+"         do {\n"
+"            ptr->clear();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+"\n"
+"      if (s_ptr != NULL) {\n"
+"         %s *s_ptr_end = data + size;\n"
+"         do {\n"
+"            s_ptr->clear();\n"
+"         } while(++s_ptr < s_ptr_end);\n"
+"      }\n"
+"   }\n"
+"\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"   begin = 0;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define QUEUE_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   if (used != a_second.used) return false;\n"\
-"   if (used == 0) return true;\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   bool _break;\n"\
-"   bool s_break;\n"\
-"   unsigned pos;\n"\
-"   unsigned pos_end;\n"\
-"   unsigned s_pos;\n"\
-"\n"\
-"   _break = (begin + used > size);\n"\
-"   s_break = (a_second.begin + a_second.used > a_second.size);\n"\
-"   pos = begin;\n"\
-"   s_pos = a_second.begin;\n"\
-"\n"\
-"   if (_break) {\n"\
-"      pos_end = begin + used - size;\n"\
-"   }\n"\
-"   else {\n"\
-"      pos_end = begin + used;\n"\
-"   }\n"\
-"\n"\
-"   do {\n"\
-"      if (_break) {\n"\
-"         unsigned offset = size - pos;\n"\
-"         \n"\
-"         if (s_break) {\n"\
-"            unsigned s_offset = a_second.size = s_pos;\n"\
-"\n"\
-"            if (offset < s_offset) {\n"\
-"               if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"                  return false;\n"\
-"               }\n"\
-"\n"\
-"               s_pos += offset;\n"\
-"               pos = 0;\n"\
-"               _break = false;\n"\
-"            }\n"\
-"            else {\n"\
-"               if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"                  return false;\n"\
-"               }\n"\
-"\n"\
-"               if (pos += s_offset >= size) {\n"\
-"                  pos = 0;\n"\
-"                  _break = false;\n"\
-"               }\n"\
-"               s_pos = 0;\n"\
-"               s_break = false;\n"\
-"            }\n"\
-"         }\n"\
-"         else {\n"\
-"            if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"\
-"               return false;\n"\
-"            }\n"\
-"            s_pos += offset;\n"\
-"            pos = 0;\n"\
-"            _break = false;\n"\
-"         }\n"\
-"      }\n"\
-"      else {\n"\
-"         if (s_break) {\n"\
-"            unsigned s_offset = a_second.size - s_pos;\n"\
-"\n"\
-"            if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"\
-"               return false;\n"\
-"            }\n"\
-"            pos += s_offset;\n"\
-"            s_pos = 0;\n"\
-"            s_break = false;\n"\
-"         }\n"\
-"         else {\n"\
-"            if (memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"\
-"               return false;\n"\
-"            }\n"\
-"            else {\n"\
-"               return true;\n"\
-"            }\n"\
-"         }\n"\
-"      }\n"\
-"   } while(1);\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"   %s *ptr = data + begin;\n"\
-"   %s *ptr_break = data + size;\n"\
-"   %s *ptr_end;\n"\
-"   %s *s_ptr = a_second.data + a_second.begin;\n"\
-"   %s *s_ptr_break = a_second.data + a_second.size;\n"\
-"\n"\
-"   if (begin + used > size) {\n"\
-"      ptr_end = data + (begin + used - size);\n"\
-"   }\n"\
-"   else {\n"\
-"      ptr_end = ptr + used;\n"\
-"   }\n"\
-"\n"\
-"   do {\n"\
-"      if (!(*ptr == *s_ptr)) {\n"\
-"         return false;\n"\
-"      }\n"\
-"      \n"\
-"      if (++ptr >= ptr_break) {\n"\
-"         ptr = data;\n"\
-"      }\n"\
-"\n"\
-"      if (++s_ptr >= s_ptr_break) {\n"\
-"         s_ptr = a_second.data;\n"\
-"      }\n"\
-"\n"\
-"   } while(ptr != ptr_end);\n"\
-"\n"\
-"   return true;\n"\
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void  QUEUE_OPERATOR_EQUAL(QUEUE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.used == 0) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+"\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   unsigned fir_cnt;\n"
+"   unsigned sec_cnt;\n"
+"\n"
+"   if (a_src.begin + a_src.used > a_src.size) {\n"
+"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"
+"      fir_cnt = a_src.used - sec_cnt;\n"
+"   }\n"
+"   else {\n"
+"      fir_cnt = a_src.used;\n"
+"      sec_cnt = 0;\n"
+"   }\n"
+"\n"
+"   memcpy(data,a_src.data + a_src.begin,fir_cnt*sizeof(%s));\n"
+"\n"
+"   if (sec_cnt != 0) {\n"
+"      memcpy(data + fir_cnt,a_src.data,sec_cnt*sizeof(%s));\n"
+"   }\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"   unsigned sec_cnt;\n"
+"   %s *ptr = data;\n"
+"   %s *s_ptr = a_src.data + a_src.begin;\n"
+"   %s *s_ptr_end;\n"
+"\n"
+"   if (a_src.begin + a_src.used > a_src.size) {\n"
+"      s_ptr_end = a_src.data + a_src.size;\n"
+"      sec_cnt = a_src.begin + a_src.used - a_src.size;\n"
+"   }\n"
+"   else {\n"
+"      s_ptr_end = s_ptr + a_src.used;\n"
+"      sec_cnt = 0;\n"
+"   }\n"
+"\n"
+"   do {\n"
+"      *ptr = *s_ptr; \n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+"\n"
+"   if (sec_cnt != 0) {\n"
+"      s_ptr = a_src.data;\n"
+"      s_ptr_end = s_ptr + sec_cnt;\n"
+"\n"
+"      do {\n"
+"         *ptr = *s_ptr;\n"
+"      } while(++ptr,++s_ptr < s_ptr_end);\n"
+"   }\n"
+"\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"   used = a_src.used;\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void  QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   if (used != a_second.used) return false;\n"
+"   if (used == 0) return true;\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   bool _break;\n"
+"   bool s_break;\n"
+"   unsigned pos;\n"
+"   unsigned pos_end;\n"
+"   unsigned s_pos;\n"
+"\n"
+"   _break = (begin + used > size);\n"
+"   s_break = (a_second.begin + a_second.used > a_second.size);\n"
+"   pos = begin;\n"
+"   s_pos = a_second.begin;\n"
+"\n"
+"   if (_break) {\n"
+"      pos_end = begin + used - size;\n"
+"   }\n"
+"   else {\n"
+"      pos_end = begin + used;\n"
+"   }\n"
+"\n"
+"   do {\n"
+"      if (_break) {\n"
+"         unsigned offset = size - pos;\n"
+"         \n"
+"         if (s_break) {\n"
+"            unsigned s_offset = a_second.size = s_pos;\n"
+"\n"
+"            if (offset < s_offset) {\n"
+"               if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"
+"                  return false;\n"
+"               }\n"
+"\n"
+"               s_pos += offset;\n"
+"               pos = 0;\n"
+"               _break = false;\n"
+"            }\n"
+"            else {\n"
+"               if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"
+"                  return false;\n"
+"               }\n"
+"\n"
+"               if (pos += s_offset >= size) {\n"
+"                  pos = 0;\n"
+"                  _break = false;\n"
+"               }\n"
+"               s_pos = 0;\n"
+"               s_break = false;\n"
+"            }\n"
+"         }\n"
+"         else {\n"
+"            if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"
+"               return false;\n"
+"            }\n"
+"            s_pos += offset;\n"
+"            pos = 0;\n"
+"            _break = false;\n"
+"         }\n"
+"      }\n"
+"      else {\n"
+"         if (s_break) {\n"
+"            unsigned s_offset = a_second.size - s_pos;\n"
+"\n"
+"            if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"
+"               return false;\n"
+"            }\n"
+"            pos += s_offset;\n"
+"            s_pos = 0;\n"
+"            s_break = false;\n"
+"         }\n"
+"         else {\n"
+"            if (memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"
+"               return false;\n"
+"            }\n"
+"            else {\n"
+"               return true;\n"
+"            }\n"
+"         }\n"
+"      }\n"
+"   } while(1);\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"   %s *ptr = data + begin;\n"
+"   %s *ptr_break = data + size;\n"
+"   %s *ptr_end;\n"
+"   %s *s_ptr = a_second.data + a_second.begin;\n"
+"   %s *s_ptr_break = a_second.data + a_second.size;\n"
+"\n"
+"   if (begin + used > size) {\n"
+"      ptr_end = data + (begin + used - size);\n"
+"   }\n"
+"   else {\n"
+"      ptr_end = ptr + used;\n"
+"   }\n"
+"\n"
+"   do {\n"
+"      if (!(*ptr == *s_ptr)) {\n"
+"         return false;\n"
+"      }\n"
+"      \n"
+"      if (++ptr >= ptr_break) {\n"
+"         ptr = data;\n"
+"      }\n"
+"\n"
+"      if (++s_ptr >= s_ptr_break) {\n"
+"         s_ptr = a_second.data;\n"
+"      }\n"
+"\n"
+"   } while(ptr != ptr_end);\n"
+"\n"
+"   return true;\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
 void processor_s::generate_queue_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &fun_defs = cont_params.functions;
    string_array_s &abbs = cont_params.names;
@@ -6000,7 +6006,7 @@ void processor_s::generate_queue_type()
    data_type_s &type = data_types[type_idx];
 
    // - test type options -
-   if (type.properties & c_type_setting_strict_dynamic) {
+   if (type.properties & c_type_option_strict_dynamic) {
       fprintf(stderr,"queue: container have not implemented processing of types with option strict_dynamic\n");
       cassert(0);
    }
@@ -6027,7 +6033,7 @@ void processor_s::generate_queue_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -6088,7 +6094,7 @@ printf(
 "   %s *data; //!< pointer to queue elements\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize queue\n"
@@ -6106,7 +6112,7 @@ printf(
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by queue\n"
@@ -6117,7 +6123,7 @@ printf(
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by queue\n"
@@ -6152,7 +6158,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of queue with another queue\n"
@@ -6210,7 +6216,7 @@ printf(
 "   void copy_resize(unsigned a_size);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -6255,10 +6261,10 @@ printf(
 "};\n"
 "\n"
 );
-};
+}/*}}}*/
 
 void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -6280,59 +6286,59 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - queue init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
-QUEUE_INIT();
+   if (!(data_type.properties & c_type_option_nogen_init)) {
+QUEUE_INIT(QUEUE_GEN_VALUES);
    }
 
    // - queue init_size method -
-QUEUE_INIT_SIZE();
+QUEUE_INIT_SIZE(QUEUE_GEN_VALUES);
 
    // - queue clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-QUEUE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+QUEUE_CLEAR(QUEUE_GEN_VALUES);
       }
    }
 
    // - queue flush method -
-QUEUE_FLUSH();
+QUEUE_FLUSH(QUEUE_GEN_VALUES);
 
    // - queue flush_all method -
    if (!(TYPE_NUMBER & c_type_flushable)) {
-QUEUE_FLUSH_ALL();
+QUEUE_FLUSH_ALL(QUEUE_GEN_VALUES);
    }
 
    // - queue swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-QUEUE_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+QUEUE_SWAP(QUEUE_GEN_VALUES);
    }
 
    // - queue insert method -
-QUEUE_INSERT();
+QUEUE_INSERT(QUEUE_GEN_VALUES);
 
    // - queue insert_blank method -
-QUEUE_INSERT_BLANK();
+QUEUE_INSERT_BLANK(QUEUE_GEN_VALUES);
 
    // - queue next method -
-QUEUE_NEXT();
+QUEUE_NEXT(QUEUE_GEN_VALUES);
 
    // - queue last method -
-QUEUE_LAST();
+QUEUE_LAST(QUEUE_GEN_VALUES);
 
    // - queue copy_resize method -
 
    // - queue operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-QUEUE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }
 
    // - queue operator== method -
-}
+}/*}}}*/
 
 void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -6359,8 +6365,8 @@ printf(
 
    // - queue clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-QUEUE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+QUEUE_CLEAR(QUEUE_GEN_VALUES);
       }
    }
 
@@ -6368,7 +6374,7 @@ QUEUE_CLEAR();
 
    // - queue flush_all method -
    if (TYPE_NUMBER & c_type_flushable) {
-QUEUE_FLUSH_ALL();
+QUEUE_FLUSH_ALL(QUEUE_GEN_VALUES);
    }
 
    // - queue swap method -
@@ -6382,777 +6388,780 @@ QUEUE_FLUSH_ALL();
    // - queue last method -
 
    // - queue copy_resize method -
-QUEUE_COPY_RESIZE();
+QUEUE_COPY_RESIZE(QUEUE_GEN_VALUES);
 
    // - queue operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-QUEUE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }
 
    // - queue operator== method -
-QUEUE_OPERATOR_DOUBLE_EQUAL();
-}
+QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_VALUES);
+}/*}}}*/
 
 
-#define LIST_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   data = NULL;\n"\
-"   free_idx = c_idx_not_exist;\n"\
-"   first_idx = c_idx_not_exist;\n"\
-"   last_idx = c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+#define LIST_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type
+#define LIST_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type
 
-#define LIST_INIT_SIZE() \
-{\
-printf(\
-"inline void %s::init_size(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   init();\n"\
-"   copy_resize(a_size);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_INIT(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   data = NULL;\n"
+"   free_idx = c_idx_not_exist;\n"
+"   first_idx = c_idx_not_exist;\n"
+"   last_idx = c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_CLEAR() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"      %s_element *ptr = data;\n"\
-"      %s_element *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_INIT_SIZE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init_size(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   init();\n"
+"   copy_resize(a_size);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_CLEAR(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"      %s_element *ptr = data;\n"
+"      %s_element *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define LIST_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBER & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-);\
-   if (TYPE_NUMBER & c_type_flushable) {\
-printf(\
-"   %s_element *ptr = data;\n"\
-"   %s_element *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object.flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_FLUSH(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   %s_element *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"\n"\
-"   tmp_unsigned = free_idx;\n"\
-"   free_idx = a_second.free_idx;\n"\
-"   a_second.free_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = first_idx;\n"\
-"   first_idx = a_second.first_idx;\n"\
-"   a_second.first_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = last_idx;\n"\
-"   last_idx = a_second.last_idx;\n"\
-"   a_second.last_idx = tmp_unsigned;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_FLUSH_ALL(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+);
+   if (TYPE_NUMBER & c_type_flushable) {
+printf(
+"   %s_element *ptr = data;\n"
+"   %s_element *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->object.flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define LIST_OPERATOR_LE_BR_RE_BR() \
-{\
-printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"   return data[a_idx].object;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void LIST_SWAP(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   %s_element *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"\n"
+"   tmp_unsigned = free_idx;\n"
+"   free_idx = a_second.free_idx;\n"
+"   a_second.free_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = first_idx;\n"
+"   first_idx = a_second.first_idx;\n"
+"   a_second.first_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = last_idx;\n"
+"   last_idx = a_second.last_idx;\n"
+"   a_second.last_idx = tmp_unsigned;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_PREPEND() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::prepend(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::prepend(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = first_idx;\n"\
-"   new_element.prev_idx = c_idx_not_exist;\n"\
-"\n"\
-"   if (first_idx != c_idx_not_exist) {\n"\
-"      data[first_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   first_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator[](unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"   return data[a_idx].object;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_APPEND() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::append(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::append(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = c_idx_not_exist;\n"\
-"   new_element.prev_idx = last_idx;\n"\
-"\n"\
-"   if (last_idx != c_idx_not_exist) {\n"\
-"      data[last_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   last_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_PREPEND(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::prepend(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::prepend(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = first_idx;\n"
+"   new_element.prev_idx = c_idx_not_exist;\n"
+"\n"
+"   if (first_idx != c_idx_not_exist) {\n"
+"      data[first_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   first_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_BEFORE() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = a_idx;\n"\
-"   new_element.prev_idx = idx_element.prev_idx;\n"\
-"\n"\
-"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.prev_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_APPEND(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::append(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::append(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = c_idx_not_exist;\n"
+"   new_element.prev_idx = last_idx;\n"
+"\n"
+"   if (last_idx != c_idx_not_exist) {\n"
+"      data[last_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   last_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_AFTER() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = idx_element.next_idx;\n"\
-"   new_element.prev_idx = a_idx;\n"\
-"\n"\
-"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.next_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_BEFORE(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = a_idx;\n"
+"   new_element.prev_idx = idx_element.prev_idx;\n"
+"\n"
+"   if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"      data[idx_element.prev_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.prev_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_PREPEND_BLANK() \
-{\
-printf(\
-"inline unsigned %s::prepend_blank()\n"\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = first_idx;\n"\
-"   new_element.prev_idx = c_idx_not_exist;\n"\
-"\n"\
-"   if (first_idx != c_idx_not_exist) {\n"\
-"      data[first_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   first_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_AFTER(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = idx_element.next_idx;\n"
+"   new_element.prev_idx = a_idx;\n"
+"\n"
+"   if (idx_element.next_idx != c_idx_not_exist) {\n"
+"      data[idx_element.next_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.next_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_APPEND_BLANK() \
-{\
-printf(\
-"inline unsigned %s::append_blank()\n"\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = c_idx_not_exist;\n"\
-"   new_element.prev_idx = last_idx;\n"\
-"\n"\
-"   if (last_idx != c_idx_not_exist) {\n"\
-"      data[last_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   last_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_PREPEND_BLANK(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::prepend_blank()\n"
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = first_idx;\n"
+"   new_element.prev_idx = c_idx_not_exist;\n"
+"\n"
+"   if (first_idx != c_idx_not_exist) {\n"
+"      data[first_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   first_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_BLANK_BEFORE() \
-{\
-printf(\
-"inline unsigned %s::insert_blank_before(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = a_idx;\n"\
-"   new_element.prev_idx = idx_element.prev_idx;\n"\
-"\n"\
-"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.prev_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_APPEND_BLANK(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::append_blank()\n"
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = c_idx_not_exist;\n"
+"   new_element.prev_idx = last_idx;\n"
+"\n"
+"   if (last_idx != c_idx_not_exist) {\n"
+"      data[last_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   last_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_BLANK_AFTER() \
-{\
-printf(\
-"inline unsigned %s::insert_blank_after(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = idx_element.next_idx;\n"\
-"   new_element.prev_idx = a_idx;\n"\
-"\n"\
-"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.next_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::insert_blank_before(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = a_idx;\n"
+"   new_element.prev_idx = idx_element.prev_idx;\n"
+"\n"
+"   if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"      data[idx_element.prev_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.prev_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_REMOVE() \
-{\
-printf(\
-"inline void %s::remove(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_element &rm_element = data[a_idx];\n"\
-"\n"\
-"   if (rm_element.next_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = rm_element.prev_idx;\n"\
-"   }\n"\
-"\n"\
-"   if (rm_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = rm_element.next_idx;\n"\
-"   }\n"\
-"\n"\
-"   rm_element.next_idx = free_idx;\n"\
-"   free_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::insert_blank_after(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = idx_element.next_idx;\n"
+"   new_element.prev_idx = a_idx;\n"
+"\n"
+"   if (idx_element.next_idx != c_idx_not_exist) {\n"
+"      data[idx_element.next_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.next_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_NEXT_IDX() \
-{\
-printf(\
-"inline unsigned %s::next_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   return data[a_idx].next_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_REMOVE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::remove(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_element &rm_element = data[a_idx];\n"
+"\n"
+"   if (rm_element.next_idx != c_idx_not_exist) {\n"
+"      data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = rm_element.prev_idx;\n"
+"   }\n"
+"\n"
+"   if (rm_element.prev_idx != c_idx_not_exist) {\n"
+"      data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = rm_element.next_idx;\n"
+"   }\n"
+"\n"
+"   rm_element.next_idx = free_idx;\n"
+"   free_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_PREV_IDX() \
-{\
-printf(\
-"inline unsigned %s::prev_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   return data[a_idx].prev_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_NEXT_IDX(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::next_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   return data[a_idx].next_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s_element *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s_element *ptr = n_data + used;\n"\
-"         %s_element *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->object.init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s_element));\n"\
-"   }\n"\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"   if (size > used) {\n"\
-"      %s_element *ptr = data + used;\n"\
-"      %s_element *ptr_end = data + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"   }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_PREV_IDX(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::prev_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   return data[a_idx].prev_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_GET_IDX() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"\
-"\n"\
-"   unsigned idx = first_idx;\n"\
-"   do {\n"\
-"      %s_element &element = data[idx];\n"\
-"\n"\
-"      if (element.object == a_value) {\n"\
-"         return idx;\n"\
-"      }\n"\
-"\n"\
-"      idx = element.next_idx;\n"\
-"   } while(idx != c_idx_not_exist);\n"\
-"\n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_COPY_RESIZE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s_element *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s_element *ptr = n_data + used;\n"
+"         %s_element *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->object.init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   }\n"
+"\n"
+"   if (used != 0) {\n"
+"      memcpy(n_data,data,used*sizeof(%s_element));\n"
+"   }\n"
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"   if (size > used) {\n"
+"      %s_element *ptr = data + used;\n"
+"      %s_element *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define LIST_OPERATOR_EQUAL() \
-{\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.used == 0) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"\n"\
-"   %s_element *ptr = data;\n"\
-"   %s_element *s_ptr = a_src.data;\n"\
-"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object = s_ptr->object;\n"\
-"      ptr->next_idx = s_ptr->next_idx;\n"\
-"      ptr->prev_idx = s_ptr->prev_idx;\n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = a_src.used;\n"\
-"   free_idx = a_src.free_idx;\n"\
-"   first_idx = a_src.first_idx;\n"\
-"   last_idx = a_src.last_idx;\n"\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_GET_IDX(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"unsigned %s::get_idx(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"unsigned %s::get_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"
+"\n"
+"   unsigned idx = first_idx;\n"
+"   do {\n"
+"      %s_element &element = data[idx];\n"
+"\n"
+"      if (element.object == a_value) {\n"
+"         return idx;\n"
+"      }\n"
+"\n"
+"      idx = element.next_idx;\n"
+"   } while(idx != c_idx_not_exist);\n"
+"\n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   if (first_idx == c_idx_not_exist) {\n"\
-"      return a_second.first_idx == c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   if (a_second.first_idx == c_idx_not_exist) {\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   unsigned idx = first_idx;\n"\
-"   unsigned s_idx = a_second.first_idx;\n"\
-"\n"\
-"   do {\n"\
-"      %s_element &element = data[idx];\n"\
-"      %s_element &s_element = a_second.data[s_idx];\n"\
-"\n"\
-"      if (!(element.object == s_element.object)) {\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      idx = element.next_idx;\n"\
-"      s_idx = s_element.next_idx;\n"\
-"\n"\
-"   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);\n"\
-"\n"\
-"   return idx == s_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_OPERATOR_EQUAL(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.used == 0) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"\n"
+"   %s_element *ptr = data;\n"
+"   %s_element *s_ptr = a_src.data;\n"
+"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"
+"\n"
+"   do {\n"
+"      ptr->object = s_ptr->object;\n"
+"      ptr->next_idx = s_ptr->next_idx;\n"
+"      ptr->prev_idx = s_ptr->prev_idx;\n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   used = a_src.used;\n"
+"   free_idx = a_src.free_idx;\n"
+"   first_idx = a_src.first_idx;\n"
+"   last_idx = a_src.last_idx;\n"
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   if (first_idx == c_idx_not_exist) {\n"
+"      return a_second.first_idx == c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   if (a_second.first_idx == c_idx_not_exist) {\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   unsigned idx = first_idx;\n"
+"   unsigned s_idx = a_second.first_idx;\n"
+"\n"
+"   do {\n"
+"      %s_element &element = data[idx];\n"
+"      %s_element &s_element = a_second.data[s_idx];\n"
+"\n"
+"      if (!(element.object == s_element.object)) {\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      idx = element.next_idx;\n"
+"      s_idx = s_element.next_idx;\n"
+"\n"
+"   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);\n"
+"\n"
+"   return idx == s_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
 void processor_s::generate_list_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &fun_defs = cont_params.functions;
    string_array_s &abbs = cont_params.names;
@@ -7177,7 +7186,7 @@ void processor_s::generate_list_type()
    data_type_s &type = data_types[type_idx];
 
    // - test type options -
-   if (type.properties & c_type_setting_strict_dynamic) {
+   if (type.properties & c_type_option_strict_dynamic) {
       fprintf(stderr,"list: container have not implemented processing of types with option strict_dynamic\n");
       cassert(0);
    }
@@ -7204,7 +7213,7 @@ void processor_s::generate_list_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -7278,7 +7287,7 @@ printf(
 "   unsigned last_idx; //!< index of last element\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize list\n"
@@ -7296,7 +7305,7 @@ printf(
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by list\n"
@@ -7307,7 +7316,7 @@ printf(
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by list\n"
@@ -7342,7 +7351,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of list with another list\n"
@@ -7476,7 +7485,7 @@ printf(
 "   unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -7521,10 +7530,10 @@ printf(
 "};\n"
 "\n"
 );
-}
+}/*}}}*/
 
 void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -7546,68 +7555,68 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - list init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
-LIST_INIT();
+   if (!(data_type.properties & c_type_option_nogen_init)) {
+LIST_INIT(LIST_GEN_VALUES);
    }
 
    // - list init_size method -
-LIST_INIT_SIZE();
+LIST_INIT_SIZE(LIST_GEN_VALUES);
 
    // - list clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-LIST_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+LIST_CLEAR(LIST_GEN_VALUES);
       }
    }
 
    // - list flush method -
-LIST_FLUSH();
+LIST_FLUSH(LIST_GEN_VALUES);
 
    // - list flush_all method -
    if (!(TYPE_NUMBER & c_type_flushable)) {
-LIST_FLUSH_ALL();
+LIST_FLUSH_ALL(LIST_GEN_VALUES);
    }
 
    // - list swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-LIST_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+LIST_SWAP(LIST_GEN_VALUES);
    }
 
    // - list operator[] method -
-LIST_OPERATOR_LE_BR_RE_BR();
+LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_VALUES);
 
    // - list prepend method -
-LIST_PREPEND();
+LIST_PREPEND(LIST_GEN_VALUES);
 
    // - list append method -
-LIST_APPEND();
+LIST_APPEND(LIST_GEN_VALUES);
 
    // - list insert_before method -
-LIST_INSERT_BEFORE();
+LIST_INSERT_BEFORE(LIST_GEN_VALUES);
 
    // - list insert_after method -
-LIST_INSERT_AFTER();
+LIST_INSERT_AFTER(LIST_GEN_VALUES);
 
    // - list prepend_blank method -
-LIST_PREPEND_BLANK();
+LIST_PREPEND_BLANK(LIST_GEN_VALUES);
 
    // - list append_blank method -
-LIST_APPEND_BLANK();
+LIST_APPEND_BLANK(LIST_GEN_VALUES);
 
    // - list insert_blank_before method -
-LIST_INSERT_BLANK_BEFORE();
+LIST_INSERT_BLANK_BEFORE(LIST_GEN_VALUES);
 
    // - list insert_blank_after method -
-LIST_INSERT_BLANK_AFTER();
+LIST_INSERT_BLANK_AFTER(LIST_GEN_VALUES);
 
    // - list remove method -
-LIST_REMOVE();
+LIST_REMOVE(LIST_GEN_VALUES);
 
    // - list next_idx method -
-LIST_NEXT_IDX();
+LIST_NEXT_IDX(LIST_GEN_VALUES);
 
    // - list prev_idx method -
-LIST_PREV_IDX();
+LIST_PREV_IDX(LIST_GEN_VALUES);
 
    // - list copy_resize method -
 
@@ -7615,17 +7624,17 @@ LIST_PREV_IDX();
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-LIST_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
       }
    }
 
    // - list operator== method -
 
-}
+}/*}}}*/
 
 void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -7652,8 +7661,8 @@ printf(
 
    // - list clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-LIST_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+LIST_CLEAR(LIST_GEN_VALUES);
       }
    }
 
@@ -7661,7 +7670,7 @@ LIST_CLEAR();
 
    // - list flush_all method -
    if (TYPE_NUMBER & c_type_flushable) {
-LIST_FLUSH_ALL();
+LIST_FLUSH_ALL(LIST_GEN_VALUES);
    }
 
    // - list swap method - 
@@ -7683,207 +7692,209 @@ LIST_FLUSH_ALL();
    // - list prev_idx method -
 
    // - list copy_resize method -
-LIST_COPY_RESIZE();
+LIST_COPY_RESIZE(LIST_GEN_VALUES);
 
    // - list get_idx method -
-LIST_GET_IDX();
+LIST_GET_IDX(LIST_GEN_VALUES);
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-LIST_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
       }
    }
 
    // - list operator== method -
-LIST_OPERATOR_DOUBLE_EQUAL();
+LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_VALUES);
 
-}
+}/*}}}*/
 
 
+#define STRUCT_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
+#define STRUCT_GEN_VALUES abbreviations,abb_idx,type_cnt,data_type,types
 
-#define STRUCT_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
-printf(\
-"   %s.init();\n"\
-,VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_INIT(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+printf(
+"   %s.init();\n"
+,VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_CLEAR() \
-{\
-printf(\
-"inline void %s::clear()\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
-printf(\
-"   %s.clear();\n"\
-,VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::clear()\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+printf(
+"   %s.clear();\n"
+,VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_SET() \
-{\
-printf(\
-"inline void %s::set("\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"%s a_%s"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0));\
-   }\
-   else {\
-printf(\
-"%s &a_%s"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0));\
-   }\
-   if (TYPE_CNT > 1) {\
-      unsigned t_idx = 1;\
-      do {\
-         if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-",%s a_%s"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-         else {\
-printf(\
-",%s &a_%s"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < TYPE_CNT);\
-   }\
-printf(\
-")\n"\
-"{/*{{{*/\n"\
-);\
-   t_idx = 0;\
-   do {\
-printf(\
-"   %s = a_%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_SET(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::set("
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"%s a_%s"
+,IM_TYPE_NAMES(0),VAR_NAMES(0));
+   }
+   else {
+printf(
+"%s &a_%s"
+,IM_TYPE_NAMES(0),VAR_NAMES(0));
+   }
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+         if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+",%s a_%s"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+         else {
+printf(
+",%s &a_%s"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < TYPE_CNT);
+   }
+printf(
+")\n"
+"{/*{{{*/\n"
+);
+   unsigned t_idx = 0;
+   do {
+printf(
+"   %s = a_%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_FLUSH_ALL() \
-{\
-printf(\
-"inline void %s::flush_all()\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_flushable) {\
-printf(\
-"   %s.flush_all();\n"\
-,VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush_all()\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
+printf(
+"   %s.flush_all();\n"
+,VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-printf(\
-"\n"\
-);\
-      if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-"   %s tmp_%s = %s;\n"\
-"   %s = a_second.%s;\n"\
-"   a_second.%s = tmp_%s;\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-      else {\
-printf(\
-"   %s.swap(a_second.%s);\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_SWAP(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+printf(
+"\n"
+);
+      if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+"   %s tmp_%s = %s;\n"
+"   %s = a_second.%s;\n"
+"   a_second.%s = tmp_%s;\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+      else {
+printf(
+"   %s.swap(a_second.%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_OPERATOR_EQUAL() \
-{\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-printf(\
-"   %s = a_src.%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+printf(
+"   %s = a_src.%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+   } while(++t_idx < TYPE_CNT);
+printf(
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"inline bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   return (%s == a_second.%s"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,VAR_NAMES(0),VAR_NAMES(0));\
-   if (TYPE_CNT > 1) {\
-      t_idx = 1;\
-      do {\
-printf(\
-" && %s == a_second.%s"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      } while(++t_idx < TYPE_CNT);\
-   }\
-printf(\
-");\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   return (%s == a_second.%s"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,VAR_NAMES(0),VAR_NAMES(0));
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+printf(
+" && %s == a_second.%s"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < TYPE_CNT);
+   }
+printf(
+");\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
 void processor_s::generate_struct_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
    string_array_s &comp_idx_strings = cont_params.compare;
@@ -7918,7 +7929,7 @@ void processor_s::generate_struct_type()
 
          // - test type options -
          data_type_s &type = data_types[type_idx];
-         if (type.properties & c_type_setting_strict_dynamic) {
+         if (type.properties & c_type_option_strict_dynamic) {
             cassert(type.properties & c_type_dynamic);
          }
 
@@ -8002,7 +8013,7 @@ void processor_s::generate_struct_type()
       } while(++t_pptr < t_pptr_end);
 
       data_type.properties = (c_type_static << dynamic) | (flushable << 3) | (comp_idx_strings.used != 0) << 4;
-      data_type.properties |= type_settings & c_type_setting_mask;
+      data_type.properties |= type_settings & c_type_option_mask;
 
       {
          string_array_s &dt_type_names = data_type.types;
@@ -8076,7 +8087,7 @@ printf(
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
 
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "\n"
 "   /*!\n"
@@ -8086,7 +8097,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+   if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by structure\n"
@@ -8134,7 +8145,7 @@ printf(
 "   inline void flush_all();\n"
 "\n"
 );
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap structure members with another structure\n"
@@ -8143,7 +8154,7 @@ printf(
 "\n"
 ,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy structure from another structure\n"
@@ -8175,10 +8186,10 @@ printf(
 "};\n"
 "\n"
 );
-};
+}/*}}}*/
 
 void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -8202,8 +8213,6 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // - definition of inline methods -
 
 printf(
@@ -8212,38 +8221,38 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - struct init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
-STRUCT_INIT();
+   if (!(data_type.properties & c_type_option_nogen_init)) {
+STRUCT_INIT(STRUCT_GEN_VALUES);
    }
 
    // - struct clear method -
-   if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-STRUCT_CLEAR();
+   if (!(data_type.properties & c_type_option_nogen_clear)) {
+STRUCT_CLEAR(STRUCT_GEN_VALUES);
    }
 
    // - struct set method -
-STRUCT_SET();
+STRUCT_SET(STRUCT_GEN_VALUES);
 
    // - struct flush_all method  -
-STRUCT_FLUSH_ALL();
+STRUCT_FLUSH_ALL(STRUCT_GEN_VALUES);
 
    // - struct swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-STRUCT_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+STRUCT_SWAP(STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-STRUCT_OPERATOR_EQUAL();
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
    }
 
    // - struct operator== method -
-STRUCT_OPERATOR_DOUBLE_EQUAL();
+STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
 
-}
+}/*}}}*/
 
 void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -8284,1585 +8293,1588 @@ printf(
    // - struct operator== method -
 
    // - struct part_compare method -
-}
+}/*}}}*/
 
 
 //#define RB_TREE_GENERATE_PRINT_DOT_CODE
 //#define RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
 
-#define RB_TREE___GET_GRANDPARENT_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_grandparent_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.parent_idx != c_idx_not_exist) {\n"\
-"      return data[node.parent_idx].parent_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+#define RB_TREE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,data_type_s &data_type,data_type_s **types
+#define RB_TREE_GEN_VALUES abbreviations,abb_idx,data_type,types
 
-#define RB_TREE___GET_UNCLE_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_uncle_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned gp_idx = __get_grandparent_idx(a_idx);\n"\
-"\n"\
-"   if (gp_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &gp = data[gp_idx];\n"\
-"      return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_GRANDPARENT_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_grandparent_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.parent_idx != c_idx_not_exist) {\n"
+"      return data[node.parent_idx].parent_idx;\n"
+"   }\n"
+"   else {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___GET_SIBLING_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_sibling_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &p = data[data[a_idx].parent_idx];\n"\
-"   return p.left_idx == a_idx?p.right_idx:p.left_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_UNCLE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_uncle_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned gp_idx = __get_grandparent_idx(a_idx);\n"
+"\n"
+"   if (gp_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &gp = data[gp_idx];\n"
+"      return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_DESCENT_STACK_SIZE() \
-{\
-printf(\
-"inline unsigned %s::get_descent_stack_size()\n"\
-"{/*{{{*/\n"\
-"   return (unsigned)(logf(used)/c_log_of_2) << 1;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_SIBLING_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_sibling_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &p = data[data[a_idx].parent_idx];\n"
+"   return p.left_idx == a_idx?p.right_idx:p.left_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_STACK_MIN_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.left_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      *((*a_s_ptr)++) = node_idx;\n"\
-"      node_idx = node.left_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_DESCENT_STACK_SIZE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::get_descent_stack_size()\n"
+"{/*{{{*/\n"
+"   return (unsigned)(logf(used)/c_log_of_2) << 1;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_STACK_NEXT_IDX() \
-{\
-printf(\
-"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.right_idx != leaf_idx) {\n"\
-"      return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"\
-"   }\n"\
-"\n"\
-"   if (*a_s_ptr > a_stack_base) {\n"\
-"      return *(--(*a_s_ptr));\n"\
-"   }\n"\
-"   \n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.left_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      *((*a_s_ptr)++) = node_idx;\n"
+"      node_idx = node.left_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_MIN_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_min_value_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.left_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      node_idx = node.left_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.right_idx != leaf_idx) {\n"
+"      return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"
+"   }\n"
+"\n"
+"   if (*a_s_ptr > a_stack_base) {\n"
+"      return *(--(*a_s_ptr));\n"
+"   }\n"
+"   \n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_MAX_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_max_value_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.right_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      node_idx = node.right_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_min_value_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.left_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      node_idx = node.left_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_NEXT_IDX() \
-{\
-printf(\
-"unsigned %s::get_next_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.right_idx != leaf_idx) {\n"\
-"      return get_min_value_idx(node.right_idx);\n"\
-"   }\n"\
-"   else {\n"\
-"\n"\
-"      unsigned node_idx = a_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.parent_idx == c_idx_not_exist) {\n"\
-"            return c_idx_not_exist;\n"\
-"         }\n"\
-"         \n"\
-"         if (data[node.parent_idx].right_idx != node_idx) {\n"\
-"            return node.parent_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.parent_idx;\n"\
-"      } while(1);\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_max_value_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.right_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      node_idx = node.right_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_PREV_IDX() \
-{\
-printf(\
-"unsigned %s::get_prev_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.left_idx != leaf_idx) {\n"\
-"      return get_max_value_idx(node.left_idx);\n"\
-"   }\n"\
-"   else {\n"\
-"\n"\
-"      unsigned node_idx = a_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.parent_idx == c_idx_not_exist) {\n"\
-"            return c_idx_not_exist;\n"\
-"         }\n"\
-"         \n"\
-"         if (data[node.parent_idx].left_idx != node_idx) {\n"\
-"            return node.parent_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.parent_idx;\n"\
-"      } while(1);\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_next_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.right_idx != leaf_idx) {\n"
+"      return get_min_value_idx(node.right_idx);\n"
+"   }\n"
+"   else {\n"
+"\n"
+"      unsigned node_idx = a_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.parent_idx == c_idx_not_exist) {\n"
+"            return c_idx_not_exist;\n"
+"         }\n"
+"         \n"
+"         if (data[node.parent_idx].right_idx != node_idx) {\n"
+"            return node.parent_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.parent_idx;\n"
+"      } while(1);\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___ROTATE_LEFT() \
-{\
-printf(\
-"inline void %s::__rotate_left(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &root = data[a_idx];\n"\
-"   %s_node &pivot = data[root.right_idx];\n"\
-"\n"\
-"   if (a_idx == root_idx) {\n"\
-"      root_idx = root.right_idx;\n"\
-"      pivot.parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &rp = data[root.parent_idx];\n"\
-"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"\
-"\n"\
-"      pivot.parent_idx = root.parent_idx;\n"\
-"   }\n"\
-"\n"\
-"   root.parent_idx = root.right_idx;\n"\
-"\n"\
-"   root.right_idx = pivot.left_idx;\n"\
-"   data[root.right_idx].parent_idx = a_idx;\n"\
-"\n"\
-"   pivot.left_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_prev_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.left_idx != leaf_idx) {\n"
+"      return get_max_value_idx(node.left_idx);\n"
+"   }\n"
+"   else {\n"
+"\n"
+"      unsigned node_idx = a_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.parent_idx == c_idx_not_exist) {\n"
+"            return c_idx_not_exist;\n"
+"         }\n"
+"         \n"
+"         if (data[node.parent_idx].left_idx != node_idx) {\n"
+"            return node.parent_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.parent_idx;\n"
+"      } while(1);\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___ROTATE_RIGHT() \
-{\
-printf(\
-"inline void %s::__rotate_right(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &root = data[a_idx];\n"\
-"   %s_node &pivot = data[root.left_idx];\n"\
-"\n"\
-"   if (a_idx == root_idx) {\n"\
-"      root_idx = root.left_idx;\n"\
-"      pivot.parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &rp = data[root.parent_idx];\n"\
-"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"\
-"\n"\
-"      pivot.parent_idx = root.parent_idx;\n"\
-"   }\n"\
-"\n"\
-"   root.parent_idx = root.left_idx;\n"\
-"\n"\
-"   root.left_idx = pivot.right_idx;\n"\
-"   data[root.left_idx].parent_idx = a_idx;\n"\
-"\n"\
-"   pivot.right_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___ROTATE_LEFT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__rotate_left(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &root = data[a_idx];\n"
+"   %s_node &pivot = data[root.right_idx];\n"
+"\n"
+"   if (a_idx == root_idx) {\n"
+"      root_idx = root.right_idx;\n"
+"      pivot.parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &rp = data[root.parent_idx];\n"
+"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"
+"\n"
+"      pivot.parent_idx = root.parent_idx;\n"
+"   }\n"
+"\n"
+"   root.parent_idx = root.right_idx;\n"
+"\n"
+"   root.right_idx = pivot.left_idx;\n"
+"   data[root.right_idx].parent_idx = a_idx;\n"
+"\n"
+"   pivot.left_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___GET_NEW_INDEX() \
-{\
-printf(\
-"inline unsigned %s::__get_new_index()\n"\
-"{/*{{{*/\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      unsigned new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].parent_idx;\n"\
-"\n"\
-"      return new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      return used++;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE___ROTATE_RIGHT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__rotate_right(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &root = data[a_idx];\n"
+"   %s_node &pivot = data[root.left_idx];\n"
+"\n"
+"   if (a_idx == root_idx) {\n"
+"      root_idx = root.left_idx;\n"
+"      pivot.parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &rp = data[root.parent_idx];\n"
+"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"
+"\n"
+"      pivot.parent_idx = root.parent_idx;\n"
+"   }\n"
+"\n"
+"   root.parent_idx = root.left_idx;\n"
+"\n"
+"   root.left_idx = pivot.right_idx;\n"
+"   data[root.left_idx].parent_idx = a_idx;\n"
+"\n"
+"   pivot.right_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___BINARY_TREE_INSERT() \
-{\
-printf(\
-"void %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value)\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      if (leaf_idx == c_idx_not_exist) {\n"\
-"         leaf_idx = __get_new_index();\n"\
-"         %s_node &leaf = data[leaf_idx];\n"\
-"\n"\
-"         leaf.color = true;\n"\
-"\n"\
-"#ifdef RB_TREE_SET_LEAF_CHILDS\n"\
-"         leaf.left_idx = c_idx_not_exist;\n"\
-"         leaf.right_idx = c_idx_not_exist;\n"\
-"#endif\n"\
-"      }\n"\
-"\n"\
-"      data[a_new_idx].parent_idx = c_idx_not_exist;\n"\
-"      root_idx = a_new_idx;\n"\
-"   }\n"\
-"   else  {\n"\
-"      unsigned node_idx = root_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"         \n"\
-"         if (__compare_value(a_value,node.object) < 0) {\n"\
-"            if (node.left_idx == leaf_idx) {\n"\
-"               node.left_idx = a_new_idx;\n"\
-"               break;\n"\
-"            }\n"\
-"            node_idx = node.left_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            if (node.right_idx == leaf_idx) {\n"\
-"               node.right_idx = a_new_idx;\n"\
-"               break;\n"\
-"            }\n"\
-"            node_idx = node.right_idx;\n"\
-"         }\n"\
-"      } while(1);\n"\
-"\n"\
-"      data[a_new_idx].parent_idx = node_idx;\n"\
-"   }\n"\
-"\n"\
-"   %s_node &new_node = data[a_new_idx];\n"\
-"   new_node.left_idx = leaf_idx;\n"\
-"   new_node.right_idx = leaf_idx;\n"\
-"   new_node.color = false;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_new_index()\n"
+"{/*{{{*/\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      unsigned new_idx = free_idx;\n"
+"      free_idx = data[new_idx].parent_idx;\n"
+"\n"
+"      return new_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      return used++;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___REPLACE_DELETE_NODE_BY_CHILD() \
-{\
-printf(\
-"inline void %s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.parent_idx != c_idx_not_exist) {\n"\
-"      %s_node &parent = data[node.parent_idx];\n"\
-"      (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"\
-"\n"\
-"      data[a_ch_idx].parent_idx = node.parent_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"\
-"      data[a_ch_idx].parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___BINARY_TREE_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value)\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      if (leaf_idx == c_idx_not_exist) {\n"
+"         leaf_idx = __get_new_index();\n"
+"         %s_node &leaf = data[leaf_idx];\n"
+"\n"
+"         leaf.color = true;\n"
+"\n"
+"#ifdef RB_TREE_SET_LEAF_CHILDS\n"
+"         leaf.left_idx = c_idx_not_exist;\n"
+"         leaf.right_idx = c_idx_not_exist;\n"
+"#endif\n"
+"      }\n"
+"\n"
+"      data[a_new_idx].parent_idx = c_idx_not_exist;\n"
+"      root_idx = a_new_idx;\n"
+"   }\n"
+"   else  {\n"
+"      unsigned node_idx = root_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"         \n"
+"         if (__compare_value(a_value,node.object) < 0) {\n"
+"            if (node.left_idx == leaf_idx) {\n"
+"               node.left_idx = a_new_idx;\n"
+"               break;\n"
+"            }\n"
+"            node_idx = node.left_idx;\n"
+"         }\n"
+"         else {\n"
+"            if (node.right_idx == leaf_idx) {\n"
+"               node.right_idx = a_new_idx;\n"
+"               break;\n"
+"            }\n"
+"            node_idx = node.right_idx;\n"
+"         }\n"
+"      } while(1);\n"
+"\n"
+"      data[a_new_idx].parent_idx = node_idx;\n"
+"   }\n"
+"\n"
+"   %s_node &new_node = data[a_new_idx];\n"
+"   new_node.left_idx = leaf_idx;\n"
+"   new_node.right_idx = leaf_idx;\n"
+"   new_node.color = false;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___REMOVE_BLACK_BLACK()  \
-{\
-printf(\
-"void %s::__remove_black_black(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"      \n"\
-"      if (node.parent_idx == c_idx_not_exist) {\n"\
-"         return;\n"\
-"      }\n"\
-"\n"\
-"      unsigned parent_idx = node.parent_idx;\n"\
-"      %s_node &parent = data[parent_idx];\n"\
-"\n"\
-"      {\n"\
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"         %s_node &sibling = data[sibling_idx];\n"\
-"\n"\
-"         if (!sibling.color) {\n"\
-"            parent.color = false;\n"\
-"            sibling.color = true;\n"\
-"\n"\
-"            if (node_idx == parent.left_idx) {\n"\
-"               __rotate_left(parent_idx);\n"\
-"            }\n"\
-"            else {\n"\
-"               __rotate_right(parent_idx);\n"\
-"            }\n"\
-"         }\n"\
-"      }\n"\
-"\n"\
-"      {\n"\
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"         %s_node& sibling = data[sibling_idx];\n"\
-"\n"\
-"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
-"            sibling.color = false;\n"\
-"            node_idx = parent_idx;\n"\
-"            continue;\n"\
-"         }\n"\
-"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
-"            sibling.color = false;\n"\
-"            parent.color = true;\n"\
-"            return;\n"\
-"         }\n"\
-"         else if (sibling.color) {\n"\
-"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"\
-"               sibling.color = false;\n"\
-"               data[sibling.left_idx].color = true;\n"\
-"               __rotate_right(sibling_idx);\n"\
-"            }\n"\
-"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"\
-"               sibling.color = false;\n"\
-"               data[sibling.right_idx].color = true;\n"\
-"               __rotate_left(sibling_idx);\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         {\n"\
-"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"            %s_node &sibling = data[sibling_idx];\n"\
-"\n"\
-"            sibling.color = parent.color;\n"\
-"            parent.color = true;\n"\
-"\n"\
-"            if (node_idx == parent.left_idx) {\n"\
-"               data[sibling.right_idx].color = true;\n"\
-"               __rotate_left(parent_idx);\n"\
-"            }\n"\
-"            else {\n"\
-"               data[sibling.left_idx].color = true;\n"\
-"               __rotate_right(parent_idx);\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         return;\n"\
-"      }\n"\
-"\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.parent_idx != c_idx_not_exist) {\n"
+"      %s_node &parent = data[node.parent_idx];\n"
+"      (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"
+"\n"
+"      data[a_ch_idx].parent_idx = node.parent_idx;\n"
+"   }\n"
+"   else {\n"
+"      root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"
+"      data[a_ch_idx].parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n" 
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___REMOVE_ONE_CHILD()  \
-{\
-printf(\
-"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"\
-"\n"\
-"   node.parent_idx = free_idx;\n"\
-"   free_idx = a_idx;\n"\
-"\n"\
-"   if (node.color) {\n"\
-"      %s_node &child_node = data[a_ch_idx];\n"\
-"\n"\
-"      if (!child_node.color) {\n"\
-"         child_node.color = true;\n"\
-"      }\n"\
-"      else {\n"\
-"         __remove_black_black(a_ch_idx);\n"\
-"      }\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___REMOVE_BLACK_BLACK(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__remove_black_black(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"      \n"
+"      if (node.parent_idx == c_idx_not_exist) {\n"
+"         return;\n"
+"      }\n"
+"\n"
+"      unsigned parent_idx = node.parent_idx;\n"
+"      %s_node &parent = data[parent_idx];\n"
+"\n"
+"      {\n"
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"         %s_node &sibling = data[sibling_idx];\n"
+"\n"
+"         if (!sibling.color) {\n"
+"            parent.color = false;\n"
+"            sibling.color = true;\n"
+"\n"
+"            if (node_idx == parent.left_idx) {\n"
+"               __rotate_left(parent_idx);\n"
+"            }\n"
+"            else {\n"
+"               __rotate_right(parent_idx);\n"
+"            }\n"
+"         }\n"
+"      }\n"
+"\n"
+"      {\n"
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"         %s_node& sibling = data[sibling_idx];\n"
+"\n"
+"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"            sibling.color = false;\n"
+"            node_idx = parent_idx;\n"
+"            continue;\n"
+"         }\n"
+"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"            sibling.color = false;\n"
+"            parent.color = true;\n"
+"            return;\n"
+"         }\n"
+"         else if (sibling.color) {\n"
+"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"
+"               sibling.color = false;\n"
+"               data[sibling.left_idx].color = true;\n"
+"               __rotate_right(sibling_idx);\n"
+"            }\n"
+"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"
+"               sibling.color = false;\n"
+"               data[sibling.right_idx].color = true;\n"
+"               __rotate_left(sibling_idx);\n"
+"            }\n"
+"         }\n"
+"\n"
+"         {\n"
+"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"            %s_node &sibling = data[sibling_idx];\n"
+"\n"
+"            sibling.color = parent.color;\n"
+"            parent.color = true;\n"
+"\n"
+"            if (node_idx == parent.left_idx) {\n"
+"               data[sibling.right_idx].color = true;\n"
+"               __rotate_left(parent_idx);\n"
+"            }\n"
+"            else {\n"
+"               data[sibling.left_idx].color = true;\n"
+"               __rotate_right(parent_idx);\n"
+"            }\n"
+"         }\n"
+"\n"
+"         return;\n"
+"      }\n"
+"\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___INSERT_OPERATION() \
-{\
-printf(\
-"void %s::__insert_operation(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.parent_idx == c_idx_not_exist) {\n"\
-"         node.color = true;\n"\
-"         return;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (data[node.parent_idx].color) {\n"\
-"            return;\n"\
-"         }\n"\
-"         else {\n"\
-"            unsigned uncle_idx = __get_uncle_idx(node_idx);\n"\
-"            if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"\
-"               data[node.parent_idx].color = true;\n"\
-"               data[uncle_idx].color = true;\n"\
-"\n"\
-"               node_idx = __get_grandparent_idx(node_idx);\n"\
-"               data[node_idx].color = false;\n"\
-"\n"\
-"               continue;\n"\
-"            }\n"\
-"            else {\n"\
-"               unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"\
-"\n"\
-"               if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"\
-"                  __rotate_left(node.parent_idx);\n"\
-"                  node_idx = node.left_idx;\n"\
-"               }\n"\
-"               else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"\
-"                  __rotate_right(node.parent_idx);\n"\
-"                  node_idx = node.right_idx;\n"\
-"               }\n"\
-"\n"\
-"               {\n"\
-"                  unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"\
-"                  %s_node &node = data[node_idx];\n"\
-"\n"\
-"                  data[node.parent_idx].color = true;\n"\
-"                  data[grandparent_idx].color = false;\n"\
-"\n"\
-"                  if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"\
-"                     __rotate_right(grandparent_idx);\n"\
-"                  }\n"\
-"                  else {\n"\
-"                     __rotate_left(grandparent_idx);\n"\
-"                  }\n"\
-"               }\n"\
-"\n"\
-"               return;\n"\
-"            }\n"\
-"         }\n"\
-"      }\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"
+"\n"
+"   node.parent_idx = free_idx;\n"
+"   free_idx = a_idx;\n"
+"\n"
+"   if (node.color) {\n"
+"      %s_node &child_node = data[a_ch_idx];\n"
+"\n"
+"      if (!child_node.color) {\n"
+"         child_node.color = true;\n"
+"      }\n"
+"      else {\n"
+"         __remove_black_black(a_ch_idx);\n"
+"      }\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   data = NULL;\n"\
-"   free_idx = c_idx_not_exist;\n"\
-"   root_idx = c_idx_not_exist;\n"\
-"   leaf_idx = c_idx_not_exist;\n"\
-,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {\
-printf(\
-"   %s.init();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE___INSERT_OPERATION(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__insert_operation(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.parent_idx == c_idx_not_exist) {\n"
+"         node.color = true;\n"
+"         return;\n"
+"      }\n"
+"      else {\n"
+"         if (data[node.parent_idx].color) {\n"
+"            return;\n"
+"         }\n"
+"         else {\n"
+"            unsigned uncle_idx = __get_uncle_idx(node_idx);\n"
+"            if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"
+"               data[node.parent_idx].color = true;\n"
+"               data[uncle_idx].color = true;\n"
+"\n"
+"               node_idx = __get_grandparent_idx(node_idx);\n"
+"               data[node_idx].color = false;\n"
+"\n"
+"               continue;\n"
+"            }\n"
+"            else {\n"
+"               unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
+"\n"
+"               if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"                  __rotate_left(node.parent_idx);\n"
+"                  node_idx = node.left_idx;\n"
+"               }\n"
+"               else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"
+"                  __rotate_right(node.parent_idx);\n"
+"                  node_idx = node.right_idx;\n"
+"               }\n"
+"\n"
+"               {\n"
+"                  unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
+"                  %s_node &node = data[node_idx];\n"
+"\n"
+"                  data[node.parent_idx].color = true;\n"
+"                  data[grandparent_idx].color = false;\n"
+"\n"
+"                  if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"                     __rotate_right(grandparent_idx);\n"
+"                  }\n"
+"                  else {\n"
+"                     __rotate_left(grandparent_idx);\n"
+"                  }\n"
+"               }\n"
+"\n"
+"               return;\n"
+"            }\n"
+"         }\n"
+"      }\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_CLEAR() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"      %s_node *ptr = data;\n"\
-"      %s_node *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {\
-printf(\
-"   %s.clear();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_INIT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   data = NULL;\n"
+"   free_idx = c_idx_not_exist;\n"
+"   root_idx = c_idx_not_exist;\n"
+"   leaf_idx = c_idx_not_exist;\n"
+,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+printf(
+"   %s.init();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_CLEAR(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"      %s_node *ptr = data;\n"
+"      %s_node *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+printf(
+"   %s.clear();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-);\
-   if (TYPE_NUMBERS(0) & c_type_flushable) {\
-printf(\
-"   %s_node *ptr = data;\n"\
-"   %s_node *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object.flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   copy_resize(used);\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {\
-printf(\
-"   %s.flush_all();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_FLUSH(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   %s_node *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"\n"\
-"   tmp_unsigned = free_idx;\n"\
-"   free_idx = a_second.free_idx;\n"\
-"   a_second.free_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = root_idx;\n"\
-"   root_idx = a_second.root_idx;\n"\
-"   a_second.root_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = leaf_idx;\n"\
-"   leaf_idx = a_second.leaf_idx;\n"\
-"   a_second.leaf_idx = tmp_unsigned;\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-      t_idx = 0;\
-      do {\
-printf(\
-"\n"\
-);\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {\
-printf(\
-"   %s tmp_%s = %s;\n"\
-"   %s = a_second.%s;\n"\
-"   a_second.%s = tmp_%s;\n"\
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-         else {\
-printf(\
-"   %s.swap(a_second.%s);\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_FLUSH_ALL(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_flushable) {
+printf(
+"   %s_node *ptr = data;\n"
+"   %s_node *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->object.flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   copy_resize(used);\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
+printf(
+"   %s.flush_all();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_OPERATOR_LE_BR_RE_BR() \
-{\
-printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"   return data[a_idx].object;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);\
-}
+void RB_TREE_SWAP(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   %s_node *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"\n"
+"   tmp_unsigned = free_idx;\n"
+"   free_idx = a_second.free_idx;\n"
+"   a_second.free_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = root_idx;\n"
+"   root_idx = a_second.root_idx;\n"
+"   a_second.root_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = leaf_idx;\n"
+"   leaf_idx = a_second.leaf_idx;\n"
+"   a_second.leaf_idx = tmp_unsigned;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+      unsigned t_idx = 0;
+      do {
+printf(
+"\n"
+);
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
+printf(
+"   %s tmp_%s = %s;\n"
+"   %s = a_second.%s;\n"
+"   a_second.%s = tmp_%s;\n"
+,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+         else {
+printf(
+"   %s.swap(a_second.%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_INSERT() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_node_idx = __get_new_index();\n"\
-"\n"\
-"   __binary_tree_insert(new_node_idx,a_value);\n"\
-"   __insert_operation(new_node_idx);\n"\
-"\n"\
-"   data[new_node_idx].object = a_value;\n"\
-"\n"\
-"   return new_node_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator[](unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"   return data[a_idx].object;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_SWAP_INSERT() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_basic)) {\
-printf(\
-"inline unsigned %s::swap_insert(%s &a_value)\n"\
-"{/*{{{*/\n"\
-"   unsigned new_node_idx = __get_new_index();\n"\
-"\n"\
-"   __binary_tree_insert(new_node_idx,a_value);\n"\
-"   __insert_operation(new_node_idx);\n"\
-"\n"\
-"   data[new_node_idx].object.swap(a_value);\n"\
-"\n"\
-"   return new_node_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-}
+void RB_TREE_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"inline unsigned %s::insert(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"inline unsigned %s::insert(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_node_idx = __get_new_index();\n"
+"\n"
+"   __binary_tree_insert(new_node_idx,a_value);\n"
+"   __insert_operation(new_node_idx);\n"
+"\n"
+"   data[new_node_idx].object = a_value;\n"
+"\n"
+"   return new_node_idx;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_REMOVE()  \
-{\
-printf(\
-"void %s::remove(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &del_node = data[a_idx];\n"\
-"\n"\
-"   if (del_node.left_idx != leaf_idx) {\n"\
-"      if (del_node.right_idx != leaf_idx) {\n"\
-"         \n"\
-"         unsigned found_idx = del_node.right_idx;\n"\
-"         do {\n"\
-"            %s_node &node = data[found_idx];\n"\
-"\n"\
-"            if (node.left_idx == leaf_idx) {\n"\
-"               break;\n"\
-"            }\n"\
-"\n"\
-"            found_idx = node.left_idx;\n"\
-"         } while(1);\n"\
-"\n"\
-"         %s_node &found_node = data[found_idx];\n"\
-"\n"\
-"         /* - process del_node parent_idx - */\n"\
-"         if (del_node.parent_idx != c_idx_not_exist) {\n"\
-"            %s_node &del_node_parent = data[del_node.parent_idx];\n"\
-"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            root_idx = found_idx;\n"\
-"         }\n"\
-"\n"\
-"         /* - process del_node left_idx - */\n"\
-"         data[del_node.left_idx].parent_idx = found_idx;\n"\
-"\n"\
-"         /* - process found_node right_idx - */\n"\
-"         if (found_node.right_idx != leaf_idx) {\n"\
-"            data[found_node.right_idx].parent_idx = a_idx;\n"\
-"         }\n"\
-"\n"\
-"         if (del_node.right_idx == found_idx) {\n"\
-"            \n"\
-"            /* - found node is right child of deleted node - */\n"\
-"            del_node.right_idx = found_node.right_idx;\n"\
-"            found_node.right_idx = a_idx;\n"\
-"\n"\
-"            found_node.parent_idx = del_node.parent_idx;\n"\
-"            del_node.parent_idx = found_idx;\n"\
-"\n"\
-"            found_node.left_idx = del_node.left_idx;\n"\
-"            del_node.left_idx = leaf_idx;\n"\
-"\n"\
-"            bool tmp_bool = found_node.color;\n"\
-"            found_node.color = del_node.color;\n"\
-"            del_node.color = tmp_bool;\n"\
-"         }\n"\
-"         else {\n"\
-"            \n"\
-"            /* - process found_node parent - */\n"\
-"            %s_node &found_node_parent = data[found_node.parent_idx];\n"\
-"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"\
-"\n"\
-"            /* - process del_node right_idx - */\n"\
-"            data[del_node.right_idx].parent_idx = found_idx;\n"\
-"\n"\
-"            /* - swap index pointers between nodes - */\n"\
-"            unsigned tmp_unsigned = found_node.parent_idx;\n"\
-"            found_node.parent_idx = del_node.parent_idx;\n"\
-"            del_node.parent_idx = tmp_unsigned;\n"\
-"\n"\
-"            found_node.left_idx = del_node.left_idx;\n"\
-"            del_node.left_idx = leaf_idx;\n"\
-"\n"\
-"            tmp_unsigned = found_node.right_idx;\n"\
-"            found_node.right_idx = del_node.right_idx;\n"\
-"            del_node.right_idx = tmp_unsigned;\n"\
-"\n"\
-"            bool tmp_bool = found_node.color;\n"\
-"            found_node.color = del_node.color;\n"\
-"            del_node.color = tmp_bool;\n"\
-"         }\n"\
-"\n"\
-"         __remove_one_child(a_idx,del_node.right_idx);\n"\
-"      }\n"\
-"      else {\n"\
-"         __remove_one_child(a_idx,del_node.left_idx);\n"\
-"      }\n"\
-"   }\n"\
-"   else {\n"\
-"      __remove_one_child(a_idx,del_node.right_idx);\n"\
-"   }\n"\
-"\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+printf(
+"inline unsigned %s::swap_insert(%s &a_value)\n"
+"{/*{{{*/\n"
+"   unsigned new_node_idx = __get_new_index();\n"
+"\n"
+"   __binary_tree_insert(new_node_idx,a_value);\n"
+"   __insert_operation(new_node_idx);\n"
+"\n"
+"   data[new_node_idx].object.swap(a_value);\n"
+"\n"
+"   return new_node_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+}/*}}}*/
 
-#define RB_TREE_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s_node *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s_node *ptr = n_data + used;\n"\
-"         %s_node *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->object.init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s_node));\n"\
-"   }\n"\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"\n"\
-"   if (size > used) {\n"\
-"      %s_node *ptr = data + used;\n"\
-"      %s_node *ptr_end = data + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"   }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_REMOVE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::remove(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &del_node = data[a_idx];\n"
+"\n"
+"   if (del_node.left_idx != leaf_idx) {\n"
+"      if (del_node.right_idx != leaf_idx) {\n"
+"         \n"
+"         unsigned found_idx = del_node.right_idx;\n"
+"         do {\n"
+"            %s_node &node = data[found_idx];\n"
+"\n"
+"            if (node.left_idx == leaf_idx) {\n"
+"               break;\n"
+"            }\n"
+"\n"
+"            found_idx = node.left_idx;\n"
+"         } while(1);\n"
+"\n"
+"         %s_node &found_node = data[found_idx];\n"
+"\n"
+"         /* - process del_node parent_idx - */\n"
+"         if (del_node.parent_idx != c_idx_not_exist) {\n"
+"            %s_node &del_node_parent = data[del_node.parent_idx];\n"
+"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"
+"         }\n"
+"         else {\n"
+"            root_idx = found_idx;\n"
+"         }\n"
+"\n"
+"         /* - process del_node left_idx - */\n"
+"         data[del_node.left_idx].parent_idx = found_idx;\n"
+"\n"
+"         /* - process found_node right_idx - */\n"
+"         if (found_node.right_idx != leaf_idx) {\n"
+"            data[found_node.right_idx].parent_idx = a_idx;\n"
+"         }\n"
+"\n"
+"         if (del_node.right_idx == found_idx) {\n"
+"            \n"
+"            /* - found node is right child of deleted node - */\n"
+"            del_node.right_idx = found_node.right_idx;\n"
+"            found_node.right_idx = a_idx;\n"
+"\n"
+"            found_node.parent_idx = del_node.parent_idx;\n"
+"            del_node.parent_idx = found_idx;\n"
+"\n"
+"            found_node.left_idx = del_node.left_idx;\n"
+"            del_node.left_idx = leaf_idx;\n"
+"\n"
+"            bool tmp_bool = found_node.color;\n"
+"            found_node.color = del_node.color;\n"
+"            del_node.color = tmp_bool;\n"
+"         }\n"
+"         else {\n"
+"            \n"
+"            /* - process found_node parent - */\n"
+"            %s_node &found_node_parent = data[found_node.parent_idx];\n"
+"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"
+"\n"
+"            /* - process del_node right_idx - */\n"
+"            data[del_node.right_idx].parent_idx = found_idx;\n"
+"\n"
+"            /* - swap index pointers between nodes - */\n"
+"            unsigned tmp_unsigned = found_node.parent_idx;\n"
+"            found_node.parent_idx = del_node.parent_idx;\n"
+"            del_node.parent_idx = tmp_unsigned;\n"
+"\n"
+"            found_node.left_idx = del_node.left_idx;\n"
+"            del_node.left_idx = leaf_idx;\n"
+"\n"
+"            tmp_unsigned = found_node.right_idx;\n"
+"            found_node.right_idx = del_node.right_idx;\n"
+"            del_node.right_idx = tmp_unsigned;\n"
+"\n"
+"            bool tmp_bool = found_node.color;\n"
+"            found_node.color = del_node.color;\n"
+"            del_node.color = tmp_bool;\n"
+"         }\n"
+"\n"
+"         __remove_one_child(a_idx,del_node.right_idx);\n"
+"      }\n"
+"      else {\n"
+"         __remove_one_child(a_idx,del_node.left_idx);\n"
+"      }\n"
+"   }\n"
+"   else {\n"
+"      __remove_one_child(a_idx,del_node.right_idx);\n"
+"   }\n"
+"\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_COPY_RESIZE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s_node *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s_node *ptr = n_data + used;\n"
+"         %s_node *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->object.init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   }\n"
+"\n"
+"   if (used != 0) {\n"
+"      memcpy(n_data,data,used*sizeof(%s_node));\n"
+"   }\n"
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+"   if (size > used) {\n"
+"      %s_node *ptr = data + used;\n"
+"      %s_node *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_GET_IDX_LEFT() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx_left(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx_left(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            good_idx = node_idx;\n"\
-"            node_idx = node.left_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            node_idx = node.right_idx;\n"\
-"         }\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_GRE_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_gre_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_gre_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         good_idx = node_idx;\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_IDX_LEFT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_idx_left(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_idx_left(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            good_idx = node_idx;\n"
+"            node_idx = node.left_idx;\n"
+"         }\n"
+"         else {\n"
+"            node_idx = node.right_idx;\n"
+"         }\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_LEE_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_lee_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_lee_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         good_idx = node_idx;\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_GRE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_gre_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_gre_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         good_idx = node_idx;\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_IDXS() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"void %s::get_idxs(%s a_value,ui_array_s &a_idxs_array)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"void %s::get_idxs(%s &a_value,ui_array_s &a_idxs_array)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   a_idxs_array.used = 0;\n"\
-"\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return;\n"\
-"   }\n"\
-"\n"\
-"   unsigned stack[get_descent_stack_size()];\n"\
-"   unsigned *stack_ptr = stack;\n"\
-"\n"\
-"   *(stack_ptr++) = root_idx;\n"\
-"   do {\n"\
-"      unsigned node_idx = *(--stack_ptr);\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         if (node.left_idx != leaf_idx) {\n"\
-"            *(stack_ptr++) = node.left_idx;\n"\
-"         }\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            a_idxs_array.push(node_idx);\n"\
-"\n"\
-"            if (node.left_idx != leaf_idx) {\n"\
-"               *(stack_ptr++) = node.left_idx;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != leaf_idx) {\n"\
-"            *(stack_ptr++) = node.right_idx;\n"\
-"         }\n"\
-"      }\n"\
-"   } while(stack_ptr > stack);\n"\
-"\n"\
-"   return;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_LEE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_lee_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_lee_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         good_idx = node_idx;\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_OPERATOR_EQUAL() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.root_idx == c_idx_not_exist) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-);\
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else \
-   {\
-printf(\
-"\n"\
-"   %s_node *ptr = data;\n"\
-"   %s_node *s_ptr = a_src.data;\n"\
-"   %s_node *s_ptr_end = s_ptr + a_src.used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object = s_ptr->object;\n"\
-"      ptr->parent_idx = s_ptr->parent_idx;\n"\
-"      ptr->left_idx = s_ptr->left_idx;\n"\
-"      ptr->right_idx = s_ptr->right_idx;\n"\
-"      ptr->color = s_ptr->color;\n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = a_src.used;\n"\
-"   free_idx = a_src.free_idx;\n"\
-"   root_idx = a_src.root_idx;\n"\
-"   leaf_idx = a_src.leaf_idx;\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-printf(\
-"   %s = a_src.%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_GET_IDXS(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"void %s::get_idxs(%s a_value,ui_array_s &a_idxs_array)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"void %s::get_idxs(%s &a_value,ui_array_s &a_idxs_array)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   a_idxs_array.used = 0;\n"
+"\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return;\n"
+"   }\n"
+"\n"
+"   unsigned stack[get_descent_stack_size()];\n"
+"   unsigned *stack_ptr = stack;\n"
+"\n"
+"   *(stack_ptr++) = root_idx;\n"
+"   do {\n"
+"      unsigned node_idx = *(--stack_ptr);\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         if (node.left_idx != leaf_idx) {\n"
+"            *(stack_ptr++) = node.left_idx;\n"
+"         }\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            a_idxs_array.push(node_idx);\n"
+"\n"
+"            if (node.left_idx != leaf_idx) {\n"
+"               *(stack_ptr++) = node.left_idx;\n"
+"            }\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != leaf_idx) {\n"
+"            *(stack_ptr++) = node.right_idx;\n"
+"         }\n"
+"      }\n"
+"   } while(stack_ptr > stack);\n"
+"\n"
+"   return;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      if (a_second.root_idx != c_idx_not_exist) {\n"\
-"         return false;\n"\
-"      }\n"\
-"   }\n"\
-"   else {\n"\
-"      if (a_second.root_idx == c_idx_not_exist) {\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned s_stack[a_second.get_descent_stack_size()];\n"\
-"\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"      unsigned *s_stack_ptr = s_stack;\n"\
-"\n"\
-"      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"\
-"      do {\n"\
-"         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"\
-"            return false;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);\n"\
-"         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"\
-"      } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"\
-"\n"\
-"      if (node_idx != s_node_idx) {\n"\
-"         return false;\n"\
-"      }\n"\
-"   }\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"   return (%s == a_second.%s"\
-,VAR_NAMES(0),VAR_NAMES(0));\
-      if (VAR_NAMES_CNT > 1) {\
-         t_idx = 1;\
-         do {\
-printf(\
-" && %s == a_second.%s"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         } while(++t_idx < VAR_NAMES_CNT);\
-      }\
-printf(\
-");\n"\
-);\
-   }\
-   else {\
-printf(\
-"   return true;\n"\
-);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.root_idx == c_idx_not_exist) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+);
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"
+,IM_STRUCT_NAME);
+   }
+   else 
+   {
+printf(
+"\n"
+"   %s_node *ptr = data;\n"
+"   %s_node *s_ptr = a_src.data;\n"
+"   %s_node *s_ptr_end = s_ptr + a_src.used;\n"
+"\n"
+"   do {\n"
+"      ptr->object = s_ptr->object;\n"
+"      ptr->parent_idx = s_ptr->parent_idx;\n"
+"      ptr->left_idx = s_ptr->left_idx;\n"
+"      ptr->right_idx = s_ptr->right_idx;\n"
+"      ptr->color = s_ptr->color;\n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   used = a_src.used;\n"
+"   free_idx = a_src.free_idx;\n"
+"   root_idx = a_src.root_idx;\n"
+"   leaf_idx = a_src.leaf_idx;\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+printf(
+"   %s = a_src.%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_REHASH_TREE() \
-{\
-printf(\
-"void %s::rehash_tree()\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) return;\n"\
-"\n"\
-"   ui_array_s indexes;\n"\
-"   indexes.init();\n"\
-"\n"\
-"   {\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"\n"\
-"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      do {\n"\
-"         indexes.push(idx);\n"\
-"\n"\
-"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"\
-"      } while(idx != c_idx_not_exist);\n"\
-"   }\n"\
-"\n"\
-"   root_idx = c_idx_not_exist;\n"\
-"\n"\
-"   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"\
-"   memset(processed,false,indexes.used*sizeof(bool));\n"\
-"\n"\
-"   unsigned step = indexes.used >> 1;\n"\
-"   if (step > 0) {\n"\
-"      do {\n"\
-"         unsigned idx = step;\n"\
-"         do {\n"\
-"            if (!processed[idx]) {\n"\
-"               unsigned node_idx = indexes[idx];\n"\
-"\n"\
-"               __binary_tree_insert(node_idx,data[node_idx].object);\n"\
-"               __insert_operation(node_idx);\n"\
-"\n"\
-"               processed[idx] = true;\n"\
-"            }\n"\
-"         } while((idx += step) < indexes.used);\n"\
-"      } while((step >>= 1) > 0);\n"\
-"   }\n"\
-"\n"\
-"   unsigned node_idx = indexes[0];\n"\
-"   __binary_tree_insert(node_idx,data[node_idx].object);\n"\
-"   __insert_operation(node_idx);\n"\
-"\n"\
-"   cfree(processed);\n"\
-"   indexes.clear();\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      if (a_second.root_idx != c_idx_not_exist) {\n"
+"         return false;\n"
+"      }\n"
+"   }\n"
+"   else {\n"
+"      if (a_second.root_idx == c_idx_not_exist) {\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned s_stack[a_second.get_descent_stack_size()];\n"
+"\n"
+"      unsigned *stack_ptr = stack;\n"
+"      unsigned *s_stack_ptr = s_stack;\n"
+"\n"
+"      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"
+"      do {\n"
+"         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"
+"            return false;\n"
+"         }\n"
+"\n"
+"         node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);\n"
+"         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"
+"      } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"
+"\n"
+"      if (node_idx != s_node_idx) {\n"
+"         return false;\n"
+"      }\n"
+"   }\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"   return (%s == a_second.%s"
+,VAR_NAMES(0),VAR_NAMES(0));
+      if (VAR_NAMES_CNT > 1) {
+         unsigned t_idx = 1;
+         do {
+printf(
+" && %s == a_second.%s"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         } while(++t_idx < VAR_NAMES_CNT);
+      }
+printf(
+");\n"
+);
+   }
+   else {
+printf(
+"   return true;\n"
+);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_PRINT_DOT_CODE() \
-{\
-printf(\
-"void %s::print_dot_code(FILE *a_file)\n"\
-"{/*{{{*/\n"\
-"   fprintf(a_file,\n"\
-"\"digraph G {\\n\"\n"\
-"\"   rankdir = TD\\n\"\n"\
-"\"   node [ shape = circle margin = 0.0 fixedsize = true width = 0.7 height = 0.7]\\n\"\n"\
-"\"\\n\"\n"\
-"   );\n"\
-"\n"\
-"   const char *node_colors[] = {\n"\
-"      \"red\",\n"\
-"      \"black\",\n"\
-"   };\n"\
-"\n"\
-"   fprintf(a_file,\n"\
-"\"   root_idx [label = \\\"R\\\" ]\\n\"\n"\
-"\"   root_idx -> node_%%u\\n\"\n"\
-"   ,root_idx);\n"\
-"\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      ui_array_s stack;\n"\
-"      stack.init();\n"\
-"\n"\
-"      stack.push(root_idx);\n"\
-"      do {\n"\
-"         unsigned node_idx = stack.pop();\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         /* - print node - */\n"\
-"         fprintf(a_file,\n"\
-"\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"\
-"         ,node_idx,node_colors[node.color],node_idx);\n"\
-"\n"\
-"         if (node.parent_idx != c_idx_not_exist) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"\
-"            ,node_idx,node.parent_idx);\n"\
-"         }\n"\
-"\n"\
-"         if (node.left_idx != leaf_idx) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"\
-"            ,node_idx,node.left_idx);\n"\
-"\n"\
-"            stack.push(node.left_idx);\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != leaf_idx) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"\
-"            ,node_idx,node.right_idx);\n"\
-"\n"\
-"            stack.push(node.right_idx);\n"\
-"         }\n"\
-"      } while(stack.used > 0);\n"\
-"\n"\
-"      stack.clear();\n"\
-"   }\n"\
-"\n"\
-"   fprintf(a_file,\n"\
-"\"}\\n\"\n"\
-"\"\\n\");\n"\
-"\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::rehash_tree()\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) return;\n"
+"\n"
+"   ui_array_s indexes;\n"
+"   indexes.init();\n"
+"\n"
+"   {\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned *stack_ptr = stack;\n"
+"\n"
+"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      do {\n"
+"         indexes.push(idx);\n"
+"\n"
+"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
+"      } while(idx != c_idx_not_exist);\n"
+"   }\n"
+"\n"
+"   root_idx = c_idx_not_exist;\n"
+"\n"
+"   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"
+"   memset(processed,false,indexes.used*sizeof(bool));\n"
+"\n"
+"   unsigned step = indexes.used >> 1;\n"
+"   if (step > 0) {\n"
+"      do {\n"
+"         unsigned idx = step;\n"
+"         do {\n"
+"            if (!processed[idx]) {\n"
+"               unsigned node_idx = indexes[idx];\n"
+"\n"
+"               __binary_tree_insert(node_idx,data[node_idx].object);\n"
+"               __insert_operation(node_idx);\n"
+"\n"
+"               processed[idx] = true;\n"
+"            }\n"
+"         } while((idx += step) < indexes.used);\n"
+"      } while((step >>= 1) > 0);\n"
+"   }\n"
+"\n"
+"   unsigned node_idx = indexes[0];\n"
+"   __binary_tree_insert(node_idx,data[node_idx].object);\n"
+"   __insert_operation(node_idx);\n"
+"\n"
+"   cfree(processed);\n"
+"   indexes.clear();\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_CHECK_RB_TREE_PROPERTIES() \
-{\
-printf(\
-"bool %s::check_rb_tree_properties()\n"\
-"{/*{{{*/\n"\
-"   %s_node &leaf = data[leaf_idx];\n"\
-"   if (!leaf.color) {\n"\
-"      fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"\
-"      fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      \n"\
-"      /* - check if root node is black - */\n"\
-"      %s_node &r_node = data[root_idx];\n"\
-"      if (!r_node.color) {\n"\
-"         fprintf(stderr,\"ERROR: root node is not black\\n\");\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      /* - create node index and path length stacks - */\n"\
-"      ui_array_s ni_stack;\n"\
-"      ui_array_s pl_stack;\n"\
-"\n"\
-"      ni_stack.init();\n"\
-"      pl_stack.init();\n"\
-"\n"\
-"      /* - insert root on stack - */\n"\
-"      ni_stack.push(root_idx);\n"\
-"      pl_stack.push(0);\n"\
-"\n"\
-"      unsigned r_path_length = c_idx_not_exist;\n"\
-"      do {\n"\
-"         unsigned node_idx = ni_stack.pop();\n"\
-"         unsigned path_length = pl_stack.pop();\n"\
-"         unsigned stack_depth = ni_stack.used;\n"\
-"\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.color) {\n"\
-"            path_length++;\n"\
-"         }\n"\
-"         else {\n"\
-"            if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"\
-"               fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"\
-"               ni_stack.clear();\n"\
-"               pl_stack.clear();\n"\
-"               return false;\n"\
-"            }\n"\
-"\n"\
-"            if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"\
-"               fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"\
-"               ni_stack.clear();\n"\
-"               pl_stack.clear();\n"\
-"               return false;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         if (node.left_idx != c_idx_not_exist) {\n"\
-"            ni_stack.push(node.left_idx);\n"\
-"            pl_stack.push(path_length);\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != c_idx_not_exist) {\n"\
-"            ni_stack.push(node.right_idx);\n"\
-"            pl_stack.push(path_length);\n"\
-"         }\n"\
-"\n"\
-"         /* - if node is leaf node - */\n"\
-"         if (stack_depth == ni_stack.used) {\n"\
-"            if (r_path_length != c_idx_not_exist) {\n"\
-"               if (r_path_length != path_length) {\n"\
-"                  fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"\
-"                  ni_stack.clear();\n"\
-"                  pl_stack.clear();\n"\
-"                  return false;\n"\
-"               }\n"\
-"            }\n"\
-"            else {\n"\
-"               r_path_length = path_length;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"      } while(ni_stack.used > 0);\n"\
-"\n"\
-"      ni_stack.clear();\n"\
-"      pl_stack.clear();\n"\
-"   }\n"\
-"\n"\
-"   /* - test if are node values sorted - */\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"\n"\
-"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      do {\n"\
-"         unsigned l_idx = idx;\n"\
-"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"\
-"         if (idx == c_idx_not_exist) {\n"\
-"            break;\n"\
-"         }\n"\
-"         if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"\
-"            fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"\
-"            return false;\n"\
-"         }\n"\
-"      } while(1);\n"\
-"   }\n"\
-"\n"\
-"   return true;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::print_dot_code(FILE *a_file)\n"
+"{/*{{{*/\n"
+"   fprintf(a_file,\n"
+"\"digraph G {\\n\"\n"
+"\"   rankdir = TD\\n\"\n"
+"\"   node [ shape = circle margin = 0.0 fixedsize = true width = 0.7 height = 0.7]\\n\"\n"
+"\"\\n\"\n"
+"   );\n"
+"\n"
+"   const char *node_colors[] = {\n"
+"      \"red\",\n"
+"      \"black\",\n"
+"   };\n"
+"\n"
+"   fprintf(a_file,\n"
+"\"   root_idx [label = \\\"R\\\" ]\\n\"\n"
+"\"   root_idx -> node_%%u\\n\"\n"
+"   ,root_idx);\n"
+"\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      ui_array_s stack;\n"
+"      stack.init();\n"
+"\n"
+"      stack.push(root_idx);\n"
+"      do {\n"
+"         unsigned node_idx = stack.pop();\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         /* - print node - */\n"
+"         fprintf(a_file,\n"
+"\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"
+"         ,node_idx,node_colors[node.color],node_idx);\n"
+"\n"
+"         if (node.parent_idx != c_idx_not_exist) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"
+"            ,node_idx,node.parent_idx);\n"
+"         }\n"
+"\n"
+"         if (node.left_idx != leaf_idx) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"
+"            ,node_idx,node.left_idx);\n"
+"\n"
+"            stack.push(node.left_idx);\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != leaf_idx) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"
+"            ,node_idx,node.right_idx);\n"
+"\n"
+"            stack.push(node.right_idx);\n"
+"         }\n"
+"      } while(stack.used > 0);\n"
+"\n"
+"      stack.clear();\n"
+"   }\n"
+"\n"
+"   fprintf(a_file,\n"
+"\"}\\n\"\n"
+"\"\\n\");\n"
+"\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
+void RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::check_rb_tree_properties()\n"
+"{/*{{{*/\n"
+"   %s_node &leaf = data[leaf_idx];\n"
+"   if (!leaf.color) {\n"
+"      fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"
+"      fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      \n"
+"      /* - check if root node is black - */\n"
+"      %s_node &r_node = data[root_idx];\n"
+"      if (!r_node.color) {\n"
+"         fprintf(stderr,\"ERROR: root node is not black\\n\");\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      /* - create node index and path length stacks - */\n"
+"      ui_array_s ni_stack;\n"
+"      ui_array_s pl_stack;\n"
+"\n"
+"      ni_stack.init();\n"
+"      pl_stack.init();\n"
+"\n"
+"      /* - insert root on stack - */\n"
+"      ni_stack.push(root_idx);\n"
+"      pl_stack.push(0);\n"
+"\n"
+"      unsigned r_path_length = c_idx_not_exist;\n"
+"      do {\n"
+"         unsigned node_idx = ni_stack.pop();\n"
+"         unsigned path_length = pl_stack.pop();\n"
+"         unsigned stack_depth = ni_stack.used;\n"
+"\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.color) {\n"
+"            path_length++;\n"
+"         }\n"
+"         else {\n"
+"            if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"
+"               fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"
+"               ni_stack.clear();\n"
+"               pl_stack.clear();\n"
+"               return false;\n"
+"            }\n"
+"\n"
+"            if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"
+"               fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"
+"               ni_stack.clear();\n"
+"               pl_stack.clear();\n"
+"               return false;\n"
+"            }\n"
+"         }\n"
+"\n"
+"         if (node.left_idx != c_idx_not_exist) {\n"
+"            ni_stack.push(node.left_idx);\n"
+"            pl_stack.push(path_length);\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != c_idx_not_exist) {\n"
+"            ni_stack.push(node.right_idx);\n"
+"            pl_stack.push(path_length);\n"
+"         }\n"
+"\n"
+"         /* - if node is leaf node - */\n"
+"         if (stack_depth == ni_stack.used) {\n"
+"            if (r_path_length != c_idx_not_exist) {\n"
+"               if (r_path_length != path_length) {\n"
+"                  fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"
+"                  ni_stack.clear();\n"
+"                  pl_stack.clear();\n"
+"                  return false;\n"
+"               }\n"
+"            }\n"
+"            else {\n"
+"               r_path_length = path_length;\n"
+"            }\n"
+"         }\n"
+"\n"
+"      } while(ni_stack.used > 0);\n"
+"\n"
+"      ni_stack.clear();\n"
+"      pl_stack.clear();\n"
+"   }\n"
+"\n"
+"   /* - test if are node values sorted - */\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned *stack_ptr = stack;\n"
+"\n"
+"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      do {\n"
+"         unsigned l_idx = idx;\n"
+"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
+"         if (idx == c_idx_not_exist) {\n"
+"            break;\n"
+"         }\n"
+"         if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"
+"            fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"
+"            return false;\n"
+"         }\n"
+"      } while(1);\n"
+"   }\n"
+"\n"
+"   return true;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
 void processor_s::generate_rb_tree_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
    string_array_s &fun_defs = cont_params.functions;
@@ -9900,7 +9912,7 @@ void processor_s::generate_rb_tree_type()
          type_idxs[tn_idx] = type_idx;
 
          // - test type options -
-         if (data_types[type_idx].properties & c_type_setting_strict_dynamic) {
+         if (data_types[type_idx].properties & c_type_option_strict_dynamic) {
             fprintf(stderr,"rb_tree: container have not implemented processing of types with option strict_dynamic\n");
             cassert(0);
          }
@@ -9963,7 +9975,7 @@ void processor_s::generate_rb_tree_type()
          } while(++tn_idx < type_cnt);
       }
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
 
       {
          string_array_s &dt_type_names = data_type.types;
@@ -10095,7 +10107,7 @@ printf(
 "   inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize rb_tree\n"
@@ -10105,7 +10117,7 @@ printf(
 );
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -10116,7 +10128,7 @@ printf(
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -10151,7 +10163,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of rb_tree with another rb_tree\n"
@@ -10291,7 +10303,7 @@ printf(
 "\n"
 ,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -10363,10 +10375,10 @@ printf(
 "};\n"
 "\n"
 );
-}
+}/*}}}*/
 
 void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -10390,8 +10402,6 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // --- definition of inline methods ---
 
 printf(
@@ -10400,21 +10410,21 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - rb_tree __get_grandparent_idx method -
-RB_TREE___GET_GRANDPARENT_IDX();
+RB_TREE___GET_GRANDPARENT_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_uncle_idx method -
-RB_TREE___GET_UNCLE_IDX();
+RB_TREE___GET_UNCLE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_sibling_idx method -
-RB_TREE___GET_SIBLING_IDX();
+RB_TREE___GET_SIBLING_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_descent_stack_size -
-RB_TREE_GET_DESCENT_STACK_SIZE();
+RB_TREE_GET_DESCENT_STACK_SIZE(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_stack_min_value_idx method -
 
    // - rb_tree get_stack_next_idx method -
-RB_TREE_GET_STACK_NEXT_IDX();
+RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_min_value_idx method -
 
@@ -10425,57 +10435,57 @@ RB_TREE_GET_STACK_NEXT_IDX();
    // - rb_tree get_prev_idx method -
 
    // - rb_tree __rotate_left method -
-RB_TREE___ROTATE_LEFT();
+RB_TREE___ROTATE_LEFT(RB_TREE_GEN_VALUES);
 
    // - rb_tree __rotate_right method -
-RB_TREE___ROTATE_RIGHT();
+RB_TREE___ROTATE_RIGHT(RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_new_index method -
-RB_TREE___GET_NEW_INDEX();
+RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __binary_tree_insert method -
 
    // - rb_tree __replace_delete_node_by_child method -
-RB_TREE___REPLACE_DELETE_NODE_BY_CHILD();
+RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_VALUES);
 
    // - rb_tree __remove_black_black method -
 
    // - rb_tree __remove_one_child method -
-RB_TREE___REMOVE_ONE_CHILD();
+RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_VALUES);
 
    // - rb_tree __insert_operation method -
 
    // - rb_tree init method -
-RB_TREE_INIT();
+RB_TREE_INIT(RB_TREE_GEN_VALUES);
 
    // - rb_tree clear method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-RB_TREE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+RB_TREE_CLEAR(RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree flush method -
-RB_TREE_FLUSH();
+RB_TREE_FLUSH(RB_TREE_GEN_VALUES);
 
    // - rb_tree flush_all method -
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
-RB_TREE_FLUSH_ALL();
+RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-RB_TREE_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+RB_TREE_SWAP(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree operator[] method -
-RB_TREE_OPERATOR_LE_BR_RE_BR();
+RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_VALUES);
 
    // - rb_tree insert method -
-RB_TREE_INSERT();
+RB_TREE_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree swap_insert method -
-RB_TREE_SWAP_INSERT();
+RB_TREE_SWAP_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree remove method -
 
@@ -10493,8 +10503,8 @@ RB_TREE_SWAP_INSERT();
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-RB_TREE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }
 
@@ -10506,10 +10516,10 @@ RB_TREE_OPERATOR_EQUAL();
 
    // - rb_tree check_rb_tree_properties -
 
-}
+}/*}}}*/
 
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -10533,8 +10543,6 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // --- definition of methods ---
 
 printf(
@@ -10551,21 +10559,21 @@ printf(
    // - rb_tree get_descent_stack_size -
 
    // - rb_tree get_stack_min_value_idx method -
-RB_TREE_GET_STACK_MIN_VALUE_IDX();
+RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_stack_next_idx method -
 
    // - rb_tree get_min_value_idx method -
-RB_TREE_GET_MIN_VALUE_IDX();
+RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_max_value_idx method -
-RB_TREE_GET_MAX_VALUE_IDX();
+RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_next_idx method -
-RB_TREE_GET_NEXT_IDX();
+RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_prev_idx method -
-RB_TREE_GET_PREV_IDX();
+RB_TREE_GET_PREV_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __rotate_left method -
 
@@ -10574,24 +10582,24 @@ RB_TREE_GET_PREV_IDX();
    // - rb_tree __get_new_index method -
 
    // - rb_tree __binary_tree_insert method -
-RB_TREE___BINARY_TREE_INSERT();
+RB_TREE___BINARY_TREE_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree __replace_delete_node_by_child method -
 
    // - rb_tree __remove_black_black method -
-RB_TREE___REMOVE_BLACK_BLACK();
+RB_TREE___REMOVE_BLACK_BLACK(RB_TREE_GEN_VALUES);
 
    // - rb_tree __remove_one_child method -
 
    // - rb_tree __insert_operation method -
-RB_TREE___INSERT_OPERATION();
+RB_TREE___INSERT_OPERATION(RB_TREE_GEN_VALUES);
 
    // - rb_tree init method -
 
    // - rb_tree clear method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-RB_TREE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+RB_TREE_CLEAR(RB_TREE_GEN_VALUES);
       }
    }
 
@@ -10599,7 +10607,7 @@ RB_TREE_CLEAR();
 
    // - rb_tree flush_all method -
    if (TYPE_NUMBERS(0) & c_type_flushable) {
-RB_TREE_FLUSH_ALL();
+RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
@@ -10611,841 +10619,844 @@ RB_TREE_FLUSH_ALL();
    // - rb_tree swap_insert method -
 
    // - rb_tree remove method -
-RB_TREE_REMOVE();
+RB_TREE_REMOVE(RB_TREE_GEN_VALUES);
 
    // - rb_tree copy_resize method -
-RB_TREE_COPY_RESIZE();
+RB_TREE_COPY_RESIZE(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idx method -
-RB_TREE_GET_IDX();
+RB_TREE_GET_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idx_left method -
-RB_TREE_GET_IDX_LEFT();
+RB_TREE_GET_IDX_LEFT(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_gre_idx method -
-RB_TREE_GET_GRE_IDX();
+RB_TREE_GET_GRE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_lee_idx method -
-RB_TREE_GET_LEE_IDX();
+RB_TREE_GET_LEE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idxs method -
-RB_TREE_GET_IDXS();
+RB_TREE_GET_IDXS(RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-RB_TREE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree operator== method -
-RB_TREE_OPERATOR_DOUBLE_EQUAL();
+RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_VALUES);
 
    // - rb_tree rehash_tree -
-RB_TREE_REHASH_TREE();
+RB_TREE_REHASH_TREE(RB_TREE_GEN_VALUES);
 
    // - rb_tree print_dot_code -
 #ifdef RB_TREE_GENERATE_PRINT_DOT_CODE
-RB_TREE_PRINT_DOT_CODE();
+RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
 #endif
 
    // - rb_tree check_rb_tree_properties -
 #ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
-RB_TREE_CHECK_RB_TREE_PROPERTIES();
+RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_VALUES);
 #endif
 
-}
+}/*}}}*/
 
 
-#define SAFE_LIST_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   count = 0;\n"\
-"   data = NULL;\n"\
-"   free_idx = c_idx_not_exist;\n"\
-"   first_idx = c_idx_not_exist;\n"\
-"   last_idx = c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+#define SAFE_LIST_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type
+#define SAFE_LIST_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type
 
-#define SAFE_LIST_INIT_SIZE() \
-{\
-printf(\
-"inline void %s::init_size(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   init();\n"\
-"   copy_resize(a_size);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_INIT(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   count = 0;\n"
+"   data = NULL;\n"
+"   free_idx = c_idx_not_exist;\n"
+"   first_idx = c_idx_not_exist;\n"
+"   last_idx = c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_CLEAR() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"      %s_element *ptr = data;\n"\
-"      %s_element *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_LIST_INIT_SIZE(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init_size(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   init();\n"
+"   copy_resize(a_size);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_CLEAR(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"      %s_element *ptr = data;\n"
+"      %s_element *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_LIST_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBER & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-);\
-   if (TYPE_NUMBER & c_type_flushable) {\
-printf(\
-"   %s_element *ptr = data;\n"\
-"   %s_element *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object.flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_LIST_FLUSH(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = count;\n"\
-"   count = a_second.count;\n"\
-"   a_second.count = tmp_unsigned;\n"\
-"\n"\
-"   %s_element *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"\n"\
-"   tmp_unsigned = free_idx;\n"\
-"   free_idx = a_second.free_idx;\n"\
-"   a_second.free_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = first_idx;\n"\
-"   first_idx = a_second.first_idx;\n"\
-"   a_second.first_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = last_idx;\n"\
-"   last_idx = a_second.last_idx;\n"\
-"   a_second.last_idx = tmp_unsigned;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_FLUSH_ALL(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+);
+   if (TYPE_NUMBER & c_type_flushable) {
+printf(
+"   %s_element *ptr = data;\n"
+"   %s_element *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->object.flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_LIST_OPERATOR_LE_BR_RE_BR() \
-{\
-printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"   return data[a_idx].object;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_SWAP(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = count;\n"
+"   count = a_second.count;\n"
+"   a_second.count = tmp_unsigned;\n"
+"\n"
+"   %s_element *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"\n"
+"   tmp_unsigned = free_idx;\n"
+"   free_idx = a_second.free_idx;\n"
+"   a_second.free_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = first_idx;\n"
+"   first_idx = a_second.first_idx;\n"
+"   a_second.first_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = last_idx;\n"
+"   last_idx = a_second.last_idx;\n"
+"   a_second.last_idx = tmp_unsigned;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_PREPEND() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::prepend(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::prepend(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = first_idx;\n"\
-"   new_element.prev_idx = c_idx_not_exist;\n"\
-"\n"\
-"   if (first_idx != c_idx_not_exist) {\n"\
-"      data[first_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   first_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_OPERATOR_LE_BR_RE_BR(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator[](unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"   return data[a_idx].object;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_APPEND() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::append(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::append(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = c_idx_not_exist;\n"\
-"   new_element.prev_idx = last_idx;\n"\
-"\n"\
-"   if (last_idx != c_idx_not_exist) {\n"\
-"      data[last_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   last_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_PREPEND(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::prepend(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::prepend(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = first_idx;\n"
+"   new_element.prev_idx = c_idx_not_exist;\n"
+"\n"
+"   if (first_idx != c_idx_not_exist) {\n"
+"      data[first_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   first_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_INSERT_BEFORE() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = a_idx;\n"\
-"   new_element.prev_idx = idx_element.prev_idx;\n"\
-"\n"\
-"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   idx_element.prev_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_APPEND(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::append(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::append(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = c_idx_not_exist;\n"
+"   new_element.prev_idx = last_idx;\n"
+"\n"
+"   if (last_idx != c_idx_not_exist) {\n"
+"      data[last_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   last_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_INSERT_AFTER() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = idx_element.next_idx;\n"\
-"   new_element.prev_idx = a_idx;\n"\
-"\n"\
-"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   idx_element.next_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_INSERT_BEFORE(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = a_idx;\n"
+"   new_element.prev_idx = idx_element.prev_idx;\n"
+"\n"
+"   if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"      data[idx_element.prev_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   idx_element.prev_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_PREPEND_BLANK() \
-{\
-printf(\
-"inline unsigned %s::prepend_blank()\n"\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = first_idx;\n"\
-"   new_element.prev_idx = c_idx_not_exist;\n"\
-"\n"\
-"   if (first_idx != c_idx_not_exist) {\n"\
-"      data[first_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   first_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_INSERT_AFTER(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = idx_element.next_idx;\n"
+"   new_element.prev_idx = a_idx;\n"
+"\n"
+"   if (idx_element.next_idx != c_idx_not_exist) {\n"
+"      data[idx_element.next_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   idx_element.next_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_APPEND_BLANK() \
-{\
-printf(\
-"inline unsigned %s::append_blank()\n"\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = c_idx_not_exist;\n"\
-"   new_element.prev_idx = last_idx;\n"\
-"\n"\
-"   if (last_idx != c_idx_not_exist) {\n"\
-"      data[last_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   last_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_PREPEND_BLANK(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::prepend_blank()\n"
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = first_idx;\n"
+"   new_element.prev_idx = c_idx_not_exist;\n"
+"\n"
+"   if (first_idx != c_idx_not_exist) {\n"
+"      data[first_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   first_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_INSERT_BLANK_BEFORE() \
-{\
-printf(\
-"inline unsigned %s::insert_blank_before(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = a_idx;\n"\
-"   new_element.prev_idx = idx_element.prev_idx;\n"\
-"\n"\
-"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   idx_element.prev_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_APPEND_BLANK(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::append_blank()\n"
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = c_idx_not_exist;\n"
+"   new_element.prev_idx = last_idx;\n"
+"\n"
+"   if (last_idx != c_idx_not_exist) {\n"
+"      data[last_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   last_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_INSERT_BLANK_AFTER() \
-{\
-printf(\
-"inline unsigned %s::insert_blank_after(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.valid = true;\n"\
-"   new_element.next_idx = idx_element.next_idx;\n"\
-"   new_element.prev_idx = a_idx;\n"\
-"\n"\
-"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   count++;\n"\
-"   idx_element.next_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_INSERT_BLANK_BEFORE(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::insert_blank_before(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = a_idx;\n"
+"   new_element.prev_idx = idx_element.prev_idx;\n"
+"\n"
+"   if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"      data[idx_element.prev_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   idx_element.prev_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_REMOVE() \
-{\
-printf(\
-"inline void %s::remove(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   %s_element &rm_element = data[a_idx];\n"\
-"\n"\
-"   if (rm_element.next_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = rm_element.prev_idx;\n"\
-"   }\n"\
-"\n"\
-"   if (rm_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = rm_element.next_idx;\n"\
-"   }\n"\
-"\n"\
-"   rm_element.valid = false;\n"\
-"   rm_element.next_idx = free_idx;\n"\
-"\n"\
-"   count--;\n"\
-"   free_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_INSERT_BLANK_AFTER(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::insert_blank_after(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.valid = true;\n"
+"   new_element.next_idx = idx_element.next_idx;\n"
+"   new_element.prev_idx = a_idx;\n"
+"\n"
+"   if (idx_element.next_idx != c_idx_not_exist) {\n"
+"      data[idx_element.next_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   count++;\n"
+"   idx_element.next_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_NEXT_IDX() \
-{\
-printf(\
-"inline unsigned %s::next_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(data[a_idx].valid);\n"\
-"   return data[a_idx].next_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_REMOVE(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::remove(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   %s_element &rm_element = data[a_idx];\n"
+"\n"
+"   if (rm_element.next_idx != c_idx_not_exist) {\n"
+"      data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = rm_element.prev_idx;\n"
+"   }\n"
+"\n"
+"   if (rm_element.prev_idx != c_idx_not_exist) {\n"
+"      data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = rm_element.next_idx;\n"
+"   }\n"
+"\n"
+"   rm_element.valid = false;\n"
+"   rm_element.next_idx = free_idx;\n"
+"\n"
+"   count--;\n"
+"   free_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_PREV_IDX() \
-{\
-printf(\
-"inline unsigned %s::prev_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(data[a_idx].valid);\n"\
-"   return data[a_idx].prev_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_NEXT_IDX(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::next_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(data[a_idx].valid);\n"
+"   return data[a_idx].next_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s_element *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s_element *ptr = n_data + used;\n"\
-"         %s_element *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->object.init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s_element));\n"\
-"   }\n"\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"   if (size > used) {\n"\
-"      %s_element *ptr = data + used;\n"\
-"      %s_element *ptr_end = data + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"   }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_LIST_PREV_IDX(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::prev_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(data[a_idx].valid);\n"
+"   return data[a_idx].prev_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_GET_IDX() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"\
-"\n"\
-"   unsigned idx = first_idx;\n"\
-"   do {\n"\
-"      %s_element &element = data[idx];\n"\
-"\n"\
-"      if (element.object == a_value) {\n"\
-"         return idx;\n"\
-"      }\n"\
-"\n"\
-"      idx = element.next_idx;\n"\
-"   } while(idx != c_idx_not_exist);\n"\
-"\n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_COPY_RESIZE(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s_element *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s_element *ptr = n_data + used;\n"
+"         %s_element *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->object.init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   }\n"
+"\n"
+"   if (used != 0) {\n"
+"      memcpy(n_data,data,used*sizeof(%s_element));\n"
+"   }\n"
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"   if (size > used) {\n"
+"      %s_element *ptr = data + used;\n"
+"      %s_element *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_LIST_OPERATOR_EQUAL() \
-{\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.used == 0) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"\n"\
-"   %s_element *ptr = data;\n"\
-"   %s_element *s_ptr = a_src.data;\n"\
-"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object = s_ptr->object;\n"\
-"      ptr->valid = s_ptr->valid;\n"\
-"      ptr->next_idx = s_ptr->next_idx;\n"\
-"      ptr->prev_idx = s_ptr->prev_idx;\n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = a_src.used;\n"\
-"   count = a_src.count;\n"\
-"   free_idx = a_src.free_idx;\n"\
-"   first_idx = a_src.first_idx;\n"\
-"   last_idx = a_src.last_idx;\n"\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_LIST_GET_IDX(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"unsigned %s::get_idx(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"unsigned %s::get_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"
+"\n"
+"   unsigned idx = first_idx;\n"
+"   do {\n"
+"      %s_element &element = data[idx];\n"
+"\n"
+"      if (element.object == a_value) {\n"
+"         return idx;\n"
+"      }\n"
+"\n"
+"      idx = element.next_idx;\n"
+"   } while(idx != c_idx_not_exist);\n"
+"\n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_LIST_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   if (count != a_second.count) {\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   if (first_idx == c_idx_not_exist) {\n"\
-"      return a_second.first_idx == c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   if (a_second.first_idx == c_idx_not_exist) {\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   unsigned idx = first_idx;\n"\
-"   unsigned s_idx = a_second.first_idx;\n"\
-"\n"\
-"   do {\n"\
-"      %s_element &element = data[idx];\n"\
-"      %s_element &s_element = a_second.data[s_idx];\n"\
-"\n"\
-"      if (!(element.object == s_element.object)) {\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      idx = element.next_idx;\n"\
-"      s_idx = s_element.next_idx;\n"\
-"\n"\
-"   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);\n"\
-"\n"\
-"   return idx == s_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.used == 0) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"\n"
+"   %s_element *ptr = data;\n"
+"   %s_element *s_ptr = a_src.data;\n"
+"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"
+"\n"
+"   do {\n"
+"      ptr->object = s_ptr->object;\n"
+"      ptr->valid = s_ptr->valid;\n"
+"      ptr->next_idx = s_ptr->next_idx;\n"
+"      ptr->prev_idx = s_ptr->prev_idx;\n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   used = a_src.used;\n"
+"   count = a_src.count;\n"
+"   free_idx = a_src.free_idx;\n"
+"   first_idx = a_src.first_idx;\n"
+"   last_idx = a_src.last_idx;\n"
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void SAFE_LIST_OPERATOR_DOUBLE_EQUAL(SAFE_LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   if (count != a_second.count) {\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   if (first_idx == c_idx_not_exist) {\n"
+"      return a_second.first_idx == c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   if (a_second.first_idx == c_idx_not_exist) {\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   unsigned idx = first_idx;\n"
+"   unsigned s_idx = a_second.first_idx;\n"
+"\n"
+"   do {\n"
+"      %s_element &element = data[idx];\n"
+"      %s_element &s_element = a_second.data[s_idx];\n"
+"\n"
+"      if (!(element.object == s_element.object)) {\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      idx = element.next_idx;\n"
+"      s_idx = s_element.next_idx;\n"
+"\n"
+"   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);\n"
+"\n"
+"   return idx == s_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
 void processor_s::generate_safe_list_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &fun_defs = cont_params.functions;
    string_array_s &abbs = cont_params.names;
@@ -11470,7 +11481,7 @@ void processor_s::generate_safe_list_type()
    data_type_s &type = data_types[type_idx];
 
    // - test type options -
-   if (type.properties & c_type_setting_strict_dynamic) {
+   if (type.properties & c_type_option_strict_dynamic) {
       fprintf(stderr,"list: container have not implemented processing of types with option strict_dynamic\n");
       cassert(0);
    }
@@ -11497,7 +11508,7 @@ void processor_s::generate_safe_list_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -11573,7 +11584,7 @@ printf(
 "   unsigned last_idx; //!< index of last element\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize list\n"
@@ -11591,7 +11602,7 @@ printf(
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by list\n"
@@ -11602,7 +11613,7 @@ printf(
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by list\n"
@@ -11637,7 +11648,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of list with another list\n"
@@ -11771,7 +11782,7 @@ printf(
 "   unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -11816,10 +11827,10 @@ printf(
 "};\n"
 "\n"
 );
-}
+}/*}}}*/
 
 void processor_s::generate_safe_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -11841,68 +11852,68 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - list init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
-SAFE_LIST_INIT();
+   if (!(data_type.properties & c_type_option_nogen_init)) {
+SAFE_LIST_INIT(SAFE_LIST_GEN_VALUES);
    }
 
    // - list init_size method -
-SAFE_LIST_INIT_SIZE();
+SAFE_LIST_INIT_SIZE(SAFE_LIST_GEN_VALUES);
 
    // - list clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-SAFE_LIST_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+SAFE_LIST_CLEAR(SAFE_LIST_GEN_VALUES);
       }
    }
 
    // - list flush method -
-SAFE_LIST_FLUSH();
+SAFE_LIST_FLUSH(SAFE_LIST_GEN_VALUES);
 
    // - list flush_all method -
    if (!(TYPE_NUMBER & c_type_flushable)) {
-SAFE_LIST_FLUSH_ALL();
+SAFE_LIST_FLUSH_ALL(SAFE_LIST_GEN_VALUES);
    }
 
    // - list swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-SAFE_LIST_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+SAFE_LIST_SWAP(SAFE_LIST_GEN_VALUES);
    }
 
    // - list operator[] method -
-SAFE_LIST_OPERATOR_LE_BR_RE_BR();
+SAFE_LIST_OPERATOR_LE_BR_RE_BR(SAFE_LIST_GEN_VALUES);
 
    // - list prepend method -
-SAFE_LIST_PREPEND();
+SAFE_LIST_PREPEND(SAFE_LIST_GEN_VALUES);
 
    // - list append method -
-SAFE_LIST_APPEND();
+SAFE_LIST_APPEND(SAFE_LIST_GEN_VALUES);
 
    // - list insert_before method -
-SAFE_LIST_INSERT_BEFORE();
+SAFE_LIST_INSERT_BEFORE(SAFE_LIST_GEN_VALUES);
 
    // - list insert_after method -
-SAFE_LIST_INSERT_AFTER();
+SAFE_LIST_INSERT_AFTER(SAFE_LIST_GEN_VALUES);
 
    // - list prepend_blank method -
-SAFE_LIST_PREPEND_BLANK();
+SAFE_LIST_PREPEND_BLANK(SAFE_LIST_GEN_VALUES);
 
    // - list append_blank method -
-SAFE_LIST_APPEND_BLANK();
+SAFE_LIST_APPEND_BLANK(SAFE_LIST_GEN_VALUES);
 
    // - list insert_blank_before method -
-SAFE_LIST_INSERT_BLANK_BEFORE();
+SAFE_LIST_INSERT_BLANK_BEFORE(SAFE_LIST_GEN_VALUES);
 
    // - list insert_blank_after method -
-SAFE_LIST_INSERT_BLANK_AFTER();
+SAFE_LIST_INSERT_BLANK_AFTER(SAFE_LIST_GEN_VALUES);
 
    // - list remove method -
-SAFE_LIST_REMOVE();
+SAFE_LIST_REMOVE(SAFE_LIST_GEN_VALUES);
 
    // - list next_idx method -
-SAFE_LIST_NEXT_IDX();
+SAFE_LIST_NEXT_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list prev_idx method -
-SAFE_LIST_PREV_IDX();
+SAFE_LIST_PREV_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list copy_resize method -
 
@@ -11910,17 +11921,17 @@ SAFE_LIST_PREV_IDX();
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-SAFE_LIST_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }
 
    // - list operator== method -
 
-}
+}/*}}}*/
 
 void processor_s::generate_safe_list_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -11947,8 +11958,8 @@ printf(
 
    // - list clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-SAFE_LIST_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+SAFE_LIST_CLEAR(SAFE_LIST_GEN_VALUES);
       }
    }
 
@@ -11956,7 +11967,7 @@ SAFE_LIST_CLEAR();
 
    // - list flush_all method -
    if (TYPE_NUMBER & c_type_flushable) {
-SAFE_LIST_FLUSH_ALL();
+SAFE_LIST_FLUSH_ALL(SAFE_LIST_GEN_VALUES);
    }
 
    // - list swap method - 
@@ -11978,1629 +11989,1631 @@ SAFE_LIST_FLUSH_ALL();
    // - list prev_idx method -
 
    // - list copy_resize method -
-SAFE_LIST_COPY_RESIZE();
+SAFE_LIST_COPY_RESIZE(SAFE_LIST_GEN_VALUES);
 
    // - list get_idx method -
-SAFE_LIST_GET_IDX();
+SAFE_LIST_GET_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-SAFE_LIST_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }
 
    // - list operator== method -
-SAFE_LIST_OPERATOR_DOUBLE_EQUAL();
+SAFE_LIST_OPERATOR_DOUBLE_EQUAL(SAFE_LIST_GEN_VALUES);
 
-}
-
+}/*}}}*/
 
 
 //#define SAFE_RB_TREE_GENERATE_PRINT_DOT_CODE
 //#define SAFE_RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
 
-#define SAFE_RB_TREE___GET_GRANDPARENT_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_grandparent_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.parent_idx != c_idx_not_exist) {\n"\
-"      return data[node.parent_idx].parent_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+#define SAFE_RB_TREE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,data_type_s &data_type,data_type_s **types
+#define SAFE_RB_TREE_GEN_VALUES abbreviations,abb_idx,data_type,types
 
-#define SAFE_RB_TREE___GET_UNCLE_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_uncle_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned gp_idx = __get_grandparent_idx(a_idx);\n"\
-"\n"\
-"   if (gp_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &gp = data[gp_idx];\n"\
-"      return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___GET_GRANDPARENT_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_grandparent_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.parent_idx != c_idx_not_exist) {\n"
+"      return data[node.parent_idx].parent_idx;\n"
+"   }\n"
+"   else {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___GET_SIBLING_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_sibling_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &p = data[data[a_idx].parent_idx];\n"\
-"   return p.left_idx == a_idx?p.right_idx:p.left_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___GET_UNCLE_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_uncle_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned gp_idx = __get_grandparent_idx(a_idx);\n"
+"\n"
+"   if (gp_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &gp = data[gp_idx];\n"
+"      return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_DESCENT_STACK_SIZE() \
-{\
-printf(\
-"inline unsigned %s::get_descent_stack_size()\n"\
-"{/*{{{*/\n"\
-"   return (unsigned)(logf(used)/c_log_of_2) << 1;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___GET_SIBLING_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_sibling_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &p = data[data[a_idx].parent_idx];\n"
+"   return p.left_idx == a_idx?p.right_idx:p.left_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_STACK_MIN_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.left_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      *((*a_s_ptr)++) = node_idx;\n"\
-"      node_idx = node.left_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_DESCENT_STACK_SIZE(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::get_descent_stack_size()\n"
+"{/*{{{*/\n"
+"   return (unsigned)(logf(used)/c_log_of_2) << 1;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_STACK_NEXT_IDX() \
-{\
-printf(\
-"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.right_idx != leaf_idx) {\n"\
-"      return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"\
-"   }\n"\
-"\n"\
-"   if (*a_s_ptr > a_stack_base) {\n"\
-"      return *(--(*a_s_ptr));\n"\
-"   }\n"\
-"   \n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_STACK_MIN_VALUE_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.left_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      *((*a_s_ptr)++) = node_idx;\n"
+"      node_idx = node.left_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_MIN_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_min_value_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.left_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      node_idx = node.left_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_STACK_NEXT_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.right_idx != leaf_idx) {\n"
+"      return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"
+"   }\n"
+"\n"
+"   if (*a_s_ptr > a_stack_base) {\n"
+"      return *(--(*a_s_ptr));\n"
+"   }\n"
+"   \n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_MAX_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_max_value_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.right_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      node_idx = node.right_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_MIN_VALUE_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_min_value_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.left_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      node_idx = node.left_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_NEXT_IDX() \
-{\
-printf(\
-"unsigned %s::get_next_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.right_idx != leaf_idx) {\n"\
-"      return get_min_value_idx(node.right_idx);\n"\
-"   }\n"\
-"   else {\n"\
-"\n"\
-"      unsigned node_idx = a_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.parent_idx == c_idx_not_exist) {\n"\
-"            return c_idx_not_exist;\n"\
-"         }\n"\
-"         \n"\
-"         if (data[node.parent_idx].right_idx != node_idx) {\n"\
-"            return node.parent_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.parent_idx;\n"\
-"      } while(1);\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_MAX_VALUE_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_max_value_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.right_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      node_idx = node.right_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_PREV_IDX() \
-{\
-printf(\
-"unsigned %s::get_prev_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.left_idx != leaf_idx) {\n"\
-"      return get_max_value_idx(node.left_idx);\n"\
-"   }\n"\
-"   else {\n"\
-"\n"\
-"      unsigned node_idx = a_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.parent_idx == c_idx_not_exist) {\n"\
-"            return c_idx_not_exist;\n"\
-"         }\n"\
-"         \n"\
-"         if (data[node.parent_idx].left_idx != node_idx) {\n"\
-"            return node.parent_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.parent_idx;\n"\
-"      } while(1);\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_NEXT_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_next_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.right_idx != leaf_idx) {\n"
+"      return get_min_value_idx(node.right_idx);\n"
+"   }\n"
+"   else {\n"
+"\n"
+"      unsigned node_idx = a_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.parent_idx == c_idx_not_exist) {\n"
+"            return c_idx_not_exist;\n"
+"         }\n"
+"         \n"
+"         if (data[node.parent_idx].right_idx != node_idx) {\n"
+"            return node.parent_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.parent_idx;\n"
+"      } while(1);\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___ROTATE_LEFT() \
-{\
-printf(\
-"inline void %s::__rotate_left(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &root = data[a_idx];\n"\
-"   %s_node &pivot = data[root.right_idx];\n"\
-"\n"\
-"   if (a_idx == root_idx) {\n"\
-"      root_idx = root.right_idx;\n"\
-"      pivot.parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &rp = data[root.parent_idx];\n"\
-"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"\
-"\n"\
-"      pivot.parent_idx = root.parent_idx;\n"\
-"   }\n"\
-"\n"\
-"   root.parent_idx = root.right_idx;\n"\
-"\n"\
-"   root.right_idx = pivot.left_idx;\n"\
-"   data[root.right_idx].parent_idx = a_idx;\n"\
-"\n"\
-"   pivot.left_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_PREV_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_prev_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.left_idx != leaf_idx) {\n"
+"      return get_max_value_idx(node.left_idx);\n"
+"   }\n"
+"   else {\n"
+"\n"
+"      unsigned node_idx = a_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.parent_idx == c_idx_not_exist) {\n"
+"            return c_idx_not_exist;\n"
+"         }\n"
+"         \n"
+"         if (data[node.parent_idx].left_idx != node_idx) {\n"
+"            return node.parent_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.parent_idx;\n"
+"      } while(1);\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___ROTATE_RIGHT() \
-{\
-printf(\
-"inline void %s::__rotate_right(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &root = data[a_idx];\n"\
-"   %s_node &pivot = data[root.left_idx];\n"\
-"\n"\
-"   if (a_idx == root_idx) {\n"\
-"      root_idx = root.left_idx;\n"\
-"      pivot.parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &rp = data[root.parent_idx];\n"\
-"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"\
-"\n"\
-"      pivot.parent_idx = root.parent_idx;\n"\
-"   }\n"\
-"\n"\
-"   root.parent_idx = root.left_idx;\n"\
-"\n"\
-"   root.left_idx = pivot.right_idx;\n"\
-"   data[root.left_idx].parent_idx = a_idx;\n"\
-"\n"\
-"   pivot.right_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___ROTATE_LEFT(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__rotate_left(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &root = data[a_idx];\n"
+"   %s_node &pivot = data[root.right_idx];\n"
+"\n"
+"   if (a_idx == root_idx) {\n"
+"      root_idx = root.right_idx;\n"
+"      pivot.parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &rp = data[root.parent_idx];\n"
+"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"
+"\n"
+"      pivot.parent_idx = root.parent_idx;\n"
+"   }\n"
+"\n"
+"   root.parent_idx = root.right_idx;\n"
+"\n"
+"   root.right_idx = pivot.left_idx;\n"
+"   data[root.right_idx].parent_idx = a_idx;\n"
+"\n"
+"   pivot.left_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___GET_NEW_INDEX() \
-{\
-printf(\
-"inline unsigned %s::__get_new_index()\n"\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].parent_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n" \
-"   data[new_idx].valid = true;\n" \
-"   count++;\n" \
-"\n" \
-"   return new_idx;\n" \
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___ROTATE_RIGHT(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__rotate_right(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &root = data[a_idx];\n"
+"   %s_node &pivot = data[root.left_idx];\n"
+"\n"
+"   if (a_idx == root_idx) {\n"
+"      root_idx = root.left_idx;\n"
+"      pivot.parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &rp = data[root.parent_idx];\n"
+"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"
+"\n"
+"      pivot.parent_idx = root.parent_idx;\n"
+"   }\n"
+"\n"
+"   root.parent_idx = root.left_idx;\n"
+"\n"
+"   root.left_idx = pivot.right_idx;\n"
+"   data[root.left_idx].parent_idx = a_idx;\n"
+"\n"
+"   pivot.right_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___BINARY_TREE_INSERT() \
-{\
-printf(\
-"bool %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique)\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      if (leaf_idx == c_idx_not_exist) {\n"\
-"         leaf_idx = __get_new_index();\n"\
-"         %s_node &leaf = data[leaf_idx];\n"\
-"\n"\
-"         leaf.valid = false;\n"\
-"         leaf.color = true;\n"\
-"         count--;\n"\
-"\n"\
-"#ifdef SAFE_RB_TREE_SET_LEAF_CHILDS\n"\
-"         leaf.left_idx = c_idx_not_exist;\n"\
-"         leaf.right_idx = c_idx_not_exist;\n"\
-"#endif\n"\
-"      }\n"\
-"\n"\
-"      data[a_new_idx].parent_idx = c_idx_not_exist;\n"\
-"      root_idx = a_new_idx;\n"\
-"   }\n"\
-"   else  {\n"\
-"      unsigned node_idx = root_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         int comp_result = __compare_value(a_value,node.object);\n"\
-"         if (comp_result < 0) {\n"\
-"            if (node.left_idx == leaf_idx) {\n"\
-"               node.left_idx = a_new_idx;\n"\
-"               break;\n"\
-"            }\n"\
-"            node_idx = node.left_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            if (a_unique && comp_result == 0) {\n"\
-"               return false;\n"\
-"            }\n"\
-"\n"\
-"            if (node.right_idx == leaf_idx) {\n"\
-"               node.right_idx = a_new_idx;\n"\
-"               break;\n"\
-"            }\n"\
-"            node_idx = node.right_idx;\n"\
-"         }\n"\
-"      } while(1);\n"\
-"\n"\
-"      data[a_new_idx].parent_idx = node_idx;\n"\
-"   }\n"\
-"\n"\
-"   %s_node &new_node = data[a_new_idx];\n"\
-"   new_node.left_idx = leaf_idx;\n"\
-"   new_node.right_idx = leaf_idx;\n"\
-"   new_node.color = false;\n"\
-"\n"\
-"   return true;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___GET_NEW_INDEX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_new_index()\n"
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].parent_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n" 
+"   data[new_idx].valid = true;\n" 
+"   count++;\n" 
+"\n" 
+"   return new_idx;\n" 
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___REPLACE_DELETE_NODE_BY_CHILD() \
-{\
-printf(\
-"inline void %s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.parent_idx != c_idx_not_exist) {\n"\
-"      %s_node &parent = data[node.parent_idx];\n"\
-"      (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"\
-"\n"\
-"      data[a_ch_idx].parent_idx = node.parent_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"\
-"      data[a_ch_idx].parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___BINARY_TREE_INSERT(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique)\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      if (leaf_idx == c_idx_not_exist) {\n"
+"         leaf_idx = __get_new_index();\n"
+"         %s_node &leaf = data[leaf_idx];\n"
+"\n"
+"         leaf.valid = false;\n"
+"         leaf.color = true;\n"
+"         count--;\n"
+"\n"
+"#ifdef SAFE_RB_TREE_SET_LEAF_CHILDS\n"
+"         leaf.left_idx = c_idx_not_exist;\n"
+"         leaf.right_idx = c_idx_not_exist;\n"
+"#endif\n"
+"      }\n"
+"\n"
+"      data[a_new_idx].parent_idx = c_idx_not_exist;\n"
+"      root_idx = a_new_idx;\n"
+"   }\n"
+"   else  {\n"
+"      unsigned node_idx = root_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         int comp_result = __compare_value(a_value,node.object);\n"
+"         if (comp_result < 0) {\n"
+"            if (node.left_idx == leaf_idx) {\n"
+"               node.left_idx = a_new_idx;\n"
+"               break;\n"
+"            }\n"
+"            node_idx = node.left_idx;\n"
+"         }\n"
+"         else {\n"
+"            if (a_unique && comp_result == 0) {\n"
+"               return false;\n"
+"            }\n"
+"\n"
+"            if (node.right_idx == leaf_idx) {\n"
+"               node.right_idx = a_new_idx;\n"
+"               break;\n"
+"            }\n"
+"            node_idx = node.right_idx;\n"
+"         }\n"
+"      } while(1);\n"
+"\n"
+"      data[a_new_idx].parent_idx = node_idx;\n"
+"   }\n"
+"\n"
+"   %s_node &new_node = data[a_new_idx];\n"
+"   new_node.left_idx = leaf_idx;\n"
+"   new_node.right_idx = leaf_idx;\n"
+"   new_node.color = false;\n"
+"\n"
+"   return true;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___REMOVE_BLACK_BLACK()  \
-{\
-printf(\
-"void %s::__remove_black_black(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"      \n"\
-"      if (node.parent_idx == c_idx_not_exist) {\n"\
-"         return;\n"\
-"      }\n"\
-"\n"\
-"      unsigned parent_idx = node.parent_idx;\n"\
-"      %s_node &parent = data[parent_idx];\n"\
-"\n"\
-"      {\n"\
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"         %s_node &sibling = data[sibling_idx];\n"\
-"\n"\
-"         if (!sibling.color) {\n"\
-"            parent.color = false;\n"\
-"            sibling.color = true;\n"\
-"\n"\
-"            if (node_idx == parent.left_idx) {\n"\
-"               __rotate_left(parent_idx);\n"\
-"            }\n"\
-"            else {\n"\
-"               __rotate_right(parent_idx);\n"\
-"            }\n"\
-"         }\n"\
-"      }\n"\
-"\n"\
-"      {\n"\
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"         %s_node& sibling = data[sibling_idx];\n"\
-"\n"\
-"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
-"            sibling.color = false;\n"\
-"            node_idx = parent_idx;\n"\
-"            continue;\n"\
-"         }\n"\
-"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
-"            sibling.color = false;\n"\
-"            parent.color = true;\n"\
-"            return;\n"\
-"         }\n"\
-"         else if (sibling.color) {\n"\
-"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"\
-"               sibling.color = false;\n"\
-"               data[sibling.left_idx].color = true;\n"\
-"               __rotate_right(sibling_idx);\n"\
-"            }\n"\
-"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"\
-"               sibling.color = false;\n"\
-"               data[sibling.right_idx].color = true;\n"\
-"               __rotate_left(sibling_idx);\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         {\n"\
-"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"            %s_node &sibling = data[sibling_idx];\n"\
-"\n"\
-"            sibling.color = parent.color;\n"\
-"            parent.color = true;\n"\
-"\n"\
-"            if (node_idx == parent.left_idx) {\n"\
-"               data[sibling.right_idx].color = true;\n"\
-"               __rotate_left(parent_idx);\n"\
-"            }\n"\
-"            else {\n"\
-"               data[sibling.left_idx].color = true;\n"\
-"               __rotate_right(parent_idx);\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         return;\n"\
-"      }\n"\
-"\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.parent_idx != c_idx_not_exist) {\n"
+"      %s_node &parent = data[node.parent_idx];\n"
+"      (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"
+"\n"
+"      data[a_ch_idx].parent_idx = node.parent_idx;\n"
+"   }\n"
+"   else {\n"
+"      root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"
+"      data[a_ch_idx].parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n" 
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___REMOVE_ONE_CHILD()  \
-{\
-printf(\
-"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"\
-"\n"\
-"   node.parent_idx = free_idx;\n"\
-"   free_idx = a_idx;\n"\
-"\n"\
-"   node.valid = false;\n"\
-"   count--;\n"\
-"\n"\
-"   if (node.color) {\n"\
-"      %s_node &child_node = data[a_ch_idx];\n"\
-"\n"\
-"      if (!child_node.color) {\n"\
-"         child_node.color = true;\n"\
-"      }\n"\
-"      else {\n"\
-"         __remove_black_black(a_ch_idx);\n"\
-"      }\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___REMOVE_BLACK_BLACK(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__remove_black_black(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"      \n"
+"      if (node.parent_idx == c_idx_not_exist) {\n"
+"         return;\n"
+"      }\n"
+"\n"
+"      unsigned parent_idx = node.parent_idx;\n"
+"      %s_node &parent = data[parent_idx];\n"
+"\n"
+"      {\n"
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"         %s_node &sibling = data[sibling_idx];\n"
+"\n"
+"         if (!sibling.color) {\n"
+"            parent.color = false;\n"
+"            sibling.color = true;\n"
+"\n"
+"            if (node_idx == parent.left_idx) {\n"
+"               __rotate_left(parent_idx);\n"
+"            }\n"
+"            else {\n"
+"               __rotate_right(parent_idx);\n"
+"            }\n"
+"         }\n"
+"      }\n"
+"\n"
+"      {\n"
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"         %s_node& sibling = data[sibling_idx];\n"
+"\n"
+"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"            sibling.color = false;\n"
+"            node_idx = parent_idx;\n"
+"            continue;\n"
+"         }\n"
+"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"            sibling.color = false;\n"
+"            parent.color = true;\n"
+"            return;\n"
+"         }\n"
+"         else if (sibling.color) {\n"
+"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"
+"               sibling.color = false;\n"
+"               data[sibling.left_idx].color = true;\n"
+"               __rotate_right(sibling_idx);\n"
+"            }\n"
+"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"
+"               sibling.color = false;\n"
+"               data[sibling.right_idx].color = true;\n"
+"               __rotate_left(sibling_idx);\n"
+"            }\n"
+"         }\n"
+"\n"
+"         {\n"
+"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"            %s_node &sibling = data[sibling_idx];\n"
+"\n"
+"            sibling.color = parent.color;\n"
+"            parent.color = true;\n"
+"\n"
+"            if (node_idx == parent.left_idx) {\n"
+"               data[sibling.right_idx].color = true;\n"
+"               __rotate_left(parent_idx);\n"
+"            }\n"
+"            else {\n"
+"               data[sibling.left_idx].color = true;\n"
+"               __rotate_right(parent_idx);\n"
+"            }\n"
+"         }\n"
+"\n"
+"         return;\n"
+"      }\n"
+"\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE___INSERT_OPERATION() \
-{\
-printf(\
-"void %s::__insert_operation(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.parent_idx == c_idx_not_exist) {\n"\
-"         node.color = true;\n"\
-"         return;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (data[node.parent_idx].color) {\n"\
-"            return;\n"\
-"         }\n"\
-"         else {\n"\
-"            unsigned uncle_idx = __get_uncle_idx(node_idx);\n"\
-"            if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"\
-"               data[node.parent_idx].color = true;\n"\
-"               data[uncle_idx].color = true;\n"\
-"\n"\
-"               node_idx = __get_grandparent_idx(node_idx);\n"\
-"               data[node_idx].color = false;\n"\
-"\n"\
-"               continue;\n"\
-"            }\n"\
-"            else {\n"\
-"               unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"\
-"\n"\
-"               if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"\
-"                  __rotate_left(node.parent_idx);\n"\
-"                  node_idx = node.left_idx;\n"\
-"               }\n"\
-"               else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"\
-"                  __rotate_right(node.parent_idx);\n"\
-"                  node_idx = node.right_idx;\n"\
-"               }\n"\
-"\n"\
-"               {\n"\
-"                  unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"\
-"                  %s_node &node = data[node_idx];\n"\
-"\n"\
-"                  data[node.parent_idx].color = true;\n"\
-"                  data[grandparent_idx].color = false;\n"\
-"\n"\
-"                  if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"\
-"                     __rotate_right(grandparent_idx);\n"\
-"                  }\n"\
-"                  else {\n"\
-"                     __rotate_left(grandparent_idx);\n"\
-"                  }\n"\
-"               }\n"\
-"\n"\
-"               return;\n"\
-"            }\n"\
-"         }\n"\
-"      }\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE___REMOVE_ONE_CHILD(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"
+"\n"
+"   node.parent_idx = free_idx;\n"
+"   free_idx = a_idx;\n"
+"\n"
+"   node.valid = false;\n"
+"   count--;\n"
+"\n"
+"   if (node.color) {\n"
+"      %s_node &child_node = data[a_ch_idx];\n"
+"\n"
+"      if (!child_node.color) {\n"
+"         child_node.color = true;\n"
+"      }\n"
+"      else {\n"
+"         __remove_black_black(a_ch_idx);\n"
+"      }\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   count = 0;\n"\
-"   data = NULL;\n"\
-"   free_idx = c_idx_not_exist;\n"\
-"   root_idx = c_idx_not_exist;\n"\
-"   leaf_idx = c_idx_not_exist;\n"\
-,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {\
-printf(\
-"   %s.init();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE___INSERT_OPERATION(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__insert_operation(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.parent_idx == c_idx_not_exist) {\n"
+"         node.color = true;\n"
+"         return;\n"
+"      }\n"
+"      else {\n"
+"         if (data[node.parent_idx].color) {\n"
+"            return;\n"
+"         }\n"
+"         else {\n"
+"            unsigned uncle_idx = __get_uncle_idx(node_idx);\n"
+"            if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"
+"               data[node.parent_idx].color = true;\n"
+"               data[uncle_idx].color = true;\n"
+"\n"
+"               node_idx = __get_grandparent_idx(node_idx);\n"
+"               data[node_idx].color = false;\n"
+"\n"
+"               continue;\n"
+"            }\n"
+"            else {\n"
+"               unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
+"\n"
+"               if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"                  __rotate_left(node.parent_idx);\n"
+"                  node_idx = node.left_idx;\n"
+"               }\n"
+"               else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"
+"                  __rotate_right(node.parent_idx);\n"
+"                  node_idx = node.right_idx;\n"
+"               }\n"
+"\n"
+"               {\n"
+"                  unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
+"                  %s_node &node = data[node_idx];\n"
+"\n"
+"                  data[node.parent_idx].color = true;\n"
+"                  data[grandparent_idx].color = false;\n"
+"\n"
+"                  if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"                     __rotate_right(grandparent_idx);\n"
+"                  }\n"
+"                  else {\n"
+"                     __rotate_left(grandparent_idx);\n"
+"                  }\n"
+"               }\n"
+"\n"
+"               return;\n"
+"            }\n"
+"         }\n"
+"      }\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_CLEAR() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"      %s_node *ptr = data;\n"\
-"      %s_node *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {\
-printf(\
-"   %s.clear();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE_INIT(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   count = 0;\n"
+"   data = NULL;\n"
+"   free_idx = c_idx_not_exist;\n"
+"   root_idx = c_idx_not_exist;\n"
+"   leaf_idx = c_idx_not_exist;\n"
+,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+printf(
+"   %s.init();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_CLEAR(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"      %s_node *ptr = data;\n"
+"      %s_node *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+printf(
+"   %s.clear();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-);\
-   if (TYPE_NUMBERS(0) & c_type_flushable) {\
-printf(\
-"   %s_node *ptr = data;\n"\
-"   %s_node *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object.flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   copy_resize(used);\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {\
-printf(\
-"   %s.flush_all();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE_FLUSH(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = count;\n"\
-"   count = a_second.count;\n"\
-"   a_second.count = tmp_unsigned;\n"\
-"\n"\
-"   %s_node *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"\n"\
-"   tmp_unsigned = free_idx;\n"\
-"   free_idx = a_second.free_idx;\n"\
-"   a_second.free_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = root_idx;\n"\
-"   root_idx = a_second.root_idx;\n"\
-"   a_second.root_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = leaf_idx;\n"\
-"   leaf_idx = a_second.leaf_idx;\n"\
-"   a_second.leaf_idx = tmp_unsigned;\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-      t_idx = 0;\
-      do {\
-printf(\
-"\n"\
-);\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {\
-printf(\
-"   %s tmp_%s = %s;\n"\
-"   %s = a_second.%s;\n"\
-"   a_second.%s = tmp_%s;\n"\
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-         else {\
-printf(\
-"   %s.swap(a_second.%s);\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_flushable) {
+printf(
+"   %s_node *ptr = data;\n"
+"   %s_node *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->object.flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   copy_resize(used);\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
+printf(
+"   %s.flush_all();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_OPERATOR_LE_BR_RE_BR() \
-{\
-printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"   return data[a_idx].object;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_SWAP(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = count;\n"
+"   count = a_second.count;\n"
+"   a_second.count = tmp_unsigned;\n"
+"\n"
+"   %s_node *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"\n"
+"   tmp_unsigned = free_idx;\n"
+"   free_idx = a_second.free_idx;\n"
+"   a_second.free_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = root_idx;\n"
+"   root_idx = a_second.root_idx;\n"
+"   a_second.root_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = leaf_idx;\n"
+"   leaf_idx = a_second.leaf_idx;\n"
+"   a_second.leaf_idx = tmp_unsigned;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+      unsigned t_idx = 0;
+      do {
+printf(
+"\n"
+);
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
+printf(
+"   %s tmp_%s = %s;\n"
+"   %s = a_second.%s;\n"
+"   a_second.%s = tmp_%s;\n"
+,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+         else {
+printf(
+"   %s.swap(a_second.%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_INSERT() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_node_idx = __get_new_index();\n"\
-"\n"\
-"   __binary_tree_insert(new_node_idx,a_value,false);\n"\
-"   __insert_operation(new_node_idx);\n"\
-"\n"\
-"   data[new_node_idx].object = a_value;\n"\
-"\n"\
-"   return new_node_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE_OPERATOR_LE_BR_RE_BR(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator[](unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"   return data[a_idx].object;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_SWAP_INSERT() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_basic)) {\
-printf(\
-"inline unsigned %s::swap_insert(%s &a_value)\n"\
-"{/*{{{*/\n"\
-"   unsigned new_node_idx = __get_new_index();\n"\
-"\n"\
-"   __binary_tree_insert(new_node_idx,a_value,false);\n"\
-"   __insert_operation(new_node_idx);\n"\
-"\n"\
-"   data[new_node_idx].object.swap(a_value);\n"\
-"\n"\
-"   return new_node_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-}
+void SAFE_RB_TREE_INSERT(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"inline unsigned %s::insert(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"inline unsigned %s::insert(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_node_idx = __get_new_index();\n"
+"\n"
+"   __binary_tree_insert(new_node_idx,a_value,false);\n"
+"   __insert_operation(new_node_idx);\n"
+"\n"
+"   data[new_node_idx].object = a_value;\n"
+"\n"
+"   return new_node_idx;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_REMOVE()  \
-{\
-printf(\
-"void %s::remove(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used && data[a_idx].valid);\n"\
-"\n"\
-"   %s_node &del_node = data[a_idx];\n"\
-"\n"\
-"   if (del_node.left_idx != leaf_idx) {\n"\
-"      if (del_node.right_idx != leaf_idx) {\n"\
-"         \n"\
-"         unsigned found_idx = del_node.right_idx;\n"\
-"         do {\n"\
-"            %s_node &node = data[found_idx];\n"\
-"\n"\
-"            if (node.left_idx == leaf_idx) {\n"\
-"               break;\n"\
-"            }\n"\
-"\n"\
-"            found_idx = node.left_idx;\n"\
-"         } while(1);\n"\
-"\n"\
-"         %s_node &found_node = data[found_idx];\n"\
-"\n"\
-"         /* - process del_node parent_idx - */\n"\
-"         if (del_node.parent_idx != c_idx_not_exist) {\n"\
-"            %s_node &del_node_parent = data[del_node.parent_idx];\n"\
-"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            root_idx = found_idx;\n"\
-"         }\n"\
-"\n"\
-"         /* - process del_node left_idx - */\n"\
-"         data[del_node.left_idx].parent_idx = found_idx;\n"\
-"\n"\
-"         /* - process found_node right_idx - */\n"\
-"         if (found_node.right_idx != leaf_idx) {\n"\
-"            data[found_node.right_idx].parent_idx = a_idx;\n"\
-"         }\n"\
-"\n"\
-"         if (del_node.right_idx == found_idx) {\n"\
-"            \n"\
-"            /* - found node is right child of deleted node - */\n"\
-"            del_node.right_idx = found_node.right_idx;\n"\
-"            found_node.right_idx = a_idx;\n"\
-"\n"\
-"            found_node.parent_idx = del_node.parent_idx;\n"\
-"            del_node.parent_idx = found_idx;\n"\
-"\n"\
-"            found_node.left_idx = del_node.left_idx;\n"\
-"            del_node.left_idx = leaf_idx;\n"\
-"\n"\
-"            bool tmp_bool = found_node.color;\n"\
-"            found_node.color = del_node.color;\n"\
-"            del_node.color = tmp_bool;\n"\
-"         }\n"\
-"         else {\n"\
-"            \n"\
-"            /* - process found_node parent - */\n"\
-"            %s_node &found_node_parent = data[found_node.parent_idx];\n"\
-"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"\
-"\n"\
-"            /* - process del_node right_idx - */\n"\
-"            data[del_node.right_idx].parent_idx = found_idx;\n"\
-"\n"\
-"            /* - swap index pointers between nodes - */\n"\
-"            unsigned tmp_unsigned = found_node.parent_idx;\n"\
-"            found_node.parent_idx = del_node.parent_idx;\n"\
-"            del_node.parent_idx = tmp_unsigned;\n"\
-"\n"\
-"            found_node.left_idx = del_node.left_idx;\n"\
-"            del_node.left_idx = leaf_idx;\n"\
-"\n"\
-"            tmp_unsigned = found_node.right_idx;\n"\
-"            found_node.right_idx = del_node.right_idx;\n"\
-"            del_node.right_idx = tmp_unsigned;\n"\
-"\n"\
-"            bool tmp_bool = found_node.color;\n"\
-"            found_node.color = del_node.color;\n"\
-"            del_node.color = tmp_bool;\n"\
-"         }\n"\
-"\n"\
-"         __remove_one_child(a_idx,del_node.right_idx);\n"\
-"      }\n"\
-"      else {\n"\
-"         __remove_one_child(a_idx,del_node.left_idx);\n"\
-"      }\n"\
-"   }\n"\
-"   else {\n"\
-"      __remove_one_child(a_idx,del_node.right_idx);\n"\
-"   }\n"\
-"\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_SWAP_INSERT(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+printf(
+"inline unsigned %s::swap_insert(%s &a_value)\n"
+"{/*{{{*/\n"
+"   unsigned new_node_idx = __get_new_index();\n"
+"\n"
+"   __binary_tree_insert(new_node_idx,a_value,false);\n"
+"   __insert_operation(new_node_idx);\n"
+"\n"
+"   data[new_node_idx].object.swap(a_value);\n"
+"\n"
+"   return new_node_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+}/*}}}*/
 
-#define SAFE_RB_TREE_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s_node *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s_node *ptr = n_data + used;\n"\
-"         %s_node *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->object.init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s_node));\n"\
-"   }\n"\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"\n"\
-"   if (size > used) {\n"\
-"      %s_node *ptr = data + used;\n"\
-"      %s_node *ptr_end = data + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"   }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE_REMOVE(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::remove(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used && data[a_idx].valid);\n"
+"\n"
+"   %s_node &del_node = data[a_idx];\n"
+"\n"
+"   if (del_node.left_idx != leaf_idx) {\n"
+"      if (del_node.right_idx != leaf_idx) {\n"
+"         \n"
+"         unsigned found_idx = del_node.right_idx;\n"
+"         do {\n"
+"            %s_node &node = data[found_idx];\n"
+"\n"
+"            if (node.left_idx == leaf_idx) {\n"
+"               break;\n"
+"            }\n"
+"\n"
+"            found_idx = node.left_idx;\n"
+"         } while(1);\n"
+"\n"
+"         %s_node &found_node = data[found_idx];\n"
+"\n"
+"         /* - process del_node parent_idx - */\n"
+"         if (del_node.parent_idx != c_idx_not_exist) {\n"
+"            %s_node &del_node_parent = data[del_node.parent_idx];\n"
+"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"
+"         }\n"
+"         else {\n"
+"            root_idx = found_idx;\n"
+"         }\n"
+"\n"
+"         /* - process del_node left_idx - */\n"
+"         data[del_node.left_idx].parent_idx = found_idx;\n"
+"\n"
+"         /* - process found_node right_idx - */\n"
+"         if (found_node.right_idx != leaf_idx) {\n"
+"            data[found_node.right_idx].parent_idx = a_idx;\n"
+"         }\n"
+"\n"
+"         if (del_node.right_idx == found_idx) {\n"
+"            \n"
+"            /* - found node is right child of deleted node - */\n"
+"            del_node.right_idx = found_node.right_idx;\n"
+"            found_node.right_idx = a_idx;\n"
+"\n"
+"            found_node.parent_idx = del_node.parent_idx;\n"
+"            del_node.parent_idx = found_idx;\n"
+"\n"
+"            found_node.left_idx = del_node.left_idx;\n"
+"            del_node.left_idx = leaf_idx;\n"
+"\n"
+"            bool tmp_bool = found_node.color;\n"
+"            found_node.color = del_node.color;\n"
+"            del_node.color = tmp_bool;\n"
+"         }\n"
+"         else {\n"
+"            \n"
+"            /* - process found_node parent - */\n"
+"            %s_node &found_node_parent = data[found_node.parent_idx];\n"
+"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"
+"\n"
+"            /* - process del_node right_idx - */\n"
+"            data[del_node.right_idx].parent_idx = found_idx;\n"
+"\n"
+"            /* - swap index pointers between nodes - */\n"
+"            unsigned tmp_unsigned = found_node.parent_idx;\n"
+"            found_node.parent_idx = del_node.parent_idx;\n"
+"            del_node.parent_idx = tmp_unsigned;\n"
+"\n"
+"            found_node.left_idx = del_node.left_idx;\n"
+"            del_node.left_idx = leaf_idx;\n"
+"\n"
+"            tmp_unsigned = found_node.right_idx;\n"
+"            found_node.right_idx = del_node.right_idx;\n"
+"            del_node.right_idx = tmp_unsigned;\n"
+"\n"
+"            bool tmp_bool = found_node.color;\n"
+"            found_node.color = del_node.color;\n"
+"            del_node.color = tmp_bool;\n"
+"         }\n"
+"\n"
+"         __remove_one_child(a_idx,del_node.right_idx);\n"
+"      }\n"
+"      else {\n"
+"         __remove_one_child(a_idx,del_node.left_idx);\n"
+"      }\n"
+"   }\n"
+"   else {\n"
+"      __remove_one_child(a_idx,del_node.right_idx);\n"
+"   }\n"
+"\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_COPY_RESIZE(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s_node *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s_node *ptr = n_data + used;\n"
+"         %s_node *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->object.init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   }\n"
+"\n"
+"   if (used != 0) {\n"
+"      memcpy(n_data,data,used*sizeof(%s_node));\n"
+"   }\n"
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+"   if (size > used) {\n"
+"      %s_node *ptr = data + used;\n"
+"      %s_node *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_IDX_LEFT() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx_left(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx_left(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            good_idx = node_idx;\n"\
-"            node_idx = node.left_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            node_idx = node.right_idx;\n"\
-"         }\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_GRE_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_gre_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_gre_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         good_idx = node_idx;\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_IDX_LEFT(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_idx_left(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_idx_left(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            good_idx = node_idx;\n"
+"            node_idx = node.left_idx;\n"
+"         }\n"
+"         else {\n"
+"            node_idx = node.right_idx;\n"
+"         }\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_LEE_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_lee_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_lee_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         good_idx = node_idx;\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_GRE_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_gre_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_gre_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         good_idx = node_idx;\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_GET_IDXS() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"void %s::get_idxs(%s a_value,ui_array_s &a_idxs_array)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"void %s::get_idxs(%s &a_value,ui_array_s &a_idxs_array)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   a_idxs_array.used = 0;\n"\
-"\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return;\n"\
-"   }\n"\
-"\n"\
-"   unsigned stack[get_descent_stack_size()];\n"\
-"   unsigned *stack_ptr = stack;\n"\
-"\n"\
-"   *(stack_ptr++) = root_idx;\n"\
-"   do {\n"\
-"      unsigned node_idx = *(--stack_ptr);\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         if (node.left_idx != leaf_idx) {\n"\
-"            *(stack_ptr++) = node.left_idx;\n"\
-"         }\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            a_idxs_array.push(node_idx);\n"\
-"\n"\
-"            if (node.left_idx != leaf_idx) {\n"\
-"               *(stack_ptr++) = node.left_idx;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != leaf_idx) {\n"\
-"            *(stack_ptr++) = node.right_idx;\n"\
-"         }\n"\
-"      }\n"\
-"   } while(stack_ptr > stack);\n"\
-"\n"\
-"   return;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_GET_LEE_IDX(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_lee_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_lee_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         good_idx = node_idx;\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_OPERATOR_EQUAL() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.root_idx == c_idx_not_exist) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-);\
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else \
-   {\
-printf(\
-"\n"\
-"   %s_node *ptr = data;\n"\
-"   %s_node *s_ptr = a_src.data;\n"\
-"   %s_node *s_ptr_end = s_ptr + a_src.used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object = s_ptr->object;\n"\
-"      ptr->valid = s_ptr->valid;\n"\
-"      ptr->parent_idx = s_ptr->parent_idx;\n"\
-"      ptr->left_idx = s_ptr->left_idx;\n"\
-"      ptr->right_idx = s_ptr->right_idx;\n"\
-"      ptr->color = s_ptr->color;\n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = a_src.used;\n"\
-"   count = a_src.count;\n"\
-"   free_idx = a_src.free_idx;\n"\
-"   root_idx = a_src.root_idx;\n"\
-"   leaf_idx = a_src.leaf_idx;\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-printf(\
-"   %s = a_src.%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE_GET_IDXS(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"void %s::get_idxs(%s a_value,ui_array_s &a_idxs_array)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"void %s::get_idxs(%s &a_value,ui_array_s &a_idxs_array)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   a_idxs_array.used = 0;\n"
+"\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return;\n"
+"   }\n"
+"\n"
+"   unsigned stack[get_descent_stack_size()];\n"
+"   unsigned *stack_ptr = stack;\n"
+"\n"
+"   *(stack_ptr++) = root_idx;\n"
+"   do {\n"
+"      unsigned node_idx = *(--stack_ptr);\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         if (node.left_idx != leaf_idx) {\n"
+"            *(stack_ptr++) = node.left_idx;\n"
+"         }\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            a_idxs_array.push(node_idx);\n"
+"\n"
+"            if (node.left_idx != leaf_idx) {\n"
+"               *(stack_ptr++) = node.left_idx;\n"
+"            }\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != leaf_idx) {\n"
+"            *(stack_ptr++) = node.right_idx;\n"
+"         }\n"
+"      }\n"
+"   } while(stack_ptr > stack);\n"
+"\n"
+"   return;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   if (count != a_second.count) {\n"\
-"     return false;\n"\
-"   }\n"\
-"\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      if (a_second.root_idx != c_idx_not_exist) {\n"\
-"         return false;\n"\
-"      }\n"\
-"   }\n"\
-"   else {\n"\
-"      if (a_second.root_idx == c_idx_not_exist) {\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned s_stack[a_second.get_descent_stack_size()];\n"\
-"\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"      unsigned *s_stack_ptr = s_stack;\n"\
-"\n"\
-"      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"\
-"      do {\n"\
-"         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"\
-"            return false;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);\n"\
-"         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"\
-"      } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"\
-"\n"\
-"      if (node_idx != s_node_idx) {\n"\
-"         return false;\n"\
-"      }\n"\
-"   }\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"   return (%s == a_second.%s"\
-,VAR_NAMES(0),VAR_NAMES(0));\
-      if (VAR_NAMES_CNT > 1) {\
-         t_idx = 1;\
-         do {\
-printf(\
-" && %s == a_second.%s"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         } while(++t_idx < VAR_NAMES_CNT);\
-      }\
-printf(\
-");\n"\
-);\
-   }\
-   else {\
-printf(\
-"   return true;\n"\
-);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.root_idx == c_idx_not_exist) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+);
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"
+,IM_STRUCT_NAME);
+   }
+   else 
+   {
+printf(
+"\n"
+"   %s_node *ptr = data;\n"
+"   %s_node *s_ptr = a_src.data;\n"
+"   %s_node *s_ptr_end = s_ptr + a_src.used;\n"
+"\n"
+"   do {\n"
+"      ptr->object = s_ptr->object;\n"
+"      ptr->valid = s_ptr->valid;\n"
+"      ptr->parent_idx = s_ptr->parent_idx;\n"
+"      ptr->left_idx = s_ptr->left_idx;\n"
+"      ptr->right_idx = s_ptr->right_idx;\n"
+"      ptr->color = s_ptr->color;\n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   used = a_src.used;\n"
+"   count = a_src.count;\n"
+"   free_idx = a_src.free_idx;\n"
+"   root_idx = a_src.root_idx;\n"
+"   leaf_idx = a_src.leaf_idx;\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+printf(
+"   %s = a_src.%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_REHASH_TREE() \
-{\
-printf(\
-"void %s::rehash_tree()\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) return;\n"\
-"\n"\
-"   ui_array_s indexes;\n"\
-"   indexes.init();\n"\
-"\n"\
-"   {\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"\n"\
-"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      do {\n"\
-"         indexes.push(idx);\n"\
-"\n"\
-"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"\
-"      } while(idx != c_idx_not_exist);\n"\
-"   }\n"\
-"\n"\
-"   root_idx = c_idx_not_exist;\n"\
-"\n"\
-"   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"\
-"   memset(processed,false,indexes.used*sizeof(bool));\n"\
-"\n"\
-"   unsigned step = indexes.used >> 1;\n"\
-"   if (step > 0) {\n"\
-"      do {\n"\
-"         unsigned idx = step;\n"\
-"         do {\n"\
-"            if (!processed[idx]) {\n"\
-"               unsigned node_idx = indexes[idx];\n"\
-"\n"\
-"               __binary_tree_insert(node_idx,data[node_idx].object,false);\n"\
-"               __insert_operation(node_idx);\n"\
-"\n"\
-"               processed[idx] = true;\n"\
-"            }\n"\
-"         } while((idx += step) < indexes.used);\n"\
-"      } while((step >>= 1) > 0);\n"\
-"   }\n"\
-"\n"\
-"   unsigned node_idx = indexes[0];\n"\
-"   __binary_tree_insert(node_idx,data[node_idx].object,false);\n"\
-"   __insert_operation(node_idx);\n"\
-"\n"\
-"   cfree(processed);\n"\
-"   indexes.clear();\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_OPERATOR_DOUBLE_EQUAL(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   if (count != a_second.count) {\n"
+"     return false;\n"
+"   }\n"
+"\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      if (a_second.root_idx != c_idx_not_exist) {\n"
+"         return false;\n"
+"      }\n"
+"   }\n"
+"   else {\n"
+"      if (a_second.root_idx == c_idx_not_exist) {\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned s_stack[a_second.get_descent_stack_size()];\n"
+"\n"
+"      unsigned *stack_ptr = stack;\n"
+"      unsigned *s_stack_ptr = s_stack;\n"
+"\n"
+"      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"
+"      do {\n"
+"         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"
+"            return false;\n"
+"         }\n"
+"\n"
+"         node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);\n"
+"         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"
+"      } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"
+"\n"
+"      if (node_idx != s_node_idx) {\n"
+"         return false;\n"
+"      }\n"
+"   }\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"   return (%s == a_second.%s"
+,VAR_NAMES(0),VAR_NAMES(0));
+      if (VAR_NAMES_CNT > 1) {
+         unsigned t_idx = 1;
+         do {
+printf(
+" && %s == a_second.%s"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         } while(++t_idx < VAR_NAMES_CNT);
+      }
+printf(
+");\n"
+);
+   }
+   else {
+printf(
+"   return true;\n"
+);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define SAFE_RB_TREE_PRINT_DOT_CODE() \
-{\
-printf(\
-"void %s::print_dot_code(FILE *a_file)\n"\
-"{/*{{{*/\n"\
-"   fprintf(a_file,\n"\
-"\"digraph G {\\n\"\n"\
-"\"   rankdir = TD\\n\"\n"\
-"\"   node [ shape = circle margin = 0.0 fixedsize = true width = 0.7 height = 0.7]\\n\"\n"\
-"\"\\n\"\n"\
-"   );\n"\
-"\n"\
-"   const char *node_colors[] = {\n"\
-"      \"red\",\n"\
-"      \"black\",\n"\
-"   };\n"\
-"\n"\
-"   fprintf(a_file,\n"\
-"\"   root_idx [label = \\\"R\\\" ]\\n\"\n"\
-"\"   root_idx -> node_%%u\\n\"\n"\
-"   ,root_idx);\n"\
-"\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      ui_array_s stack;\n"\
-"      stack.init();\n"\
-"\n"\
-"      stack.push(root_idx);\n"\
-"      do {\n"\
-"         unsigned node_idx = stack.pop();\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         /* - print node - */\n"\
-"         fprintf(a_file,\n"\
-"\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"\
-"         ,node_idx,node_colors[node.color],node_idx);\n"\
-"\n"\
-"         if (node.parent_idx != c_idx_not_exist) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"\
-"            ,node_idx,node.parent_idx);\n"\
-"         }\n"\
-"\n"\
-"         if (node.left_idx != leaf_idx) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"\
-"            ,node_idx,node.left_idx);\n"\
-"\n"\
-"            stack.push(node.left_idx);\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != leaf_idx) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"\
-"            ,node_idx,node.right_idx);\n"\
-"\n"\
-"            stack.push(node.right_idx);\n"\
-"         }\n"\
-"      } while(stack.used > 0);\n"\
-"\n"\
-"      stack.clear();\n"\
-"   }\n"\
-"\n"\
-"   fprintf(a_file,\n"\
-"\"}\\n\"\n"\
-"\"\\n\");\n"\
-"\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_REHASH_TREE(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::rehash_tree()\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) return;\n"
+"\n"
+"   ui_array_s indexes;\n"
+"   indexes.init();\n"
+"\n"
+"   {\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned *stack_ptr = stack;\n"
+"\n"
+"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      do {\n"
+"         indexes.push(idx);\n"
+"\n"
+"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
+"      } while(idx != c_idx_not_exist);\n"
+"   }\n"
+"\n"
+"   root_idx = c_idx_not_exist;\n"
+"\n"
+"   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"
+"   memset(processed,false,indexes.used*sizeof(bool));\n"
+"\n"
+"   unsigned step = indexes.used >> 1;\n"
+"   if (step > 0) {\n"
+"      do {\n"
+"         unsigned idx = step;\n"
+"         do {\n"
+"            if (!processed[idx]) {\n"
+"               unsigned node_idx = indexes[idx];\n"
+"\n"
+"               __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
+"               __insert_operation(node_idx);\n"
+"\n"
+"               processed[idx] = true;\n"
+"            }\n"
+"         } while((idx += step) < indexes.used);\n"
+"      } while((step >>= 1) > 0);\n"
+"   }\n"
+"\n"
+"   unsigned node_idx = indexes[0];\n"
+"   __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
+"   __insert_operation(node_idx);\n"
+"\n"
+"   cfree(processed);\n"
+"   indexes.clear();\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define SAFE_RB_TREE_CHECK_RB_TREE_PROPERTIES() \
-{\
-printf(\
-"bool %s::check_rb_tree_properties()\n"\
-"{/*{{{*/\n"\
-"   %s_node &leaf = data[leaf_idx];\n"\
-"   if (!leaf.color) {\n"\
-"      fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"\
-"      fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      \n"\
-"      /* - check if root node is black - */\n"\
-"      %s_node &r_node = data[root_idx];\n"\
-"      if (!r_node.color) {\n"\
-"         fprintf(stderr,\"ERROR: root node is not black\\n\");\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      /* - create node index and path length stacks - */\n"\
-"      ui_array_s ni_stack;\n"\
-"      ui_array_s pl_stack;\n"\
-"\n"\
-"      ni_stack.init();\n"\
-"      pl_stack.init();\n"\
-"\n"\
-"      /* - insert root on stack - */\n"\
-"      ni_stack.push(root_idx);\n"\
-"      pl_stack.push(0);\n"\
-"\n"\
-"      unsigned r_path_length = c_idx_not_exist;\n"\
-"      do {\n"\
-"         unsigned node_idx = ni_stack.pop();\n"\
-"         unsigned path_length = pl_stack.pop();\n"\
-"         unsigned stack_depth = ni_stack.used;\n"\
-"\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.color) {\n"\
-"            path_length++;\n"\
-"         }\n"\
-"         else {\n"\
-"            if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"\
-"               fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"\
-"               ni_stack.clear();\n"\
-"               pl_stack.clear();\n"\
-"               return false;\n"\
-"            }\n"\
-"\n"\
-"            if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"\
-"               fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"\
-"               ni_stack.clear();\n"\
-"               pl_stack.clear();\n"\
-"               return false;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         if (node.left_idx != c_idx_not_exist) {\n"\
-"            ni_stack.push(node.left_idx);\n"\
-"            pl_stack.push(path_length);\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != c_idx_not_exist) {\n"\
-"            ni_stack.push(node.right_idx);\n"\
-"            pl_stack.push(path_length);\n"\
-"         }\n"\
-"\n"\
-"         /* - if node is leaf node - */\n"\
-"         if (stack_depth == ni_stack.used) {\n"\
-"            if (r_path_length != c_idx_not_exist) {\n"\
-"               if (r_path_length != path_length) {\n"\
-"                  fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"\
-"                  ni_stack.clear();\n"\
-"                  pl_stack.clear();\n"\
-"                  return false;\n"\
-"               }\n"\
-"            }\n"\
-"            else {\n"\
-"               r_path_length = path_length;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"      } while(ni_stack.used > 0);\n"\
-"\n"\
-"      ni_stack.clear();\n"\
-"      pl_stack.clear();\n"\
-"   }\n"\
-"\n"\
-"   /* - test if are node values sorted - */\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"\n"\
-"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      do {\n"\
-"         unsigned l_idx = idx;\n"\
-"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"\
-"         if (idx == c_idx_not_exist) {\n"\
-"            break;\n"\
-"         }\n"\
-"         if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"\
-"            fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"\
-"            return false;\n"\
-"         }\n"\
-"      } while(1);\n"\
-"   }\n"\
-"\n"\
-"   return true;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void SAFE_RB_TREE_PRINT_DOT_CODE(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::print_dot_code(FILE *a_file)\n"
+"{/*{{{*/\n"
+"   fprintf(a_file,\n"
+"\"digraph G {\\n\"\n"
+"\"   rankdir = TD\\n\"\n"
+"\"   node [ shape = circle margin = 0.0 fixedsize = true width = 0.7 height = 0.7]\\n\"\n"
+"\"\\n\"\n"
+"   );\n"
+"\n"
+"   const char *node_colors[] = {\n"
+"      \"red\",\n"
+"      \"black\",\n"
+"   };\n"
+"\n"
+"   fprintf(a_file,\n"
+"\"   root_idx [label = \\\"R\\\" ]\\n\"\n"
+"\"   root_idx -> node_%%u\\n\"\n"
+"   ,root_idx);\n"
+"\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      ui_array_s stack;\n"
+"      stack.init();\n"
+"\n"
+"      stack.push(root_idx);\n"
+"      do {\n"
+"         unsigned node_idx = stack.pop();\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         /* - print node - */\n"
+"         fprintf(a_file,\n"
+"\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"
+"         ,node_idx,node_colors[node.color],node_idx);\n"
+"\n"
+"         if (node.parent_idx != c_idx_not_exist) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"
+"            ,node_idx,node.parent_idx);\n"
+"         }\n"
+"\n"
+"         if (node.left_idx != leaf_idx) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"
+"            ,node_idx,node.left_idx);\n"
+"\n"
+"            stack.push(node.left_idx);\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != leaf_idx) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"
+"            ,node_idx,node.right_idx);\n"
+"\n"
+"            stack.push(node.right_idx);\n"
+"         }\n"
+"      } while(stack.used > 0);\n"
+"\n"
+"      stack.clear();\n"
+"   }\n"
+"\n"
+"   fprintf(a_file,\n"
+"\"}\\n\"\n"
+"\"\\n\");\n"
+"\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
+void SAFE_RB_TREE_CHECK_RB_TREE_PROPERTIES(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::check_rb_tree_properties()\n"
+"{/*{{{*/\n"
+"   %s_node &leaf = data[leaf_idx];\n"
+"   if (!leaf.color) {\n"
+"      fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"
+"      fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      \n"
+"      /* - check if root node is black - */\n"
+"      %s_node &r_node = data[root_idx];\n"
+"      if (!r_node.color) {\n"
+"         fprintf(stderr,\"ERROR: root node is not black\\n\");\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      /* - create node index and path length stacks - */\n"
+"      ui_array_s ni_stack;\n"
+"      ui_array_s pl_stack;\n"
+"\n"
+"      ni_stack.init();\n"
+"      pl_stack.init();\n"
+"\n"
+"      /* - insert root on stack - */\n"
+"      ni_stack.push(root_idx);\n"
+"      pl_stack.push(0);\n"
+"\n"
+"      unsigned r_path_length = c_idx_not_exist;\n"
+"      do {\n"
+"         unsigned node_idx = ni_stack.pop();\n"
+"         unsigned path_length = pl_stack.pop();\n"
+"         unsigned stack_depth = ni_stack.used;\n"
+"\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.color) {\n"
+"            path_length++;\n"
+"         }\n"
+"         else {\n"
+"            if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"
+"               fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"
+"               ni_stack.clear();\n"
+"               pl_stack.clear();\n"
+"               return false;\n"
+"            }\n"
+"\n"
+"            if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"
+"               fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"
+"               ni_stack.clear();\n"
+"               pl_stack.clear();\n"
+"               return false;\n"
+"            }\n"
+"         }\n"
+"\n"
+"         if (node.left_idx != c_idx_not_exist) {\n"
+"            ni_stack.push(node.left_idx);\n"
+"            pl_stack.push(path_length);\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != c_idx_not_exist) {\n"
+"            ni_stack.push(node.right_idx);\n"
+"            pl_stack.push(path_length);\n"
+"         }\n"
+"\n"
+"         /* - if node is leaf node - */\n"
+"         if (stack_depth == ni_stack.used) {\n"
+"            if (r_path_length != c_idx_not_exist) {\n"
+"               if (r_path_length != path_length) {\n"
+"                  fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"
+"                  ni_stack.clear();\n"
+"                  pl_stack.clear();\n"
+"                  return false;\n"
+"               }\n"
+"            }\n"
+"            else {\n"
+"               r_path_length = path_length;\n"
+"            }\n"
+"         }\n"
+"\n"
+"      } while(ni_stack.used > 0);\n"
+"\n"
+"      ni_stack.clear();\n"
+"      pl_stack.clear();\n"
+"   }\n"
+"\n"
+"   /* - test if are node values sorted - */\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned *stack_ptr = stack;\n"
+"\n"
+"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      do {\n"
+"         unsigned l_idx = idx;\n"
+"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
+"         if (idx == c_idx_not_exist) {\n"
+"            break;\n"
+"         }\n"
+"         if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"
+"            fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"
+"            return false;\n"
+"         }\n"
+"      } while(1);\n"
+"   }\n"
+"\n"
+"   return true;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
 void processor_s::generate_safe_rb_tree_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
    string_array_s &fun_defs = cont_params.functions;
@@ -13638,7 +13651,7 @@ void processor_s::generate_safe_rb_tree_type()
          type_idxs[tn_idx] = type_idx;
 
          // - test type options -
-         if (data_types[type_idx].properties & c_type_setting_strict_dynamic) {
+         if (data_types[type_idx].properties & c_type_option_strict_dynamic) {
             fprintf(stderr,"rb_tree: container have not implemented processing of types with option strict_dynamic\n");
             cassert(0);
          }
@@ -13701,7 +13714,7 @@ void processor_s::generate_safe_rb_tree_type()
          } while(++tn_idx < type_cnt);
       }
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
 
       {
          string_array_s &dt_type_names = data_type.types;
@@ -13835,7 +13848,7 @@ printf(
 "   inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize rb_tree\n"
@@ -13845,7 +13858,7 @@ printf(
 );
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -13856,7 +13869,7 @@ printf(
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -13891,7 +13904,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of rb_tree with another rb_tree\n"
@@ -14032,7 +14045,7 @@ printf(
 "\n"
 ,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -14104,10 +14117,10 @@ printf(
 "};\n"
 "\n"
 );
-}
+}/*}}}*/
 
 void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -14131,8 +14144,6 @@ void processor_s::generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_i
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // --- definition of inline methods ---
 
 printf(
@@ -14141,21 +14152,21 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - rb_tree __get_grandparent_idx method -
-SAFE_RB_TREE___GET_GRANDPARENT_IDX();
+SAFE_RB_TREE___GET_GRANDPARENT_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_uncle_idx method -
-SAFE_RB_TREE___GET_UNCLE_IDX();
+SAFE_RB_TREE___GET_UNCLE_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_sibling_idx method -
-SAFE_RB_TREE___GET_SIBLING_IDX();
+SAFE_RB_TREE___GET_SIBLING_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_descent_stack_size -
-SAFE_RB_TREE_GET_DESCENT_STACK_SIZE();
+SAFE_RB_TREE_GET_DESCENT_STACK_SIZE(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_stack_min_value_idx method -
 
    // - rb_tree get_stack_next_idx method -
-SAFE_RB_TREE_GET_STACK_NEXT_IDX();
+SAFE_RB_TREE_GET_STACK_NEXT_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_min_value_idx method -
 
@@ -14166,57 +14177,57 @@ SAFE_RB_TREE_GET_STACK_NEXT_IDX();
    // - rb_tree get_prev_idx method -
 
    // - rb_tree __rotate_left method -
-SAFE_RB_TREE___ROTATE_LEFT();
+SAFE_RB_TREE___ROTATE_LEFT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __rotate_right method -
-SAFE_RB_TREE___ROTATE_RIGHT();
+SAFE_RB_TREE___ROTATE_RIGHT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_new_index method -
-SAFE_RB_TREE___GET_NEW_INDEX();
+SAFE_RB_TREE___GET_NEW_INDEX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __binary_tree_insert method -
 
    // - rb_tree __replace_delete_node_by_child method -
-SAFE_RB_TREE___REPLACE_DELETE_NODE_BY_CHILD();
+SAFE_RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __remove_black_black method -
 
    // - rb_tree __remove_one_child method -
-SAFE_RB_TREE___REMOVE_ONE_CHILD();
+SAFE_RB_TREE___REMOVE_ONE_CHILD(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __insert_operation method -
 
    // - rb_tree init method -
-SAFE_RB_TREE_INIT();
+SAFE_RB_TREE_INIT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree clear method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-SAFE_RB_TREE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+SAFE_RB_TREE_CLEAR(SAFE_RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree flush method -
-SAFE_RB_TREE_FLUSH();
+SAFE_RB_TREE_FLUSH(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree flush_all method -
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
-SAFE_RB_TREE_FLUSH_ALL();
+SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-SAFE_RB_TREE_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+SAFE_RB_TREE_SWAP(SAFE_RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree operator[] method -
-SAFE_RB_TREE_OPERATOR_LE_BR_RE_BR();
+SAFE_RB_TREE_OPERATOR_LE_BR_RE_BR(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree insert method -
-SAFE_RB_TREE_INSERT();
+SAFE_RB_TREE_INSERT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree swap_insert method -
-SAFE_RB_TREE_SWAP_INSERT();
+SAFE_RB_TREE_SWAP_INSERT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree remove method -
 
@@ -14234,8 +14245,8 @@ SAFE_RB_TREE_SWAP_INSERT();
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-SAFE_RB_TREE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_VALUES);
       }
    }
 
@@ -14247,10 +14258,10 @@ SAFE_RB_TREE_OPERATOR_EQUAL();
 
    // - rb_tree check_rb_tree_properties -
 
-}
+}/*}}}*/
 
 void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -14274,8 +14285,6 @@ void processor_s::generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_i
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // --- definition of methods ---
 
 printf(
@@ -14292,21 +14301,21 @@ printf(
    // - rb_tree get_descent_stack_size -
 
    // - rb_tree get_stack_min_value_idx method -
-SAFE_RB_TREE_GET_STACK_MIN_VALUE_IDX();
+SAFE_RB_TREE_GET_STACK_MIN_VALUE_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_stack_next_idx method -
 
    // - rb_tree get_min_value_idx method -
-SAFE_RB_TREE_GET_MIN_VALUE_IDX();
+SAFE_RB_TREE_GET_MIN_VALUE_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_max_value_idx method -
-SAFE_RB_TREE_GET_MAX_VALUE_IDX();
+SAFE_RB_TREE_GET_MAX_VALUE_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_next_idx method -
-SAFE_RB_TREE_GET_NEXT_IDX();
+SAFE_RB_TREE_GET_NEXT_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_prev_idx method -
-SAFE_RB_TREE_GET_PREV_IDX();
+SAFE_RB_TREE_GET_PREV_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __rotate_left method -
 
@@ -14315,24 +14324,24 @@ SAFE_RB_TREE_GET_PREV_IDX();
    // - rb_tree __get_new_index method -
 
    // - rb_tree __binary_tree_insert method -
-SAFE_RB_TREE___BINARY_TREE_INSERT();
+SAFE_RB_TREE___BINARY_TREE_INSERT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __replace_delete_node_by_child method -
 
    // - rb_tree __remove_black_black method -
-SAFE_RB_TREE___REMOVE_BLACK_BLACK();
+SAFE_RB_TREE___REMOVE_BLACK_BLACK(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree __remove_one_child method -
 
    // - rb_tree __insert_operation method -
-SAFE_RB_TREE___INSERT_OPERATION();
+SAFE_RB_TREE___INSERT_OPERATION(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree init method -
 
    // - rb_tree clear method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-SAFE_RB_TREE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+SAFE_RB_TREE_CLEAR(SAFE_RB_TREE_GEN_VALUES);
       }
    }
 
@@ -14340,7 +14349,7 @@ SAFE_RB_TREE_CLEAR();
 
    // - rb_tree flush_all method -
    if (TYPE_NUMBERS(0) & c_type_flushable) {
-SAFE_RB_TREE_FLUSH_ALL();
+SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
@@ -14352,50 +14361,50 @@ SAFE_RB_TREE_FLUSH_ALL();
    // - rb_tree swap_insert method -
 
    // - rb_tree remove method -
-SAFE_RB_TREE_REMOVE();
+SAFE_RB_TREE_REMOVE(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree copy_resize method -
-SAFE_RB_TREE_COPY_RESIZE();
+SAFE_RB_TREE_COPY_RESIZE(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idx method -
-SAFE_RB_TREE_GET_IDX();
+SAFE_RB_TREE_GET_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idx_left method -
-SAFE_RB_TREE_GET_IDX_LEFT();
+SAFE_RB_TREE_GET_IDX_LEFT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_gre_idx method -
-SAFE_RB_TREE_GET_GRE_IDX();
+SAFE_RB_TREE_GET_GRE_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_lee_idx method -
-SAFE_RB_TREE_GET_LEE_IDX();
+SAFE_RB_TREE_GET_LEE_IDX(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idxs method -
-SAFE_RB_TREE_GET_IDXS();
+SAFE_RB_TREE_GET_IDXS(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-SAFE_RB_TREE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree operator== method -
-SAFE_RB_TREE_OPERATOR_DOUBLE_EQUAL();
+SAFE_RB_TREE_OPERATOR_DOUBLE_EQUAL(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree rehash_tree -
-SAFE_RB_TREE_REHASH_TREE();
+SAFE_RB_TREE_REHASH_TREE(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree print_dot_code -
 #ifdef SAFE_RB_TREE_GENERATE_PRINT_DOT_CODE
-SAFE_RB_TREE_PRINT_DOT_CODE();
+SAFE_RB_TREE_PRINT_DOT_CODE(SAFE_RB_TREE_GEN_VALUES);
 #endif
 
    // - rb_tree check_rb_tree_properties -
 #ifdef SAFE_RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
-SAFE_RB_TREE_CHECK_RB_TREE_PROPERTIES();
+SAFE_RB_TREE_CHECK_RB_TREE_PROPERTIES(SAFE_RB_TREE_GEN_VALUES);
 #endif
 
-}
+}/*}}}*/
 
 
 

@@ -2137,15 +2137,15 @@ enum {
 
 const unsigned c_type_byte_neg_mod_mask = 0xf8;
 const unsigned c_type_flushable = 0x00000010;
-const unsigned c_type_setting_mask = 0xffffff00;
+const unsigned c_type_option_mask = 0xffffff00;
 
 enum {
-   c_type_setting_not_generate_init = 0x00000100,
-   c_type_setting_not_generate_clear = 0x00000200,
-   c_type_setting_not_generate_swap = 0x00000400,
-   c_type_setting_not_generate_operator_equal = 0x00000800,
+   c_type_option_nogen_init           = 0x100,
+   c_type_option_nogen_clear          = 0x100 << 1,
+   c_type_option_nogen_swap           = 0x100 << 2,
+   c_type_option_nogen_operator_equal = 0x100 << 3,
 
-   c_type_setting_strict_dynamic = 0x00001000,
+   c_type_option_strict_dynamic       = 0x100 << 4,
 };
 
 

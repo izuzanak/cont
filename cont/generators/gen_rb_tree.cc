@@ -2,1579 +2,1582 @@
 //#define RB_TREE_GENERATE_PRINT_DOT_CODE
 //#define RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
 
-#define RB_TREE___GET_GRANDPARENT_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_grandparent_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.parent_idx != c_idx_not_exist) {\n"\
-"      return data[node.parent_idx].parent_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+#define RB_TREE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,data_type_s &data_type,data_type_s **types
+#define RB_TREE_GEN_VALUES abbreviations,abb_idx,data_type,types
 
-#define RB_TREE___GET_UNCLE_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_uncle_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned gp_idx = __get_grandparent_idx(a_idx);\n"\
-"\n"\
-"   if (gp_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &gp = data[gp_idx];\n"\
-"      return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_GRANDPARENT_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_grandparent_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.parent_idx != c_idx_not_exist) {\n"
+"      return data[node.parent_idx].parent_idx;\n"
+"   }\n"
+"   else {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___GET_SIBLING_IDX() \
-{\
-printf(\
-"inline unsigned %s::__get_sibling_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &p = data[data[a_idx].parent_idx];\n"\
-"   return p.left_idx == a_idx?p.right_idx:p.left_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_UNCLE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_uncle_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned gp_idx = __get_grandparent_idx(a_idx);\n"
+"\n"
+"   if (gp_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &gp = data[gp_idx];\n"
+"      return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_DESCENT_STACK_SIZE() \
-{\
-printf(\
-"inline unsigned %s::get_descent_stack_size()\n"\
-"{/*{{{*/\n"\
-"   return (unsigned)(logf(used)/c_log_of_2) << 1;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_SIBLING_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_sibling_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &p = data[data[a_idx].parent_idx];\n"
+"   return p.left_idx == a_idx?p.right_idx:p.left_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_STACK_MIN_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.left_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      *((*a_s_ptr)++) = node_idx;\n"\
-"      node_idx = node.left_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_DESCENT_STACK_SIZE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::get_descent_stack_size()\n"
+"{/*{{{*/\n"
+"   return (unsigned)(logf(used)/c_log_of_2) << 1;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_STACK_NEXT_IDX() \
-{\
-printf(\
-"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.right_idx != leaf_idx) {\n"\
-"      return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"\
-"   }\n"\
-"\n"\
-"   if (*a_s_ptr > a_stack_base) {\n"\
-"      return *(--(*a_s_ptr));\n"\
-"   }\n"\
-"   \n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.left_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      *((*a_s_ptr)++) = node_idx;\n"
+"      node_idx = node.left_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_MIN_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_min_value_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.left_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      node_idx = node.left_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.right_idx != leaf_idx) {\n"
+"      return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"
+"   }\n"
+"\n"
+"   if (*a_s_ptr > a_stack_base) {\n"
+"      return *(--(*a_s_ptr));\n"
+"   }\n"
+"   \n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_MAX_VALUE_IDX() \
-{\
-printf(\
-"unsigned %s::get_max_value_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.right_idx == leaf_idx) {\n"\
-"         return node_idx;\n"\
-"      }\n"\
-"\n"\
-"      node_idx = node.right_idx;\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_min_value_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.left_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      node_idx = node.left_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_NEXT_IDX() \
-{\
-printf(\
-"unsigned %s::get_next_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.right_idx != leaf_idx) {\n"\
-"      return get_min_value_idx(node.right_idx);\n"\
-"   }\n"\
-"   else {\n"\
-"\n"\
-"      unsigned node_idx = a_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.parent_idx == c_idx_not_exist) {\n"\
-"            return c_idx_not_exist;\n"\
-"         }\n"\
-"         \n"\
-"         if (data[node.parent_idx].right_idx != node_idx) {\n"\
-"            return node.parent_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.parent_idx;\n"\
-"      } while(1);\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_max_value_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.right_idx == leaf_idx) {\n"
+"         return node_idx;\n"
+"      }\n"
+"\n"
+"      node_idx = node.right_idx;\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_PREV_IDX() \
-{\
-printf(\
-"unsigned %s::get_prev_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.left_idx != leaf_idx) {\n"\
-"      return get_max_value_idx(node.left_idx);\n"\
-"   }\n"\
-"   else {\n"\
-"\n"\
-"      unsigned node_idx = a_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.parent_idx == c_idx_not_exist) {\n"\
-"            return c_idx_not_exist;\n"\
-"         }\n"\
-"         \n"\
-"         if (data[node.parent_idx].left_idx != node_idx) {\n"\
-"            return node.parent_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.parent_idx;\n"\
-"      } while(1);\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_next_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.right_idx != leaf_idx) {\n"
+"      return get_min_value_idx(node.right_idx);\n"
+"   }\n"
+"   else {\n"
+"\n"
+"      unsigned node_idx = a_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.parent_idx == c_idx_not_exist) {\n"
+"            return c_idx_not_exist;\n"
+"         }\n"
+"         \n"
+"         if (data[node.parent_idx].right_idx != node_idx) {\n"
+"            return node.parent_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.parent_idx;\n"
+"      } while(1);\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___ROTATE_LEFT() \
-{\
-printf(\
-"inline void %s::__rotate_left(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &root = data[a_idx];\n"\
-"   %s_node &pivot = data[root.right_idx];\n"\
-"\n"\
-"   if (a_idx == root_idx) {\n"\
-"      root_idx = root.right_idx;\n"\
-"      pivot.parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &rp = data[root.parent_idx];\n"\
-"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"\
-"\n"\
-"      pivot.parent_idx = root.parent_idx;\n"\
-"   }\n"\
-"\n"\
-"   root.parent_idx = root.right_idx;\n"\
-"\n"\
-"   root.right_idx = pivot.left_idx;\n"\
-"   data[root.right_idx].parent_idx = a_idx;\n"\
-"\n"\
-"   pivot.left_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"unsigned %s::get_prev_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.left_idx != leaf_idx) {\n"
+"      return get_max_value_idx(node.left_idx);\n"
+"   }\n"
+"   else {\n"
+"\n"
+"      unsigned node_idx = a_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.parent_idx == c_idx_not_exist) {\n"
+"            return c_idx_not_exist;\n"
+"         }\n"
+"         \n"
+"         if (data[node.parent_idx].left_idx != node_idx) {\n"
+"            return node.parent_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.parent_idx;\n"
+"      } while(1);\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___ROTATE_RIGHT() \
-{\
-printf(\
-"inline void %s::__rotate_right(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &root = data[a_idx];\n"\
-"   %s_node &pivot = data[root.left_idx];\n"\
-"\n"\
-"   if (a_idx == root_idx) {\n"\
-"      root_idx = root.left_idx;\n"\
-"      pivot.parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"   else {\n"\
-"      %s_node &rp = data[root.parent_idx];\n"\
-"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"\
-"\n"\
-"      pivot.parent_idx = root.parent_idx;\n"\
-"   }\n"\
-"\n"\
-"   root.parent_idx = root.left_idx;\n"\
-"\n"\
-"   root.left_idx = pivot.right_idx;\n"\
-"   data[root.left_idx].parent_idx = a_idx;\n"\
-"\n"\
-"   pivot.right_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___ROTATE_LEFT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__rotate_left(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &root = data[a_idx];\n"
+"   %s_node &pivot = data[root.right_idx];\n"
+"\n"
+"   if (a_idx == root_idx) {\n"
+"      root_idx = root.right_idx;\n"
+"      pivot.parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &rp = data[root.parent_idx];\n"
+"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"
+"\n"
+"      pivot.parent_idx = root.parent_idx;\n"
+"   }\n"
+"\n"
+"   root.parent_idx = root.right_idx;\n"
+"\n"
+"   root.right_idx = pivot.left_idx;\n"
+"   data[root.right_idx].parent_idx = a_idx;\n"
+"\n"
+"   pivot.left_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___GET_NEW_INDEX() \
-{\
-printf(\
-"inline unsigned %s::__get_new_index()\n"\
-"{/*{{{*/\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      unsigned new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].parent_idx;\n"\
-"\n"\
-"      return new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      return used++;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE___ROTATE_RIGHT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__rotate_right(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &root = data[a_idx];\n"
+"   %s_node &pivot = data[root.left_idx];\n"
+"\n"
+"   if (a_idx == root_idx) {\n"
+"      root_idx = root.left_idx;\n"
+"      pivot.parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"   else {\n"
+"      %s_node &rp = data[root.parent_idx];\n"
+"      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"
+"\n"
+"      pivot.parent_idx = root.parent_idx;\n"
+"   }\n"
+"\n"
+"   root.parent_idx = root.left_idx;\n"
+"\n"
+"   root.left_idx = pivot.right_idx;\n"
+"   data[root.left_idx].parent_idx = a_idx;\n"
+"\n"
+"   pivot.right_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___BINARY_TREE_INSERT() \
-{\
-printf(\
-"void %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value)\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      if (leaf_idx == c_idx_not_exist) {\n"\
-"         leaf_idx = __get_new_index();\n"\
-"         %s_node &leaf = data[leaf_idx];\n"\
-"\n"\
-"         leaf.color = true;\n"\
-"\n"\
-"#ifdef RB_TREE_SET_LEAF_CHILDS\n"\
-"         leaf.left_idx = c_idx_not_exist;\n"\
-"         leaf.right_idx = c_idx_not_exist;\n"\
-"#endif\n"\
-"      }\n"\
-"\n"\
-"      data[a_new_idx].parent_idx = c_idx_not_exist;\n"\
-"      root_idx = a_new_idx;\n"\
-"   }\n"\
-"   else  {\n"\
-"      unsigned node_idx = root_idx;\n"\
-"      do {\n"\
-"         %s_node &node = data[node_idx];\n"\
-"         \n"\
-"         if (__compare_value(a_value,node.object) < 0) {\n"\
-"            if (node.left_idx == leaf_idx) {\n"\
-"               node.left_idx = a_new_idx;\n"\
-"               break;\n"\
-"            }\n"\
-"            node_idx = node.left_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            if (node.right_idx == leaf_idx) {\n"\
-"               node.right_idx = a_new_idx;\n"\
-"               break;\n"\
-"            }\n"\
-"            node_idx = node.right_idx;\n"\
-"         }\n"\
-"      } while(1);\n"\
-"\n"\
-"      data[a_new_idx].parent_idx = node_idx;\n"\
-"   }\n"\
-"\n"\
-"   %s_node &new_node = data[a_new_idx];\n"\
-"   new_node.left_idx = leaf_idx;\n"\
-"   new_node.right_idx = leaf_idx;\n"\
-"   new_node.color = false;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::__get_new_index()\n"
+"{/*{{{*/\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      unsigned new_idx = free_idx;\n"
+"      free_idx = data[new_idx].parent_idx;\n"
+"\n"
+"      return new_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      return used++;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___REPLACE_DELETE_NODE_BY_CHILD() \
-{\
-printf(\
-"inline void %s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"\n"\
-"   if (node.parent_idx != c_idx_not_exist) {\n"\
-"      %s_node &parent = data[node.parent_idx];\n"\
-"      (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"\
-"\n"\
-"      data[a_ch_idx].parent_idx = node.parent_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"\
-"      data[a_ch_idx].parent_idx = c_idx_not_exist;\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n" \
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___BINARY_TREE_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value)\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      if (leaf_idx == c_idx_not_exist) {\n"
+"         leaf_idx = __get_new_index();\n"
+"         %s_node &leaf = data[leaf_idx];\n"
+"\n"
+"         leaf.color = true;\n"
+"\n"
+"#ifdef RB_TREE_SET_LEAF_CHILDS\n"
+"         leaf.left_idx = c_idx_not_exist;\n"
+"         leaf.right_idx = c_idx_not_exist;\n"
+"#endif\n"
+"      }\n"
+"\n"
+"      data[a_new_idx].parent_idx = c_idx_not_exist;\n"
+"      root_idx = a_new_idx;\n"
+"   }\n"
+"   else  {\n"
+"      unsigned node_idx = root_idx;\n"
+"      do {\n"
+"         %s_node &node = data[node_idx];\n"
+"         \n"
+"         if (__compare_value(a_value,node.object) < 0) {\n"
+"            if (node.left_idx == leaf_idx) {\n"
+"               node.left_idx = a_new_idx;\n"
+"               break;\n"
+"            }\n"
+"            node_idx = node.left_idx;\n"
+"         }\n"
+"         else {\n"
+"            if (node.right_idx == leaf_idx) {\n"
+"               node.right_idx = a_new_idx;\n"
+"               break;\n"
+"            }\n"
+"            node_idx = node.right_idx;\n"
+"         }\n"
+"      } while(1);\n"
+"\n"
+"      data[a_new_idx].parent_idx = node_idx;\n"
+"   }\n"
+"\n"
+"   %s_node &new_node = data[a_new_idx];\n"
+"   new_node.left_idx = leaf_idx;\n"
+"   new_node.right_idx = leaf_idx;\n"
+"   new_node.color = false;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___REMOVE_BLACK_BLACK()  \
-{\
-printf(\
-"void %s::__remove_black_black(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"      \n"\
-"      if (node.parent_idx == c_idx_not_exist) {\n"\
-"         return;\n"\
-"      }\n"\
-"\n"\
-"      unsigned parent_idx = node.parent_idx;\n"\
-"      %s_node &parent = data[parent_idx];\n"\
-"\n"\
-"      {\n"\
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"         %s_node &sibling = data[sibling_idx];\n"\
-"\n"\
-"         if (!sibling.color) {\n"\
-"            parent.color = false;\n"\
-"            sibling.color = true;\n"\
-"\n"\
-"            if (node_idx == parent.left_idx) {\n"\
-"               __rotate_left(parent_idx);\n"\
-"            }\n"\
-"            else {\n"\
-"               __rotate_right(parent_idx);\n"\
-"            }\n"\
-"         }\n"\
-"      }\n"\
-"\n"\
-"      {\n"\
-"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"         %s_node& sibling = data[sibling_idx];\n"\
-"\n"\
-"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
-"            sibling.color = false;\n"\
-"            node_idx = parent_idx;\n"\
-"            continue;\n"\
-"         }\n"\
-"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"\
-"            sibling.color = false;\n"\
-"            parent.color = true;\n"\
-"            return;\n"\
-"         }\n"\
-"         else if (sibling.color) {\n"\
-"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"\
-"               sibling.color = false;\n"\
-"               data[sibling.left_idx].color = true;\n"\
-"               __rotate_right(sibling_idx);\n"\
-"            }\n"\
-"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"\
-"               sibling.color = false;\n"\
-"               data[sibling.right_idx].color = true;\n"\
-"               __rotate_left(sibling_idx);\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         {\n"\
-"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"\
-"            %s_node &sibling = data[sibling_idx];\n"\
-"\n"\
-"            sibling.color = parent.color;\n"\
-"            parent.color = true;\n"\
-"\n"\
-"            if (node_idx == parent.left_idx) {\n"\
-"               data[sibling.right_idx].color = true;\n"\
-"               __rotate_left(parent_idx);\n"\
-"            }\n"\
-"            else {\n"\
-"               data[sibling.left_idx].color = true;\n"\
-"               __rotate_right(parent_idx);\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         return;\n"\
-"      }\n"\
-"\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"\n"
+"   if (node.parent_idx != c_idx_not_exist) {\n"
+"      %s_node &parent = data[node.parent_idx];\n"
+"      (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"
+"\n"
+"      data[a_ch_idx].parent_idx = node.parent_idx;\n"
+"   }\n"
+"   else {\n"
+"      root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"
+"      data[a_ch_idx].parent_idx = c_idx_not_exist;\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n" 
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___REMOVE_ONE_CHILD()  \
-{\
-printf(\
-"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"\
-"{/*{{{*/\n"\
-"   %s_node &node = data[a_idx];\n"\
-"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"\
-"\n"\
-"   node.parent_idx = free_idx;\n"\
-"   free_idx = a_idx;\n"\
-"\n"\
-"   if (node.color) {\n"\
-"      %s_node &child_node = data[a_ch_idx];\n"\
-"\n"\
-"      if (!child_node.color) {\n"\
-"         child_node.color = true;\n"\
-"      }\n"\
-"      else {\n"\
-"         __remove_black_black(a_ch_idx);\n"\
-"      }\n"\
-"   }\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___REMOVE_BLACK_BLACK(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__remove_black_black(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"      \n"
+"      if (node.parent_idx == c_idx_not_exist) {\n"
+"         return;\n"
+"      }\n"
+"\n"
+"      unsigned parent_idx = node.parent_idx;\n"
+"      %s_node &parent = data[parent_idx];\n"
+"\n"
+"      {\n"
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"         %s_node &sibling = data[sibling_idx];\n"
+"\n"
+"         if (!sibling.color) {\n"
+"            parent.color = false;\n"
+"            sibling.color = true;\n"
+"\n"
+"            if (node_idx == parent.left_idx) {\n"
+"               __rotate_left(parent_idx);\n"
+"            }\n"
+"            else {\n"
+"               __rotate_right(parent_idx);\n"
+"            }\n"
+"         }\n"
+"      }\n"
+"\n"
+"      {\n"
+"         unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"         %s_node& sibling = data[sibling_idx];\n"
+"\n"
+"         if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"            sibling.color = false;\n"
+"            node_idx = parent_idx;\n"
+"            continue;\n"
+"         }\n"
+"         else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"            sibling.color = false;\n"
+"            parent.color = true;\n"
+"            return;\n"
+"         }\n"
+"         else if (sibling.color) {\n"
+"            if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"
+"               sibling.color = false;\n"
+"               data[sibling.left_idx].color = true;\n"
+"               __rotate_right(sibling_idx);\n"
+"            }\n"
+"            else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"
+"               sibling.color = false;\n"
+"               data[sibling.right_idx].color = true;\n"
+"               __rotate_left(sibling_idx);\n"
+"            }\n"
+"         }\n"
+"\n"
+"         {\n"
+"            unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
+"            %s_node &sibling = data[sibling_idx];\n"
+"\n"
+"            sibling.color = parent.color;\n"
+"            parent.color = true;\n"
+"\n"
+"            if (node_idx == parent.left_idx) {\n"
+"               data[sibling.right_idx].color = true;\n"
+"               __rotate_left(parent_idx);\n"
+"            }\n"
+"            else {\n"
+"               data[sibling.left_idx].color = true;\n"
+"               __rotate_right(parent_idx);\n"
+"            }\n"
+"         }\n"
+"\n"
+"         return;\n"
+"      }\n"
+"\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE___INSERT_OPERATION() \
-{\
-printf(\
-"void %s::__insert_operation(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   unsigned node_idx = a_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      if (node.parent_idx == c_idx_not_exist) {\n"\
-"         node.color = true;\n"\
-"         return;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (data[node.parent_idx].color) {\n"\
-"            return;\n"\
-"         }\n"\
-"         else {\n"\
-"            unsigned uncle_idx = __get_uncle_idx(node_idx);\n"\
-"            if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"\
-"               data[node.parent_idx].color = true;\n"\
-"               data[uncle_idx].color = true;\n"\
-"\n"\
-"               node_idx = __get_grandparent_idx(node_idx);\n"\
-"               data[node_idx].color = false;\n"\
-"\n"\
-"               continue;\n"\
-"            }\n"\
-"            else {\n"\
-"               unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"\
-"\n"\
-"               if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"\
-"                  __rotate_left(node.parent_idx);\n"\
-"                  node_idx = node.left_idx;\n"\
-"               }\n"\
-"               else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"\
-"                  __rotate_right(node.parent_idx);\n"\
-"                  node_idx = node.right_idx;\n"\
-"               }\n"\
-"\n"\
-"               {\n"\
-"                  unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"\
-"                  %s_node &node = data[node_idx];\n"\
-"\n"\
-"                  data[node.parent_idx].color = true;\n"\
-"                  data[grandparent_idx].color = false;\n"\
-"\n"\
-"                  if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"\
-"                     __rotate_right(grandparent_idx);\n"\
-"                  }\n"\
-"                  else {\n"\
-"                     __rotate_left(grandparent_idx);\n"\
-"                  }\n"\
-"               }\n"\
-"\n"\
-"               return;\n"\
-"            }\n"\
-"         }\n"\
-"      }\n"\
-"   } while(1);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)\n"
+"{/*{{{*/\n"
+"   %s_node &node = data[a_idx];\n"
+"   __replace_delete_node_by_child(a_idx,a_ch_idx);\n"
+"\n"
+"   node.parent_idx = free_idx;\n"
+"   free_idx = a_idx;\n"
+"\n"
+"   if (node.color) {\n"
+"      %s_node &child_node = data[a_ch_idx];\n"
+"\n"
+"      if (!child_node.color) {\n"
+"         child_node.color = true;\n"
+"      }\n"
+"      else {\n"
+"         __remove_black_black(a_ch_idx);\n"
+"      }\n"
+"   }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   data = NULL;\n"\
-"   free_idx = c_idx_not_exist;\n"\
-"   root_idx = c_idx_not_exist;\n"\
-"   leaf_idx = c_idx_not_exist;\n"\
-,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {\
-printf(\
-"   %s.init();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE___INSERT_OPERATION(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::__insert_operation(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   unsigned node_idx = a_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      if (node.parent_idx == c_idx_not_exist) {\n"
+"         node.color = true;\n"
+"         return;\n"
+"      }\n"
+"      else {\n"
+"         if (data[node.parent_idx].color) {\n"
+"            return;\n"
+"         }\n"
+"         else {\n"
+"            unsigned uncle_idx = __get_uncle_idx(node_idx);\n"
+"            if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"
+"               data[node.parent_idx].color = true;\n"
+"               data[uncle_idx].color = true;\n"
+"\n"
+"               node_idx = __get_grandparent_idx(node_idx);\n"
+"               data[node_idx].color = false;\n"
+"\n"
+"               continue;\n"
+"            }\n"
+"            else {\n"
+"               unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
+"\n"
+"               if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"                  __rotate_left(node.parent_idx);\n"
+"                  node_idx = node.left_idx;\n"
+"               }\n"
+"               else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"
+"                  __rotate_right(node.parent_idx);\n"
+"                  node_idx = node.right_idx;\n"
+"               }\n"
+"\n"
+"               {\n"
+"                  unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
+"                  %s_node &node = data[node_idx];\n"
+"\n"
+"                  data[node.parent_idx].color = true;\n"
+"                  data[grandparent_idx].color = false;\n"
+"\n"
+"                  if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"                     __rotate_right(grandparent_idx);\n"
+"                  }\n"
+"                  else {\n"
+"                     __rotate_left(grandparent_idx);\n"
+"                  }\n"
+"               }\n"
+"\n"
+"               return;\n"
+"            }\n"
+"         }\n"
+"      }\n"
+"   } while(1);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_CLEAR() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"      %s_node *ptr = data;\n"\
-"      %s_node *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {\
-printf(\
-"   %s.clear();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_INIT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   data = NULL;\n"
+"   free_idx = c_idx_not_exist;\n"
+"   root_idx = c_idx_not_exist;\n"
+"   leaf_idx = c_idx_not_exist;\n"
+,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+printf(
+"   %s.init();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_CLEAR(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"      %s_node *ptr = data;\n"
+"      %s_node *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+printf(
+"   %s.clear();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-);\
-   if (TYPE_NUMBERS(0) & c_type_flushable) {\
-printf(\
-"   %s_node *ptr = data;\n"\
-"   %s_node *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object.flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   copy_resize(used);\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {\
-printf(\
-"   %s.flush_all();\n"\
-,VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_FLUSH(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   %s_node *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"\n"\
-"   tmp_unsigned = free_idx;\n"\
-"   free_idx = a_second.free_idx;\n"\
-"   a_second.free_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = root_idx;\n"\
-"   root_idx = a_second.root_idx;\n"\
-"   a_second.root_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = leaf_idx;\n"\
-"   leaf_idx = a_second.leaf_idx;\n"\
-"   a_second.leaf_idx = tmp_unsigned;\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-      t_idx = 0;\
-      do {\
-printf(\
-"\n"\
-);\
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {\
-printf(\
-"   %s tmp_%s = %s;\n"\
-"   %s = a_second.%s;\n"\
-"   a_second.%s = tmp_%s;\n"\
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-         else {\
-printf(\
-"   %s.swap(a_second.%s);\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_FLUSH_ALL(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_flushable) {
+printf(
+"   %s_node *ptr = data;\n"
+"   %s_node *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->object.flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   copy_resize(used);\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
+printf(
+"   %s.flush_all();\n"
+,VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_OPERATOR_LE_BR_RE_BR() \
-{\
-printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"   return data[a_idx].object;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);\
-}
+void RB_TREE_SWAP(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   %s_node *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"\n"
+"   tmp_unsigned = free_idx;\n"
+"   free_idx = a_second.free_idx;\n"
+"   a_second.free_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = root_idx;\n"
+"   root_idx = a_second.root_idx;\n"
+"   a_second.root_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = leaf_idx;\n"
+"   leaf_idx = a_second.leaf_idx;\n"
+"   a_second.leaf_idx = tmp_unsigned;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+      unsigned t_idx = 0;
+      do {
+printf(
+"\n"
+);
+         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
+printf(
+"   %s tmp_%s = %s;\n"
+"   %s = a_second.%s;\n"
+"   a_second.%s = tmp_%s;\n"
+,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+         else {
+printf(
+"   %s.swap(a_second.%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_INSERT() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_node_idx = __get_new_index();\n"\
-"\n"\
-"   __binary_tree_insert(new_node_idx,a_value);\n"\
-"   __insert_operation(new_node_idx);\n"\
-"\n"\
-"   data[new_node_idx].object = a_value;\n"\
-"\n"\
-"   return new_node_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator[](unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"   return data[a_idx].object;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_SWAP_INSERT() \
-{\
-   if (!(TYPE_NUMBERS(0) & c_type_basic)) {\
-printf(\
-"inline unsigned %s::swap_insert(%s &a_value)\n"\
-"{/*{{{*/\n"\
-"   unsigned new_node_idx = __get_new_index();\n"\
-"\n"\
-"   __binary_tree_insert(new_node_idx,a_value);\n"\
-"   __insert_operation(new_node_idx);\n"\
-"\n"\
-"   data[new_node_idx].object.swap(a_value);\n"\
-"\n"\
-"   return new_node_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-}
+void RB_TREE_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"inline unsigned %s::insert(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"inline unsigned %s::insert(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_node_idx = __get_new_index();\n"
+"\n"
+"   __binary_tree_insert(new_node_idx,a_value);\n"
+"   __insert_operation(new_node_idx);\n"
+"\n"
+"   data[new_node_idx].object = a_value;\n"
+"\n"
+"   return new_node_idx;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_REMOVE()  \
-{\
-printf(\
-"void %s::remove(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_node &del_node = data[a_idx];\n"\
-"\n"\
-"   if (del_node.left_idx != leaf_idx) {\n"\
-"      if (del_node.right_idx != leaf_idx) {\n"\
-"         \n"\
-"         unsigned found_idx = del_node.right_idx;\n"\
-"         do {\n"\
-"            %s_node &node = data[found_idx];\n"\
-"\n"\
-"            if (node.left_idx == leaf_idx) {\n"\
-"               break;\n"\
-"            }\n"\
-"\n"\
-"            found_idx = node.left_idx;\n"\
-"         } while(1);\n"\
-"\n"\
-"         %s_node &found_node = data[found_idx];\n"\
-"\n"\
-"         /* - process del_node parent_idx - */\n"\
-"         if (del_node.parent_idx != c_idx_not_exist) {\n"\
-"            %s_node &del_node_parent = data[del_node.parent_idx];\n"\
-"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            root_idx = found_idx;\n"\
-"         }\n"\
-"\n"\
-"         /* - process del_node left_idx - */\n"\
-"         data[del_node.left_idx].parent_idx = found_idx;\n"\
-"\n"\
-"         /* - process found_node right_idx - */\n"\
-"         if (found_node.right_idx != leaf_idx) {\n"\
-"            data[found_node.right_idx].parent_idx = a_idx;\n"\
-"         }\n"\
-"\n"\
-"         if (del_node.right_idx == found_idx) {\n"\
-"            \n"\
-"            /* - found node is right child of deleted node - */\n"\
-"            del_node.right_idx = found_node.right_idx;\n"\
-"            found_node.right_idx = a_idx;\n"\
-"\n"\
-"            found_node.parent_idx = del_node.parent_idx;\n"\
-"            del_node.parent_idx = found_idx;\n"\
-"\n"\
-"            found_node.left_idx = del_node.left_idx;\n"\
-"            del_node.left_idx = leaf_idx;\n"\
-"\n"\
-"            bool tmp_bool = found_node.color;\n"\
-"            found_node.color = del_node.color;\n"\
-"            del_node.color = tmp_bool;\n"\
-"         }\n"\
-"         else {\n"\
-"            \n"\
-"            /* - process found_node parent - */\n"\
-"            %s_node &found_node_parent = data[found_node.parent_idx];\n"\
-"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"\
-"\n"\
-"            /* - process del_node right_idx - */\n"\
-"            data[del_node.right_idx].parent_idx = found_idx;\n"\
-"\n"\
-"            /* - swap index pointers between nodes - */\n"\
-"            unsigned tmp_unsigned = found_node.parent_idx;\n"\
-"            found_node.parent_idx = del_node.parent_idx;\n"\
-"            del_node.parent_idx = tmp_unsigned;\n"\
-"\n"\
-"            found_node.left_idx = del_node.left_idx;\n"\
-"            del_node.left_idx = leaf_idx;\n"\
-"\n"\
-"            tmp_unsigned = found_node.right_idx;\n"\
-"            found_node.right_idx = del_node.right_idx;\n"\
-"            del_node.right_idx = tmp_unsigned;\n"\
-"\n"\
-"            bool tmp_bool = found_node.color;\n"\
-"            found_node.color = del_node.color;\n"\
-"            del_node.color = tmp_bool;\n"\
-"         }\n"\
-"\n"\
-"         __remove_one_child(a_idx,del_node.right_idx);\n"\
-"      }\n"\
-"      else {\n"\
-"         __remove_one_child(a_idx,del_node.left_idx);\n"\
-"      }\n"\
-"   }\n"\
-"   else {\n"\
-"      __remove_one_child(a_idx,del_node.right_idx);\n"\
-"   }\n"\
-"\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+printf(
+"inline unsigned %s::swap_insert(%s &a_value)\n"
+"{/*{{{*/\n"
+"   unsigned new_node_idx = __get_new_index();\n"
+"\n"
+"   __binary_tree_insert(new_node_idx,a_value);\n"
+"   __insert_operation(new_node_idx);\n"
+"\n"
+"   data[new_node_idx].object.swap(a_value);\n"
+"\n"
+"   return new_node_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+}/*}}}*/
 
-#define RB_TREE_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s_node *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s_node *ptr = n_data + used;\n"\
-"         %s_node *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->object.init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s_node));\n"\
-"   }\n"\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"\n"\
-"   if (size > used) {\n"\
-"      %s_node *ptr = data + used;\n"\
-"      %s_node *ptr_end = data + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"   }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_REMOVE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::remove(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_node &del_node = data[a_idx];\n"
+"\n"
+"   if (del_node.left_idx != leaf_idx) {\n"
+"      if (del_node.right_idx != leaf_idx) {\n"
+"         \n"
+"         unsigned found_idx = del_node.right_idx;\n"
+"         do {\n"
+"            %s_node &node = data[found_idx];\n"
+"\n"
+"            if (node.left_idx == leaf_idx) {\n"
+"               break;\n"
+"            }\n"
+"\n"
+"            found_idx = node.left_idx;\n"
+"         } while(1);\n"
+"\n"
+"         %s_node &found_node = data[found_idx];\n"
+"\n"
+"         /* - process del_node parent_idx - */\n"
+"         if (del_node.parent_idx != c_idx_not_exist) {\n"
+"            %s_node &del_node_parent = data[del_node.parent_idx];\n"
+"            (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"
+"         }\n"
+"         else {\n"
+"            root_idx = found_idx;\n"
+"         }\n"
+"\n"
+"         /* - process del_node left_idx - */\n"
+"         data[del_node.left_idx].parent_idx = found_idx;\n"
+"\n"
+"         /* - process found_node right_idx - */\n"
+"         if (found_node.right_idx != leaf_idx) {\n"
+"            data[found_node.right_idx].parent_idx = a_idx;\n"
+"         }\n"
+"\n"
+"         if (del_node.right_idx == found_idx) {\n"
+"            \n"
+"            /* - found node is right child of deleted node - */\n"
+"            del_node.right_idx = found_node.right_idx;\n"
+"            found_node.right_idx = a_idx;\n"
+"\n"
+"            found_node.parent_idx = del_node.parent_idx;\n"
+"            del_node.parent_idx = found_idx;\n"
+"\n"
+"            found_node.left_idx = del_node.left_idx;\n"
+"            del_node.left_idx = leaf_idx;\n"
+"\n"
+"            bool tmp_bool = found_node.color;\n"
+"            found_node.color = del_node.color;\n"
+"            del_node.color = tmp_bool;\n"
+"         }\n"
+"         else {\n"
+"            \n"
+"            /* - process found_node parent - */\n"
+"            %s_node &found_node_parent = data[found_node.parent_idx];\n"
+"            (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"
+"\n"
+"            /* - process del_node right_idx - */\n"
+"            data[del_node.right_idx].parent_idx = found_idx;\n"
+"\n"
+"            /* - swap index pointers between nodes - */\n"
+"            unsigned tmp_unsigned = found_node.parent_idx;\n"
+"            found_node.parent_idx = del_node.parent_idx;\n"
+"            del_node.parent_idx = tmp_unsigned;\n"
+"\n"
+"            found_node.left_idx = del_node.left_idx;\n"
+"            del_node.left_idx = leaf_idx;\n"
+"\n"
+"            tmp_unsigned = found_node.right_idx;\n"
+"            found_node.right_idx = del_node.right_idx;\n"
+"            del_node.right_idx = tmp_unsigned;\n"
+"\n"
+"            bool tmp_bool = found_node.color;\n"
+"            found_node.color = del_node.color;\n"
+"            del_node.color = tmp_bool;\n"
+"         }\n"
+"\n"
+"         __remove_one_child(a_idx,del_node.right_idx);\n"
+"      }\n"
+"      else {\n"
+"         __remove_one_child(a_idx,del_node.left_idx);\n"
+"      }\n"
+"   }\n"
+"   else {\n"
+"      __remove_one_child(a_idx,del_node.right_idx);\n"
+"   }\n"
+"\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_COPY_RESIZE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s_node *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s_node *ptr = n_data + used;\n"
+"         %s_node *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->object.init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   }\n"
+"\n"
+"   if (used != 0) {\n"
+"      memcpy(n_data,data,used*sizeof(%s_node));\n"
+"   }\n"
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+"   if (size > used) {\n"
+"      %s_node *ptr = data + used;\n"
+"      %s_node *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_GET_IDX_LEFT() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx_left(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx_left(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            good_idx = node_idx;\n"\
-"            node_idx = node.left_idx;\n"\
-"         }\n"\
-"         else {\n"\
-"            node_idx = node.right_idx;\n"\
-"         }\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_GRE_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_gre_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_gre_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         good_idx = node_idx;\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_IDX_LEFT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_idx_left(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_idx_left(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            good_idx = node_idx;\n"
+"            node_idx = node.left_idx;\n"
+"         }\n"
+"         else {\n"
+"            node_idx = node.right_idx;\n"
+"         }\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_LEE_IDX() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"unsigned %s::get_lee_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_lee_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   unsigned good_idx = c_idx_not_exist;\n"\
-"   unsigned node_idx = root_idx;\n"\
-"   do {\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         node_idx = node.left_idx;\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            return node_idx;\n"\
-"         }\n"\
-"\n"\
-"         good_idx = node_idx;\n"\
-"         node_idx = node.right_idx;\n"\
-"      }\n"\
-"   } while(node_idx != leaf_idx);\n"\
-"\n"\
-"   return good_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_GRE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_gre_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_gre_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         good_idx = node_idx;\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_GET_IDXS() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"void %s::get_idxs(%s a_value,ui_array_s &a_idxs_array)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-   else {\
-printf(\
-"void %s::get_idxs(%s &a_value,ui_array_s &a_idxs_array)\n"\
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   a_idxs_array.used = 0;\n"\
-"\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      return;\n"\
-"   }\n"\
-"\n"\
-"   unsigned stack[get_descent_stack_size()];\n"\
-"   unsigned *stack_ptr = stack;\n"\
-"\n"\
-"   *(stack_ptr++) = root_idx;\n"\
-"   do {\n"\
-"      unsigned node_idx = *(--stack_ptr);\n"\
-"      %s_node &node = data[node_idx];\n"\
-"\n"\
-"      int comp_result = __compare_value(a_value,node.object);\n"\
-"      if (comp_result < 0) {\n"\
-"         if (node.left_idx != leaf_idx) {\n"\
-"            *(stack_ptr++) = node.left_idx;\n"\
-"         }\n"\
-"      }\n"\
-"      else {\n"\
-"         if (comp_result == 0) {\n"\
-"            a_idxs_array.push(node_idx);\n"\
-"\n"\
-"            if (node.left_idx != leaf_idx) {\n"\
-"               *(stack_ptr++) = node.left_idx;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != leaf_idx) {\n"\
-"            *(stack_ptr++) = node.right_idx;\n"\
-"         }\n"\
-"      }\n"\
-"   } while(stack_ptr > stack);\n"\
-"\n"\
-"   return;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_GET_LEE_IDX(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"unsigned %s::get_lee_idx(%s a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"unsigned %s::get_lee_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   unsigned good_idx = c_idx_not_exist;\n"
+"   unsigned node_idx = root_idx;\n"
+"   do {\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         node_idx = node.left_idx;\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            return node_idx;\n"
+"         }\n"
+"\n"
+"         good_idx = node_idx;\n"
+"         node_idx = node.right_idx;\n"
+"      }\n"
+"   } while(node_idx != leaf_idx);\n"
+"\n"
+"   return good_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_OPERATOR_EQUAL() \
-{\
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.root_idx == c_idx_not_exist) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-);\
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else \
-   {\
-printf(\
-"\n"\
-"   %s_node *ptr = data;\n"\
-"   %s_node *s_ptr = a_src.data;\n"\
-"   %s_node *s_ptr_end = s_ptr + a_src.used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object = s_ptr->object;\n"\
-"      ptr->parent_idx = s_ptr->parent_idx;\n"\
-"      ptr->left_idx = s_ptr->left_idx;\n"\
-"      ptr->right_idx = s_ptr->right_idx;\n"\
-"      ptr->color = s_ptr->color;\n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = a_src.used;\n"\
-"   free_idx = a_src.free_idx;\n"\
-"   root_idx = a_src.root_idx;\n"\
-"   leaf_idx = a_src.leaf_idx;\n"\
-);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"\n"\
-);\
-      t_idx = 0;\
-      do {\
-printf(\
-"   %s = a_src.%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      } while(++t_idx < VAR_NAMES_CNT);\
-   }\
-printf(\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_GET_IDXS(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"void %s::get_idxs(%s a_value,ui_array_s &a_idxs_array)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+   else {
+printf(
+"void %s::get_idxs(%s &a_value,ui_array_s &a_idxs_array)\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"{/*{{{*/\n"
+"   a_idxs_array.used = 0;\n"
+"\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      return;\n"
+"   }\n"
+"\n"
+"   unsigned stack[get_descent_stack_size()];\n"
+"   unsigned *stack_ptr = stack;\n"
+"\n"
+"   *(stack_ptr++) = root_idx;\n"
+"   do {\n"
+"      unsigned node_idx = *(--stack_ptr);\n"
+"      %s_node &node = data[node_idx];\n"
+"\n"
+"      int comp_result = __compare_value(a_value,node.object);\n"
+"      if (comp_result < 0) {\n"
+"         if (node.left_idx != leaf_idx) {\n"
+"            *(stack_ptr++) = node.left_idx;\n"
+"         }\n"
+"      }\n"
+"      else {\n"
+"         if (comp_result == 0) {\n"
+"            a_idxs_array.push(node_idx);\n"
+"\n"
+"            if (node.left_idx != leaf_idx) {\n"
+"               *(stack_ptr++) = node.left_idx;\n"
+"            }\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != leaf_idx) {\n"
+"            *(stack_ptr++) = node.right_idx;\n"
+"         }\n"
+"      }\n"
+"   } while(stack_ptr > stack);\n"
+"\n"
+"   return;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) {\n"\
-"      if (a_second.root_idx != c_idx_not_exist) {\n"\
-"         return false;\n"\
-"      }\n"\
-"   }\n"\
-"   else {\n"\
-"      if (a_second.root_idx == c_idx_not_exist) {\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned s_stack[a_second.get_descent_stack_size()];\n"\
-"\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"      unsigned *s_stack_ptr = s_stack;\n"\
-"\n"\
-"      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"\
-"      do {\n"\
-"         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"\
-"            return false;\n"\
-"         }\n"\
-"\n"\
-"         node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);\n"\
-"         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"\
-"      } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"\
-"\n"\
-"      if (node_idx != s_node_idx) {\n"\
-"         return false;\n"\
-"      }\n"\
-"   }\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (VAR_NAMES_CNT > 0) {\
-printf(\
-"   return (%s == a_second.%s"\
-,VAR_NAMES(0),VAR_NAMES(0));\
-      if (VAR_NAMES_CNT > 1) {\
-         t_idx = 1;\
-         do {\
-printf(\
-" && %s == a_second.%s"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-         } while(++t_idx < VAR_NAMES_CNT);\
-      }\
-printf(\
-");\n"\
-);\
-   }\
-   else {\
-printf(\
-"   return true;\n"\
-);\
-   }\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.root_idx == c_idx_not_exist) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+);
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"
+,IM_STRUCT_NAME);
+   }
+   else 
+   {
+printf(
+"\n"
+"   %s_node *ptr = data;\n"
+"   %s_node *s_ptr = a_src.data;\n"
+"   %s_node *s_ptr_end = s_ptr + a_src.used;\n"
+"\n"
+"   do {\n"
+"      ptr->object = s_ptr->object;\n"
+"      ptr->parent_idx = s_ptr->parent_idx;\n"
+"      ptr->left_idx = s_ptr->left_idx;\n"
+"      ptr->right_idx = s_ptr->right_idx;\n"
+"      ptr->color = s_ptr->color;\n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   used = a_src.used;\n"
+"   free_idx = a_src.free_idx;\n"
+"   root_idx = a_src.root_idx;\n"
+"   leaf_idx = a_src.leaf_idx;\n"
+);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      unsigned t_idx = 0;
+      do {
+printf(
+"   %s = a_src.%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < VAR_NAMES_CNT);
+   }
+printf(
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_REHASH_TREE() \
-{\
-printf(\
-"void %s::rehash_tree()\n"\
-"{/*{{{*/\n"\
-"   if (root_idx == c_idx_not_exist) return;\n"\
-"\n"\
-"   ui_array_s indexes;\n"\
-"   indexes.init();\n"\
-"\n"\
-"   {\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"\n"\
-"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      do {\n"\
-"         indexes.push(idx);\n"\
-"\n"\
-"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"\
-"      } while(idx != c_idx_not_exist);\n"\
-"   }\n"\
-"\n"\
-"   root_idx = c_idx_not_exist;\n"\
-"\n"\
-"   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"\
-"   memset(processed,false,indexes.used*sizeof(bool));\n"\
-"\n"\
-"   unsigned step = indexes.used >> 1;\n"\
-"   if (step > 0) {\n"\
-"      do {\n"\
-"         unsigned idx = step;\n"\
-"         do {\n"\
-"            if (!processed[idx]) {\n"\
-"               unsigned node_idx = indexes[idx];\n"\
-"\n"\
-"               __binary_tree_insert(node_idx,data[node_idx].object);\n"\
-"               __insert_operation(node_idx);\n"\
-"\n"\
-"               processed[idx] = true;\n"\
-"            }\n"\
-"         } while((idx += step) < indexes.used);\n"\
-"      } while((step >>= 1) > 0);\n"\
-"   }\n"\
-"\n"\
-"   unsigned node_idx = indexes[0];\n"\
-"   __binary_tree_insert(node_idx,data[node_idx].object);\n"\
-"   __insert_operation(node_idx);\n"\
-"\n"\
-"   cfree(processed);\n"\
-"   indexes.clear();\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) {\n"
+"      if (a_second.root_idx != c_idx_not_exist) {\n"
+"         return false;\n"
+"      }\n"
+"   }\n"
+"   else {\n"
+"      if (a_second.root_idx == c_idx_not_exist) {\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned s_stack[a_second.get_descent_stack_size()];\n"
+"\n"
+"      unsigned *stack_ptr = stack;\n"
+"      unsigned *s_stack_ptr = s_stack;\n"
+"\n"
+"      unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"
+"      do {\n"
+"         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"
+"            return false;\n"
+"         }\n"
+"\n"
+"         node_idx = get_stack_next_idx(node_idx,&stack_ptr,stack);\n"
+"         s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"
+"      } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"
+"\n"
+"      if (node_idx != s_node_idx) {\n"
+"         return false;\n"
+"      }\n"
+"   }\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (VAR_NAMES_CNT > 0) {
+printf(
+"   return (%s == a_second.%s"
+,VAR_NAMES(0),VAR_NAMES(0));
+      if (VAR_NAMES_CNT > 1) {
+         unsigned t_idx = 1;
+         do {
+printf(
+" && %s == a_second.%s"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+         } while(++t_idx < VAR_NAMES_CNT);
+      }
+printf(
+");\n"
+);
+   }
+   else {
+printf(
+"   return true;\n"
+);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define RB_TREE_PRINT_DOT_CODE() \
-{\
-printf(\
-"void %s::print_dot_code(FILE *a_file)\n"\
-"{/*{{{*/\n"\
-"   fprintf(a_file,\n"\
-"\"digraph G {\\n\"\n"\
-"\"   rankdir = TD\\n\"\n"\
-"\"   node [ shape = circle margin = 0.0 fixedsize = true width = 0.7 height = 0.7]\\n\"\n"\
-"\"\\n\"\n"\
-"   );\n"\
-"\n"\
-"   const char *node_colors[] = {\n"\
-"      \"red\",\n"\
-"      \"black\",\n"\
-"   };\n"\
-"\n"\
-"   fprintf(a_file,\n"\
-"\"   root_idx [label = \\\"R\\\" ]\\n\"\n"\
-"\"   root_idx -> node_%%u\\n\"\n"\
-"   ,root_idx);\n"\
-"\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      ui_array_s stack;\n"\
-"      stack.init();\n"\
-"\n"\
-"      stack.push(root_idx);\n"\
-"      do {\n"\
-"         unsigned node_idx = stack.pop();\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         /* - print node - */\n"\
-"         fprintf(a_file,\n"\
-"\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"\
-"         ,node_idx,node_colors[node.color],node_idx);\n"\
-"\n"\
-"         if (node.parent_idx != c_idx_not_exist) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"\
-"            ,node_idx,node.parent_idx);\n"\
-"         }\n"\
-"\n"\
-"         if (node.left_idx != leaf_idx) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"\
-"            ,node_idx,node.left_idx);\n"\
-"\n"\
-"            stack.push(node.left_idx);\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != leaf_idx) {\n"\
-"            fprintf(a_file,\n"\
-"\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"\
-"            ,node_idx,node.right_idx);\n"\
-"\n"\
-"            stack.push(node.right_idx);\n"\
-"         }\n"\
-"      } while(stack.used > 0);\n"\
-"\n"\
-"      stack.clear();\n"\
-"   }\n"\
-"\n"\
-"   fprintf(a_file,\n"\
-"\"}\\n\"\n"\
-"\"\\n\");\n"\
-"\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::rehash_tree()\n"
+"{/*{{{*/\n"
+"   if (root_idx == c_idx_not_exist) return;\n"
+"\n"
+"   ui_array_s indexes;\n"
+"   indexes.init();\n"
+"\n"
+"   {\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned *stack_ptr = stack;\n"
+"\n"
+"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      do {\n"
+"         indexes.push(idx);\n"
+"\n"
+"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
+"      } while(idx != c_idx_not_exist);\n"
+"   }\n"
+"\n"
+"   root_idx = c_idx_not_exist;\n"
+"\n"
+"   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"
+"   memset(processed,false,indexes.used*sizeof(bool));\n"
+"\n"
+"   unsigned step = indexes.used >> 1;\n"
+"   if (step > 0) {\n"
+"      do {\n"
+"         unsigned idx = step;\n"
+"         do {\n"
+"            if (!processed[idx]) {\n"
+"               unsigned node_idx = indexes[idx];\n"
+"\n"
+"               __binary_tree_insert(node_idx,data[node_idx].object);\n"
+"               __insert_operation(node_idx);\n"
+"\n"
+"               processed[idx] = true;\n"
+"            }\n"
+"         } while((idx += step) < indexes.used);\n"
+"      } while((step >>= 1) > 0);\n"
+"   }\n"
+"\n"
+"   unsigned node_idx = indexes[0];\n"
+"   __binary_tree_insert(node_idx,data[node_idx].object);\n"
+"   __insert_operation(node_idx);\n"
+"\n"
+"   cfree(processed);\n"
+"   indexes.clear();\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define RB_TREE_CHECK_RB_TREE_PROPERTIES() \
-{\
-printf(\
-"bool %s::check_rb_tree_properties()\n"\
-"{/*{{{*/\n"\
-"   %s_node &leaf = data[leaf_idx];\n"\
-"   if (!leaf.color) {\n"\
-"      fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"\
-"      fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      \n"\
-"      /* - check if root node is black - */\n"\
-"      %s_node &r_node = data[root_idx];\n"\
-"      if (!r_node.color) {\n"\
-"         fprintf(stderr,\"ERROR: root node is not black\\n\");\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      /* - create node index and path length stacks - */\n"\
-"      ui_array_s ni_stack;\n"\
-"      ui_array_s pl_stack;\n"\
-"\n"\
-"      ni_stack.init();\n"\
-"      pl_stack.init();\n"\
-"\n"\
-"      /* - insert root on stack - */\n"\
-"      ni_stack.push(root_idx);\n"\
-"      pl_stack.push(0);\n"\
-"\n"\
-"      unsigned r_path_length = c_idx_not_exist;\n"\
-"      do {\n"\
-"         unsigned node_idx = ni_stack.pop();\n"\
-"         unsigned path_length = pl_stack.pop();\n"\
-"         unsigned stack_depth = ni_stack.used;\n"\
-"\n"\
-"         %s_node &node = data[node_idx];\n"\
-"\n"\
-"         if (node.color) {\n"\
-"            path_length++;\n"\
-"         }\n"\
-"         else {\n"\
-"            if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"\
-"               fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"\
-"               ni_stack.clear();\n"\
-"               pl_stack.clear();\n"\
-"               return false;\n"\
-"            }\n"\
-"\n"\
-"            if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"\
-"               fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"\
-"               ni_stack.clear();\n"\
-"               pl_stack.clear();\n"\
-"               return false;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"         if (node.left_idx != c_idx_not_exist) {\n"\
-"            ni_stack.push(node.left_idx);\n"\
-"            pl_stack.push(path_length);\n"\
-"         }\n"\
-"\n"\
-"         if (node.right_idx != c_idx_not_exist) {\n"\
-"            ni_stack.push(node.right_idx);\n"\
-"            pl_stack.push(path_length);\n"\
-"         }\n"\
-"\n"\
-"         /* - if node is leaf node - */\n"\
-"         if (stack_depth == ni_stack.used) {\n"\
-"            if (r_path_length != c_idx_not_exist) {\n"\
-"               if (r_path_length != path_length) {\n"\
-"                  fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"\
-"                  ni_stack.clear();\n"\
-"                  pl_stack.clear();\n"\
-"                  return false;\n"\
-"               }\n"\
-"            }\n"\
-"            else {\n"\
-"               r_path_length = path_length;\n"\
-"            }\n"\
-"         }\n"\
-"\n"\
-"      } while(ni_stack.used > 0);\n"\
-"\n"\
-"      ni_stack.clear();\n"\
-"      pl_stack.clear();\n"\
-"   }\n"\
-"\n"\
-"   /* - test if are node values sorted - */\n"\
-"   if (root_idx != c_idx_not_exist) {\n"\
-"      unsigned stack[get_descent_stack_size()];\n"\
-"      unsigned *stack_ptr = stack;\n"\
-"\n"\
-"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"\
-"      do {\n"\
-"         unsigned l_idx = idx;\n"\
-"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"\
-"         if (idx == c_idx_not_exist) {\n"\
-"            break;\n"\
-"         }\n"\
-"         if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"\
-"            fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"\
-"            return false;\n"\
-"         }\n"\
-"      } while(1);\n"\
-"   }\n"\
-"\n"\
-"   return true;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::print_dot_code(FILE *a_file)\n"
+"{/*{{{*/\n"
+"   fprintf(a_file,\n"
+"\"digraph G {\\n\"\n"
+"\"   rankdir = TD\\n\"\n"
+"\"   node [ shape = circle margin = 0.0 fixedsize = true width = 0.7 height = 0.7]\\n\"\n"
+"\"\\n\"\n"
+"   );\n"
+"\n"
+"   const char *node_colors[] = {\n"
+"      \"red\",\n"
+"      \"black\",\n"
+"   };\n"
+"\n"
+"   fprintf(a_file,\n"
+"\"   root_idx [label = \\\"R\\\" ]\\n\"\n"
+"\"   root_idx -> node_%%u\\n\"\n"
+"   ,root_idx);\n"
+"\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      ui_array_s stack;\n"
+"      stack.init();\n"
+"\n"
+"      stack.push(root_idx);\n"
+"      do {\n"
+"         unsigned node_idx = stack.pop();\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         /* - print node - */\n"
+"         fprintf(a_file,\n"
+"\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"
+"         ,node_idx,node_colors[node.color],node_idx);\n"
+"\n"
+"         if (node.parent_idx != c_idx_not_exist) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"
+"            ,node_idx,node.parent_idx);\n"
+"         }\n"
+"\n"
+"         if (node.left_idx != leaf_idx) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"
+"            ,node_idx,node.left_idx);\n"
+"\n"
+"            stack.push(node.left_idx);\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != leaf_idx) {\n"
+"            fprintf(a_file,\n"
+"\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"
+"            ,node_idx,node.right_idx);\n"
+"\n"
+"            stack.push(node.right_idx);\n"
+"         }\n"
+"      } while(stack.used > 0);\n"
+"\n"
+"      stack.clear();\n"
+"   }\n"
+"\n"
+"   fprintf(a_file,\n"
+"\"}\\n\"\n"
+"\"\\n\");\n"
+"\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
+void RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::check_rb_tree_properties()\n"
+"{/*{{{*/\n"
+"   %s_node &leaf = data[leaf_idx];\n"
+"   if (!leaf.color) {\n"
+"      fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"
+"      fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      \n"
+"      /* - check if root node is black - */\n"
+"      %s_node &r_node = data[root_idx];\n"
+"      if (!r_node.color) {\n"
+"         fprintf(stderr,\"ERROR: root node is not black\\n\");\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      /* - create node index and path length stacks - */\n"
+"      ui_array_s ni_stack;\n"
+"      ui_array_s pl_stack;\n"
+"\n"
+"      ni_stack.init();\n"
+"      pl_stack.init();\n"
+"\n"
+"      /* - insert root on stack - */\n"
+"      ni_stack.push(root_idx);\n"
+"      pl_stack.push(0);\n"
+"\n"
+"      unsigned r_path_length = c_idx_not_exist;\n"
+"      do {\n"
+"         unsigned node_idx = ni_stack.pop();\n"
+"         unsigned path_length = pl_stack.pop();\n"
+"         unsigned stack_depth = ni_stack.used;\n"
+"\n"
+"         %s_node &node = data[node_idx];\n"
+"\n"
+"         if (node.color) {\n"
+"            path_length++;\n"
+"         }\n"
+"         else {\n"
+"            if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"
+"               fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"
+"               ni_stack.clear();\n"
+"               pl_stack.clear();\n"
+"               return false;\n"
+"            }\n"
+"\n"
+"            if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"
+"               fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"
+"               ni_stack.clear();\n"
+"               pl_stack.clear();\n"
+"               return false;\n"
+"            }\n"
+"         }\n"
+"\n"
+"         if (node.left_idx != c_idx_not_exist) {\n"
+"            ni_stack.push(node.left_idx);\n"
+"            pl_stack.push(path_length);\n"
+"         }\n"
+"\n"
+"         if (node.right_idx != c_idx_not_exist) {\n"
+"            ni_stack.push(node.right_idx);\n"
+"            pl_stack.push(path_length);\n"
+"         }\n"
+"\n"
+"         /* - if node is leaf node - */\n"
+"         if (stack_depth == ni_stack.used) {\n"
+"            if (r_path_length != c_idx_not_exist) {\n"
+"               if (r_path_length != path_length) {\n"
+"                  fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"
+"                  ni_stack.clear();\n"
+"                  pl_stack.clear();\n"
+"                  return false;\n"
+"               }\n"
+"            }\n"
+"            else {\n"
+"               r_path_length = path_length;\n"
+"            }\n"
+"         }\n"
+"\n"
+"      } while(ni_stack.used > 0);\n"
+"\n"
+"      ni_stack.clear();\n"
+"      pl_stack.clear();\n"
+"   }\n"
+"\n"
+"   /* - test if are node values sorted - */\n"
+"   if (root_idx != c_idx_not_exist) {\n"
+"      unsigned stack[get_descent_stack_size()];\n"
+"      unsigned *stack_ptr = stack;\n"
+"\n"
+"      unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
+"      do {\n"
+"         unsigned l_idx = idx;\n"
+"         idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
+"         if (idx == c_idx_not_exist) {\n"
+"            break;\n"
+"         }\n"
+"         if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"
+"            fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"
+"            return false;\n"
+"         }\n"
+"      } while(1);\n"
+"   }\n"
+"\n"
+"   return true;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
 void processor_s::generate_rb_tree_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
    string_array_s &fun_defs = cont_params.functions;
@@ -1612,7 +1615,7 @@ void processor_s::generate_rb_tree_type()
          type_idxs[tn_idx] = type_idx;
 
          // - test type options -
-         if (data_types[type_idx].properties & c_type_setting_strict_dynamic) {
+         if (data_types[type_idx].properties & c_type_option_strict_dynamic) {
             fprintf(stderr,"rb_tree: container have not implemented processing of types with option strict_dynamic\n");
             cassert(0);
          }
@@ -1675,7 +1678,7 @@ void processor_s::generate_rb_tree_type()
          } while(++tn_idx < type_cnt);
       }
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
 
       {
          string_array_s &dt_type_names = data_type.types;
@@ -1807,7 +1810,7 @@ printf(
 "   inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize rb_tree\n"
@@ -1817,7 +1820,7 @@ printf(
 );
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -1828,7 +1831,7 @@ printf(
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -1863,7 +1866,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of rb_tree with another rb_tree\n"
@@ -2003,7 +2006,7 @@ printf(
 "\n"
 ,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -2075,10 +2078,10 @@ printf(
 "};\n"
 "\n"
 );
-}
+}/*}}}*/
 
 void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -2102,8 +2105,6 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // --- definition of inline methods ---
 
 printf(
@@ -2112,21 +2113,21 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - rb_tree __get_grandparent_idx method -
-RB_TREE___GET_GRANDPARENT_IDX();
+RB_TREE___GET_GRANDPARENT_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_uncle_idx method -
-RB_TREE___GET_UNCLE_IDX();
+RB_TREE___GET_UNCLE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_sibling_idx method -
-RB_TREE___GET_SIBLING_IDX();
+RB_TREE___GET_SIBLING_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_descent_stack_size -
-RB_TREE_GET_DESCENT_STACK_SIZE();
+RB_TREE_GET_DESCENT_STACK_SIZE(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_stack_min_value_idx method -
 
    // - rb_tree get_stack_next_idx method -
-RB_TREE_GET_STACK_NEXT_IDX();
+RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_min_value_idx method -
 
@@ -2137,57 +2138,57 @@ RB_TREE_GET_STACK_NEXT_IDX();
    // - rb_tree get_prev_idx method -
 
    // - rb_tree __rotate_left method -
-RB_TREE___ROTATE_LEFT();
+RB_TREE___ROTATE_LEFT(RB_TREE_GEN_VALUES);
 
    // - rb_tree __rotate_right method -
-RB_TREE___ROTATE_RIGHT();
+RB_TREE___ROTATE_RIGHT(RB_TREE_GEN_VALUES);
 
    // - rb_tree __get_new_index method -
-RB_TREE___GET_NEW_INDEX();
+RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __binary_tree_insert method -
 
    // - rb_tree __replace_delete_node_by_child method -
-RB_TREE___REPLACE_DELETE_NODE_BY_CHILD();
+RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_VALUES);
 
    // - rb_tree __remove_black_black method -
 
    // - rb_tree __remove_one_child method -
-RB_TREE___REMOVE_ONE_CHILD();
+RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_VALUES);
 
    // - rb_tree __insert_operation method -
 
    // - rb_tree init method -
-RB_TREE_INIT();
+RB_TREE_INIT(RB_TREE_GEN_VALUES);
 
    // - rb_tree clear method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-RB_TREE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+RB_TREE_CLEAR(RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree flush method -
-RB_TREE_FLUSH();
+RB_TREE_FLUSH(RB_TREE_GEN_VALUES);
 
    // - rb_tree flush_all method -
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
-RB_TREE_FLUSH_ALL();
+RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-RB_TREE_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+RB_TREE_SWAP(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree operator[] method -
-RB_TREE_OPERATOR_LE_BR_RE_BR();
+RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_VALUES);
 
    // - rb_tree insert method -
-RB_TREE_INSERT();
+RB_TREE_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree swap_insert method -
-RB_TREE_SWAP_INSERT();
+RB_TREE_SWAP_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree remove method -
 
@@ -2205,8 +2206,8 @@ RB_TREE_SWAP_INSERT();
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-RB_TREE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }
 
@@ -2218,10 +2219,10 @@ RB_TREE_OPERATOR_EQUAL();
 
    // - rb_tree check_rb_tree_properties -
 
-}
+}/*}}}*/
 
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -2245,8 +2246,6 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // --- definition of methods ---
 
 printf(
@@ -2263,21 +2262,21 @@ printf(
    // - rb_tree get_descent_stack_size -
 
    // - rb_tree get_stack_min_value_idx method -
-RB_TREE_GET_STACK_MIN_VALUE_IDX();
+RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_stack_next_idx method -
 
    // - rb_tree get_min_value_idx method -
-RB_TREE_GET_MIN_VALUE_IDX();
+RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_max_value_idx method -
-RB_TREE_GET_MAX_VALUE_IDX();
+RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_next_idx method -
-RB_TREE_GET_NEXT_IDX();
+RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_prev_idx method -
-RB_TREE_GET_PREV_IDX();
+RB_TREE_GET_PREV_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree __rotate_left method -
 
@@ -2286,24 +2285,24 @@ RB_TREE_GET_PREV_IDX();
    // - rb_tree __get_new_index method -
 
    // - rb_tree __binary_tree_insert method -
-RB_TREE___BINARY_TREE_INSERT();
+RB_TREE___BINARY_TREE_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree __replace_delete_node_by_child method -
 
    // - rb_tree __remove_black_black method -
-RB_TREE___REMOVE_BLACK_BLACK();
+RB_TREE___REMOVE_BLACK_BLACK(RB_TREE_GEN_VALUES);
 
    // - rb_tree __remove_one_child method -
 
    // - rb_tree __insert_operation method -
-RB_TREE___INSERT_OPERATION();
+RB_TREE___INSERT_OPERATION(RB_TREE_GEN_VALUES);
 
    // - rb_tree init method -
 
    // - rb_tree clear method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-RB_TREE_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+RB_TREE_CLEAR(RB_TREE_GEN_VALUES);
       }
    }
 
@@ -2311,7 +2310,7 @@ RB_TREE_CLEAR();
 
    // - rb_tree flush_all method -
    if (TYPE_NUMBERS(0) & c_type_flushable) {
-RB_TREE_FLUSH_ALL();
+RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
@@ -2323,48 +2322,48 @@ RB_TREE_FLUSH_ALL();
    // - rb_tree swap_insert method -
 
    // - rb_tree remove method -
-RB_TREE_REMOVE();
+RB_TREE_REMOVE(RB_TREE_GEN_VALUES);
 
    // - rb_tree copy_resize method -
-RB_TREE_COPY_RESIZE();
+RB_TREE_COPY_RESIZE(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idx method -
-RB_TREE_GET_IDX();
+RB_TREE_GET_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idx_left method -
-RB_TREE_GET_IDX_LEFT();
+RB_TREE_GET_IDX_LEFT(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_gre_idx method -
-RB_TREE_GET_GRE_IDX();
+RB_TREE_GET_GRE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_lee_idx method -
-RB_TREE_GET_LEE_IDX();
+RB_TREE_GET_LEE_IDX(RB_TREE_GEN_VALUES);
 
    // - rb_tree get_idxs method -
-RB_TREE_GET_IDXS();
+RB_TREE_GET_IDXS(RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-RB_TREE_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree operator== method -
-RB_TREE_OPERATOR_DOUBLE_EQUAL();
+RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_VALUES);
 
    // - rb_tree rehash_tree -
-RB_TREE_REHASH_TREE();
+RB_TREE_REHASH_TREE(RB_TREE_GEN_VALUES);
 
    // - rb_tree print_dot_code -
 #ifdef RB_TREE_GENERATE_PRINT_DOT_CODE
-RB_TREE_PRINT_DOT_CODE();
+RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
 #endif
 
    // - rb_tree check_rb_tree_properties -
 #ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
-RB_TREE_CHECK_RB_TREE_PROPERTIES();
+RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_VALUES);
 #endif
 
-}
+}/*}}}*/
 

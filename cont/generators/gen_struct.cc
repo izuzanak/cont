@@ -1,186 +1,189 @@
 
-#define STRUCT_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
-printf(\
-"   %s.init();\n"\
-,VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+#define STRUCT_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
+#define STRUCT_GEN_VALUES abbreviations,abb_idx,type_cnt,data_type,types
 
-#define STRUCT_CLEAR() \
-{\
-printf(\
-"inline void %s::clear()\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {\
-printf(\
-"   %s.clear();\n"\
-,VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_INIT(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+printf(
+"   %s.init();\n"
+,VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_SET() \
-{\
-printf(\
-"inline void %s::set("\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
-"%s a_%s"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0));\
-   }\
-   else {\
-printf(\
-"%s &a_%s"\
-,IM_TYPE_NAMES(0),VAR_NAMES(0));\
-   }\
-   if (TYPE_CNT > 1) {\
-      unsigned t_idx = 1;\
-      do {\
-         if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-",%s a_%s"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-         else {\
-printf(\
-",%s &a_%s"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));\
-         }\
-      } while(++t_idx < TYPE_CNT);\
-   }\
-printf(\
-")\n"\
-"{/*{{{*/\n"\
-);\
-   t_idx = 0;\
-   do {\
-printf(\
-"   %s = a_%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::clear()\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+printf(
+"   %s.clear();\n"
+,VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_FLUSH_ALL() \
-{\
-printf(\
-"inline void %s::flush_all()\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-      if (TYPE_NUMBERS(t_idx) & c_type_flushable) {\
-printf(\
-"   %s.flush_all();\n"\
-,VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_SET(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::set("
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+printf(
+"%s a_%s"
+,IM_TYPE_NAMES(0),VAR_NAMES(0));
+   }
+   else {
+printf(
+"%s &a_%s"
+,IM_TYPE_NAMES(0),VAR_NAMES(0));
+   }
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+         if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+",%s a_%s"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+         else {
+printf(
+",%s &a_%s"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         }
+      } while(++t_idx < TYPE_CNT);
+   }
+printf(
+")\n"
+"{/*{{{*/\n"
+);
+   unsigned t_idx = 0;
+   do {
+printf(
+"   %s = a_%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-printf(\
-"\n"\
-);\
-      if (TYPE_NUMBERS(t_idx) & c_type_basic) {\
-printf(\
-"   %s tmp_%s = %s;\n"\
-"   %s = a_second.%s;\n"\
-"   a_second.%s = tmp_%s;\n"\
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-      else {\
-printf(\
-"   %s.swap(a_second.%s);\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      }\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush_all()\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+      if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
+printf(
+"   %s.flush_all();\n"
+,VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_OPERATOR_EQUAL() \
-{\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-"{/*{{{*/\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   t_idx = 0;\
-   do {\
-printf(\
-"   %s = a_src.%s;\n"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-   } while(++t_idx < TYPE_CNT);\
-printf(\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_SWAP(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+printf(
+"\n"
+);
+      if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+printf(
+"   %s tmp_%s = %s;\n"
+"   %s = a_second.%s;\n"
+"   a_second.%s = tmp_%s;\n"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+      else {
+printf(
+"   %s.swap(a_second.%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      }
+   } while(++t_idx < TYPE_CNT);
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define STRUCT_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"inline bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   return (%s == a_second.%s"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,VAR_NAMES(0),VAR_NAMES(0));\
-   if (TYPE_CNT > 1) {\
-      t_idx = 1;\
-      do {\
-printf(\
-" && %s == a_second.%s"\
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));\
-      } while(++t_idx < TYPE_CNT);\
-   }\
-printf(\
-");\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+printf(
+"   %s = a_src.%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+   } while(++t_idx < TYPE_CNT);
+printf(
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   return (%s == a_second.%s"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,VAR_NAMES(0),VAR_NAMES(0));
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+printf(
+" && %s == a_second.%s"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < TYPE_CNT);
+   }
+printf(
+");\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
 void processor_s::generate_struct_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
    string_array_s &comp_idx_strings = cont_params.compare;
@@ -215,7 +218,7 @@ void processor_s::generate_struct_type()
 
          // - test type options -
          data_type_s &type = data_types[type_idx];
-         if (type.properties & c_type_setting_strict_dynamic) {
+         if (type.properties & c_type_option_strict_dynamic) {
             cassert(type.properties & c_type_dynamic);
          }
 
@@ -299,7 +302,7 @@ void processor_s::generate_struct_type()
       } while(++t_pptr < t_pptr_end);
 
       data_type.properties = (c_type_static << dynamic) | (flushable << 3) | (comp_idx_strings.used != 0) << 4;
-      data_type.properties |= type_settings & c_type_setting_mask;
+      data_type.properties |= type_settings & c_type_option_mask;
 
       {
          string_array_s &dt_type_names = data_type.types;
@@ -373,7 +376,7 @@ printf(
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
 
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "\n"
 "   /*!\n"
@@ -383,7 +386,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+   if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by structure\n"
@@ -431,7 +434,7 @@ printf(
 "   inline void flush_all();\n"
 "\n"
 );
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap structure members with another structure\n"
@@ -440,7 +443,7 @@ printf(
 "\n"
 ,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy structure from another structure\n"
@@ -472,10 +475,10 @@ printf(
 "};\n"
 "\n"
 );
-};
+}/*}}}*/
 
 void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -499,8 +502,6 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   unsigned t_idx;
-
    // - definition of inline methods -
 
 printf(
@@ -509,38 +510,38 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - struct init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
-STRUCT_INIT();
+   if (!(data_type.properties & c_type_option_nogen_init)) {
+STRUCT_INIT(STRUCT_GEN_VALUES);
    }
 
    // - struct clear method -
-   if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-STRUCT_CLEAR();
+   if (!(data_type.properties & c_type_option_nogen_clear)) {
+STRUCT_CLEAR(STRUCT_GEN_VALUES);
    }
 
    // - struct set method -
-STRUCT_SET();
+STRUCT_SET(STRUCT_GEN_VALUES);
 
    // - struct flush_all method  -
-STRUCT_FLUSH_ALL();
+STRUCT_FLUSH_ALL(STRUCT_GEN_VALUES);
 
    // - struct swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-STRUCT_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+STRUCT_SWAP(STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-STRUCT_OPERATOR_EQUAL();
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
    }
 
    // - struct operator== method -
-STRUCT_OPERATOR_DOUBLE_EQUAL();
+STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
 
-}
+}/*}}}*/
 
 void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
@@ -581,5 +582,5 @@ printf(
    // - struct operator== method -
 
    // - struct part_compare method -
-}
+}/*}}}*/
 

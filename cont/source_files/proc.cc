@@ -3383,27 +3383,27 @@ void process_s::pa_reduce_type_and_name(process_s &proc)
 
 void process_s::pa_reduce_not_generate_init(process_s &proc)
 {/*{{{*/
-   proc.processor_ptr->type_settings |= c_type_setting_not_generate_init;
+   proc.processor_ptr->type_settings |= c_type_option_nogen_init;
 }/*}}}*/
 
 void process_s::pa_reduce_not_generate_clear(process_s &proc)
 {/*{{{*/
-   proc.processor_ptr->type_settings |= c_type_setting_not_generate_clear;
+   proc.processor_ptr->type_settings |= c_type_option_nogen_clear;
 }/*}}}*/
 
 void process_s::pa_reduce_not_generate_swap(process_s &proc)
 {/*{{{*/
-   proc.processor_ptr->type_settings |= c_type_setting_not_generate_swap;
+   proc.processor_ptr->type_settings |= c_type_option_nogen_swap;
 }/*}}}*/
 
 void process_s::pa_reduce_not_generate_operator_equal(process_s &proc)
 {/*{{{*/
-   proc.processor_ptr->type_settings |= c_type_setting_not_generate_operator_equal;
+   proc.processor_ptr->type_settings |= c_type_option_nogen_operator_equal;
 }/*}}}*/
 
 void process_s::pa_reduce_option_strict_dynamic(process_s &proc)
 {/*{{{*/
-   proc.processor_ptr->type_settings |= c_type_setting_strict_dynamic;
+   proc.processor_ptr->type_settings |= c_type_option_strict_dynamic;
 }/*}}}*/
 
 void process_s::pa_reduce_additions_body(process_s &proc)

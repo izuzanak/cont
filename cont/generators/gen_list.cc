@@ -1,761 +1,764 @@
 
-#define LIST_INIT() \
-{\
-printf(\
-"inline void %s::init()\n"\
-"{/*{{{*/\n"\
-"   size = 0;\n"\
-"   used = 0;\n"\
-"   data = NULL;\n"\
-"   free_idx = c_idx_not_exist;\n"\
-"   first_idx = c_idx_not_exist;\n"\
-"   last_idx = c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+#define LIST_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type
+#define LIST_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type
 
-#define LIST_INIT_SIZE() \
-{\
-printf(\
-"inline void %s::init_size(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   init();\n"\
-"   copy_resize(a_size);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_INIT(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init()\n"
+"{/*{{{*/\n"
+"   size = 0;\n"
+"   used = 0;\n"
+"   data = NULL;\n"
+"   free_idx = c_idx_not_exist;\n"
+"   first_idx = c_idx_not_exist;\n"
+"   last_idx = c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_CLEAR() \
-{\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"inline void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::clear()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (data != NULL) {\n"\
-);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"      %s_element *ptr = data;\n"\
-"      %s_element *ptr_end = ptr + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   init();\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_INIT_SIZE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init_size(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   init();\n"
+"   copy_resize(a_size);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_FLUSH() \
-{\
-printf(\
-"inline void %s::flush()\n"\
-"{/*{{{*/\n"\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_CLEAR(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::clear()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (data != NULL) {\n"
+);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"      %s_element *ptr = data;\n"
+"      %s_element *ptr_end = ptr + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   init();\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define LIST_FLUSH_ALL() \
-{\
-   if (!(TYPE_NUMBER & c_type_flushable)) {\
-printf(\
-"inline void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"void %s::flush_all()\n"\
-,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-);\
-   if (TYPE_NUMBER & c_type_flushable) {\
-printf(\
-"   %s_element *ptr = data;\n"\
-"   %s_element *ptr_end = ptr + used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object.flush_all();\n"\
-"   } while(++ptr < ptr_end);\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   copy_resize(used);\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_FLUSH(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::flush()\n"
+"{/*{{{*/\n"
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_SWAP() \
-{\
-printf(\
-"inline void %s::swap(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   unsigned tmp_unsigned = size;\n"\
-"   size = a_second.size;\n"\
-"   a_second.size = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = used;\n"\
-"   used = a_second.used;\n"\
-"   a_second.used = tmp_unsigned;\n"\
-"\n"\
-"   %s_element *tmp_data = data;\n"\
-"   data = a_second.data;\n"\
-"   a_second.data = tmp_data;\n"\
-"\n"\
-"   tmp_unsigned = free_idx;\n"\
-"   free_idx = a_second.free_idx;\n"\
-"   a_second.free_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = first_idx;\n"\
-"   first_idx = a_second.first_idx;\n"\
-"   a_second.first_idx = tmp_unsigned;\n"\
-"\n"\
-"   tmp_unsigned = last_idx;\n"\
-"   last_idx = a_second.last_idx;\n"\
-"   a_second.last_idx = tmp_unsigned;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_FLUSH_ALL(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_flushable)) {
+printf(
+"inline void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::flush_all()\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+);
+   if (TYPE_NUMBER & c_type_flushable) {
+printf(
+"   %s_element *ptr = data;\n"
+"   %s_element *ptr_end = ptr + used;\n"
+"\n"
+"   do {\n"
+"      ptr->object.flush_all();\n"
+"   } while(++ptr < ptr_end);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   copy_resize(used);\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define LIST_OPERATOR_LE_BR_RE_BR() \
-{\
-printf(\
-"inline %s &%s::operator[](unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"   return data[a_idx].object;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,TYPE_NAME,IM_STRUCT_NAME);\
-}
+void LIST_SWAP(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::swap(%s &a_second)\n"
+"{/*{{{*/\n"
+"   unsigned tmp_unsigned = size;\n"
+"   size = a_second.size;\n"
+"   a_second.size = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = used;\n"
+"   used = a_second.used;\n"
+"   a_second.used = tmp_unsigned;\n"
+"\n"
+"   %s_element *tmp_data = data;\n"
+"   data = a_second.data;\n"
+"   a_second.data = tmp_data;\n"
+"\n"
+"   tmp_unsigned = free_idx;\n"
+"   free_idx = a_second.free_idx;\n"
+"   a_second.free_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = first_idx;\n"
+"   first_idx = a_second.first_idx;\n"
+"   a_second.first_idx = tmp_unsigned;\n"
+"\n"
+"   tmp_unsigned = last_idx;\n"
+"   last_idx = a_second.last_idx;\n"
+"   a_second.last_idx = tmp_unsigned;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_PREPEND() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::prepend(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::prepend(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = first_idx;\n"\
-"   new_element.prev_idx = c_idx_not_exist;\n"\
-"\n"\
-"   if (first_idx != c_idx_not_exist) {\n"\
-"      data[first_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   first_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline %s &%s::operator[](unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"   return data[a_idx].object;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_APPEND() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::append(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::append(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = c_idx_not_exist;\n"\
-"   new_element.prev_idx = last_idx;\n"\
-"\n"\
-"   if (last_idx != c_idx_not_exist) {\n"\
-"      data[last_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   last_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_PREPEND(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::prepend(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::prepend(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = first_idx;\n"
+"   new_element.prev_idx = c_idx_not_exist;\n"
+"\n"
+"   if (first_idx != c_idx_not_exist) {\n"
+"      data[first_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   first_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_BEFORE() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = a_idx;\n"\
-"   new_element.prev_idx = idx_element.prev_idx;\n"\
-"\n"\
-"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.prev_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_APPEND(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::append(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::append(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = c_idx_not_exist;\n"
+"   new_element.prev_idx = last_idx;\n"
+"\n"
+"   if (last_idx != c_idx_not_exist) {\n"
+"      data[last_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   last_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_AFTER() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = idx_element.next_idx;\n"\
-"   new_element.prev_idx = a_idx;\n"\
-"\n"\
-"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.next_idx = new_idx;\n"\
-"\n"\
-"   new_element.object = a_value;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_BEFORE(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = a_idx;\n"
+"   new_element.prev_idx = idx_element.prev_idx;\n"
+"\n"
+"   if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"      data[idx_element.prev_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.prev_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_PREPEND_BLANK() \
-{\
-printf(\
-"inline unsigned %s::prepend_blank()\n"\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = first_idx;\n"\
-"   new_element.prev_idx = c_idx_not_exist;\n"\
-"\n"\
-"   if (first_idx != c_idx_not_exist) {\n"\
-"      data[first_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   first_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_AFTER(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = idx_element.next_idx;\n"
+"   new_element.prev_idx = a_idx;\n"
+"\n"
+"   if (idx_element.next_idx != c_idx_not_exist) {\n"
+"      data[idx_element.next_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.next_idx = new_idx;\n"
+"\n"
+"   new_element.object = a_value;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_APPEND_BLANK() \
-{\
-printf(\
-"inline unsigned %s::append_blank()\n"\
-"{/*{{{*/\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = c_idx_not_exist;\n"\
-"   new_element.prev_idx = last_idx;\n"\
-"\n"\
-"   if (last_idx != c_idx_not_exist) {\n"\
-"      data[last_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   last_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_PREPEND_BLANK(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::prepend_blank()\n"
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = first_idx;\n"
+"   new_element.prev_idx = c_idx_not_exist;\n"
+"\n"
+"   if (first_idx != c_idx_not_exist) {\n"
+"      data[first_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   first_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_BLANK_BEFORE() \
-{\
-printf(\
-"inline unsigned %s::insert_blank_before(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = a_idx;\n"\
-"   new_element.prev_idx = idx_element.prev_idx;\n"\
-"\n"\
-"   if (idx_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.prev_idx].next_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.prev_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_APPEND_BLANK(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::append_blank()\n"
+"{/*{{{*/\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = c_idx_not_exist;\n"
+"   new_element.prev_idx = last_idx;\n"
+"\n"
+"   if (last_idx != c_idx_not_exist) {\n"
+"      data[last_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   last_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_INSERT_BLANK_AFTER() \
-{\
-printf(\
-"inline unsigned %s::insert_blank_after(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   unsigned new_idx;\n"\
-"\n"\
-"   if (free_idx != c_idx_not_exist) {\n"\
-"      new_idx = free_idx;\n"\
-"      free_idx = data[new_idx].next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      if (used >= size) {\n"\
-"         copy_resize((size << 1) + c_array_add);\n"\
-"      }\n"\
-"\n"\
-"      new_idx = used++;\n"\
-"   }\n"\
-"\n"\
-"   %s_element &idx_element = data[a_idx];\n"\
-"   %s_element &new_element = data[new_idx];\n"\
-"\n"\
-"   new_element.next_idx = idx_element.next_idx;\n"\
-"   new_element.prev_idx = a_idx;\n"\
-"\n"\
-"   if (idx_element.next_idx != c_idx_not_exist) {\n"\
-"      data[idx_element.next_idx].prev_idx = new_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = new_idx;\n"\
-"   }\n"\
-"\n"\
-"   idx_element.next_idx = new_idx;\n"\
-"\n"\
-"   return new_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::insert_blank_before(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = a_idx;\n"
+"   new_element.prev_idx = idx_element.prev_idx;\n"
+"\n"
+"   if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"      data[idx_element.prev_idx].next_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.prev_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_REMOVE() \
-{\
-printf(\
-"inline void %s::remove(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_idx < used);\n"\
-"\n"\
-"   %s_element &rm_element = data[a_idx];\n"\
-"\n"\
-"   if (rm_element.next_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      last_idx = rm_element.prev_idx;\n"\
-"   }\n"\
-"\n"\
-"   if (rm_element.prev_idx != c_idx_not_exist) {\n"\
-"      data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"\
-"   }\n"\
-"   else {\n"\
-"      first_idx = rm_element.next_idx;\n"\
-"   }\n"\
-"\n"\
-"   rm_element.next_idx = free_idx;\n"\
-"   free_idx = a_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::insert_blank_after(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   unsigned new_idx;\n"
+"\n"
+"   if (free_idx != c_idx_not_exist) {\n"
+"      new_idx = free_idx;\n"
+"      free_idx = data[new_idx].next_idx;\n"
+"   }\n"
+"   else {\n"
+"      if (used >= size) {\n"
+"         copy_resize((size << 1) + c_array_add);\n"
+"      }\n"
+"\n"
+"      new_idx = used++;\n"
+"   }\n"
+"\n"
+"   %s_element &idx_element = data[a_idx];\n"
+"   %s_element &new_element = data[new_idx];\n"
+"\n"
+"   new_element.next_idx = idx_element.next_idx;\n"
+"   new_element.prev_idx = a_idx;\n"
+"\n"
+"   if (idx_element.next_idx != c_idx_not_exist) {\n"
+"      data[idx_element.next_idx].prev_idx = new_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = new_idx;\n"
+"   }\n"
+"\n"
+"   idx_element.next_idx = new_idx;\n"
+"\n"
+"   return new_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_NEXT_IDX() \
-{\
-printf(\
-"inline unsigned %s::next_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   return data[a_idx].next_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_REMOVE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::remove(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_idx < used);\n"
+"\n"
+"   %s_element &rm_element = data[a_idx];\n"
+"\n"
+"   if (rm_element.next_idx != c_idx_not_exist) {\n"
+"      data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"
+"   }\n"
+"   else {\n"
+"      last_idx = rm_element.prev_idx;\n"
+"   }\n"
+"\n"
+"   if (rm_element.prev_idx != c_idx_not_exist) {\n"
+"      data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"
+"   }\n"
+"   else {\n"
+"      first_idx = rm_element.next_idx;\n"
+"   }\n"
+"\n"
+"   rm_element.next_idx = free_idx;\n"
+"   free_idx = a_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_PREV_IDX() \
-{\
-printf(\
-"inline unsigned %s::prev_idx(unsigned a_idx)\n"\
-"{/*{{{*/\n"\
-"   return data[a_idx].prev_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_NEXT_IDX(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::next_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   return data[a_idx].next_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_COPY_RESIZE() \
-{\
-printf(\
-"void %s::copy_resize(unsigned a_size)\n"\
-"{/*{{{*/\n"\
-"   debug_assert(a_size >= used);\n"\
-"\n"\
-"   %s_element *n_data;\n"\
-"\n"\
-"   if (a_size == 0) {\n"\
-"      n_data = NULL;\n"\
-"   }\n"\
-"   else {\n"\
-"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"      if (a_size > used) {\n"\
-"         %s_element *ptr = n_data + used;\n"\
-"         %s_element *ptr_end = n_data + a_size;\n"\
-"\n"\
-"         do {\n"\
-"            ptr->object.init();\n"\
-"         } while(++ptr < ptr_end);\n"\
-"      }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"   }\n"\
-"\n"\
-"   if (used != 0) {\n"\
-"      memcpy(n_data,data,used*sizeof(%s_element));\n"\
-"   }\n"\
-,IM_STRUCT_NAME);\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"\n"\
-"   if (size > used) {\n"\
-"      %s_element *ptr = data + used;\n"\
-"      %s_element *ptr_end = data + size;\n"\
-"\n"\
-"      do {\n"\
-"         ptr->object.clear();\n"\
-"      } while(++ptr < ptr_end);\n"\
-"   }\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   if (size != 0) {\n"\
-"      cfree(data);\n"\
-"   }\n"\
-"\n"\
-"   data = n_data;\n"\
-"   size = a_size;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_PREV_IDX(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline unsigned %s::prev_idx(unsigned a_idx)\n"
+"{/*{{{*/\n"
+"   return data[a_idx].prev_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_GET_IDX() \
-{\
-   if (TYPE_NUMBER & c_type_basic) {\
-printf(\
-"unsigned %s::get_idx(%s a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-   else {\
-printf(\
-"unsigned %s::get_idx(%s &a_value)\n"\
-,IM_STRUCT_NAME,TYPE_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"\
-"\n"\
-"   unsigned idx = first_idx;\n"\
-"   do {\n"\
-"      %s_element &element = data[idx];\n"\
-"\n"\
-"      if (element.object == a_value) {\n"\
-"         return idx;\n"\
-"      }\n"\
-"\n"\
-"      idx = element.next_idx;\n"\
-"   } while(idx != c_idx_not_exist);\n"\
-"\n"\
-"   return c_idx_not_exist;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME);\
-}
+void LIST_COPY_RESIZE(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+"\n"
+"   %s_element *n_data;\n"
+"\n"
+"   if (a_size == 0) {\n"
+"      n_data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"      if (a_size > used) {\n"
+"         %s_element *ptr = n_data + used;\n"
+"         %s_element *ptr_end = n_data + a_size;\n"
+"\n"
+"         do {\n"
+"            ptr->object.init();\n"
+"         } while(++ptr < ptr_end);\n"
+"      }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"   }\n"
+"\n"
+"   if (used != 0) {\n"
+"      memcpy(n_data,data,used*sizeof(%s_element));\n"
+"   }\n"
+,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"   if (size > used) {\n"
+"      %s_element *ptr = data + used;\n"
+"      %s_element *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.clear();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
 
-#define LIST_OPERATOR_EQUAL() \
-{\
-   if (TYPE_NUMBER & c_type_dynamic) {\
-printf(\
-"%s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"inline %s &%s::operator=(%s &a_src)\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"{/*{{{*/\n"\
-"   clear();\n"\
-"\n"\
-"   if (a_src.used == 0) return *this;\n"\
-"\n"\
-"   copy_resize(a_src.used);\n"\
-);\
-   if (!(TYPE_NUMBER & c_type_dynamic)) {\
-printf(\
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"\
-,IM_STRUCT_NAME);\
-   }\
-   else {\
-printf(\
-"\n"\
-"   %s_element *ptr = data;\n"\
-"   %s_element *s_ptr = a_src.data;\n"\
-"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"\
-"\n"\
-"   do {\n"\
-"      ptr->object = s_ptr->object;\n"\
-"      ptr->next_idx = s_ptr->next_idx;\n"\
-"      ptr->prev_idx = s_ptr->prev_idx;\n"\
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-   }\
-printf(\
-"\n"\
-"   used = a_src.used;\n"\
-"   free_idx = a_src.free_idx;\n"\
-"   first_idx = a_src.first_idx;\n"\
-"   last_idx = a_src.last_idx;\n"\
-"\n"\
-"   return *this;\n"\
-"}/*}}}*/\n"\
-"\n"\
-);\
-}
+void LIST_GET_IDX(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_basic) {
+printf(
+"unsigned %s::get_idx(%s a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"unsigned %s::get_idx(%s &a_value)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"
+"\n"
+"   unsigned idx = first_idx;\n"
+"   do {\n"
+"      %s_element &element = data[idx];\n"
+"\n"
+"      if (element.object == a_value) {\n"
+"         return idx;\n"
+"      }\n"
+"\n"
+"      idx = element.next_idx;\n"
+"   } while(idx != c_idx_not_exist);\n"
+"\n"
+"   return c_idx_not_exist;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME);
+}/*}}}*/
 
-#define LIST_OPERATOR_DOUBLE_EQUAL() \
-{\
-printf(\
-"bool %s::operator==(%s &a_second)\n"\
-"{/*{{{*/\n"\
-"   if (first_idx == c_idx_not_exist) {\n"\
-"      return a_second.first_idx == c_idx_not_exist;\n"\
-"   }\n"\
-"\n"\
-"   if (a_second.first_idx == c_idx_not_exist) {\n"\
-"      return false;\n"\
-"   }\n"\
-"\n"\
-"   unsigned idx = first_idx;\n"\
-"   unsigned s_idx = a_second.first_idx;\n"\
-"\n"\
-"   do {\n"\
-"      %s_element &element = data[idx];\n"\
-"      %s_element &s_element = a_second.data[s_idx];\n"\
-"\n"\
-"      if (!(element.object == s_element.object)) {\n"\
-"         return false;\n"\
-"      }\n"\
-"\n"\
-"      idx = element.next_idx;\n"\
-"      s_idx = s_element.next_idx;\n"\
-"\n"\
-"   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);\n"\
-"\n"\
-"   return idx == s_idx;\n"\
-"}/*}}}*/\n"\
-"\n"\
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);\
-}
+void LIST_OPERATOR_EQUAL(LIST_GEN_PARAMS)
+{/*{{{*/
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"%s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"inline %s &%s::operator=(%s &a_src)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   clear();\n"
+"\n"
+"   if (a_src.used == 0) return *this;\n"
+"\n"
+"   copy_resize(a_src.used);\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"\n"
+"   %s_element *ptr = data;\n"
+"   %s_element *s_ptr = a_src.data;\n"
+"   %s_element *s_ptr_end = s_ptr + a_src.used;\n"
+"\n"
+"   do {\n"
+"      ptr->object = s_ptr->object;\n"
+"      ptr->next_idx = s_ptr->next_idx;\n"
+"      ptr->prev_idx = s_ptr->prev_idx;\n"
+"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
+"   used = a_src.used;\n"
+"   free_idx = a_src.free_idx;\n"
+"   first_idx = a_src.first_idx;\n"
+"   last_idx = a_src.last_idx;\n"
+"\n"
+"   return *this;\n"
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
+{/*{{{*/
+printf(
+"bool %s::operator==(%s &a_second)\n"
+"{/*{{{*/\n"
+"   if (first_idx == c_idx_not_exist) {\n"
+"      return a_second.first_idx == c_idx_not_exist;\n"
+"   }\n"
+"\n"
+"   if (a_second.first_idx == c_idx_not_exist) {\n"
+"      return false;\n"
+"   }\n"
+"\n"
+"   unsigned idx = first_idx;\n"
+"   unsigned s_idx = a_second.first_idx;\n"
+"\n"
+"   do {\n"
+"      %s_element &element = data[idx];\n"
+"      %s_element &s_element = a_second.data[s_idx];\n"
+"\n"
+"      if (!(element.object == s_element.object)) {\n"
+"         return false;\n"
+"      }\n"
+"\n"
+"      idx = element.next_idx;\n"
+"      s_idx = s_element.next_idx;\n"
+"\n"
+"   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);\n"
+"\n"
+"   return idx == s_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
 
 void processor_s::generate_list_type()
-{
+{/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &fun_defs = cont_params.functions;
    string_array_s &abbs = cont_params.names;
@@ -780,7 +783,7 @@ void processor_s::generate_list_type()
    data_type_s &type = data_types[type_idx];
 
    // - test type options -
-   if (type.properties & c_type_setting_strict_dynamic) {
+   if (type.properties & c_type_option_strict_dynamic) {
       fprintf(stderr,"list: container have not implemented processing of types with option strict_dynamic\n");
       cassert(0);
    }
@@ -807,7 +810,7 @@ void processor_s::generate_list_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_setting_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -881,7 +884,7 @@ printf(
 "   unsigned last_idx; //!< index of last element\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
+   if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN initialize list\n"
@@ -899,7 +902,7 @@ printf(
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by list\n"
@@ -910,7 +913,7 @@ printf(
       }
    }
    else {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN release memory used by list\n"
@@ -945,7 +948,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN swap members of list with another list\n"
@@ -1079,7 +1082,7 @@ printf(
 "   unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -1124,10 +1127,10 @@ printf(
 "};\n"
 "\n"
 );
-}
+}/*}}}*/
 
 void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -1149,68 +1152,68 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - list init method -
-   if (!(data_type.properties & c_type_setting_not_generate_init)) {
-LIST_INIT();
+   if (!(data_type.properties & c_type_option_nogen_init)) {
+LIST_INIT(LIST_GEN_VALUES);
    }
 
    // - list init_size method -
-LIST_INIT_SIZE();
+LIST_INIT_SIZE(LIST_GEN_VALUES);
 
    // - list clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-LIST_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+LIST_CLEAR(LIST_GEN_VALUES);
       }
    }
 
    // - list flush method -
-LIST_FLUSH();
+LIST_FLUSH(LIST_GEN_VALUES);
 
    // - list flush_all method -
    if (!(TYPE_NUMBER & c_type_flushable)) {
-LIST_FLUSH_ALL();
+LIST_FLUSH_ALL(LIST_GEN_VALUES);
    }
 
    // - list swap method -
-   if (!(data_type.properties & c_type_setting_not_generate_swap)) {
-LIST_SWAP();
+   if (!(data_type.properties & c_type_option_nogen_swap)) {
+LIST_SWAP(LIST_GEN_VALUES);
    }
 
    // - list operator[] method -
-LIST_OPERATOR_LE_BR_RE_BR();
+LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_VALUES);
 
    // - list prepend method -
-LIST_PREPEND();
+LIST_PREPEND(LIST_GEN_VALUES);
 
    // - list append method -
-LIST_APPEND();
+LIST_APPEND(LIST_GEN_VALUES);
 
    // - list insert_before method -
-LIST_INSERT_BEFORE();
+LIST_INSERT_BEFORE(LIST_GEN_VALUES);
 
    // - list insert_after method -
-LIST_INSERT_AFTER();
+LIST_INSERT_AFTER(LIST_GEN_VALUES);
 
    // - list prepend_blank method -
-LIST_PREPEND_BLANK();
+LIST_PREPEND_BLANK(LIST_GEN_VALUES);
 
    // - list append_blank method -
-LIST_APPEND_BLANK();
+LIST_APPEND_BLANK(LIST_GEN_VALUES);
 
    // - list insert_blank_before method -
-LIST_INSERT_BLANK_BEFORE();
+LIST_INSERT_BLANK_BEFORE(LIST_GEN_VALUES);
 
    // - list insert_blank_after method -
-LIST_INSERT_BLANK_AFTER();
+LIST_INSERT_BLANK_AFTER(LIST_GEN_VALUES);
 
    // - list remove method -
-LIST_REMOVE();
+LIST_REMOVE(LIST_GEN_VALUES);
 
    // - list next_idx method -
-LIST_NEXT_IDX();
+LIST_NEXT_IDX(LIST_GEN_VALUES);
 
    // - list prev_idx method -
-LIST_PREV_IDX();
+LIST_PREV_IDX(LIST_GEN_VALUES);
 
    // - list copy_resize method -
 
@@ -1218,17 +1221,17 @@ LIST_PREV_IDX();
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-LIST_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
       }
    }
 
    // - list operator== method -
 
-}
+}/*}}}*/
 
 void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
-{
+{/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
    string_s &type_abb_string = data_type.types[0];
@@ -1255,8 +1258,8 @@ printf(
 
    // - list clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_clear)) {
-LIST_CLEAR();
+      if (!(data_type.properties & c_type_option_nogen_clear)) {
+LIST_CLEAR(LIST_GEN_VALUES);
       }
    }
 
@@ -1264,7 +1267,7 @@ LIST_CLEAR();
 
    // - list flush_all method -
    if (TYPE_NUMBER & c_type_flushable) {
-LIST_FLUSH_ALL();
+LIST_FLUSH_ALL(LIST_GEN_VALUES);
    }
 
    // - list swap method - 
@@ -1286,21 +1289,20 @@ LIST_FLUSH_ALL();
    // - list prev_idx method -
 
    // - list copy_resize method -
-LIST_COPY_RESIZE();
+LIST_COPY_RESIZE(LIST_GEN_VALUES);
 
    // - list get_idx method -
-LIST_GET_IDX();
+LIST_GET_IDX(LIST_GEN_VALUES);
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_setting_not_generate_operator_equal)) {
-LIST_OPERATOR_EQUAL();
+      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
       }
    }
 
    // - list operator== method -
-LIST_OPERATOR_DOUBLE_EQUAL();
+LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_VALUES);
 
-}
-
+}/*}}}*/
 
