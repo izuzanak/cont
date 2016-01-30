@@ -656,6 +656,100 @@ printf(
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
+void ARRAY_TO_BLOB(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"#if OPTION_TO_BLOB == ENABLED\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s_to_blob(%s *this,bc_array_s *a_buff,unsigned a_off)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s_to_blob(%s *this,bc_array_s *a_buff,unsigned a_off)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   unsigned buff_off = a_buff->used;\n"
+"\n"
+"   %s *trg_ptr = (%s *)(a_buff->data + a_off);\n"
+"   trg_ptr->size = this->used;\n"
+"   trg_ptr->used = this->used;\n"
+"   trg_ptr->data = (%s *)(buff_off - a_off);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"   unsigned copy_size = this->used*sizeof(%s);\n"
+"   bc_array_s_push_blanks(a_buff,copy_size);\n"
+"   memcpy(a_buff->data + buff_off,this->data,copy_size);\n"
+,TYPE_NAME);
+   }
+   else {
+printf(
+"   if (this->used != 0) {\n"
+"      bc_array_s_push_blanks(a_buff,this->used*sizeof(%s));\n"
+"\n"
+"      %s *ptr = this->data;\n"
+"      %s *ptr_end = ptr + this->used;\n"
+"      unsigned t_off = buff_off;\n"
+"\n"
+"      do {\n"
+"         %s_to_blob(ptr,a_buff,t_off);\n"
+"      } while(t_off += sizeof(%s),++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
+
+void ARRAY_PIN_BLOB(ARRAY_GEN_PARAMS)
+{/*{{{*/
+printf(
+"#if OPTION_TO_BLOB == ENABLED\n"
+);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s_pin_blob(char *a_blob)\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s_pin_blob(char *a_blob)\n"
+,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"   %s *trg_ptr = (%s *)a_blob;\n"
+"   trg_ptr->data = (%s *)(a_blob + (unsigned)trg_ptr->data);\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"   if (trg_ptr->used != 0) {\n"
+"      %s *ptr = trg_ptr->data;\n"
+"      %s *ptr_end = ptr + trg_ptr->used;\n"
+"\n"
+"      do {\n"
+"         %s_pin_blob((char *)ptr);\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
+
 void processor_s::generate_array_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -896,6 +990,22 @@ printf(
 "void %s_to_string(%s *this,bc_array_s *a_trg);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"#if OPTION_TO_BLOB == ENABLED\n"
+"inline void %s_to_blob(%s *this,bc_array_s *a_buff,unsigned a_off);\n"
+"inline void %s_pin_blob(char *a_blob);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+   }
+   else {
+printf(
+"#if OPTION_TO_BLOB == ENABLED\n"
+"void %s_to_blob(%s *this,bc_array_s *a_buff,unsigned a_off);\n"
+"void %s_pin_blob(char *a_blob);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1008,6 +1118,18 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
+
+   // - array to_string method -
+
+   // - array to_blob method -
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+ARRAY_TO_BLOB(ARRAY_GEN_VALUES);
+   }
+
+   // - array pin_blob method -
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+ARRAY_PIN_BLOB(ARRAY_GEN_VALUES);
+   }
 }/*}}}*/
 
 void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -1100,5 +1222,15 @@ ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
 
    // - array to_string method -
 ARRAY_TO_STRING(ARRAY_GEN_VALUES);
+
+   // - array to_blob method -
+   if (TYPE_NUMBER & c_type_dynamic) {
+ARRAY_TO_BLOB(ARRAY_GEN_VALUES);
+   }
+
+   // - array pin_blob method -
+   if (TYPE_NUMBER & c_type_dynamic) {
+ARRAY_PIN_BLOB(ARRAY_GEN_VALUES);
+   }
 }/*}}}*/
 
