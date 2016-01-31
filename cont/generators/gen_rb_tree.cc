@@ -2460,6 +2460,10 @@ RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
 
    // - rb_tree swap_insert method -
 
+   // - rb_tree unique_insert method -
+
+   // - rb_tree unique_swap_insert method -
+
    // - rb_tree remove method -
 RB_TREE_REMOVE(RB_TREE_GEN_VALUES);
 

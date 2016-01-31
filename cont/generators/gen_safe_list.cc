@@ -1295,6 +1295,14 @@ SAFE_LIST_FLUSH_ALL(SAFE_LIST_GEN_VALUES);
 
    // - list insert_after method -
 
+   // - list prepend_blank method -
+
+   // - list append_blank method -
+
+   // - list insert_blank_before method -
+
+   // - list insert_blank_after method -
+
    // - list remove method -
 
    // - list next_idx method -

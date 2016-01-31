@@ -2486,6 +2486,10 @@ SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree swap_insert method -
 
+   // - rb_tree unique_insert method -
+
+   // - rb_tree unique_swap_insert method -
+
    // - rb_tree remove method -
 SAFE_RB_TREE_REMOVE(SAFE_RB_TREE_GEN_VALUES);
 
