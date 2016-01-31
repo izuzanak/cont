@@ -765,50 +765,52 @@ printf(
 ,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
 }/*}}}*/
 
+#define TEMPLATE_RB_TREE_INSERT(FUN_NAME,VALUE_SET_CODE) \
+{/*{{{*/\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
+printf(\
+"inline unsigned %s::%s(%s a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_TYPE_NAMES(0));\
+   }\
+   else {\
+printf(\
+"inline unsigned %s::%s(%s &a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_TYPE_NAMES(0));\
+   }\
+printf(\
+"{/*{{{*/\n"\
+"   unsigned new_node_idx = __get_new_index();\n"\
+"\n"\
+"   __binary_tree_insert(new_node_idx,a_value);\n"\
+"   __insert_operation(new_node_idx);\n"\
+"\n"\
+);\
+   VALUE_SET_CODE;\
+printf(\
+"\n"\
+"   return new_node_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+);\
+}/*}}}*/
+
 void RB_TREE_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-   if (TYPE_NUMBERS(0) & c_type_basic) {
+TEMPLATE_RB_TREE_INSERT(insert,
 printf(
-"inline unsigned %s::insert(%s a_value)\n"
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
-   }
-   else {
-printf(
-"inline unsigned %s::insert(%s &a_value)\n"
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
-   }
-printf(
-"{/*{{{*/\n"
-"   unsigned new_node_idx = __get_new_index();\n"
-"\n"
-"   __binary_tree_insert(new_node_idx,a_value);\n"
-"   __insert_operation(new_node_idx);\n"
-"\n"
 "   data[new_node_idx].object = a_value;\n"
-"\n"
-"   return new_node_idx;\n"
-"}/*}}}*/\n"
-"\n"
+);
 );
 }/*}}}*/
 
 void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+TEMPLATE_RB_TREE_INSERT(swap_insert,
 printf(
-"inline unsigned %s::swap_insert(%s &a_value)\n"
-"{/*{{{*/\n"
-"   unsigned new_node_idx = __get_new_index();\n"
-"\n"
-"   __binary_tree_insert(new_node_idx,a_value);\n"
-"   __insert_operation(new_node_idx);\n"
-"\n"
 "   data[new_node_idx].object.swap(a_value);\n"
-"\n"
-"   return new_node_idx;\n"
-"}/*}}}*/\n"
-"\n"
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+);
+);
    }
 }/*}}}*/
 

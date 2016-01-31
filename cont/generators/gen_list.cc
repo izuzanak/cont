@@ -1270,7 +1270,7 @@ LIST_CLEAR(LIST_GEN_VALUES);
 LIST_FLUSH_ALL(LIST_GEN_VALUES);
    }
 
-   // - list swap method - 
+   // - list swap method -
 
    // - list operator[] method -
 
@@ -1281,6 +1281,14 @@ LIST_FLUSH_ALL(LIST_GEN_VALUES);
    // - list insert_before method -
 
    // - list insert_after method -
+
+   // - list prepend_blank method -
+
+   // - list append_blank method -
+
+   // - list insert_blank_before method -
+
+   // - list insert_blank_after method -
 
    // - list remove method -
 

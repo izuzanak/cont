@@ -1045,8 +1045,6 @@ ARRAY_FILL(ARRAY_GEN_VALUES,type_idx);
 
    // - array get_idx method -
 
-   // - array get_pc_idx -
-
    // - array operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
