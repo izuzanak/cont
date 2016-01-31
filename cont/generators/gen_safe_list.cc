@@ -1116,7 +1116,7 @@ printf(
 "   unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -1255,7 +1255,7 @@ SAFE_LIST_PREV_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }
@@ -1338,7 +1338,7 @@ SAFE_LIST_GET_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }

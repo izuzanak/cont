@@ -904,7 +904,7 @@ printf(
 ,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
@@ -926,7 +926,7 @@ printf(
 ,STRUCT_NAME);
    }
    else {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
@@ -1047,7 +1047,7 @@ ARRAY_FILL(ARRAY_GEN_VALUES,type_idx);
 
    // - array operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }
@@ -1136,7 +1136,7 @@ ARRAY_GET_IDX(ARRAY_GEN_VALUES);
 
    // - array operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }

@@ -443,7 +443,7 @@ printf(
 "\n"
 ,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy structure from another structure\n"
@@ -531,7 +531,7 @@ STRUCT_SWAP(STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
 STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
    }
 

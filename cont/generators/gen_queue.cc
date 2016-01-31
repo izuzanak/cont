@@ -773,7 +773,7 @@ printf(
 "   void copy_resize(unsigned a_size);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -886,7 +886,7 @@ QUEUE_LAST(QUEUE_GEN_VALUES);
 
    // - queue operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }
@@ -949,7 +949,7 @@ QUEUE_COPY_RESIZE(QUEUE_GEN_VALUES);
 
    // - queue operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }

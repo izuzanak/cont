@@ -2136,12 +2136,12 @@ const unsigned c_type_flushable = 0x00000010;
 const unsigned c_type_option_mask = 0xffffff00;
 
 enum {
-   c_type_option_nogen_init           = 0x100,
-   c_type_option_nogen_clear          = 0x100 << 1,
-   c_type_option_nogen_swap           = 0x100 << 2,
-   c_type_option_nogen_operator_equal = 0x100 << 3,
+   c_type_option_nogen_init     = 0x100,
+   c_type_option_nogen_clear    = 0x100 << 1,
+   c_type_option_nogen_swap     = 0x100 << 2,
+   c_type_option_nogen_copy     = 0x100 << 3,
 
-   c_type_option_strict_dynamic       = 0x100 << 4,
+   c_type_option_strict_dynamic = 0x100 << 4,
 };
 
 
@@ -3477,11 +3477,7 @@ struct process_s
    static void pa_reduce_gen_container(process_s &proc);
    static void pa_reduce_type(process_s &proc);
    static void pa_reduce_type_and_name(process_s &proc);
-   static void pa_reduce_not_generate_init(process_s &proc);
-   static void pa_reduce_not_generate_clear(process_s &proc);
-   static void pa_reduce_not_generate_swap(process_s &proc);
-   static void pa_reduce_not_generate_operator_equal(process_s &proc);
-   static void pa_reduce_option_strict_dynamic(process_s &proc);
+   static void pa_reduce_option(process_s &proc);
    static void pa_reduce_additions_body(process_s &proc);
    static void pa_reduce_name(process_s &proc);
 
@@ -5196,7 +5192,7 @@ printf(
 ,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
@@ -5218,7 +5214,7 @@ printf(
 ,STRUCT_NAME);
    }
    else {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy array from another array\n"
@@ -5339,7 +5335,7 @@ ARRAY_FILL(ARRAY_GEN_VALUES,type_idx);
 
    // - array operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }
@@ -5428,7 +5424,7 @@ ARRAY_GET_IDX(ARRAY_GEN_VALUES);
 
    // - array operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }
@@ -6214,7 +6210,7 @@ printf(
 "   void copy_resize(unsigned a_size);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -6327,7 +6323,7 @@ QUEUE_LAST(QUEUE_GEN_VALUES);
 
    // - queue operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }
@@ -6390,7 +6386,7 @@ QUEUE_COPY_RESIZE(QUEUE_GEN_VALUES);
 
    // - queue operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }
@@ -7483,7 +7479,7 @@ printf(
 "   unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -7622,7 +7618,7 @@ LIST_PREV_IDX(LIST_GEN_VALUES);
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
       }
    }
@@ -7705,7 +7701,7 @@ LIST_GET_IDX(LIST_GEN_VALUES);
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
       }
    }
@@ -8160,7 +8156,7 @@ printf(
 "\n"
 ,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
 "   /*!\n"
 "    * \\brief __GEN copy structure from another structure\n"
@@ -8248,7 +8244,7 @@ STRUCT_SWAP(STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
 STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
    }
 
@@ -10310,7 +10306,7 @@ printf(
 "\n"
 ,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -10510,7 +10506,7 @@ RB_TREE_SWAP_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }
@@ -10648,7 +10644,7 @@ RB_TREE_GET_IDXS(RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }
@@ -11789,7 +11785,7 @@ printf(
 "   unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -11928,7 +11924,7 @@ SAFE_LIST_PREV_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }
@@ -12011,7 +12007,7 @@ SAFE_LIST_GET_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }
@@ -14062,7 +14058,7 @@ printf(
 "\n"
 ,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+   if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "   /*!\n"
@@ -14262,7 +14258,7 @@ SAFE_RB_TREE_SWAP_INSERT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_VALUES);
       }
    }
@@ -14400,7 +14396,7 @@ SAFE_RB_TREE_GET_IDXS(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_operator_equal)) {
+      if (!(data_type.properties & c_type_option_nogen_copy)) {
 SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_VALUES);
       }
    }

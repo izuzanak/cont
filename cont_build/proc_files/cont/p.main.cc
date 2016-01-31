@@ -2140,12 +2140,12 @@ const unsigned c_type_flushable = 0x00000010;
 const unsigned c_type_option_mask = 0xffffff00;
 
 enum {
-   c_type_option_nogen_init           = 0x100,
-   c_type_option_nogen_clear          = 0x100 << 1,
-   c_type_option_nogen_swap           = 0x100 << 2,
-   c_type_option_nogen_operator_equal = 0x100 << 3,
+   c_type_option_nogen_init     = 0x100,
+   c_type_option_nogen_clear    = 0x100 << 1,
+   c_type_option_nogen_swap     = 0x100 << 2,
+   c_type_option_nogen_copy     = 0x100 << 3,
 
-   c_type_option_strict_dynamic       = 0x100 << 4,
+   c_type_option_strict_dynamic = 0x100 << 4,
 };
 
 
