@@ -674,7 +674,7 @@ struct mc_block_rb_tree_s
    inline void __rotate_right(unsigned a_idx);
 
    inline unsigned __get_new_index();
-   bool __binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique);
+   unsigned __binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique);
 
    inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);
    void __remove_black_black(unsigned a_idx);
@@ -1786,7 +1786,7 @@ unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
    }
 }/*}}}*/
 
-bool mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique)
+unsigned mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique)
 {/*{{{*/
    if (root_idx == c_idx_not_exist) {
       if (leaf_idx == c_idx_not_exist) {
@@ -1821,7 +1821,7 @@ bool mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s &a_v
          }
          else {
             if (a_unique && comp_result == 0) {
-               return false;
+               return node_idx;
             }
 
             if (node.right_idx == leaf_idx) {
@@ -1840,7 +1840,7 @@ bool mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s &a_v
    new_node.right_idx = leaf_idx;
    new_node.color = false;
 
-   return true;
+   return c_idx_not_exist;
 }/*}}}*/
 
 void mc_block_rb_tree_s::__remove_black_black(unsigned a_idx)

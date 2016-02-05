@@ -314,7 +314,7 @@ printf(
 void SAFE_RB_TREE___BINARY_TREE_INSERT(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"bool %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique)\n"
+"unsigned %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique)\n"
 "{/*{{{*/\n"
 "   if (root_idx == c_idx_not_exist) {\n"
 "      if (leaf_idx == c_idx_not_exist) {\n"
@@ -349,7 +349,7 @@ printf(
 "         }\n"
 "         else {\n"
 "            if (a_unique && comp_result == 0) {\n"
-"               return false;\n"
+"               return node_idx;\n"
 "            }\n"
 "\n"
 "            if (node.right_idx == leaf_idx) {\n"
@@ -368,7 +368,7 @@ printf(
 "   new_node.right_idx = leaf_idx;\n"
 "   new_node.color = false;\n"
 "\n"
-"   return true;\n"
+"   return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -1891,7 +1891,7 @@ printf(
 "   inline void __rotate_right(unsigned a_idx);\n"
 "\n"
 "   inline unsigned __get_new_index();\n"
-"   bool __binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique);\n"
+"   unsigned __binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique);\n"
 "\n"
 "   inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);\n"
 "   void __remove_black_black(unsigned a_idx);\n"

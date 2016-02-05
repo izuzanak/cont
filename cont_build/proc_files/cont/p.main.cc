@@ -678,7 +678,7 @@ struct mc_block_rb_tree_s
    inline void __rotate_right(unsigned a_idx);
 
    inline unsigned __get_new_index();
-   bool __binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique);
+   unsigned __binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique);
 
    inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);
    void __remove_black_black(unsigned a_idx);
