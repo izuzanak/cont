@@ -730,11 +730,26 @@ struct mc_block_rb_tree_s
    inline unsigned insert(mc_block_s &a_value);
 
    /*!
+    * \brief __GEN insert node to rb_tree if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+   inline unsigned unique_insert(mc_block_s &a_value);
+
+   /*!
     * \brief __GEN insert node to rb_tree by swapping
     * \param a_value - reference to value inserted to rb_tree
     * \return - position of node in rb_tree
     */
    inline unsigned swap_insert(mc_block_s &a_value);
+
+   /*!
+    * \brief __GEN insert node to rb_tree by swapping if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+   inline unsigned unique_swap_insert(mc_block_s &a_value);
+
    /*!
     * \brief __GEN remove node at index from rb_tree
     * \param a_idx - index of node to remove
@@ -743,7 +758,7 @@ struct mc_block_rb_tree_s
 
    /*!
     * \brief __GEN resize rb_tree capacity
-    * \param a_size - desired rb_tree capacity
+    * \param a_size - requested rb_tree capacity
     */
    void copy_resize(unsigned a_size);
 
@@ -1327,6 +1342,54 @@ inline unsigned mc_block_rb_tree_s::swap_insert(mc_block_s &a_value)
    data[new_node_idx].object.swap(a_value);
 
    return new_node_idx;
+}/*}}}*/
+
+inline unsigned mc_block_rb_tree_s::unique_insert(mc_block_s &a_value)
+{/*{{{*/
+   unsigned new_node_idx = __get_new_index();
+   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+   if (old_node_idx != c_idx_not_exist) {
+      mc_block_rb_tree_s_node &new_node = data[new_node_idx];
+
+      new_node.parent_idx = free_idx;
+      free_idx = new_node_idx;
+
+      new_node.valid = false;
+      count--;
+
+      return old_node_idx;
+   }
+
+   __insert_operation(new_node_idx);
+
+   data[new_node_idx].object = a_value;
+
+  return new_node_idx;
+}/*}}}*/
+
+inline unsigned mc_block_rb_tree_s::unique_swap_insert(mc_block_s &a_value)
+{/*{{{*/
+   unsigned new_node_idx = __get_new_index();
+   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+   if (old_node_idx != c_idx_not_exist) {
+      mc_block_rb_tree_s_node &new_node = data[new_node_idx];
+
+      new_node.parent_idx = free_idx;
+      free_idx = new_node_idx;
+
+      new_node.valid = false;
+      count--;
+
+      return old_node_idx;
+   }
+
+   __insert_operation(new_node_idx);
+
+   data[new_node_idx].object.swap(a_value);
+
+  return new_node_idx;
 }/*}}}*/
 
 inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_src)

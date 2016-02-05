@@ -1059,7 +1059,7 @@ printf(
 "\n"
 "   /*!\n"
 "    * \\brief __GEN resize list capacity\n"
-"    * \\param a_size - desired list capacity\n"
+"    * \\param a_size - requested list capacity\n"
 "    */\n"
 "   void copy_resize(unsigned a_size);\n"
 "\n"

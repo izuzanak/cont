@@ -730,11 +730,26 @@ struct mc_block_rb_tree_s
    inline unsigned insert(mc_block_s &a_value);
 
    /*!
+    * \brief __GEN insert node to rb_tree if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+   inline unsigned unique_insert(mc_block_s &a_value);
+
+   /*!
     * \brief __GEN insert node to rb_tree by swapping
     * \param a_value - reference to value inserted to rb_tree
     * \return - position of node in rb_tree
     */
    inline unsigned swap_insert(mc_block_s &a_value);
+
+   /*!
+    * \brief __GEN insert node to rb_tree by swapping if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+   inline unsigned unique_swap_insert(mc_block_s &a_value);
+
    /*!
     * \brief __GEN remove node at index from rb_tree
     * \param a_idx - index of node to remove
@@ -743,7 +758,7 @@ struct mc_block_rb_tree_s
 
    /*!
     * \brief __GEN resize rb_tree capacity
-    * \param a_size - desired rb_tree capacity
+    * \param a_size - requested rb_tree capacity
     */
    void copy_resize(unsigned a_size);
 
@@ -1327,6 +1342,54 @@ inline unsigned mc_block_rb_tree_s::swap_insert(mc_block_s &a_value)
    data[new_node_idx].object.swap(a_value);
 
    return new_node_idx;
+}/*}}}*/
+
+inline unsigned mc_block_rb_tree_s::unique_insert(mc_block_s &a_value)
+{/*{{{*/
+   unsigned new_node_idx = __get_new_index();
+   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+   if (old_node_idx != c_idx_not_exist) {
+      mc_block_rb_tree_s_node &new_node = data[new_node_idx];
+
+      new_node.parent_idx = free_idx;
+      free_idx = new_node_idx;
+
+      new_node.valid = false;
+      count--;
+
+      return old_node_idx;
+   }
+
+   __insert_operation(new_node_idx);
+
+   data[new_node_idx].object = a_value;
+
+  return new_node_idx;
+}/*}}}*/
+
+inline unsigned mc_block_rb_tree_s::unique_swap_insert(mc_block_s &a_value)
+{/*{{{*/
+   unsigned new_node_idx = __get_new_index();
+   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+   if (old_node_idx != c_idx_not_exist) {
+      mc_block_rb_tree_s_node &new_node = data[new_node_idx];
+
+      new_node.parent_idx = free_idx;
+      free_idx = new_node_idx;
+
+      new_node.valid = false;
+      count--;
+
+      return old_node_idx;
+   }
+
+   __insert_operation(new_node_idx);
+
+   data[new_node_idx].object.swap(a_value);
+
+  return new_node_idx;
 }/*}}}*/
 
 inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_src)
@@ -7456,7 +7519,7 @@ printf(
 "\n"
 "   /*!\n"
 "    * \\brief __GEN resize list capacity\n"
-"    * \\param a_size - desired list capacity\n"
+"    * \\param a_size - requested list capacity\n"
 "    */\n"
 "   void copy_resize(unsigned a_size);\n"
 "\n"
@@ -8607,7 +8670,7 @@ printf(
 void RB_TREE___BINARY_TREE_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"void %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value)\n"
+"bool %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique)\n"
 "{/*{{{*/\n"
 "   if (root_idx == c_idx_not_exist) {\n"
 "      if (leaf_idx == c_idx_not_exist) {\n"
@@ -8630,7 +8693,8 @@ printf(
 "      do {\n"
 "         %s_node &node = data[node_idx];\n"
 "         \n"
-"         if (__compare_value(a_value,node.object) < 0) {\n"
+"         int comp_result = __compare_value(a_value,node.object);\n"
+"         if (comp_result < 0) {\n"
 "            if (node.left_idx == leaf_idx) {\n"
 "               node.left_idx = a_new_idx;\n"
 "               break;\n"
@@ -8638,6 +8702,10 @@ printf(
 "            node_idx = node.left_idx;\n"
 "         }\n"
 "         else {\n"
+"            if (a_unique && comp_result == 0) {\n"
+"               return false;\n"
+"            }\n"
+"\n"
 "            if (node.right_idx == leaf_idx) {\n"
 "               node.right_idx = a_new_idx;\n"
 "               break;\n"
@@ -8653,6 +8721,8 @@ printf(
 "   new_node.left_idx = leaf_idx;\n"
 "   new_node.right_idx = leaf_idx;\n"
 "   new_node.color = false;\n"
+"\n"
+"   return true;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -9079,7 +9149,7 @@ printf(\
 "{/*{{{*/\n"\
 "   unsigned new_node_idx = __get_new_index();\n"\
 "\n"\
-"   __binary_tree_insert(new_node_idx,a_value);\n"\
+"   __binary_tree_insert(new_node_idx,a_value,false);\n"\
 "   __insert_operation(new_node_idx);\n"\
 "\n"\
 );\
@@ -9109,6 +9179,64 @@ printf(
 "   data[new_node_idx].object.swap(a_value);\n"
 );
 );
+   }
+}/*}}}*/
+
+#define TEMPLATE_RB_TREE_UNIQUE_INSERT(FUN_NAME,VALUE_SET_CODE) \
+{/*{{{*/\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
+printf(\
+"inline unsigned %s::%s(%s a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_TYPE_NAMES(0));\
+   }\
+   else {\
+printf(\
+"inline unsigned %s::%s(%s &a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_TYPE_NAMES(0));\
+   }\
+printf(\
+"{/*{{{*/\n"\
+"   unsigned new_node_idx = __get_new_index();\n"\
+"   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);\n"\
+"\n"\
+"   if (old_node_idx != c_idx_not_exist) {\n"\
+"      %s_node &new_node = data[new_node_idx];\n"\
+"\n"\
+"      new_node.parent_idx = free_idx;\n"\
+"      free_idx = new_node_idx;\n"\
+"\n"\
+"      return old_node_idx;\n"\
+"   }\n"\
+"\n"\
+"   __insert_operation(new_node_idx);\n"\
+"\n"\
+,IM_STRUCT_NAME);\
+   VALUE_SET_CODE;\
+printf(\
+"\n"\
+"  return new_node_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+);\
+}/*}}}*/
+
+void RB_TREE_UNIQUE_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_insert,
+printf(
+"   data[new_node_idx].object = a_value;\n"
+);
+)
+}/*}}}*/
+
+void RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,
+printf(
+"   data[new_node_idx].object.swap(a_value);\n"
+);
+)
    }
 }/*}}}*/
 
@@ -9666,7 +9794,7 @@ printf(
 "            if (!processed[idx]) {\n"
 "               unsigned node_idx = indexes[idx];\n"
 "\n"
-"               __binary_tree_insert(node_idx,data[node_idx].object);\n"
+"               __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
 "               __insert_operation(node_idx);\n"
 "\n"
 "               processed[idx] = true;\n"
@@ -9676,7 +9804,7 @@ printf(
 "   }\n"
 "\n"
 "   unsigned node_idx = indexes[0];\n"
-"   __binary_tree_insert(node_idx,data[node_idx].object);\n"
+"   __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
 "   __insert_operation(node_idx);\n"
 "\n"
 "   cfree(processed);\n"
@@ -10098,7 +10226,7 @@ printf(
 "   inline void __rotate_right(unsigned a_idx);\n"
 "\n"
 "   inline unsigned __get_new_index();\n"
-"   void __binary_tree_insert(unsigned a_new_idx,%s &a_value);\n"
+"   bool __binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique);\n"
 "\n"
 "   inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);\n"
 "   void __remove_black_black(unsigned a_idx);\n"
@@ -10194,7 +10322,14 @@ printf(
 "    */\n"
 "   inline unsigned insert(%s a_value);\n"
 "\n"
-,IM_TYPE_NAMES(0));
+"   /*!\n"
+"    * \\brief __GEN insert node to rb_tree if it not exist yet\n"
+"    * \\param a_value - value inserted to rb_tree\n"
+"    * \\return - position of node in rb_tree\n"
+"    */\n"
+"   inline unsigned unique_insert(%s a_value);\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
    else {
 printf(
@@ -10205,7 +10340,14 @@ printf(
 "    */\n"
 "   inline unsigned insert(%s &a_value);\n"
 "\n"
-,IM_TYPE_NAMES(0));
+"   /*!\n"
+"    * \\brief __GEN insert node to rb_tree if it not exist yet\n"
+"    * \\param a_value - reference to value inserted to rb_tree\n"
+"    * \\return - position of node in rb_tree\n"
+"    */\n"
+"   inline unsigned unique_insert(%s &a_value);\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
 printf(
@@ -10215,7 +10357,15 @@ printf(
 "    * \\return - position of node in rb_tree\n"
 "    */\n"
 "   inline unsigned swap_insert(%s &a_value);\n"
-,IM_TYPE_NAMES(0));
+"\n"
+"   /*!\n"
+"    * \\brief __GEN insert node to rb_tree by swapping if it not exist yet\n"
+"    * \\param a_value - reference to value inserted to rb_tree\n"
+"    * \\return - position of node in rb_tree\n"
+"    */\n"
+"   inline unsigned unique_swap_insert(%s &a_value);\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
 printf(
 "   /*!\n"
@@ -10226,7 +10376,7 @@ printf(
 "\n"
 "   /*!\n"
 "    * \\brief __GEN resize rb_tree capacity\n"
-"    * \\param a_size - desired rb_tree capacity\n"
+"    * \\param a_size - requested rb_tree capacity\n"
 "    */\n"
 "   void copy_resize(unsigned a_size);\n"
 "\n"
@@ -10490,6 +10640,12 @@ RB_TREE_INSERT(RB_TREE_GEN_VALUES);
    // - rb_tree swap_insert method -
 RB_TREE_SWAP_INSERT(RB_TREE_GEN_VALUES);
 
+   // - rb_tree unique_insert method -
+RB_TREE_UNIQUE_INSERT(RB_TREE_GEN_VALUES);
+
+   // - rb_tree unique_swap_insert method -
+RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_VALUES);
+
    // - rb_tree remove method -
 
    // - rb_tree copy_resize method -
@@ -10620,6 +10776,10 @@ RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
    // - rb_tree insert method -
 
    // - rb_tree swap_insert method -
+
+   // - rb_tree unique_insert method -
+
+   // - rb_tree unique_swap_insert method -
 
    // - rb_tree remove method -
 RB_TREE_REMOVE(RB_TREE_GEN_VALUES);
@@ -11762,7 +11922,7 @@ printf(
 "\n"
 "   /*!\n"
 "    * \\brief __GEN resize list capacity\n"
-"    * \\param a_size - desired list capacity\n"
+"    * \\param a_size - requested list capacity\n"
 "    */\n"
 "   void copy_resize(unsigned a_size);\n"
 "\n"
@@ -12852,6 +13012,67 @@ printf(
 "   data[new_node_idx].object.swap(a_value);\n"
 );
 );
+   }
+}/*}}}*/
+
+#define TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(FUN_NAME,VALUE_SET_CODE) \
+{/*{{{*/\
+   if (TYPE_NUMBERS(0) & c_type_basic) {\
+printf(\
+"inline unsigned %s::%s(%s a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_TYPE_NAMES(0));\
+   }\
+   else {\
+printf(\
+"inline unsigned %s::%s(%s &a_value)\n"\
+,IM_STRUCT_NAME,#FUN_NAME,IM_TYPE_NAMES(0));\
+   }\
+printf(\
+"{/*{{{*/\n"\
+"   unsigned new_node_idx = __get_new_index();\n"\
+"   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);\n"\
+"\n"\
+"   if (old_node_idx != c_idx_not_exist) {\n"\
+"      %s_node &new_node = data[new_node_idx];\n"\
+"\n"\
+"      new_node.parent_idx = free_idx;\n"\
+"      free_idx = new_node_idx;\n"\
+"\n"\
+"      new_node.valid = false;\n"\
+"      count--;\n"\
+"\n"\
+"      return old_node_idx;\n"\
+"   }\n"\
+"\n"\
+"   __insert_operation(new_node_idx);\n"\
+"\n"\
+,IM_STRUCT_NAME);\
+   VALUE_SET_CODE;\
+printf(\
+"\n"\
+"  return new_node_idx;\n"\
+"}/*}}}*/\n"\
+"\n"\
+);\
+}/*}}}*/
+
+void SAFE_RB_TREE_UNIQUE_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(unique_insert,
+printf(
+"   data[new_node_idx].object = a_value;\n"
+);
+)
+}/*}}}*/
+
+void SAFE_RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,
+printf(
+"   data[new_node_idx].object.swap(a_value);\n"
+);
+)
    }
 }/*}}}*/
 
@@ -13945,7 +14166,14 @@ printf(
 "    */\n"
 "   inline unsigned insert(%s a_value);\n"
 "\n"
-,IM_TYPE_NAMES(0));
+"   /*!\n"
+"    * \\brief __GEN insert node to rb_tree if it not exist yet\n"
+"    * \\param a_value - value inserted to rb_tree\n"
+"    * \\return - position of node in rb_tree\n"
+"    */\n"
+"   inline unsigned unique_insert(%s a_value);\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
    else {
 printf(
@@ -13956,7 +14184,14 @@ printf(
 "    */\n"
 "   inline unsigned insert(%s &a_value);\n"
 "\n"
-,IM_TYPE_NAMES(0));
+"   /*!\n"
+"    * \\brief __GEN insert node to rb_tree if it not exist yet\n"
+"    * \\param a_value - reference to value inserted to rb_tree\n"
+"    * \\return - position of node in rb_tree\n"
+"    */\n"
+"   inline unsigned unique_insert(%s &a_value);\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
 printf(
@@ -13966,7 +14201,15 @@ printf(
 "    * \\return - position of node in rb_tree\n"
 "    */\n"
 "   inline unsigned swap_insert(%s &a_value);\n"
-,IM_TYPE_NAMES(0));
+"\n"
+"   /*!\n"
+"    * \\brief __GEN insert node to rb_tree by swapping if it not exist yet\n"
+"    * \\param a_value - reference to value inserted to rb_tree\n"
+"    * \\return - position of node in rb_tree\n"
+"    */\n"
+"   inline unsigned unique_swap_insert(%s &a_value);\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
 printf(
 "   /*!\n"
@@ -13977,7 +14220,7 @@ printf(
 "\n"
 "   /*!\n"
 "    * \\brief __GEN resize rb_tree capacity\n"
-"    * \\param a_size - desired rb_tree capacity\n"
+"    * \\param a_size - requested rb_tree capacity\n"
 "    */\n"
 "   void copy_resize(unsigned a_size);\n"
 "\n"
@@ -14242,6 +14485,12 @@ SAFE_RB_TREE_INSERT(SAFE_RB_TREE_GEN_VALUES);
    // - rb_tree swap_insert method -
 SAFE_RB_TREE_SWAP_INSERT(SAFE_RB_TREE_GEN_VALUES);
 
+   // - rb_tree unique_insert method -
+SAFE_RB_TREE_UNIQUE_INSERT(SAFE_RB_TREE_GEN_VALUES);
+
+   // - rb_tree unique_swap_insert method -
+SAFE_RB_TREE_UNIQUE_SWAP_INSERT(SAFE_RB_TREE_GEN_VALUES);
+
    // - rb_tree remove method -
 
    // - rb_tree copy_resize method -
@@ -14372,6 +14621,10 @@ SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_VALUES);
    // - rb_tree insert method -
 
    // - rb_tree swap_insert method -
+
+   // - rb_tree unique_insert method -
+
+   // - rb_tree unique_swap_insert method -
 
    // - rb_tree remove method -
 SAFE_RB_TREE_REMOVE(SAFE_RB_TREE_GEN_VALUES);
