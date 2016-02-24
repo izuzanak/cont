@@ -5,7 +5,7 @@
 void ARRAY_INIT(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_init(%s *this)\n"
+"static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 "   this->size = 0;\n"
 "   this->used = 0;\n"
@@ -18,7 +18,7 @@ printf(
 void ARRAY_INIT_SIZE(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_init_size(%s *this,unsigned a_size)\n"
+"static inline void %s_init_size(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "   %s_init(this);\n"
 "   %s_copy_resize(this,a_size);\n"
@@ -31,7 +31,7 @@ void ARRAY_CLEAR(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"inline void %s_clear(%s *this)\n"
+"static inline void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -68,7 +68,7 @@ void ARRAY_SET(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"inline void %s_set(%s *this,unsigned a_used,%s *a_data)\n"
+"static inline void %s_set(%s *this,unsigned a_used,%s *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
@@ -112,7 +112,7 @@ printf(
 void ARRAY_FLUSH(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_flush(%s *this)\n"
+"static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
 "   %s_copy_resize(this,this->used);\n"
 "}/*}}}*/\n"
@@ -124,7 +124,7 @@ void ARRAY_FLUSH_ALL(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_flushable)) {
 printf(
-"inline void %s_flush_all(%s *this)\n"
+"static inline void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -156,7 +156,7 @@ printf(
 void ARRAY_SWAP(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_swap(%s *this,%s *a_second)\n"
+"static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 "   unsigned tmp_unsigned = this->size;\n"
 "   this->size = a_second->size;\n"
@@ -177,7 +177,7 @@ printf(
 void ARRAY_OPERATOR_LE_BR_RE_BR(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline %s *%s_at(%s *this,unsigned a_idx)\n"
+"static inline %s *%s_at(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_idx < this->used);\n"
 "   return this->data + a_idx;\n"
@@ -190,12 +190,12 @@ void ARRAY_PUSH(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline void %s_push(%s *this,%s a_value)\n"
+"static inline void %s_push(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline void %s_push(%s *this,%s *a_value)\n"
+"static inline void %s_push(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
 printf(
@@ -224,7 +224,7 @@ printf(
 void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_push_blank(%s *this)\n"
+"static inline void %s_push_blank(%s *this)\n"
 "{/*{{{*/\n"
 "   if (this->used >= this->size) {\n"
 "      %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -279,7 +279,7 @@ printf(
 void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_push_clear(%s *this)\n"
+"static inline void %s_push_clear(%s *this)\n"
 "{/*{{{*/\n"
 "   if (this->used >= this->size) {\n"
 "      %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -306,12 +306,12 @@ void ARRAY_POP(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline %s %s_pop(%s *this)\n"
+"static inline %s %s_pop(%s *this)\n"
 ,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
 printf(
-"inline %s *%s_pop(%s *this)\n"
+"static inline %s *%s_pop(%s *this)\n"
 ,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
 printf(
@@ -337,7 +337,7 @@ printf(
 void ARRAY_LAST(ARRAY_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline %s *%s_last(%s *this)\n"
+"static inline %s *%s_last(%s *this)\n"
 "{/*{{{*/\n"
 "   debug_assert(this->used > 0);\n"
 "   return this->data + this->used - 1;\n"
@@ -441,7 +441,7 @@ void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)
 {/*{{{*/
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char){
 printf(
-"inline void %s_fill(%s *this,%s a_value)\n"
+"static inline void %s_fill(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
@@ -541,7 +541,7 @@ void ARRAY_OPERATOR_EQUAL(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"inline void %s_copy(%s *this,%s *a_src)\n"
+"static inline void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -586,7 +586,7 @@ void ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"inline int %s_compare(%s *this,%s *a_second)\n"
+"static inline int %s_compare(%s *this,%s *a_second)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -767,20 +767,20 @@ printf(
 ,STRUCT_NAME,TYPE_NAME);
    if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
-"inline void %s_init(%s *this);\n"
+"static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline void %s_init_size(%s *this,unsigned a_size);\n"
+"static inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
-"inline void %s_clear(%s *this);\n"
+"static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
 printf(
-"inline void %s_set(%s *this,unsigned a_used,%s *a_data);\n"
+"static inline void %s_set(%s *this,unsigned a_used,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
@@ -794,11 +794,11 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 printf(
-"inline void %s_flush(%s *this);\n"
+"static inline void %s_flush(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_flushable)) {
 printf(
-"inline void %s_flush_all(%s *this);\n"
+"static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    else {
@@ -808,45 +808,45 @@ printf(
    }
    if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
-"inline void %s_swap(%s *this,%s *a_second);\n"
+"static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline %s *%s_at(%s *this,unsigned a_idx);\n"
+"static inline %s *%s_at(%s *this,unsigned a_idx);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline void %s_push(%s *this,%s a_value);\n"
+"static inline void %s_push(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline void %s_push(%s *this,%s *a_value);\n"
+"static inline void %s_push(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 printf(
-"inline void %s_push_blank(%s *this);\n"
+"static inline void %s_push_blank(%s *this);\n"
 "void %s_reserve(%s *this,unsigned a_cnt);\n"
 "void %s_push_blanks(%s *this,unsigned a_cnt);\n"
-"inline void %s_push_clear(%s *this);\n"
+"static inline void %s_push_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline %s %s_pop(%s *this);\n"
+"static inline %s %s_pop(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 printf(
-"inline %s *%s_pop(%s *this);\n"
+"static inline %s *%s_pop(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline %s *%s_last(%s *this);\n"
+"static inline %s *%s_last(%s *this);\n"
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (type_idx == c_bt_char) {
 printf(
-"inline void %s_fill(%s *this,%s a_value);\n"
+"static inline void %s_fill(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
@@ -874,11 +874,11 @@ printf(
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
-"inline void %s_copy(%s *this,%s *a_src);\n"
+"static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
 printf(
-"inline int %s_compare(%s *this,%s *a_second);\n"
+"static inline int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {

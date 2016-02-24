@@ -5,7 +5,7 @@
 void SAFE_LIST_INIT(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_init(%s *this)\n"
+"static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 "   this->size = 0;\n"
 "   this->used = 0;\n"
@@ -22,7 +22,7 @@ printf(
 void SAFE_LIST_INIT_SIZE(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_init_size(%s *this,unsigned a_size)\n"
+"static inline void %s_init_size(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "   %s_init(this);\n"
 "   %s_copy_resize(this,a_size);\n"
@@ -35,7 +35,7 @@ void SAFE_LIST_CLEAR(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"inline void %s_clear(%s *this)\n"
+"static inline void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -71,7 +71,7 @@ printf(
 void SAFE_LIST_FLUSH(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_flush(%s *this)\n"
+"static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
 "   %s_copy_resize(this,this->used);\n"
 "}/*}}}*/\n"
@@ -83,7 +83,7 @@ void SAFE_LIST_FLUSH_ALL(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_flushable)) {
 printf(
-"inline void %s_flush_all(%s *this)\n"
+"static inline void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -115,7 +115,7 @@ printf(
 void SAFE_LIST_SWAP(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_swap(%s *this,%s *a_second)\n"
+"static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 "   unsigned tmp_unsigned = this->size;\n"
 "   this->size = a_second->size;\n"
@@ -152,7 +152,7 @@ printf(
 void SAFE_LIST_OPERATOR_LE_BR_RE_BR(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline %s *%s_at(%s *this,unsigned a_idx)\n"
+"static inline %s *%s_at(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 "   return &this->data[a_idx].object;\n"
@@ -165,12 +165,12 @@ void SAFE_LIST_PREPEND(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline unsigned %s_prepend(%s *this,%s a_value)\n"
+"static inline unsigned %s_prepend(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline unsigned %s_prepend(%s *this,%s *a_value)\n"
+"static inline unsigned %s_prepend(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
 printf(
@@ -228,12 +228,12 @@ void SAFE_LIST_APPEND(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline unsigned %s_append(%s *this,%s a_value)\n"
+"static inline unsigned %s_append(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline unsigned %s_append(%s *this,%s *a_value)\n"
+"static inline unsigned %s_append(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
 printf(
@@ -291,12 +291,12 @@ void SAFE_LIST_INSERT_BEFORE(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s a_value)\n"
+"static inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s *a_value)\n"
+"static inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
 printf(
@@ -357,12 +357,12 @@ void SAFE_LIST_INSERT_AFTER(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s a_value)\n"
+"static inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s *a_value)\n"
+"static inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
 printf(
@@ -422,7 +422,7 @@ printf(
 void SAFE_LIST_PREPEND_BLANK(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_prepend_blank(%s *this)\n"
+"static inline unsigned %s_prepend_blank(%s *this)\n"
 "{/*{{{*/\n"
 "   unsigned new_idx;\n"
 "\n"
@@ -463,7 +463,7 @@ printf(
 void SAFE_LIST_APPEND_BLANK(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_append_blank(%s *this)\n"
+"static inline unsigned %s_append_blank(%s *this)\n"
 "{/*{{{*/\n"
 "   unsigned new_idx;\n"
 "\n"
@@ -504,7 +504,7 @@ printf(
 void SAFE_LIST_INSERT_BLANK_BEFORE(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx)\n"
+"static inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 "\n"
@@ -548,7 +548,7 @@ printf(
 void SAFE_LIST_INSERT_BLANK_AFTER(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx)\n"
+"static inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 "\n"
@@ -593,7 +593,7 @@ printf(
 void SAFE_LIST_REMOVE(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_remove(%s *this,unsigned a_idx)\n"
+"static inline void %s_remove(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 "\n"
@@ -626,7 +626,7 @@ printf(
 void SAFE_LIST_NEXT_IDX(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_next_idx(%s *this,unsigned a_idx)\n"
+"static inline unsigned %s_next_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(this->data[a_idx].valid);\n"
 "   return this->data[a_idx].next_idx;\n"
@@ -638,7 +638,7 @@ printf(
 void SAFE_LIST_PREV_IDX(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_prev_idx(%s *this,unsigned a_idx)\n"
+"static inline unsigned %s_prev_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(this->data[a_idx].valid);\n"
 "   return this->data[a_idx].prev_idx;\n"
@@ -756,7 +756,7 @@ void SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"inline void %s_copy(%s *this,%s *a_src)\n"
+"static inline void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -1019,16 +1019,16 @@ printf(
 ,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
-"inline void %s_init(%s *this);\n"
+"static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline void %s_init_size(%s *this,unsigned a_size);\n"
+"static inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
-"inline void %s_clear(%s *this);\n"
+"static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
@@ -1040,11 +1040,11 @@ printf(
       }
    }
 printf(
-"inline void %s_flush(%s *this);\n"
+"static inline void %s_flush(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_flushable)) {
 printf(
-"inline void %s_flush_all(%s *this);\n"
+"static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    else {
@@ -1054,18 +1054,18 @@ printf(
    }
    if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
-"inline void %s_swap(%s *this,%s *a_second);\n"
+"static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline %s *%s_at(%s *this,unsigned a_idx);\n"
+"static inline %s *%s_at(%s *this,unsigned a_idx);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline unsigned %s_prepend(%s *this,%s a_value);\n"
-"inline unsigned %s_append(%s *this,%s a_value);\n"
-"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s a_value);\n"
-"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s a_value);\n"
+"static inline unsigned %s_prepend(%s *this,%s a_value);\n"
+"static inline unsigned %s_append(%s *this,%s a_value);\n"
+"static inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s a_value);\n"
+"static inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
@@ -1073,28 +1073,28 @@ printf(
    }
    else {
 printf(
-"inline unsigned %s_prepend(%s *this,%s *a_value);\n"
-"inline unsigned %s_append(%s *this,%s *a_value);\n"
-"inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s *a_value);\n"
-"inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s *a_value);\n"
+"static inline unsigned %s_prepend(%s *this,%s *a_value);\n"
+"static inline unsigned %s_append(%s *this,%s *a_value);\n"
+"static inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s *a_value);\n"
+"static inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 printf(
-"inline unsigned %s_prepend_blank(%s *this);\n"
-"inline unsigned %s_append_blank(%s *this);\n"
-"inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx);\n"
-"inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx);\n"
+"static inline unsigned %s_prepend_blank(%s *this);\n"
+"static inline unsigned %s_append_blank(%s *this);\n"
+"static inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx);\n"
+"static inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME
 ,STRUCT_NAME,STRUCT_NAME
 ,STRUCT_NAME,STRUCT_NAME
 ,STRUCT_NAME,STRUCT_NAME);
 printf(
-"inline void %s_remove(%s *this,unsigned a_idx);\n"
-"inline unsigned %s_next_idx(%s *this,unsigned a_idx);\n"
-"inline unsigned %s_prev_idx(%s *this,unsigned a_idx);\n"
+"static inline void %s_remove(%s *this,unsigned a_idx);\n"
+"static inline unsigned %s_next_idx(%s *this,unsigned a_idx);\n"
+"static inline unsigned %s_prev_idx(%s *this,unsigned a_idx);\n"
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
@@ -1110,7 +1110,7 @@ printf(
    if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"inline void %s_copy(%s *this,%s *a_src);\n"
+"static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {

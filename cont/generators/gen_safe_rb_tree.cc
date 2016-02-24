@@ -8,7 +8,7 @@
 void SAFE_RB_TREE___GET_GRANDPARENT_IDX(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s___get_grandparent_idx(%s *this,unsigned a_idx)\n"
+"static inline unsigned %s___get_grandparent_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   %s_node *node = this->data + a_idx;\n"
 "\n"
@@ -26,7 +26,7 @@ printf(
 void SAFE_RB_TREE___GET_UNCLE_IDX(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s___get_uncle_idx(%s *this,unsigned a_idx)\n"
+"static inline unsigned %s___get_uncle_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   unsigned gp_idx = %s___get_grandparent_idx(this,a_idx);\n"
 "\n"
@@ -45,7 +45,7 @@ printf(
 void SAFE_RB_TREE___GET_SIBLING_IDX(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s___get_sibling_idx(%s *this,unsigned a_idx)\n"
+"static inline unsigned %s___get_sibling_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   %s_node *p = this->data + this->data[a_idx].parent_idx;\n"
 "   return p->left_idx == a_idx?p->right_idx:p->left_idx;\n"
@@ -57,7 +57,7 @@ printf(
 void SAFE_RB_TREE_GET_DESCENT_STACK_SIZE(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_get_descent_stack_size(%s *this)\n"
+"static inline unsigned %s_get_descent_stack_size(%s *this)\n"
 "{/*{{{*/\n"
 "   return (unsigned)(logf(this->used)/c_log_of_2) << 1;\n"
 "}/*}}}*/\n"
@@ -91,7 +91,7 @@ printf(
 void SAFE_RB_TREE_GET_STACK_NEXT_IDX(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s_get_stack_next_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
+"static inline unsigned %s_get_stack_next_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 "\n"
@@ -226,7 +226,7 @@ printf(
 void SAFE_RB_TREE___ROTATE_LEFT(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s___rotate_left(%s *this,unsigned a_idx)\n"
+"static inline void %s___rotate_left(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   %s_node *root = this->data + a_idx;\n"
 "   %s_node *pivot = this->data + root->right_idx;\n"
@@ -262,7 +262,7 @@ printf(
 void SAFE_RB_TREE___ROTATE_RIGHT(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s___rotate_right(%s *this,unsigned a_idx)\n"
+"static inline void %s___rotate_right(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   %s_node *root = this->data + a_idx;\n"
 "   %s_node *pivot = this->data + root->left_idx;\n"
@@ -298,7 +298,7 @@ printf(
 void SAFE_RB_TREE___GET_NEW_INDEX(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s___get_new_index(%s *this)\n"
+"static inline unsigned %s___get_new_index(%s *this)\n"
 "{/*{{{*/\n"
 "   unsigned new_idx;\n"
 "\n"
@@ -389,7 +389,7 @@ printf(
 void SAFE_RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx)\n"
+"static inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx)\n"
 "{/*{{{*/\n"
 "   %s_node *node = this->data + a_idx;\n"
 "\n"
@@ -504,7 +504,7 @@ printf(
 void SAFE_RB_TREE___REMOVE_ONE_CHILD(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s___remove_one_child(%s *this,unsigned a_idx,unsigned a_ch_idx)\n"
+"static inline void %s___remove_one_child(%s *this,unsigned a_idx,unsigned a_ch_idx)\n"
 "{/*{{{*/\n"
 "   %s_node *node = this->data + a_idx;\n"
 "   %s___replace_delete_node_by_child(this,a_idx,a_ch_idx);\n"
@@ -599,7 +599,7 @@ printf(
 void SAFE_RB_TREE_INIT(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_init(%s *this)\n"
+"static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 "   this->size = 0;\n"
 "   this->used = 0;\n"
@@ -629,7 +629,7 @@ void SAFE_RB_TREE_CLEAR(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
-"inline void %s_clear(%s *this)\n"
+"static inline void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -680,7 +680,7 @@ printf(
 void SAFE_RB_TREE_FLUSH(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_flush(%s *this)\n"
+"static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
 "   %s_copy_resize(this,this->used);\n"
 "}/*}}}*/\n"
@@ -692,7 +692,7 @@ void SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
 printf(
-"inline void %s_flush_all(%s *this)\n"
+"static inline void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -739,7 +739,7 @@ printf(
 void SAFE_RB_TREE_SWAP(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_swap(%s *this,%s *a_second)\n"
+"static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 "   unsigned tmp_unsigned = this->size;\n"
 "   this->size = a_second->size;\n"
@@ -798,7 +798,7 @@ printf(
 void SAFE_RB_TREE_OPERATOR_LE_BR_RE_BR(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline %s *%s_at(%s *this,unsigned a_idx)\n"
+"static inline %s *%s_at(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 "   return &this->data[a_idx].object;\n"
@@ -811,12 +811,12 @@ printf(
 {/*{{{*/\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
-"inline unsigned %s_%s(%s *this,%s a_value)\n"\
+"static inline unsigned %s_%s(%s *this,%s a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
    else {\
 printf(\
-"inline unsigned %s_%s(%s *this,%s *a_value)\n"\
+"static inline unsigned %s_%s(%s *this,%s *a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
 printf(\
@@ -878,12 +878,12 @@ printf(
 {/*{{{*/\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 printf(\
-"inline unsigned %s_%s(%s *this,%s a_value)\n"\
+"static inline unsigned %s_%s(%s *this,%s a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
    else {\
 printf(\
-"inline unsigned %s_%s(%s *this,%s *a_value)\n"\
+"static inline unsigned %s_%s(%s *this,%s *a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
 printf(\
@@ -1411,7 +1411,7 @@ void SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
-"inline void %s_copy(%s *this,%s *a_src)\n"
+"static inline void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
@@ -2065,14 +2065,14 @@ printf(
 printf(
 "};\n"
 "\n"
-"inline unsigned %s___get_grandparent_idx(%s *this,unsigned a_idx);\n"
-"inline unsigned %s___get_uncle_idx(%s *this,unsigned a_idx);\n"
-"inline unsigned %s___get_sibling_idx(%s *this,unsigned a_idx);\n"
+"static inline unsigned %s___get_grandparent_idx(%s *this,unsigned a_idx);\n"
+"static inline unsigned %s___get_uncle_idx(%s *this,unsigned a_idx);\n"
+"static inline unsigned %s___get_sibling_idx(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
-"inline unsigned %s_get_descent_stack_size(%s *this);\n"
+"static inline unsigned %s_get_descent_stack_size(%s *this);\n"
 "unsigned %s_get_stack_min_value_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr);\n"
-"inline unsigned %s_get_stack_next_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
+"static inline unsigned %s_get_stack_next_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
 "unsigned %s_get_min_value_idx(%s *this,unsigned a_idx);\n"
@@ -2081,31 +2081,31 @@ printf(
 "unsigned %s_get_prev_idx(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
-"inline void %s___rotate_left(%s *this,unsigned a_idx);\n"
-"inline void %s___rotate_right(%s *this,unsigned a_idx);\n"
+"static inline void %s___rotate_left(%s *this,unsigned a_idx);\n"
+"static inline void %s___rotate_right(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
-"inline unsigned %s___get_new_index(%s *this);\n"
+"static inline unsigned %s___get_new_index(%s *this);\n"
 "unsigned %s___binary_tree_insert(%s *this,unsigned a_new_idx,%s *a_value,int a_unique);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
 printf(
-"inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
+"static inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
 "void %s___remove_black_black(%s *this,unsigned a_idx);\n"
-"inline void %s___remove_one_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
+"static inline void %s___remove_one_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
 "void %s___insert_operation(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
-"inline int %s___compare_value(%s *this,%s *a_first,%s *a_second);\n"
+"static inline int %s___compare_value(%s *this,%s *a_first,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
-"inline void %s_init(%s *this);\n"
+"static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
       if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
-"inline void %s_clear(%s *this);\n"
+"static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
@@ -2117,11 +2117,11 @@ printf(
       }
    }
 printf(
-"inline void %s_flush(%s *this);\n"
+"static inline void %s_flush(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
 printf(
-"inline void %s_flush_all(%s *this);\n"
+"static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    else {
@@ -2131,28 +2131,28 @@ printf(
    }
    if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
-"inline void %s_swap(%s *this,%s *a_second);\n"
+"static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline %s *%s_at(%s *this,unsigned a_idx);\n"
+"static inline %s *%s_at(%s *this,unsigned a_idx);\n"
 ,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 printf(
-"inline unsigned %s_insert(%s *this,%s a_value);\n"
-"inline unsigned %s_unique_insert(%s *this,%s a_value);\n"
+"static inline unsigned %s_insert(%s *this,%s a_value);\n"
+"static inline unsigned %s_unique_insert(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
 printf(
-"inline unsigned %s_insert(%s *this,%s *a_value);\n"
-"inline unsigned %s_unique_insert(%s *this,%s *a_value);\n"
+"static inline unsigned %s_insert(%s *this,%s *a_value);\n"
+"static inline unsigned %s_unique_insert(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
 printf(
-"inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
-"inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"
+"static inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
+"static inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
 printf(
@@ -2194,7 +2194,7 @@ printf(
    if (!(data_type.properties & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
-"inline void %s_copy(%s *this,%s *a_src);\n"
+"static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {

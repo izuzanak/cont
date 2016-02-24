@@ -5,7 +5,7 @@
 void STRUCT_INIT(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_init(%s *this)\n"
+"static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
@@ -25,7 +25,7 @@ printf(
 void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_clear(%s *this)\n"
+"static inline void %s_clear(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
@@ -47,7 +47,7 @@ printf(
 void STRUCT_SET(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_set(%s *this,"
+"static inline void %s_set(%s *this,"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 printf(
@@ -100,7 +100,7 @@ printf(
 void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_flush_all(%s *this)\n"
+"static inline void %s_flush_all(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
@@ -120,7 +120,7 @@ printf(
 void STRUCT_SWAP(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_swap(%s *this,%s *a_second)\n"
+"static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
@@ -150,7 +150,7 @@ printf(
 void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline void %s_copy(%s *this,%s *a_src)\n"
+"static inline void %s_copy(%s *this,%s *a_src)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
@@ -175,7 +175,7 @@ printf(
 void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline int %s_compare(%s *this,%s *a_second)\n"
+"static inline int %s_compare(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
@@ -214,7 +214,7 @@ void STRUCT_TO_STRING(STRUCT_GEN_PARAMS)
 {/*{{{*/
 printf(
 "#if OPTION_TO_STRING == ENABLED\n"
-"inline void %s_to_string(%s *this,bc_array_s *a_trg)\n"
+"static inline void %s_to_string(%s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
 printf(
@@ -434,16 +434,16 @@ printf(
 );
    if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
-"inline void %s_init(%s *this);\n"
+"static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
-"inline void %s_clear(%s *this);\n"
+"static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline void %s_set(%s *this,"
+"static inline void %s_set(%s *this,"
 ,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 printf(
@@ -472,24 +472,24 @@ printf(
    }
 printf(
 ");\n"
-"inline void %s_flush_all(%s *this);\n"
+"static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
-"inline void %s_swap(%s *this,%s *a_second);\n"
+"static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
-"inline void %s_copy(%s *this,%s *a_src);\n"
+"static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 printf(
-"inline int %s_compare(%s *this,%s *a_second);\n"
+"static inline int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 printf(
 "#if OPTION_TO_STRING == ENABLED\n"
-"inline void %s_to_string(%s *this,bc_array_s *a_trg);\n"
+"static inline void %s_to_string(%s *this,bc_array_s *a_trg);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
