@@ -154,7 +154,6 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    <
    string_array_s:types
    string_array_s:variables
-   string_array_s:compare
    string_array_s:functions
    string_array_s:names
    >
@@ -257,7 +256,6 @@ inline void container_parameters_s::clean_out()
 {/*{{{*/
    types.used = 0;
    variables.used = 0;
-   compare.used = 0;
    functions.used = 0;
    names.used = 0;
 }/*}}}*/

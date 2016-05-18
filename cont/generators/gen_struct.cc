@@ -244,7 +244,6 @@ void processor_s::generate_struct_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
-   string_array_s &comp_idx_strings = cont_params.compare;
    string_array_s &fun_defs = cont_params.functions;
    string_array_s &abbs = cont_params.names;
 
@@ -359,7 +358,10 @@ void processor_s::generate_struct_type()
          }
       } while(++t_pptr < t_pptr_end);
 
-      data_type.properties = (c_type_static << dynamic) | (flushable << 3) | (comp_idx_strings.used != 0) << 4;
+      data_type.properties =
+        (dynamic ? c_type_dynamic : c_type_static) |
+        (flushable ? c_type_flushable : 0);
+
       data_type.properties |= type_settings & c_type_option_mask;
 
       {
