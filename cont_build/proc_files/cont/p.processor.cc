@@ -2357,7 +2357,7 @@ struct data_type_array_s
    /*!
     * \brief __GEN flush array memory usage, recursive on elemenets
     */
-   inline void flush_all();
+   void flush_all();
 
    /*!
     * \brief __GEN swap array members with another array
@@ -2651,9 +2651,8 @@ struct container_parameters_s
 {
    string_array_s types; //!< member - 0
    string_array_s variables; //!< member - 1
-   string_array_s compare; //!< member - 2
-   string_array_s functions; //!< member - 3
-   string_array_s names; //!< member - 4
+   string_array_s functions; //!< member - 2
+   string_array_s names; //!< member - 3
 
    /*!
     * \brief __GEN initialize structure
@@ -2668,7 +2667,7 @@ struct container_parameters_s
    /*!
     * \brief __GEN set structure members
     */
-   inline void set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_compare,string_array_s &a_functions,string_array_s &a_names);
+   inline void set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_functions,string_array_s &a_names);
    /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -2897,11 +2896,6 @@ inline void data_type_array_s::flush()
    copy_resize(used);
 }/*}}}*/
 
-inline void data_type_array_s::flush_all()
-{/*{{{*/
-   copy_resize(used);
-}/*}}}*/
-
 inline void data_type_array_s::swap(data_type_array_s &a_second)
 {/*{{{*/
    unsigned tmp_unsigned = size;
@@ -3108,7 +3102,6 @@ inline void container_parameters_s::init()
 {/*{{{*/
    types.init();
    variables.init();
-   compare.init();
    functions.init();
    names.init();
 }/*}}}*/
@@ -3117,18 +3110,16 @@ inline void container_parameters_s::clear()
 {/*{{{*/
    types.clear();
    variables.clear();
-   compare.clear();
    functions.clear();
    names.clear();
 
    init();
 }/*}}}*/
 
-inline void container_parameters_s::set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_compare,string_array_s &a_functions,string_array_s &a_names)
+inline void container_parameters_s::set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_functions,string_array_s &a_names)
 {/*{{{*/
    types = a_types;
    variables = a_variables;
-   compare = a_compare;
    functions = a_functions;
    names = a_names;
 }/*}}}*/
@@ -3137,7 +3128,6 @@ inline void container_parameters_s::flush_all()
 {/*{{{*/
    types.flush_all();
    variables.flush_all();
-   compare.flush_all();
    functions.flush_all();
    names.flush_all();
 }/*}}}*/
@@ -3148,8 +3138,6 @@ inline void container_parameters_s::swap(container_parameters_s &a_second)
 
    variables.swap(a_second.variables);
 
-   compare.swap(a_second.compare);
-
    functions.swap(a_second.functions);
 
    names.swap(a_second.names);
@@ -3159,7 +3147,6 @@ inline container_parameters_s &container_parameters_s::operator=(container_param
 {/*{{{*/
    types = a_src.types;
    variables = a_src.variables;
-   compare = a_src.compare;
    functions = a_src.functions;
    names = a_src.names;
 
@@ -3168,7 +3155,7 @@ inline container_parameters_s &container_parameters_s::operator=(container_param
 
 inline bool container_parameters_s::operator==(container_parameters_s &a_second)
 {/*{{{*/
-   return (types == a_second.types && variables == a_second.variables && compare == a_second.compare && functions == a_second.functions && names == a_second.names);
+   return (types == a_second.types && variables == a_second.variables && functions == a_second.functions && names == a_second.names);
 }/*}}}*/
 
 
@@ -3177,7 +3164,6 @@ inline void container_parameters_s::clean_out()
 {/*{{{*/
    types.used = 0;
    variables.used = 0;
-   compare.used = 0;
    functions.used = 0;
    names.used = 0;
 }/*}}}*/
@@ -3222,6 +3208,7 @@ inline void processor_s::flush_all()
    include_names.flush_all();
    data_types.flush_all();
    abbreviations.flush_all();
+   cont_params.flush_all();
 }/*}}}*/
 
 inline void processor_s::swap(processor_s &a_second)
@@ -3982,6 +3969,18 @@ void data_type_array_s::set(unsigned a_used,data_type_s *a_data)
    } while(++a_ptr,++ptr < ptr_end);
 
    used = a_used;
+}/*}}}*/
+
+void data_type_array_s::flush_all()
+{/*{{{*/
+   data_type_s *ptr = data;
+   data_type_s *ptr_end = ptr + used;
+
+   do {
+      ptr->flush_all();
+   } while(++ptr < ptr_end);
+
+   copy_resize(used);
 }/*}}}*/
 
 void data_type_array_s::reserve(unsigned a_cnt)
@@ -7962,7 +7961,6 @@ void processor_s::generate_struct_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
-   string_array_s &comp_idx_strings = cont_params.compare;
    string_array_s &fun_defs = cont_params.functions;
    string_array_s &abbs = cont_params.names;
 
@@ -8077,7 +8075,10 @@ void processor_s::generate_struct_type()
          }
       } while(++t_pptr < t_pptr_end);
 
-      data_type.properties = (c_type_static << dynamic) | (flushable << 3) | (comp_idx_strings.used != 0) << 4;
+      data_type.properties =
+        (dynamic ? c_type_dynamic : c_type_static) |
+        (flushable ? c_type_flushable : 0);
+
       data_type.properties |= type_settings & c_type_option_mask;
 
       {
