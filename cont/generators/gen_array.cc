@@ -97,10 +97,10 @@ printf(
 "   %s *a_ptr = a_data;\n"
 "\n"
 "   do {\n"
-"      *ptr = *a_ptr;\n"
+"      %s_copy(ptr,a_ptr);\n"
 "   } while(++a_ptr,++ptr < ptr_end);\n"
 "\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 printf(
 "   this->used = a_used;\n"
