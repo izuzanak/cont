@@ -7,5 +7,5 @@ python mf_gen.py > Makefile
 make -s -j $(nproc)
 
 # - rename executable -
-cp cont process
+cp cont process_c
 

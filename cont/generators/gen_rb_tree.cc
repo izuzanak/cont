@@ -1053,40 +1053,12 @@ printf(
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_size >= this->used);\n"
-"\n"
-"   %s_node *n_data;\n"
-"\n"
-"   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
-"   }\n"
-"   else {\n"
-"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"      if (a_size > this->used) {\n"
-"         %s_node *ptr = n_data + this->used;\n"
-"         %s_node *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            %s_init(&ptr->object);\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
-   }
-printf(
-"   }\n"
-"\n"
-"   if (this->used != 0) {\n"
-"      memcpy(n_data,this->data,this->used*sizeof(%s_node));\n"
-"   }\n"
-,IM_STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
-"\n"
-"   if (this->size > this->used) {\n"
-"      %s_node *ptr = this->data + this->used;\n"
+"   if (this->size > a_size) {\n"
+"      %s_node *ptr = this->data + a_size;\n"
 "      %s_node *ptr_end = this->data + this->size;\n"
 "\n"
 "      do {\n"
@@ -1097,11 +1069,31 @@ printf(
    }
 printf(
 "\n"
-"   if (this->size != 0) {\n"
-"      cfree(this->data);\n"
+"   if (a_size == 0) {\n"
+"      if (this->data != NULL) {\n"
+"         cfree(this->data);\n"
+"      }\n"
+"      this->data = NULL;\n"
 "   }\n"
+"   else {\n"
+"      this->data = (%s_node *)crealloc(this->data,a_size*sizeof(%s_node));\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
 "\n"
-"   this->data = n_data;\n"
+"   if (a_size > this->size) {\n"
+"      %s_node *ptr = this->data + this->size;\n"
+"      %s_node *ptr_end = this->data + a_size;\n"
+"\n"
+"      do {\n"
+"         %s_init(&ptr->object);\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+printf(
+"\n"
 "   this->size = a_size;\n"
 "}/*}}}*/\n"
 "\n"

@@ -348,6 +348,8 @@ printf(
 
 void ARRAY_COPY_RESIZE(ARRAY_GEN_PARAMS)
 {/*{{{*/
+if (TYPE_NUMBER & c_type_option_strict_dynamic)
+{/*{{{*/
 printf(
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
@@ -361,8 +363,6 @@ printf(
 "   else {\n"
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
-      if (TYPE_NUMBER & c_type_option_strict_dynamic) {
 printf(
 "\n"
 "      %s *ptr = n_data;\n"
@@ -371,27 +371,9 @@ printf(
 "      do {\n"
 "         %s_init(ptr);\n"
 "      } while(++ptr < ptr_end);\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-      }
-      else {
-printf(
-"\n"
-"      if (a_size > this->used) {\n"
-"         %s *ptr = n_data + this->used;\n"
-"         %s *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            %s_init(ptr);\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-      }
-   }
-printf(
 "   }\n"
 "\n"
-);
-   if (TYPE_NUMBER & c_type_option_strict_dynamic) {
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
 "   if (this->used > 0) {\n"
 "      %s *ptr = this->data;\n"
@@ -403,15 +385,6 @@ printf(
 "      } while(++n_ptr,++ptr < ptr_end);\n"
 "   }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   }
-   else {
-printf(
-"   if (this->used != 0) {\n"
-"      memcpy(n_data,this->data,this->used*sizeof(%s));\n"
-"   }\n"
-,TYPE_NAME);
-   }
-   if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
 "   if (this->size > this->used) {\n"
@@ -422,9 +395,6 @@ printf(
 "         %s_clear(ptr);\n"
 "      } while(++ptr < ptr_end);\n"
 "   }\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   }
-printf(
 "\n"
 "   if (this->size != 0) {\n"
 "      cfree(this->data);\n"
@@ -434,7 +404,60 @@ printf(
 "   this->size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
+else
+{/*{{{*/
+printf(
+"void %s_copy_resize(%s *this,unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= this->used);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"   if (this->size > a_size) {\n"
+"      %s *ptr = this->data + a_size;\n"
+"      %s *ptr_end = this->data + this->size;\n"
+"\n"
+"      do {\n"
+"         %s_clear(ptr);\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"\n"
+"   if (a_size == 0) {\n"
+"      if (this->data != NULL) {\n"
+"         cfree(this->data);\n"
+"      }\n"
+"      this->data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      this->data = (%s *)crealloc(this->data,a_size*sizeof(%s));\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"   if (a_size > this->size) {\n"
+"      %s *ptr = this->data + this->size;\n"
+"      %s *ptr_end = this->data + a_size;\n"
+"\n"
+"      do {\n"
+"         %s_init(ptr);\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"\n"
+"   this->size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
 );
+}/*}}}*/
 }/*}}}*/
 
 void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)
