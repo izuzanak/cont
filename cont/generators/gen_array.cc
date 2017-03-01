@@ -317,6 +317,8 @@ printf(
 
 void ARRAY_COPY_RESIZE(ARRAY_GEN_PARAMS)
 {/*{{{*/
+if (TYPE_NUMBER & c_type_option_strict_dynamic)
+{/*{{{*/
 printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
@@ -330,8 +332,6 @@ printf(
 "   else {\n"
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
-      if (TYPE_NUMBER & c_type_option_strict_dynamic) {
 printf(
 "\n"
 "      %s *ptr = n_data;\n"
@@ -340,27 +340,9 @@ printf(
 "      do {\n"
 "         ptr->init();\n"
 "      } while(++ptr < ptr_end);\n"
-,TYPE_NAME,TYPE_NAME);
-      }
-      else {
-printf(
-"\n"
-"      if (a_size > used) {\n"
-"         %s *ptr = n_data + used;\n"
-"         %s *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            ptr->init();\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,TYPE_NAME,TYPE_NAME);
-      }
-   }
-printf(
 "   }\n"
 "\n"
-);
-   if (TYPE_NUMBER & c_type_option_strict_dynamic) {
+,TYPE_NAME,TYPE_NAME);
 printf(
 "   if (used > 0) {\n"
 "      %s *ptr = data;\n"
@@ -372,14 +354,34 @@ printf(
 "      } while(++n_ptr,++ptr < ptr_end);\n"
 "   }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   }
-   else {
 printf(
-"   if (used != 0) {\n"
-"      memcpy(n_data,data,used*sizeof(%s));\n"
+"\n"
+"   if (size > used) {\n"
+"      %s *ptr = data + used;\n"
+"      %s *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->clear();\n"
+"      } while(++ptr < ptr_end);\n"
 "   }\n"
-,TYPE_NAME);
-   }
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
+else
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
@@ -395,15 +397,28 @@ printf(
    }
 printf(
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"   data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
+,TYPE_NAME,TYPE_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
 "\n"
-"   data = n_data;\n"
+"   if (a_size > used) {\n"
+"      %s *ptr = data + used;\n"
+"      %s *ptr_end = data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->init();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"\n"
 "   size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
 );
+}/*}}}*/
 }/*}}}*/
 
 void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)

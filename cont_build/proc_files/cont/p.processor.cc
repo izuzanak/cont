@@ -480,6 +480,7 @@ inline unsigned mutex_s::unlock()
 
 // - declare cmalloc/cfree functions -
 inline void *cmalloc(unsigned a_size);
+inline void *crealloc(void *a_location,unsigned a_size);
 inline void cfree(void *a_location);
 
 /*
@@ -863,6 +864,12 @@ struct mc_block_rb_tree_s
        *
        */
       inline void *cmalloc(unsigned a_size);
+
+      /*!
+       * \brief crealloc for mc_block_rb_tree_s structure overriding global
+       *
+       */
+      inline void *crealloc(void *a_location,unsigned a_size);
 
       /*!
        * \brief cfree for mc_block_rb_tree_s structure overriding global
@@ -1462,6 +1469,11 @@ inline void *mc_block_rb_tree_s::cmalloc(unsigned a_size)
    return malloc(a_size);
 }/*}}}*/
 
+inline void *mc_block_rb_tree_s::crealloc(void *a_location,unsigned a_size)
+{/*{{{*/
+   return realloc(a_location,a_size);
+}/*}}}*/
+
 inline void mc_block_rb_tree_s::cfree(void *a_location)
 {/*{{{*/
    free(a_location);
@@ -1605,6 +1617,13 @@ inline void *cmalloc(unsigned a_size)
    return mc_struct.get_block(a_size);
 }/*}}}*/
 
+inline void *crealloc(void *a_location,unsigned a_size)
+{/*{{{*/
+
+   // FIXME TODO continue ...
+   cassert(0);
+}/*}}}*/
+
 inline void cfree(void *a_location)
 {/*{{{*/
    mc_struct.release_block(a_location);
@@ -1616,6 +1635,11 @@ inline void mc_clear() {}
 inline void *cmalloc(unsigned a_size)
 {/*{{{*/
    return malloc(a_size);
+}/*}}}*/
+
+inline void *crealloc(void *a_location,unsigned a_size)
+{/*{{{*/
+   return realloc(a_location,a_size);
 }/*}}}*/
 
 inline void cfree(void *a_location)
@@ -4060,28 +4084,6 @@ void data_type_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   data_type_s *n_data;
-
-   if (a_size == 0) {
-      n_data = NULL;
-   }
-   else {
-      n_data = (data_type_s *)cmalloc(a_size*sizeof(data_type_s));
-
-      if (a_size > used) {
-         data_type_s *ptr = n_data + used;
-         data_type_s *ptr_end = n_data + a_size;
-
-         do {
-            ptr->init();
-         } while(++ptr < ptr_end);
-      }
-   }
-
-   if (used != 0) {
-      memcpy(n_data,data,used*sizeof(data_type_s));
-   }
-
    if (size > used) {
       data_type_s *ptr = data + used;
       data_type_s *ptr_end = data + size;
@@ -4091,11 +4093,17 @@ void data_type_array_s::copy_resize(unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   if (size != 0) {
-      cfree(data);
+   data = (data_type_s *)crealloc(data,a_size*sizeof(data_type_s));
+
+   if (a_size > used) {
+      data_type_s *ptr = data + used;
+      data_type_s *ptr_end = data + a_size;
+
+      do {
+         ptr->init();
+      } while(++ptr < ptr_end);
    }
 
-   data = n_data;
    size = a_size;
 }/*}}}*/
 
@@ -4259,28 +4267,6 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   abbreviation_s *n_data;
-
-   if (a_size == 0) {
-      n_data = NULL;
-   }
-   else {
-      n_data = (abbreviation_s *)cmalloc(a_size*sizeof(abbreviation_s));
-
-      if (a_size > used) {
-         abbreviation_s *ptr = n_data + used;
-         abbreviation_s *ptr_end = n_data + a_size;
-
-         do {
-            ptr->init();
-         } while(++ptr < ptr_end);
-      }
-   }
-
-   if (used != 0) {
-      memcpy(n_data,data,used*sizeof(abbreviation_s));
-   }
-
    if (size > used) {
       abbreviation_s *ptr = data + used;
       abbreviation_s *ptr_end = data + size;
@@ -4290,11 +4276,17 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   if (size != 0) {
-      cfree(data);
+   data = (abbreviation_s *)crealloc(data,a_size*sizeof(abbreviation_s));
+
+   if (a_size > used) {
+      abbreviation_s *ptr = data + used;
+      abbreviation_s *ptr_end = data + a_size;
+
+      do {
+         ptr->init();
+      } while(++ptr < ptr_end);
    }
 
-   data = n_data;
    size = a_size;
 }/*}}}*/
 
@@ -4712,6 +4704,8 @@ printf(
 
 void ARRAY_COPY_RESIZE(ARRAY_GEN_PARAMS)
 {/*{{{*/
+if (TYPE_NUMBER & c_type_option_strict_dynamic)
+{/*{{{*/
 printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
@@ -4725,8 +4719,6 @@ printf(
 "   else {\n"
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
-      if (TYPE_NUMBER & c_type_option_strict_dynamic) {
 printf(
 "\n"
 "      %s *ptr = n_data;\n"
@@ -4735,27 +4727,9 @@ printf(
 "      do {\n"
 "         ptr->init();\n"
 "      } while(++ptr < ptr_end);\n"
-,TYPE_NAME,TYPE_NAME);
-      }
-      else {
-printf(
-"\n"
-"      if (a_size > used) {\n"
-"         %s *ptr = n_data + used;\n"
-"         %s *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            ptr->init();\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,TYPE_NAME,TYPE_NAME);
-      }
-   }
-printf(
 "   }\n"
 "\n"
-);
-   if (TYPE_NUMBER & c_type_option_strict_dynamic) {
+,TYPE_NAME,TYPE_NAME);
 printf(
 "   if (used > 0) {\n"
 "      %s *ptr = data;\n"
@@ -4767,14 +4741,34 @@ printf(
 "      } while(++n_ptr,++ptr < ptr_end);\n"
 "   }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   }
-   else {
 printf(
-"   if (used != 0) {\n"
-"      memcpy(n_data,data,used*sizeof(%s));\n"
+"\n"
+"   if (size > used) {\n"
+"      %s *ptr = data + used;\n"
+"      %s *ptr_end = data + size;\n"
+"\n"
+"      do {\n"
+"         ptr->clear();\n"
+"      } while(++ptr < ptr_end);\n"
 "   }\n"
-,TYPE_NAME);
-   }
+"\n"
+"   if (size != 0) {\n"
+"      cfree(data);\n"
+"   }\n"
+"\n"
+"   data = n_data;\n"
+"   size = a_size;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
+else
+{/*{{{*/
+printf(
+"void %s::copy_resize(unsigned a_size)\n"
+"{/*{{{*/\n"
+"   debug_assert(a_size >= used);\n"
+,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
@@ -4790,15 +4784,28 @@ printf(
    }
 printf(
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"   data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
+,TYPE_NAME,TYPE_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
 "\n"
-"   data = n_data;\n"
+"   if (a_size > used) {\n"
+"      %s *ptr = data + used;\n"
+"      %s *ptr_end = data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->init();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,TYPE_NAME,TYPE_NAME);
+   }
+printf(
+"\n"
 "   size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
 );
+}/*}}}*/
 }/*}}}*/
 
 void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)
@@ -7086,34 +7093,6 @@ printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_size >= used);\n"
-"\n"
-"   %s_element *n_data;\n"
-"\n"
-"   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
-"   }\n"
-"   else {\n"
-"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
-printf(
-"\n"
-"      if (a_size > used) {\n"
-"         %s_element *ptr = n_data + used;\n"
-"         %s_element *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            ptr->object.init();\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
-printf(
-"   }\n"
-"\n"
-"   if (used != 0) {\n"
-"      memcpy(n_data,data,used*sizeof(%s_element));\n"
-"   }\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -7130,11 +7109,23 @@ printf(
    }
 printf(
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"   data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
 "\n"
-"   data = n_data;\n"
+"   if (a_size > used) {\n"
+"      %s_element *ptr = data + used;\n"
+"      %s_element *ptr_end = data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.init();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
 "   size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
@@ -9391,34 +9382,6 @@ printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_size >= used);\n"
-"\n"
-"   %s_node *n_data;\n"
-"\n"
-"   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
-"   }\n"
-"   else {\n"
-"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
-"\n"
-"      if (a_size > used) {\n"
-"         %s_node *ptr = n_data + used;\n"
-"         %s_node *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            ptr->object.init();\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
-printf(
-"   }\n"
-"\n"
-"   if (used != 0) {\n"
-"      memcpy(n_data,data,used*sizeof(%s_node));\n"
-"   }\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -9435,11 +9398,23 @@ printf(
    }
 printf(
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"   data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
 "\n"
-"   data = n_data;\n"
+"   if (a_size > used) {\n"
+"      %s_node *ptr = data + used;\n"
+"      %s_node *ptr_end = data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.init();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
 "   size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
@@ -11483,34 +11458,6 @@ printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_size >= used);\n"
-"\n"
-"   %s_element *n_data;\n"
-"\n"
-"   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
-"   }\n"
-"   else {\n"
-"      n_data = (%s_element *)cmalloc(a_size*sizeof(%s_element));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
-printf(
-"\n"
-"      if (a_size > used) {\n"
-"         %s_element *ptr = n_data + used;\n"
-"         %s_element *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            ptr->object.init();\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
-printf(
-"   }\n"
-"\n"
-"   if (used != 0) {\n"
-"      memcpy(n_data,data,used*sizeof(%s_element));\n"
-"   }\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -11527,11 +11474,23 @@ printf(
    }
 printf(
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"   data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
 "\n"
-"   data = n_data;\n"
+"   if (a_size > used) {\n"
+"      %s_element *ptr = data + used;\n"
+"      %s_element *ptr_end = data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.init();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
 "   size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
@@ -13227,34 +13186,6 @@ printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_size >= used);\n"
-"\n"
-"   %s_node *n_data;\n"
-"\n"
-"   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
-"   }\n"
-"   else {\n"
-"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
-"\n"
-"      if (a_size > used) {\n"
-"         %s_node *ptr = n_data + used;\n"
-"         %s_node *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            ptr->object.init();\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
-printf(
-"   }\n"
-"\n"
-"   if (used != 0) {\n"
-"      memcpy(n_data,data,used*sizeof(%s_node));\n"
-"   }\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -13271,11 +13202,23 @@ printf(
    }
 printf(
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"   data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
 "\n"
-"   data = n_data;\n"
+"   if (a_size > used) {\n"
+"      %s_node *ptr = data + used;\n"
+"      %s_node *ptr_end = data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.init();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
 "   size = a_size;\n"
 "}/*}}}*/\n"
 "\n"

@@ -480,6 +480,7 @@ inline unsigned mutex_s::unlock()
 
 // - declare cmalloc/cfree functions -
 inline void *cmalloc(unsigned a_size);
+inline void *crealloc(void *a_location,unsigned a_size);
 inline void cfree(void *a_location);
 
 /*
@@ -863,6 +864,12 @@ struct mc_block_rb_tree_s
        *
        */
       inline void *cmalloc(unsigned a_size);
+
+      /*!
+       * \brief crealloc for mc_block_rb_tree_s structure overriding global
+       *
+       */
+      inline void *crealloc(void *a_location,unsigned a_size);
 
       /*!
        * \brief cfree for mc_block_rb_tree_s structure overriding global
@@ -1462,6 +1469,11 @@ inline void *mc_block_rb_tree_s::cmalloc(unsigned a_size)
    return malloc(a_size);
 }/*}}}*/
 
+inline void *mc_block_rb_tree_s::crealloc(void *a_location,unsigned a_size)
+{/*{{{*/
+   return realloc(a_location,a_size);
+}/*}}}*/
+
 inline void mc_block_rb_tree_s::cfree(void *a_location)
 {/*{{{*/
    free(a_location);
@@ -1605,6 +1617,13 @@ inline void *cmalloc(unsigned a_size)
    return mc_struct.get_block(a_size);
 }/*}}}*/
 
+inline void *crealloc(void *a_location,unsigned a_size)
+{/*{{{*/
+
+   // FIXME TODO continue ...
+   cassert(0);
+}/*}}}*/
+
 inline void cfree(void *a_location)
 {/*{{{*/
    mc_struct.release_block(a_location);
@@ -1616,6 +1635,11 @@ inline void mc_clear() {}
 inline void *cmalloc(unsigned a_size)
 {/*{{{*/
    return malloc(a_size);
+}/*}}}*/
+
+inline void *crealloc(void *a_location,unsigned a_size)
+{/*{{{*/
+   return realloc(a_location,a_size);
 }/*}}}*/
 
 inline void cfree(void *a_location)
@@ -2633,28 +2657,6 @@ void string_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   string_s *n_data;
-
-   if (a_size == 0) {
-      n_data = NULL;
-   }
-   else {
-      n_data = (string_s *)cmalloc(a_size*sizeof(string_s));
-
-      if (a_size > used) {
-         string_s *ptr = n_data + used;
-         string_s *ptr_end = n_data + a_size;
-
-         do {
-            ptr->init();
-         } while(++ptr < ptr_end);
-      }
-   }
-
-   if (used != 0) {
-      memcpy(n_data,data,used*sizeof(string_s));
-   }
-
    if (size > used) {
       string_s *ptr = data + used;
       string_s *ptr_end = data + size;
@@ -2664,11 +2666,17 @@ void string_array_s::copy_resize(unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   if (size != 0) {
-      cfree(data);
+   data = (string_s *)crealloc(data,a_size*sizeof(string_s));
+
+   if (a_size > used) {
+      string_s *ptr = data + used;
+      string_s *ptr_end = data + a_size;
+
+      do {
+         ptr->init();
+      } while(++ptr < ptr_end);
    }
 
-   data = n_data;
    size = a_size;
 }/*}}}*/
 

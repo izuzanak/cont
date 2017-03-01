@@ -984,34 +984,6 @@ printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
 "   debug_assert(a_size >= used);\n"
-"\n"
-"   %s_node *n_data;\n"
-"\n"
-"   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
-"   }\n"
-"   else {\n"
-"      n_data = (%s_node *)cmalloc(a_size*sizeof(%s_node));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
-"\n"
-"      if (a_size > used) {\n"
-"         %s_node *ptr = n_data + used;\n"
-"         %s_node *ptr_end = n_data + a_size;\n"
-"\n"
-"         do {\n"
-"            ptr->object.init();\n"
-"         } while(++ptr < ptr_end);\n"
-"      }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
-printf(
-"   }\n"
-"\n"
-"   if (used != 0) {\n"
-"      memcpy(n_data,data,used*sizeof(%s_node));\n"
-"   }\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -1028,11 +1000,23 @@ printf(
    }
 printf(
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"   data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
 "\n"
-"   data = n_data;\n"
+"   if (a_size > used) {\n"
+"      %s_node *ptr = data + used;\n"
+"      %s_node *ptr_end = data + a_size;\n"
+"\n"
+"      do {\n"
+"         ptr->object.init();\n"
+"      } while(++ptr < ptr_end);\n"
+"   }\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"\n"
 "   size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
