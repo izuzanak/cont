@@ -4084,8 +4084,8 @@ void data_type_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   if (size > used) {
-      data_type_s *ptr = data + used;
+   if (size > a_size) {
+      data_type_s *ptr = data + a_size;
       data_type_s *ptr_end = data + size;
 
       do {
@@ -4095,8 +4095,8 @@ void data_type_array_s::copy_resize(unsigned a_size)
 
    data = (data_type_s *)crealloc(data,a_size*sizeof(data_type_s));
 
-   if (a_size > used) {
-      data_type_s *ptr = data + used;
+   if (a_size > size) {
+      data_type_s *ptr = data + size;
       data_type_s *ptr_end = data + a_size;
 
       do {
@@ -4267,8 +4267,8 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   if (size > used) {
-      abbreviation_s *ptr = data + used;
+   if (size > a_size) {
+      abbreviation_s *ptr = data + a_size;
       abbreviation_s *ptr_end = data + size;
 
       do {
@@ -4278,8 +4278,8 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
 
    data = (abbreviation_s *)crealloc(data,a_size*sizeof(abbreviation_s));
 
-   if (a_size > used) {
-      abbreviation_s *ptr = data + used;
+   if (a_size > size) {
+      abbreviation_s *ptr = data + size;
       abbreviation_s *ptr_end = data + a_size;
 
       do {
@@ -4772,8 +4772,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (size > used) {\n"
-"      %s *ptr = data + used;\n"
+"   if (size > a_size) {\n"
+"      %s *ptr = data + a_size;\n"
 "      %s *ptr_end = data + size;\n"
 "\n"
 "      do {\n"
@@ -4789,8 +4789,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (a_size > used) {\n"
-"      %s *ptr = data + used;\n"
+"   if (a_size > size) {\n"
+"      %s *ptr = data + size;\n"
 "      %s *ptr_end = data + a_size;\n"
 "\n"
 "      do {\n"
@@ -7097,8 +7097,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (size > used) {\n"
-"      %s_element *ptr = data + used;\n"
+"   if (size > a_size) {\n"
+"      %s_element *ptr = data + a_size;\n"
 "      %s_element *ptr_end = data + size;\n"
 "\n"
 "      do {\n"
@@ -7114,8 +7114,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (a_size > used) {\n"
-"      %s_element *ptr = data + used;\n"
+"   if (a_size > size) {\n"
+"      %s_element *ptr = data + size;\n"
 "      %s_element *ptr_end = data + a_size;\n"
 "\n"
 "      do {\n"
@@ -9386,8 +9386,8 @@ printf(
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"   if (size > used) {\n"
-"      %s_node *ptr = data + used;\n"
+"   if (size > a_size) {\n"
+"      %s_node *ptr = data + a_size;\n"
 "      %s_node *ptr_end = data + size;\n"
 "\n"
 "      do {\n"
@@ -9403,8 +9403,8 @@ printf(
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"   if (a_size > used) {\n"
-"      %s_node *ptr = data + used;\n"
+"   if (a_size > size) {\n"
+"      %s_node *ptr = data + size;\n"
 "      %s_node *ptr_end = data + a_size;\n"
 "\n"
 "      do {\n"
@@ -11462,8 +11462,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (size > used) {\n"
-"      %s_element *ptr = data + used;\n"
+"   if (size > a_size) {\n"
+"      %s_element *ptr = data + a_size;\n"
 "      %s_element *ptr_end = data + size;\n"
 "\n"
 "      do {\n"
@@ -11479,8 +11479,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (a_size > used) {\n"
-"      %s_element *ptr = data + used;\n"
+"   if (a_size > size) {\n"
+"      %s_element *ptr = data + size;\n"
 "      %s_element *ptr_end = data + a_size;\n"
 "\n"
 "      do {\n"
@@ -13190,8 +13190,8 @@ printf(
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"   if (size > used) {\n"
-"      %s_node *ptr = data + used;\n"
+"   if (size > a_size) {\n"
+"      %s_node *ptr = data + a_size;\n"
 "      %s_node *ptr_end = data + size;\n"
 "\n"
 "      do {\n"
@@ -13207,8 +13207,8 @@ printf(
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"   if (a_size > used) {\n"
-"      %s_node *ptr = data + used;\n"
+"   if (a_size > size) {\n"
+"      %s_node *ptr = data + size;\n"
 "      %s_node *ptr_end = data + a_size;\n"
 "\n"
 "      do {\n"

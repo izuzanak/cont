@@ -2657,8 +2657,8 @@ void string_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   if (size > used) {
-      string_s *ptr = data + used;
+   if (size > a_size) {
+      string_s *ptr = data + a_size;
       string_s *ptr_end = data + size;
 
       do {
@@ -2668,8 +2668,8 @@ void string_array_s::copy_resize(unsigned a_size)
 
    data = (string_s *)crealloc(data,a_size*sizeof(string_s));
 
-   if (a_size > used) {
-      string_s *ptr = data + used;
+   if (a_size > size) {
+      string_s *ptr = data + size;
       string_s *ptr_end = data + a_size;
 
       do {

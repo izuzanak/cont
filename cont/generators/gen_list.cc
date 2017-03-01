@@ -586,8 +586,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (size > used) {\n"
-"      %s_element *ptr = data + used;\n"
+"   if (size > a_size) {\n"
+"      %s_element *ptr = data + a_size;\n"
 "      %s_element *ptr_end = data + size;\n"
 "\n"
 "      do {\n"
@@ -603,8 +603,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (a_size > used) {\n"
-"      %s_element *ptr = data + used;\n"
+"   if (a_size > size) {\n"
+"      %s_element *ptr = data + size;\n"
 "      %s_element *ptr_end = data + a_size;\n"
 "\n"
 "      do {\n"
