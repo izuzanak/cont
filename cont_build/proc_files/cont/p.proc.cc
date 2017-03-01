@@ -4026,7 +4026,15 @@ void lalr_stack_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   data = (lalr_stack_element_s *)crealloc(data,a_size*sizeof(lalr_stack_element_s));
+   if (a_size == 0) {
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
+   }
+   else {
+      data = (lalr_stack_element_s *)crealloc(data,a_size*sizeof(lalr_stack_element_s));
+   }
 
    size = a_size;
 }/*}}}*/

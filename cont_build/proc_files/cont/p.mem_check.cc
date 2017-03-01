@@ -1687,7 +1687,15 @@ void ui_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   data = (unsigned *)crealloc(data,a_size*sizeof(unsigned));
+   if (a_size == 0) {
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
+   }
+   else {
+      data = (unsigned *)crealloc(data,a_size*sizeof(unsigned));
+   }
 
    size = a_size;
 }/*}}}*/
@@ -2132,7 +2140,15 @@ void mc_block_rb_tree_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   data = (mc_block_rb_tree_s_node *)crealloc(data,a_size*sizeof(mc_block_rb_tree_s_node));
+   if (a_size == 0) {
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
+   }
+   else {
+      data = (mc_block_rb_tree_s_node *)crealloc(data,a_size*sizeof(mc_block_rb_tree_s_node));
+   }
 
    size = a_size;
 }/*}}}*/

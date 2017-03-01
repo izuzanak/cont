@@ -1018,7 +1018,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+"   }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(

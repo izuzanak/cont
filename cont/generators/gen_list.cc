@@ -598,7 +598,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+"   }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(

@@ -4093,7 +4093,15 @@ void data_type_array_s::copy_resize(unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   data = (data_type_s *)crealloc(data,a_size*sizeof(data_type_s));
+   if (a_size == 0) {
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
+   }
+   else {
+      data = (data_type_s *)crealloc(data,a_size*sizeof(data_type_s));
+   }
 
    if (a_size > size) {
       data_type_s *ptr = data + size;
@@ -4276,7 +4284,15 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   data = (abbreviation_s *)crealloc(data,a_size*sizeof(abbreviation_s));
+   if (a_size == 0) {
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
+   }
+   else {
+      data = (abbreviation_s *)crealloc(data,a_size*sizeof(abbreviation_s));
+   }
 
    if (a_size > size) {
       abbreviation_s *ptr = data + size;
@@ -4784,7 +4800,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
+"   }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -7109,7 +7133,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+"   }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -9398,7 +9430,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+"   }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -11474,7 +11514,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
+"   }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -13202,7 +13250,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+"   }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(

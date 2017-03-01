@@ -397,7 +397,15 @@ printf(
    }
 printf(
 "\n"
-"   data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
+"   if (a_size == 0) {\n"
+"      if (data != NULL) {\n"
+"         cfree(data);\n"
+"      }\n"
+"      data = NULL;\n"
+"   }\n"
+"   else {\n"
+"      data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
+"   }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(

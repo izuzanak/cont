@@ -2666,7 +2666,15 @@ void string_array_s::copy_resize(unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   data = (string_s *)crealloc(data,a_size*sizeof(string_s));
+   if (a_size == 0) {
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
+   }
+   else {
+      data = (string_s *)crealloc(data,a_size*sizeof(string_s));
+   }
 
    if (a_size > size) {
       string_s *ptr = data + size;
