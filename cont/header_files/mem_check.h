@@ -81,6 +81,11 @@ inline void cfree(void *a_location);
       inline void *get_block(unsigned a_size);
 
       /*!
+       * \brief reallocate memory block to size a_size
+       */
+      inline void *reget_block(void *a_location,unsigned a_size);
+
+      /*!
        * \brief release block of memory by its location
        */
       inline void release_block(void *a_location);
@@ -166,6 +171,41 @@ inline void *mc_struct_s::get_block(unsigned a_size)
    return location;
 }/*}}}*/
 
+inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
+{/*{{{*/
+   mutex.lock();
+
+   if (a_location != NULL)
+   {
+     mc_block_s mc_block = {a_location,0};
+     unsigned idx = mc_block_set.get_idx(mc_block);
+     cassert(idx != c_idx_not_exist);
+
+     // - decrease size of allocated memory -
+     act_alloc_size -= mc_block_set[idx].size;
+
+     mc_block_set.remove(idx);
+   }
+
+   void *location = realloc(a_location,a_size);
+
+   {
+     mc_block_s mc_block = {location,a_size};
+     mc_block_set.insert(mc_block);
+
+     // - increase size of allocated memory -
+     alloc_size += a_size;
+     act_alloc_size += a_size;
+     if (act_alloc_size > max_alloc_size) {
+        max_alloc_size = act_alloc_size;
+     }
+   }
+
+   mutex.unlock();
+
+   return location;
+}/*}}}*/
+
 inline void mc_struct_s::release_block(void *a_location)
 {/*{{{*/
    mutex.lock();
@@ -209,9 +249,7 @@ inline void *cmalloc(unsigned a_size)
 
 inline void *crealloc(void *a_location,unsigned a_size)
 {/*{{{*/
-
-   // FIXME TODO continue ...
-   cassert(0);
+  return mc_struct.reget_block(a_location,a_size);
 }/*}}}*/
 
 inline void cfree(void *a_location)
