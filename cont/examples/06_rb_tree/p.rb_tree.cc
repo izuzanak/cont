@@ -14,6 +14,51 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
 
 
 #ifndef __RB_TREE_H
@@ -36,6 +81,7 @@ typedef long double ld;
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -381,7 +427,7 @@ struct rec_rb_tree_s
    inline void __rotate_right(unsigned a_idx);
 
    inline unsigned __get_new_index();
-   void __binary_tree_insert(unsigned a_new_idx,record_s &a_value);
+   unsigned __binary_tree_insert(unsigned a_new_idx,record_s &a_value,bool a_unique);
 
    inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);
    void __remove_black_black(unsigned a_idx);
@@ -433,11 +479,26 @@ struct rec_rb_tree_s
    inline unsigned insert(record_s &a_value);
 
    /*!
+    * \brief __GEN insert node to rb_tree if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+   inline unsigned unique_insert(record_s &a_value);
+
+   /*!
     * \brief __GEN insert node to rb_tree by swapping
     * \param a_value - reference to value inserted to rb_tree
     * \return - position of node in rb_tree
     */
    inline unsigned swap_insert(record_s &a_value);
+
+   /*!
+    * \brief __GEN insert node to rb_tree by swapping if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+   inline unsigned unique_swap_insert(record_s &a_value);
+
    /*!
     * \brief __GEN remove node at index from rb_tree
     * \param a_idx - index of node to remove
@@ -446,7 +507,7 @@ struct rec_rb_tree_s
 
    /*!
     * \brief __GEN resize rb_tree capacity
-    * \param a_size - desired rb_tree capacity
+    * \param a_size - requested rb_tree capacity
     */
    void copy_resize(unsigned a_size);
 
@@ -859,7 +920,7 @@ inline unsigned rec_rb_tree_s::insert(record_s &a_value)
 {/*{{{*/
    unsigned new_node_idx = __get_new_index();
 
-   __binary_tree_insert(new_node_idx,a_value);
+   __binary_tree_insert(new_node_idx,a_value,false);
    __insert_operation(new_node_idx);
 
    data[new_node_idx].object = a_value;
@@ -871,12 +932,54 @@ inline unsigned rec_rb_tree_s::swap_insert(record_s &a_value)
 {/*{{{*/
    unsigned new_node_idx = __get_new_index();
 
-   __binary_tree_insert(new_node_idx,a_value);
+   __binary_tree_insert(new_node_idx,a_value,false);
    __insert_operation(new_node_idx);
 
    data[new_node_idx].object.swap(a_value);
 
    return new_node_idx;
+}/*}}}*/
+
+inline unsigned rec_rb_tree_s::unique_insert(record_s &a_value)
+{/*{{{*/
+   unsigned new_node_idx = __get_new_index();
+   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+   if (old_node_idx != c_idx_not_exist) {
+      rec_rb_tree_s_node &new_node = data[new_node_idx];
+
+      new_node.parent_idx = free_idx;
+      free_idx = new_node_idx;
+
+      return old_node_idx;
+   }
+
+   __insert_operation(new_node_idx);
+
+   data[new_node_idx].object = a_value;
+
+  return new_node_idx;
+}/*}}}*/
+
+inline unsigned rec_rb_tree_s::unique_swap_insert(record_s &a_value)
+{/*{{{*/
+   unsigned new_node_idx = __get_new_index();
+   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+   if (old_node_idx != c_idx_not_exist) {
+      rec_rb_tree_s_node &new_node = data[new_node_idx];
+
+      new_node.parent_idx = free_idx;
+      free_idx = new_node_idx;
+
+      return old_node_idx;
+   }
+
+   __insert_operation(new_node_idx);
+
+   data[new_node_idx].object.swap(a_value);
+
+  return new_node_idx;
 }/*}}}*/
 
 inline rec_rb_tree_s &rec_rb_tree_s::operator=(rec_rb_tree_s &a_src)
@@ -955,24 +1058,16 @@ void ui_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   unsigned *n_data;
-
    if (a_size == 0) {
-      n_data = NULL;
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
    }
    else {
-      n_data = (unsigned *)cmalloc(a_size*sizeof(unsigned));
+      data = (unsigned *)crealloc(data,a_size*sizeof(unsigned));
    }
 
-   if (used != 0) {
-      memcpy(n_data,data,used*sizeof(unsigned));
-   }
-
-   if (size != 0) {
-      cfree(data);
-   }
-
-   data = n_data;
    size = a_size;
 }/*}}}*/
 
@@ -1116,7 +1211,7 @@ unsigned rec_rb_tree_s::get_prev_idx(unsigned a_idx)
    }
 }/*}}}*/
 
-void rec_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,record_s &a_value)
+unsigned rec_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,record_s &a_value,bool a_unique)
 {/*{{{*/
    if (root_idx == c_idx_not_exist) {
       if (leaf_idx == c_idx_not_exist) {
@@ -1139,7 +1234,8 @@ void rec_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,record_s &a_value)
       do {
          rec_rb_tree_s_node &node = data[node_idx];
          
-         if (__compare_value(a_value,node.object) < 0) {
+         int comp_result = __compare_value(a_value,node.object);
+         if (comp_result < 0) {
             if (node.left_idx == leaf_idx) {
                node.left_idx = a_new_idx;
                break;
@@ -1147,6 +1243,10 @@ void rec_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,record_s &a_value)
             node_idx = node.left_idx;
          }
          else {
+            if (a_unique && comp_result == 0) {
+               return node_idx;
+            }
+
             if (node.right_idx == leaf_idx) {
                node.right_idx = a_new_idx;
                break;
@@ -1162,6 +1262,8 @@ void rec_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,record_s &a_value)
    new_node.left_idx = leaf_idx;
    new_node.right_idx = leaf_idx;
    new_node.color = false;
+
+   return c_idx_not_exist;
 }/*}}}*/
 
 void rec_rb_tree_s::__remove_black_black(unsigned a_idx)
@@ -1400,24 +1502,16 @@ void rec_rb_tree_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   rec_rb_tree_s_node *n_data;
-
    if (a_size == 0) {
-      n_data = NULL;
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
    }
    else {
-      n_data = (rec_rb_tree_s_node *)cmalloc(a_size*sizeof(rec_rb_tree_s_node));
+      data = (rec_rb_tree_s_node *)crealloc(data,a_size*sizeof(rec_rb_tree_s_node));
    }
 
-   if (used != 0) {
-      memcpy(n_data,data,used*sizeof(rec_rb_tree_s_node));
-   }
-
-   if (size != 0) {
-      cfree(data);
-   }
-
-   data = n_data;
    size = a_size;
 }/*}}}*/
 
@@ -1593,7 +1687,7 @@ bool rec_rb_tree_s::operator==(rec_rb_tree_s &a_second)
       unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);
       unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);
       do {
-         if (__compare_value(data[node_idx].object,a_second.data[s_node_idx].object) != 0) {
+         if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {
             return false;
          }
 
@@ -1615,7 +1709,7 @@ void rec_rb_tree_s::rehash_tree()
 
    ui_array_s indexes;
    indexes.init();
-   
+
    {
       unsigned stack[get_descent_stack_size()];
       unsigned *stack_ptr = stack;
@@ -1630,7 +1724,7 @@ void rec_rb_tree_s::rehash_tree()
 
    root_idx = c_idx_not_exist;
 
-   bool processed[indexes.used];
+   bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));
    memset(processed,false,indexes.used*sizeof(bool));
 
    unsigned step = indexes.used >> 1;
@@ -1641,7 +1735,7 @@ void rec_rb_tree_s::rehash_tree()
             if (!processed[idx]) {
                unsigned node_idx = indexes[idx];
 
-               __binary_tree_insert(node_idx,data[node_idx].object);
+               __binary_tree_insert(node_idx,data[node_idx].object,false);
                __insert_operation(node_idx);
 
                processed[idx] = true;
@@ -1651,9 +1745,10 @@ void rec_rb_tree_s::rehash_tree()
    }
 
    unsigned node_idx = indexes[0];
-   __binary_tree_insert(node_idx,data[node_idx].object);
+   __binary_tree_insert(node_idx,data[node_idx].object,false);
    __insert_operation(node_idx);
 
+   cfree(processed);
    indexes.clear();
 }/*}}}*/
 

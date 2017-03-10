@@ -14,6 +14,51 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
 
 
 #ifndef __LIST_H
@@ -36,6 +81,7 @@ typedef long double ld;
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -294,6 +340,11 @@ struct rec_list_s
     */
    inline unsigned insert_after(unsigned a_idx,record_s &a_value);
 
+   inline unsigned prepend_blank();
+   inline unsigned append_blank();
+   inline unsigned insert_blank_before(unsigned a_idx);
+   inline unsigned insert_blank_after(unsigned a_idx);
+
    /*!
     * \brief __GEN remove element at index from list
     * \param a_idx - index of element to remove
@@ -314,7 +365,7 @@ struct rec_list_s
 
    /*!
     * \brief __GEN resize list capacity
-    * \param a_size - desired list capacity
+    * \param a_size - requested list capacity
     */
    void copy_resize(unsigned a_size);
 
@@ -562,6 +613,144 @@ inline unsigned rec_list_s::insert_after(unsigned a_idx,record_s &a_value)
    return new_idx;
 }/*}}}*/
 
+inline unsigned rec_list_s::prepend_blank()
+{/*{{{*/
+   unsigned new_idx;
+
+   if (free_idx != c_idx_not_exist) {
+      new_idx = free_idx;
+      free_idx = data[new_idx].next_idx;
+   }
+   else {
+      if (used >= size) {
+         copy_resize((size << 1) + c_array_add);
+      }
+
+      new_idx = used++;
+   }
+
+   rec_list_s_element &new_element = data[new_idx];
+
+   new_element.next_idx = first_idx;
+   new_element.prev_idx = c_idx_not_exist;
+
+   if (first_idx != c_idx_not_exist) {
+      data[first_idx].prev_idx = new_idx;
+   }
+   else {
+      last_idx = new_idx;
+   }
+
+   first_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
+inline unsigned rec_list_s::append_blank()
+{/*{{{*/
+   unsigned new_idx;
+
+   if (free_idx != c_idx_not_exist) {
+      new_idx = free_idx;
+      free_idx = data[new_idx].next_idx;
+   }
+   else {
+      if (used >= size) {
+         copy_resize((size << 1) + c_array_add);
+      }
+
+      new_idx = used++;
+   }
+
+   rec_list_s_element &new_element = data[new_idx];
+
+   new_element.next_idx = c_idx_not_exist;
+   new_element.prev_idx = last_idx;
+
+   if (last_idx != c_idx_not_exist) {
+      data[last_idx].next_idx = new_idx;
+   }
+   else {
+      first_idx = new_idx;
+   }
+
+   last_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
+inline unsigned rec_list_s::insert_blank_before(unsigned a_idx)
+{/*{{{*/
+   debug_assert(a_idx < used);
+
+   unsigned new_idx;
+
+   if (free_idx != c_idx_not_exist) {
+      new_idx = free_idx;
+      free_idx = data[new_idx].next_idx;
+   }
+   else {
+      if (used >= size) {
+         copy_resize((size << 1) + c_array_add);
+      }
+
+      new_idx = used++;
+   }
+
+   rec_list_s_element &idx_element = data[a_idx];
+   rec_list_s_element &new_element = data[new_idx];
+
+   new_element.next_idx = a_idx;
+   new_element.prev_idx = idx_element.prev_idx;
+
+   if (idx_element.prev_idx != c_idx_not_exist) {
+      data[idx_element.prev_idx].next_idx = new_idx;
+   }
+   else {
+      first_idx = new_idx;
+   }
+
+   idx_element.prev_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
+inline unsigned rec_list_s::insert_blank_after(unsigned a_idx)
+{/*{{{*/
+   debug_assert(a_idx < used);
+
+   unsigned new_idx;
+
+   if (free_idx != c_idx_not_exist) {
+      new_idx = free_idx;
+      free_idx = data[new_idx].next_idx;
+   }
+   else {
+      if (used >= size) {
+         copy_resize((size << 1) + c_array_add);
+      }
+
+      new_idx = used++;
+   }
+
+   rec_list_s_element &idx_element = data[a_idx];
+   rec_list_s_element &new_element = data[new_idx];
+
+   new_element.next_idx = idx_element.next_idx;
+   new_element.prev_idx = a_idx;
+
+   if (idx_element.next_idx != c_idx_not_exist) {
+      data[idx_element.next_idx].prev_idx = new_idx;
+   }
+   else {
+      last_idx = new_idx;
+   }
+
+   idx_element.next_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
 inline void rec_list_s::remove(unsigned a_idx)
 {/*{{{*/
    debug_assert(a_idx < used);
@@ -636,24 +825,16 @@ void rec_list_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   rec_list_s_element *n_data;
-
    if (a_size == 0) {
-      n_data = NULL;
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
    }
    else {
-      n_data = (rec_list_s_element *)cmalloc(a_size*sizeof(rec_list_s_element));
+      data = (rec_list_s_element *)crealloc(data,a_size*sizeof(rec_list_s_element));
    }
 
-   if (used != 0) {
-      memcpy(n_data,data,used*sizeof(rec_list_s_element));
-   }
-
-   if (size != 0) {
-      cfree(data);
-   }
-
-   data = n_data;
    size = a_size;
 }/*}}}*/
 

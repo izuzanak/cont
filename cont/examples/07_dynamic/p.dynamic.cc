@@ -14,6 +14,51 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
 
 
 #ifndef __DYNAMIC_H
@@ -36,6 +81,7 @@ typedef long double ld;
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -620,30 +666,8 @@ void string_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= used);
 
-   string_s *n_data;
-
-   if (a_size == 0) {
-      n_data = NULL;
-   }
-   else {
-      n_data = (string_s *)cmalloc(a_size*sizeof(string_s));
-
-      if (a_size > used) {
-         string_s *ptr = n_data + used;
-         string_s *ptr_end = n_data + a_size;
-
-         do {
-            ptr->init();
-         } while(++ptr < ptr_end);
-      }
-   }
-
-   if (used != 0) {
-      memcpy(n_data,data,used*sizeof(string_s));
-   }
-
-   if (size > used) {
-      string_s *ptr = data + used;
+   if (size > a_size) {
+      string_s *ptr = data + a_size;
       string_s *ptr_end = data + size;
 
       do {
@@ -651,11 +675,25 @@ void string_array_s::copy_resize(unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   if (size != 0) {
-      cfree(data);
+   if (a_size == 0) {
+      if (data != NULL) {
+         cfree(data);
+      }
+      data = NULL;
+   }
+   else {
+      data = (string_s *)crealloc(data,a_size*sizeof(string_s));
    }
 
-   data = n_data;
+   if (a_size > size) {
+      string_s *ptr = data + size;
+      string_s *ptr_end = data + a_size;
+
+      do {
+         ptr->init();
+      } while(++ptr < ptr_end);
+   }
+
    size = a_size;
 }/*}}}*/
 

@@ -14,6 +14,51 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
 
 
 #ifndef __QUEUE_H
@@ -36,6 +81,7 @@ typedef long double ld;
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -249,13 +295,15 @@ struct rec_queue_s
    /*!
     * \brief __GEN insert element to end of queue
     * \param a_value - value inserted to end of queue
+    * \return index of inserted element
     */
-   inline void insert(record_s &a_value);
+   inline unsigned insert(record_s &a_value);
 
    /*!
     * \brief __GEN insert blank element to the end of queue
+    * \return index of inserted element
     */
-   inline void insert_blank();
+   inline unsigned insert_blank();
 
    /*!
     * \brief __GEN return value of next element in queue, and remove it
@@ -352,29 +400,34 @@ inline void rec_queue_s::swap(rec_queue_s &a_second)
    a_second.data = tmp_data;
 }/*}}}*/
 
-inline void rec_queue_s::insert(record_s &a_value)
+inline unsigned rec_queue_s::insert(record_s &a_value)
 {/*{{{*/
    if (used >= size) {
       copy_resize((size << 1) + c_array_add);
    }
 
-   if (begin + used >= size) {
-      data[begin + used - size] = a_value;
-   }
-   else {
-      data[begin + used] = a_value;
+   unsigned inserted_idx = begin + used++;
+   if (inserted_idx >= size) {
+      inserted_idx -= size;
    }
 
-   used++;
+   data[inserted_idx] = a_value;
+
+   return inserted_idx;
 }/*}}}*/
 
-inline void rec_queue_s::insert_blank()
+inline unsigned rec_queue_s::insert_blank()
 {/*{{{*/
    if (used >= size) {
       copy_resize((size << 1) + c_array_add);
    }
 
-   used++;
+   unsigned inserted_idx = begin + used++;
+   if (inserted_idx >= size) {
+      inserted_idx -= size;
+   }
+
+   return inserted_idx;
 }/*}}}*/
 
 inline record_s &rec_queue_s::next()
@@ -396,11 +449,12 @@ inline record_s &rec_queue_s::last()
 {/*{{{*/
    debug_assert(used > 0);
 
-   if (begin + (used - 1) >= size) {
-      return data[begin + (used - 1) - size];
+   unsigned last_idx = begin + (used - 1);
+   if (last_idx >= size) {
+      return data[last_idx - size];
    }
    else {
-      return data[begin + (used - 1)];
+      return data[last_idx];
    }
 }/*}}}*/
 
