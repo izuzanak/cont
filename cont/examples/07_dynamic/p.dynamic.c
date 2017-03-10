@@ -13,6 +13,62 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define CONT_INIT(TYPE,NAME) \
+  TYPE NAME;\
+  TYPE ## _init(&NAME);
+
+#define CONT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;
+
+#define CONT_INIT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\
+  TYPE ## _init(&NAME);
+
 
 
 #ifndef __DYNAMIC_H
@@ -32,9 +88,12 @@ typedef long double ld;
 #include "assert.h"
 #include "math.h"
 
+#define ENABLED 1
+
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -77,13 +136,16 @@ struct record_s
    unsigned value; //!< member - 1
 };
 
-inline void record_s_init(record_s *this);
-inline void record_s_clear(record_s *this);
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
-inline void record_s_flush_all(record_s *this);
-inline void record_s_swap(record_s *this,record_s *a_second);
-inline void record_s_copy(record_s *this,record_s *a_src);
-inline int record_s_compare(record_s *this,record_s *a_second);
+static inline void record_s_init(record_s *this);
+static inline void record_s_clear(record_s *this);
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
+static inline void record_s_flush_all(record_s *this);
+static inline void record_s_swap(record_s *this,record_s *a_second);
+static inline void record_s_copy(record_s *this,record_s *a_src);
+static inline int record_s_compare(record_s *this,record_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg);
+#endif
 
 inline unsigned record_s_get_index();
 inline unsigned record_s_get_value();
@@ -98,27 +160,27 @@ inline unsigned record_s_get_value();
 // -- record_s --
 // --- struct record_s inline method definition ---
 
-inline void record_s_init(record_s *this)
+static inline void record_s_init(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_clear(record_s *this)
+static inline void record_s_clear(record_s *this)
 {/*{{{*/
 
    record_s_init(this);
 }/*}}}*/
 
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
 {/*{{{*/
    this->index = a_index;
    this->value = a_value;
 }/*}}}*/
 
-inline void record_s_flush_all(record_s *this)
+static inline void record_s_flush_all(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_swap(record_s *this,record_s *a_second)
+static inline void record_s_swap(record_s *this,record_s *a_second)
 {/*{{{*/
    unsigned tmp_index = this->index;
    this->index = a_second->index;
@@ -129,16 +191,27 @@ inline void record_s_swap(record_s *this,record_s *a_second)
    a_second->value = tmp_value;
 }/*}}}*/
 
-inline void record_s_copy(record_s *this,record_s *a_src)
+static inline void record_s_copy(record_s *this,record_s *a_src)
 {/*{{{*/
    this->index = a_src->index;
    this->value = a_src->value;
 }/*}}}*/
 
-inline int record_s_compare(record_s *this,record_s *a_second)
+static inline int record_s_compare(record_s *this,record_s *a_second)
 {/*{{{*/
    return (this->index == a_second->index && this->value == a_second->value);
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'{');
+   unsigned_to_string(&this->index,a_trg);
+   bc_array_s_push(a_trg,',');
+   unsigned_to_string(&this->value,a_trg);
+   bc_array_s_push(a_trg,'}');
+}/*}}}*/
+#endif
 
 
 
@@ -185,14 +258,14 @@ struct string_s
   char *data;
 };
 
-inline void string_s_init(string_s *this);
-inline void string_s_clear(string_s *this);
-inline void string_s_create(string_s *this,unsigned a_length);
-inline void string_s_set(string_s *this,unsigned a_length,const char *a_data);
-inline void string_s_flush_all(string_s *this) {}
-inline void string_s_swap(string_s *this,string_s *a_second);
-inline void string_s_copy(string_s *this,string_s *a_src);
-inline int string_s_compare(string_s *this,string_s *a_second);
+static inline void string_s_init(string_s *this);
+static inline void string_s_clear(string_s *this);
+static inline void string_s_create(string_s *this,unsigned a_length);
+static inline void string_s_set(string_s *this,unsigned a_length,const char *a_data);
+static inline void string_s_flush_all(string_s *this) {}
+static inline void string_s_swap(string_s *this,string_s *a_second);
+static inline void string_s_copy(string_s *this,string_s *a_src);
+static inline int string_s_compare(string_s *this,string_s *a_second);
 
 /*
  * definition of generated structures
@@ -210,26 +283,29 @@ struct string_array_s
    string_s *data; //!< pointer to array elements
 };
 
-inline void string_array_s_init(string_array_s *this);
-inline void string_array_s_init_size(string_array_s *this,unsigned a_size);
+static inline void string_array_s_init(string_array_s *this);
+static inline void string_array_s_init_size(string_array_s *this,unsigned a_size);
 void string_array_s_clear(string_array_s *this);
 void string_array_s_set(string_array_s *this,unsigned a_used,string_s *a_data);
-inline void string_array_s_flush(string_array_s *this);
-inline void string_array_s_flush_all(string_array_s *this);
-inline void string_array_s_swap(string_array_s *this,string_array_s *a_second);
-inline string_s *string_array_s_at(string_array_s *this,unsigned a_idx);
-inline void string_array_s_push(string_array_s *this,string_s *a_value);
-inline void string_array_s_push_blank(string_array_s *this);
+static inline void string_array_s_flush(string_array_s *this);
+static inline void string_array_s_flush_all(string_array_s *this);
+static inline void string_array_s_swap(string_array_s *this,string_array_s *a_second);
+static inline string_s *string_array_s_at(string_array_s *this,unsigned a_idx);
+static inline void string_array_s_push(string_array_s *this,string_s *a_value);
+static inline void string_array_s_push_blank(string_array_s *this);
 void string_array_s_reserve(string_array_s *this,unsigned a_cnt);
 void string_array_s_push_blanks(string_array_s *this,unsigned a_cnt);
-inline void string_array_s_push_clear(string_array_s *this);
-inline string_s *string_array_s_pop(string_array_s *this);
-inline string_s *string_array_s_last(string_array_s *this);
+static inline void string_array_s_push_clear(string_array_s *this);
+static inline string_s *string_array_s_pop(string_array_s *this);
+static inline string_s *string_array_s_last(string_array_s *this);
 void string_array_s_copy_resize(string_array_s *this,unsigned a_size);
 void string_array_s_fill(string_array_s *this,string_s *a_value);
 unsigned string_array_s_get_idx(string_array_s *this,string_s *a_value);
 void string_array_s_copy(string_array_s *this,string_array_s *a_src);
 int string_array_s_compare(string_array_s *this,string_array_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+void string_array_s_to_string(string_array_s *this,bc_array_s *a_trg);
+#endif
 
 
 
@@ -237,13 +313,13 @@ int string_array_s_compare(string_array_s *this,string_array_s *a_second);
  * inline methods of structure string_s
  */
 
-inline void string_s_init(string_s *this)
+static inline void string_s_init(string_s *this)
 {/*{{{*/
   this->size = 1;
   this->data = (char *)&c_string_terminating_char;
 }/*}}}*/
 
-inline void string_s_clear(string_s *this)
+static inline void string_s_clear(string_s *this)
 {/*{{{*/
   if (this->data != &c_string_terminating_char)
   {
@@ -253,7 +329,7 @@ inline void string_s_clear(string_s *this)
   string_s_init(this);
 }/*}}}*/
 
-inline void string_s_create(string_s *this,unsigned a_length)
+static inline void string_s_create(string_s *this,unsigned a_length)
 {/*{{{*/
   string_s_clear(this);
   this->data = (char *)cmalloc((a_length + 1)*sizeof(char));
@@ -262,7 +338,7 @@ inline void string_s_create(string_s *this,unsigned a_length)
   this->size = a_length + 1;
 }/*}}}*/
 
-inline void string_s_set(string_s *this,unsigned a_length,const char *a_data)
+static inline void string_s_set(string_s *this,unsigned a_length,const char *a_data)
 {/*{{{*/
   string_s_clear(this);
   this->data = (char *)cmalloc((a_length + 1)*sizeof(char));
@@ -276,7 +352,7 @@ inline void string_s_set(string_s *this,unsigned a_length,const char *a_data)
   this->size = a_length + 1;
 }/*}}}*/
 
-inline void string_s_swap(string_s *this,string_s *a_second)
+static inline void string_s_swap(string_s *this,string_s *a_second)
 {/*{{{*/
   unsigned tmp_size = this->size;
   this->size = a_second->size;
@@ -287,7 +363,7 @@ inline void string_s_swap(string_s *this,string_s *a_second)
   a_second->data = tmp_data;
 }/*}}}*/
 
-inline void string_s_copy(string_s *this,string_s *a_src)
+static inline void string_s_copy(string_s *this,string_s *a_src)
 {/*{{{*/
   string_s_clear(this);
 
@@ -298,7 +374,7 @@ inline void string_s_copy(string_s *this,string_s *a_src)
   this->size = a_src->size;
 }/*}}}*/
 
-inline int string_s_compare(string_s *this,string_s *a_second)
+static inline int string_s_compare(string_s *this,string_s *a_second)
 {/*{{{*/
   if (this->size != a_second->size) return 0;
   if (this->data == &c_string_terminating_char) return 1;
@@ -312,30 +388,30 @@ inline int string_s_compare(string_s *this,string_s *a_second)
 // -- string_array_s --
 // --- struct string_array_s inline method definition ---
 
-inline void string_array_s_init(string_array_s *this)
+static inline void string_array_s_init(string_array_s *this)
 {/*{{{*/
    this->size = 0;
    this->used = 0;
    this->data = NULL;
 }/*}}}*/
 
-inline void string_array_s_init_size(string_array_s *this,unsigned a_size)
+static inline void string_array_s_init_size(string_array_s *this,unsigned a_size)
 {/*{{{*/
    string_array_s_init(this);
    string_array_s_copy_resize(this,a_size);
 }/*}}}*/
 
-inline void string_array_s_flush(string_array_s *this)
+static inline void string_array_s_flush(string_array_s *this)
 {/*{{{*/
    string_array_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void string_array_s_flush_all(string_array_s *this)
+static inline void string_array_s_flush_all(string_array_s *this)
 {/*{{{*/
    string_array_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void string_array_s_swap(string_array_s *this,string_array_s *a_second)
+static inline void string_array_s_swap(string_array_s *this,string_array_s *a_second)
 {/*{{{*/
    unsigned tmp_unsigned = this->size;
    this->size = a_second->size;
@@ -350,13 +426,13 @@ inline void string_array_s_swap(string_array_s *this,string_array_s *a_second)
    a_second->data = tmp_data;
 }/*}}}*/
 
-inline string_s *string_array_s_at(string_array_s *this,unsigned a_idx)
+static inline string_s *string_array_s_at(string_array_s *this,unsigned a_idx)
 {/*{{{*/
    debug_assert(a_idx < this->used);
    return this->data + a_idx;
 }/*}}}*/
 
-inline void string_array_s_push(string_array_s *this,string_s *a_value)
+static inline void string_array_s_push(string_array_s *this,string_s *a_value)
 {/*{{{*/
    if (this->used >= this->size) {
       string_array_s_copy_resize(this,(this->size << 1) + c_array_add);
@@ -365,7 +441,7 @@ inline void string_array_s_push(string_array_s *this,string_s *a_value)
    string_s_copy(this->data + this->used++,a_value);
 }/*}}}*/
 
-inline void string_array_s_push_blank(string_array_s *this)
+static inline void string_array_s_push_blank(string_array_s *this)
 {/*{{{*/
    if (this->used >= this->size) {
       string_array_s_copy_resize(this,(this->size << 1) + c_array_add);
@@ -374,7 +450,7 @@ inline void string_array_s_push_blank(string_array_s *this)
    this->used++;
 }/*}}}*/
 
-inline void string_array_s_push_clear(string_array_s *this)
+static inline void string_array_s_push_clear(string_array_s *this)
 {/*{{{*/
    if (this->used >= this->size) {
       string_array_s_copy_resize(this,(this->size << 1) + c_array_add);
@@ -383,13 +459,13 @@ inline void string_array_s_push_clear(string_array_s *this)
    string_s_clear(this->data + this->used++);
 }/*}}}*/
 
-inline string_s *string_array_s_pop(string_array_s *this)
+static inline string_s *string_array_s_pop(string_array_s *this)
 {/*{{{*/
    debug_assert(this->used > 0);
    return this->data + --this->used;
 }/*}}}*/
 
-inline string_s *string_array_s_last(string_array_s *this)
+static inline string_s *string_array_s_last(string_array_s *this)
 {/*{{{*/
    debug_assert(this->used > 0);
    return this->data + this->used - 1;
@@ -450,7 +526,7 @@ void string_array_s_set(string_array_s *this,unsigned a_used,string_s *a_data)
    string_s *a_ptr = a_data;
 
    do {
-      *ptr = *a_ptr;
+      string_s_copy(ptr,a_ptr);
    } while(++a_ptr,++ptr < ptr_end);
 
    this->used = a_used;
@@ -488,30 +564,8 @@ void string_array_s_copy_resize(string_array_s *this,unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= this->used);
 
-   string_s *n_data;
-
-   if (a_size == 0) {
-      n_data = NULL;
-   }
-   else {
-      n_data = (string_s *)cmalloc(a_size*sizeof(string_s));
-
-      if (a_size > this->used) {
-         string_s *ptr = n_data + this->used;
-         string_s *ptr_end = n_data + a_size;
-
-         do {
-            string_s_init(ptr);
-         } while(++ptr < ptr_end);
-      }
-   }
-
-   if (this->used != 0) {
-      memcpy(n_data,this->data,this->used*sizeof(string_s));
-   }
-
-   if (this->size > this->used) {
-      string_s *ptr = this->data + this->used;
+   if (this->size > a_size) {
+      string_s *ptr = this->data + a_size;
       string_s *ptr_end = this->data + this->size;
 
       do {
@@ -519,11 +573,25 @@ void string_array_s_copy_resize(string_array_s *this,unsigned a_size)
       } while(++ptr < ptr_end);
    }
 
-   if (this->size != 0) {
-      cfree(this->data);
+   if (a_size == 0) {
+      if (this->data != NULL) {
+         cfree(this->data);
+      }
+      this->data = NULL;
+   }
+   else {
+      this->data = (string_s *)crealloc(this->data,a_size*sizeof(string_s));
    }
 
-   this->data = n_data;
+   if (a_size > this->size) {
+      string_s *ptr = this->data + this->size;
+      string_s *ptr_end = this->data + a_size;
+
+      do {
+         string_s_init(ptr);
+      } while(++ptr < ptr_end);
+   }
+
    this->size = a_size;
 }/*}}}*/
 
@@ -593,6 +661,29 @@ int string_array_s_compare(string_array_s *this,string_array_s *a_second)
 
    return 1;
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+void string_array_s_to_string(string_array_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'[');
+
+   if (this->used != 0) {
+      string_s *ptr = this->data;
+      string_s *ptr_end = this->data + this->used;
+
+      do {
+         string_s_to_string(ptr,a_trg);
+
+         if (++ptr >= ptr_end)
+            break;
+         
+         bc_array_s_push(a_trg,',');
+      } while(1);
+   }
+
+   bc_array_s_push(a_trg,']');
+}/*}}}*/
+#endif
 
 
 

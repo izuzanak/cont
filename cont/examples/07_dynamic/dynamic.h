@@ -31,14 +31,14 @@ struct string_s
   char *data;
 };
 
-inline void string_s_init(string_s *this);
-inline void string_s_clear(string_s *this);
-inline void string_s_create(string_s *this,unsigned a_length);
-inline void string_s_set(string_s *this,unsigned a_length,const char *a_data);
-inline void string_s_flush_all(string_s *this) {}
-inline void string_s_swap(string_s *this,string_s *a_second);
-inline void string_s_copy(string_s *this,string_s *a_src);
-inline int string_s_compare(string_s *this,string_s *a_second);
+static inline void string_s_init(string_s *this);
+static inline void string_s_clear(string_s *this);
+static inline void string_s_create(string_s *this,unsigned a_length);
+static inline void string_s_set(string_s *this,unsigned a_length,const char *a_data);
+static inline void string_s_flush_all(string_s *this) {}
+static inline void string_s_swap(string_s *this,string_s *a_second);
+static inline void string_s_copy(string_s *this,string_s *a_src);
+static inline int string_s_compare(string_s *this,string_s *a_second);
 
 /*
  * definition of generated structures
@@ -53,13 +53,13 @@ inline int string_s_compare(string_s *this,string_s *a_second);
  * inline methods of structure string_s
  */
 
-inline void string_s_init(string_s *this)
+static inline void string_s_init(string_s *this)
 {/*{{{*/
   this->size = 1;
   this->data = (char *)&c_string_terminating_char;
 }/*}}}*/
 
-inline void string_s_clear(string_s *this)
+static inline void string_s_clear(string_s *this)
 {/*{{{*/
   if (this->data != &c_string_terminating_char)
   {
@@ -69,7 +69,7 @@ inline void string_s_clear(string_s *this)
   string_s_init(this);
 }/*}}}*/
 
-inline void string_s_create(string_s *this,unsigned a_length)
+static inline void string_s_create(string_s *this,unsigned a_length)
 {/*{{{*/
   string_s_clear(this);
   this->data = (char *)cmalloc((a_length + 1)*sizeof(char));
@@ -78,7 +78,7 @@ inline void string_s_create(string_s *this,unsigned a_length)
   this->size = a_length + 1;
 }/*}}}*/
 
-inline void string_s_set(string_s *this,unsigned a_length,const char *a_data)
+static inline void string_s_set(string_s *this,unsigned a_length,const char *a_data)
 {/*{{{*/
   string_s_clear(this);
   this->data = (char *)cmalloc((a_length + 1)*sizeof(char));
@@ -92,7 +92,7 @@ inline void string_s_set(string_s *this,unsigned a_length,const char *a_data)
   this->size = a_length + 1;
 }/*}}}*/
 
-inline void string_s_swap(string_s *this,string_s *a_second)
+static inline void string_s_swap(string_s *this,string_s *a_second)
 {/*{{{*/
   unsigned tmp_size = this->size;
   this->size = a_second->size;
@@ -103,7 +103,7 @@ inline void string_s_swap(string_s *this,string_s *a_second)
   a_second->data = tmp_data;
 }/*}}}*/
 
-inline void string_s_copy(string_s *this,string_s *a_src)
+static inline void string_s_copy(string_s *this,string_s *a_src)
 {/*{{{*/
   string_s_clear(this);
 
@@ -114,7 +114,7 @@ inline void string_s_copy(string_s *this,string_s *a_src)
   this->size = a_src->size;
 }/*}}}*/
 
-inline int string_s_compare(string_s *this,string_s *a_second)
+static inline int string_s_compare(string_s *this,string_s *a_second)
 {/*{{{*/
   if (this->size != a_second->size) return 0;
   if (this->data == &c_string_terminating_char) return 1;

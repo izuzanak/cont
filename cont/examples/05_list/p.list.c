@@ -13,6 +13,62 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define CONT_INIT(TYPE,NAME) \
+  TYPE NAME;\
+  TYPE ## _init(&NAME);
+
+#define CONT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;
+
+#define CONT_INIT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\
+  TYPE ## _init(&NAME);
+
 
 
 #ifndef __LIST_H
@@ -32,9 +88,12 @@ typedef long double ld;
 #include "assert.h"
 #include "math.h"
 
+#define ENABLED 1
+
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -77,13 +136,16 @@ struct record_s
    unsigned value; //!< member - 1
 };
 
-inline void record_s_init(record_s *this);
-inline void record_s_clear(record_s *this);
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
-inline void record_s_flush_all(record_s *this);
-inline void record_s_swap(record_s *this,record_s *a_second);
-inline void record_s_copy(record_s *this,record_s *a_src);
-inline int record_s_compare(record_s *this,record_s *a_second);
+static inline void record_s_init(record_s *this);
+static inline void record_s_clear(record_s *this);
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
+static inline void record_s_flush_all(record_s *this);
+static inline void record_s_swap(record_s *this,record_s *a_second);
+static inline void record_s_copy(record_s *this,record_s *a_src);
+static inline int record_s_compare(record_s *this,record_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg);
+#endif
 
 inline unsigned record_s_get_index();
 inline unsigned record_s_get_value();
@@ -98,27 +160,27 @@ inline unsigned record_s_get_value();
 // -- record_s --
 // --- struct record_s inline method definition ---
 
-inline void record_s_init(record_s *this)
+static inline void record_s_init(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_clear(record_s *this)
+static inline void record_s_clear(record_s *this)
 {/*{{{*/
 
    record_s_init(this);
 }/*}}}*/
 
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
 {/*{{{*/
    this->index = a_index;
    this->value = a_value;
 }/*}}}*/
 
-inline void record_s_flush_all(record_s *this)
+static inline void record_s_flush_all(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_swap(record_s *this,record_s *a_second)
+static inline void record_s_swap(record_s *this,record_s *a_second)
 {/*{{{*/
    unsigned tmp_index = this->index;
    this->index = a_second->index;
@@ -129,16 +191,27 @@ inline void record_s_swap(record_s *this,record_s *a_second)
    a_second->value = tmp_value;
 }/*}}}*/
 
-inline void record_s_copy(record_s *this,record_s *a_src)
+static inline void record_s_copy(record_s *this,record_s *a_src)
 {/*{{{*/
    this->index = a_src->index;
    this->value = a_src->value;
 }/*}}}*/
 
-inline int record_s_compare(record_s *this,record_s *a_second)
+static inline int record_s_compare(record_s *this,record_s *a_second)
 {/*{{{*/
    return (this->index == a_second->index && this->value == a_second->value);
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'{');
+   unsigned_to_string(&this->index,a_trg);
+   bc_array_s_push(a_trg,',');
+   unsigned_to_string(&this->value,a_trg);
+   bc_array_s_push(a_trg,'}');
+}/*}}}*/
+#endif
 
 
 
@@ -189,24 +262,31 @@ struct rec_list_s
    unsigned last_idx; //!< index of last element
 };
 
-inline void rec_list_s_init(rec_list_s *this);
-inline void rec_list_s_init_size(rec_list_s *this,unsigned a_size);
-inline void rec_list_s_clear(rec_list_s *this);
-inline void rec_list_s_flush(rec_list_s *this);
-inline void rec_list_s_flush_all(rec_list_s *this);
-inline void rec_list_s_swap(rec_list_s *this,rec_list_s *a_second);
-inline record_s *rec_list_s_at(rec_list_s *this,unsigned a_idx);
-inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value);
-inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value);
-inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,record_s *a_value);
-inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,record_s *a_value);
-inline void rec_list_s_remove(rec_list_s *this,unsigned a_idx);
-inline unsigned rec_list_s_next_idx(rec_list_s *this,unsigned a_idx);
-inline unsigned rec_list_s_prev_idx(rec_list_s *this,unsigned a_idx);
+static inline void rec_list_s_init(rec_list_s *this);
+static inline void rec_list_s_init_size(rec_list_s *this,unsigned a_size);
+static inline void rec_list_s_clear(rec_list_s *this);
+static inline void rec_list_s_flush(rec_list_s *this);
+static inline void rec_list_s_flush_all(rec_list_s *this);
+static inline void rec_list_s_swap(rec_list_s *this,rec_list_s *a_second);
+static inline record_s *rec_list_s_at(rec_list_s *this,unsigned a_idx);
+static inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value);
+static inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value);
+static inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,record_s *a_value);
+static inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,record_s *a_value);
+static inline unsigned rec_list_s_prepend_blank(rec_list_s *this);
+static inline unsigned rec_list_s_append_blank(rec_list_s *this);
+static inline unsigned rec_list_s_insert_blank_before(rec_list_s *this,unsigned a_idx);
+static inline unsigned rec_list_s_insert_blank_after(rec_list_s *this,unsigned a_idx);
+static inline void rec_list_s_remove(rec_list_s *this,unsigned a_idx);
+static inline unsigned rec_list_s_next_idx(rec_list_s *this,unsigned a_idx);
+static inline unsigned rec_list_s_prev_idx(rec_list_s *this,unsigned a_idx);
 void rec_list_s_copy_resize(rec_list_s *this,unsigned a_size);
 unsigned rec_list_s_get_idx(rec_list_s *this,record_s *a_value);
-inline void rec_list_s_copy(rec_list_s *this,rec_list_s *a_src);
+static inline void rec_list_s_copy(rec_list_s *this,rec_list_s *a_src);
 int rec_list_s_compare(rec_list_s *this,rec_list_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+void rec_list_s_to_string(rec_list_s *this,bc_array_s *a_trg);
+#endif
 
 
 
@@ -217,7 +297,7 @@ int rec_list_s_compare(rec_list_s *this,rec_list_s *a_second);
 // -- rec_list_s --
 // --- struct rec_list_s inline method definition ---
 
-inline void rec_list_s_init(rec_list_s *this)
+static inline void rec_list_s_init(rec_list_s *this)
 {/*{{{*/
    this->size = 0;
    this->used = 0;
@@ -227,13 +307,13 @@ inline void rec_list_s_init(rec_list_s *this)
    this->last_idx = c_idx_not_exist;
 }/*}}}*/
 
-inline void rec_list_s_init_size(rec_list_s *this,unsigned a_size)
+static inline void rec_list_s_init_size(rec_list_s *this,unsigned a_size)
 {/*{{{*/
    rec_list_s_init(this);
    rec_list_s_copy_resize(this,a_size);
 }/*}}}*/
 
-inline void rec_list_s_clear(rec_list_s *this)
+static inline void rec_list_s_clear(rec_list_s *this)
 {/*{{{*/
    if (this->data != NULL) {
       cfree(this->data);
@@ -242,17 +322,17 @@ inline void rec_list_s_clear(rec_list_s *this)
    rec_list_s_init(this);
 }/*}}}*/
 
-inline void rec_list_s_flush(rec_list_s *this)
+static inline void rec_list_s_flush(rec_list_s *this)
 {/*{{{*/
    rec_list_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void rec_list_s_flush_all(rec_list_s *this)
+static inline void rec_list_s_flush_all(rec_list_s *this)
 {/*{{{*/
    rec_list_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void rec_list_s_swap(rec_list_s *this,rec_list_s *a_second)
+static inline void rec_list_s_swap(rec_list_s *this,rec_list_s *a_second)
 {/*{{{*/
    unsigned tmp_unsigned = this->size;
    this->size = a_second->size;
@@ -279,13 +359,13 @@ inline void rec_list_s_swap(rec_list_s *this,rec_list_s *a_second)
    a_second->last_idx = tmp_unsigned;
 }/*}}}*/
 
-inline record_s *rec_list_s_at(rec_list_s *this,unsigned a_idx)
+static inline record_s *rec_list_s_at(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
    debug_assert(a_idx < this->used);
    return &this->data[a_idx].object;
 }/*}}}*/
 
-inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value)
+static inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value)
 {/*{{{*/
    unsigned new_idx;
 
@@ -320,7 +400,7 @@ inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value)
    return new_idx;
 }/*}}}*/
 
-inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value)
+static inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value)
 {/*{{{*/
    unsigned new_idx;
 
@@ -355,7 +435,7 @@ inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value)
    return new_idx;
 }/*}}}*/
 
-inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,record_s *a_value)
+static inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,record_s *a_value)
 {/*{{{*/
    debug_assert(a_idx < this->used);
 
@@ -393,7 +473,7 @@ inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,record_
    return new_idx;
 }/*}}}*/
 
-inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,record_s *a_value)
+static inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,record_s *a_value)
 {/*{{{*/
    debug_assert(a_idx < this->used);
 
@@ -431,7 +511,145 @@ inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,record_s
    return new_idx;
 }/*}}}*/
 
-inline void rec_list_s_remove(rec_list_s *this,unsigned a_idx)
+static inline unsigned rec_list_s_prepend_blank(rec_list_s *this)
+{/*{{{*/
+   unsigned new_idx;
+
+   if (this->free_idx != c_idx_not_exist) {
+      new_idx = this->free_idx;
+      this->free_idx = this->data[new_idx].next_idx;
+   }
+   else {
+      if (this->used >= this->size) {
+         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+      }
+
+      new_idx = this->used++;
+   }
+
+   rec_list_s_element *new_element = this->data + new_idx;
+
+   new_element->next_idx = this->first_idx;
+   new_element->prev_idx = c_idx_not_exist;
+
+   if (this->first_idx != c_idx_not_exist) {
+      this->data[this->first_idx].prev_idx = new_idx;
+   }
+   else {
+      this->last_idx = new_idx;
+   }
+
+   this->first_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
+static inline unsigned rec_list_s_append_blank(rec_list_s *this)
+{/*{{{*/
+   unsigned new_idx;
+
+   if (this->free_idx != c_idx_not_exist) {
+      new_idx = this->free_idx;
+      this->free_idx = this->data[new_idx].next_idx;
+   }
+   else {
+      if (this->used >= this->size) {
+         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+      }
+
+      new_idx = this->used++;
+   }
+
+   rec_list_s_element *new_element = this->data + new_idx;
+
+   new_element->next_idx = c_idx_not_exist;
+   new_element->prev_idx = this->last_idx;
+
+   if (this->last_idx != c_idx_not_exist) {
+      this->data[this->last_idx].next_idx = new_idx;
+   }
+   else {
+      this->first_idx = new_idx;
+   }
+
+   this->last_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
+static inline unsigned rec_list_s_insert_blank_before(rec_list_s *this,unsigned a_idx)
+{/*{{{*/
+   debug_assert(a_idx < this->used);
+
+   unsigned new_idx;
+
+   if (this->free_idx != c_idx_not_exist) {
+      new_idx = this->free_idx;
+      this->free_idx = this->data[new_idx].next_idx;
+   }
+   else {
+      if (this->used >= this->size) {
+         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+      }
+
+      new_idx = this->used++;
+   }
+
+   rec_list_s_element *idx_element = this->data + a_idx;
+   rec_list_s_element *new_element = this->data + new_idx;
+
+   new_element->next_idx = a_idx;
+   new_element->prev_idx = idx_element->prev_idx;
+
+   if (idx_element->prev_idx != c_idx_not_exist) {
+      this->data[idx_element->prev_idx].next_idx = new_idx;
+   }
+   else {
+      this->first_idx = new_idx;
+   }
+
+   idx_element->prev_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
+static inline unsigned rec_list_s_insert_blank_after(rec_list_s *this,unsigned a_idx)
+{/*{{{*/
+   debug_assert(a_idx < this->used);
+
+   unsigned new_idx;
+
+   if (this->free_idx != c_idx_not_exist) {
+      new_idx = this->free_idx;
+      this->free_idx = this->data[new_idx].next_idx;
+   }
+   else {
+      if (this->used >= this->size) {
+         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+      }
+
+      new_idx = this->used++;
+   }
+
+   rec_list_s_element *idx_element = this->data + a_idx;
+   rec_list_s_element *new_element = this->data + new_idx;
+
+   new_element->next_idx = idx_element->next_idx;
+   new_element->prev_idx = a_idx;
+
+   if (idx_element->next_idx != c_idx_not_exist) {
+      this->data[idx_element->next_idx].prev_idx = new_idx;
+   }
+   else {
+      this->last_idx = new_idx;
+   }
+
+   idx_element->next_idx = new_idx;
+
+   return new_idx;
+}/*}}}*/
+
+static inline void rec_list_s_remove(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
    debug_assert(a_idx < this->used);
 
@@ -455,17 +673,17 @@ inline void rec_list_s_remove(rec_list_s *this,unsigned a_idx)
    this->free_idx = a_idx;
 }/*}}}*/
 
-inline unsigned rec_list_s_next_idx(rec_list_s *this,unsigned a_idx)
+static inline unsigned rec_list_s_next_idx(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
    return this->data[a_idx].next_idx;
 }/*}}}*/
 
-inline unsigned rec_list_s_prev_idx(rec_list_s *this,unsigned a_idx)
+static inline unsigned rec_list_s_prev_idx(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
    return this->data[a_idx].prev_idx;
 }/*}}}*/
 
-inline void rec_list_s_copy(rec_list_s *this,rec_list_s *a_src)
+static inline void rec_list_s_copy(rec_list_s *this,rec_list_s *a_src)
 {/*{{{*/
    rec_list_s_clear(this);
 
@@ -503,24 +721,16 @@ void rec_list_s_copy_resize(rec_list_s *this,unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= this->used);
 
-   rec_list_s_element *n_data;
-
    if (a_size == 0) {
-      n_data = NULL;
+      if (this->data != NULL) {
+         cfree(this->data);
+      }
+      this->data = NULL;
    }
    else {
-      n_data = (rec_list_s_element *)cmalloc(a_size*sizeof(rec_list_s_element));
+      this->data = (rec_list_s_element *)crealloc(this->data,a_size*sizeof(rec_list_s_element));
    }
 
-   if (this->used != 0) {
-      memcpy(n_data,this->data,this->used*sizeof(rec_list_s_element));
-   }
-
-   if (this->size != 0) {
-      cfree(this->data);
-   }
-
-   this->data = n_data;
    this->size = a_size;
 }/*}}}*/
 
@@ -570,6 +780,29 @@ int rec_list_s_compare(rec_list_s *this,rec_list_s *a_second)
 
    return idx == s_idx;
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+void rec_list_s_to_string(rec_list_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'[');
+
+   if (this->first_idx != c_idx_not_exist) {
+      unsigned idx = this->first_idx;
+
+      do {
+         rec_list_s_element *element = this->data + idx;
+         record_s_to_string(&element->object,a_trg);
+
+         if ((idx = element->next_idx) == c_idx_not_exist)
+            break;
+
+         bc_array_s_push(a_trg,',');
+      } while(1);
+   }
+
+   bc_array_s_push(a_trg,']');
+}/*}}}*/
+#endif
 
 
 

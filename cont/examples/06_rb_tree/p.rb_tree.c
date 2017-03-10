@@ -13,6 +13,62 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define CONT_INIT(TYPE,NAME) \
+  TYPE NAME;\
+  TYPE ## _init(&NAME);
+
+#define CONT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;
+
+#define CONT_INIT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\
+  TYPE ## _init(&NAME);
+
 
 
 #ifndef __RB_TREE_H
@@ -32,9 +88,12 @@ typedef long double ld;
 #include "assert.h"
 #include "math.h"
 
+#define ENABLED 1
+
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -77,13 +136,16 @@ struct record_s
    unsigned value; //!< member - 1
 };
 
-inline void record_s_init(record_s *this);
-inline void record_s_clear(record_s *this);
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
-inline void record_s_flush_all(record_s *this);
-inline void record_s_swap(record_s *this,record_s *a_second);
-inline void record_s_copy(record_s *this,record_s *a_src);
-inline int record_s_compare(record_s *this,record_s *a_second);
+static inline void record_s_init(record_s *this);
+static inline void record_s_clear(record_s *this);
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
+static inline void record_s_flush_all(record_s *this);
+static inline void record_s_swap(record_s *this,record_s *a_second);
+static inline void record_s_copy(record_s *this,record_s *a_src);
+static inline int record_s_compare(record_s *this,record_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg);
+#endif
 
 inline unsigned record_s_get_index();
 inline unsigned record_s_get_value();
@@ -98,27 +160,27 @@ inline unsigned record_s_get_value();
 // -- record_s --
 // --- struct record_s inline method definition ---
 
-inline void record_s_init(record_s *this)
+static inline void record_s_init(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_clear(record_s *this)
+static inline void record_s_clear(record_s *this)
 {/*{{{*/
 
    record_s_init(this);
 }/*}}}*/
 
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
 {/*{{{*/
    this->index = a_index;
    this->value = a_value;
 }/*}}}*/
 
-inline void record_s_flush_all(record_s *this)
+static inline void record_s_flush_all(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_swap(record_s *this,record_s *a_second)
+static inline void record_s_swap(record_s *this,record_s *a_second)
 {/*{{{*/
    unsigned tmp_index = this->index;
    this->index = a_second->index;
@@ -129,16 +191,27 @@ inline void record_s_swap(record_s *this,record_s *a_second)
    a_second->value = tmp_value;
 }/*}}}*/
 
-inline void record_s_copy(record_s *this,record_s *a_src)
+static inline void record_s_copy(record_s *this,record_s *a_src)
 {/*{{{*/
    this->index = a_src->index;
    this->value = a_src->value;
 }/*}}}*/
 
-inline int record_s_compare(record_s *this,record_s *a_second)
+static inline int record_s_compare(record_s *this,record_s *a_second)
 {/*{{{*/
    return (this->index == a_second->index && this->value == a_second->value);
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'{');
+   unsigned_to_string(&this->index,a_trg);
+   bc_array_s_push(a_trg,',');
+   unsigned_to_string(&this->value,a_trg);
+   bc_array_s_push(a_trg,'}');
+}/*}}}*/
+#endif
 
 
 
@@ -178,26 +251,29 @@ struct ui_array_s
    unsigned *data; //!< pointer to array elements
 };
 
-inline void ui_array_s_init(ui_array_s *this);
-inline void ui_array_s_init_size(ui_array_s *this,unsigned a_size);
-inline void ui_array_s_clear(ui_array_s *this);
-inline void ui_array_s_set(ui_array_s *this,unsigned a_used,unsigned *a_data);
-inline void ui_array_s_flush(ui_array_s *this);
-inline void ui_array_s_flush_all(ui_array_s *this);
-inline void ui_array_s_swap(ui_array_s *this,ui_array_s *a_second);
-inline unsigned *ui_array_s_at(ui_array_s *this,unsigned a_idx);
-inline void ui_array_s_push(ui_array_s *this,unsigned a_value);
-inline void ui_array_s_push_blank(ui_array_s *this);
+static inline void ui_array_s_init(ui_array_s *this);
+static inline void ui_array_s_init_size(ui_array_s *this,unsigned a_size);
+static inline void ui_array_s_clear(ui_array_s *this);
+static inline void ui_array_s_set(ui_array_s *this,unsigned a_used,unsigned *a_data);
+static inline void ui_array_s_flush(ui_array_s *this);
+static inline void ui_array_s_flush_all(ui_array_s *this);
+static inline void ui_array_s_swap(ui_array_s *this,ui_array_s *a_second);
+static inline unsigned *ui_array_s_at(ui_array_s *this,unsigned a_idx);
+static inline void ui_array_s_push(ui_array_s *this,unsigned a_value);
+static inline void ui_array_s_push_blank(ui_array_s *this);
 void ui_array_s_reserve(ui_array_s *this,unsigned a_cnt);
 void ui_array_s_push_blanks(ui_array_s *this,unsigned a_cnt);
-inline void ui_array_s_push_clear(ui_array_s *this);
-inline unsigned ui_array_s_pop(ui_array_s *this);
-inline unsigned *ui_array_s_last(ui_array_s *this);
+static inline void ui_array_s_push_clear(ui_array_s *this);
+static inline unsigned ui_array_s_pop(ui_array_s *this);
+static inline unsigned *ui_array_s_last(ui_array_s *this);
 void ui_array_s_copy_resize(ui_array_s *this,unsigned a_size);
 void ui_array_s_fill(ui_array_s *this,unsigned a_value);
 unsigned ui_array_s_get_idx(ui_array_s *this,unsigned a_value);
-inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src);
-inline int ui_array_s_compare(ui_array_s *this,ui_array_s *a_second);
+static inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src);
+static inline int ui_array_s_compare(ui_array_s *this,ui_array_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+void ui_array_s_to_string(ui_array_s *this,bc_array_s *a_trg);
+#endif
 
 
 
@@ -206,10 +282,6 @@ inline int ui_array_s_compare(ui_array_s *this,ui_array_s *a_second);
 
 typedef struct rec_rb_tree_s_node rec_rb_tree_s_node;
 typedef struct rec_rb_tree_s rec_rb_tree_s;
-
-#ifndef RB_TREE_SET_LEAF_CHILDS
-#define RB_TREE_SET_LEAF_CHILDS
-#endif
 
 struct rec_rb_tree_s_node
 {
@@ -230,33 +302,35 @@ struct rec_rb_tree_s
    unsigned leaf_idx;
 };
 
-inline unsigned rec_rb_tree_s___get_grandparent_idx(rec_rb_tree_s *this,unsigned a_idx);
-inline unsigned rec_rb_tree_s___get_uncle_idx(rec_rb_tree_s *this,unsigned a_idx);
-inline unsigned rec_rb_tree_s___get_sibling_idx(rec_rb_tree_s *this,unsigned a_idx);
-inline unsigned rec_rb_tree_s_get_descent_stack_size(rec_rb_tree_s *this);
+static inline unsigned rec_rb_tree_s___get_grandparent_idx(rec_rb_tree_s *this,unsigned a_idx);
+static inline unsigned rec_rb_tree_s___get_uncle_idx(rec_rb_tree_s *this,unsigned a_idx);
+static inline unsigned rec_rb_tree_s___get_sibling_idx(rec_rb_tree_s *this,unsigned a_idx);
+static inline unsigned rec_rb_tree_s_get_descent_stack_size(rec_rb_tree_s *this);
 unsigned rec_rb_tree_s_get_stack_min_value_idx(rec_rb_tree_s *this,unsigned a_idx,unsigned **a_s_ptr);
-inline unsigned rec_rb_tree_s_get_stack_next_idx(rec_rb_tree_s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
+static inline unsigned rec_rb_tree_s_get_stack_next_idx(rec_rb_tree_s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
 unsigned rec_rb_tree_s_get_min_value_idx(rec_rb_tree_s *this,unsigned a_idx);
 unsigned rec_rb_tree_s_get_max_value_idx(rec_rb_tree_s *this,unsigned a_idx);
 unsigned rec_rb_tree_s_get_next_idx(rec_rb_tree_s *this,unsigned a_idx);
 unsigned rec_rb_tree_s_get_prev_idx(rec_rb_tree_s *this,unsigned a_idx);
-inline void rec_rb_tree_s___rotate_left(rec_rb_tree_s *this,unsigned a_idx);
-inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_idx);
-inline unsigned rec_rb_tree_s___get_new_index(rec_rb_tree_s *this);
-void rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,record_s *a_value);
-inline void rec_rb_tree_s___replace_delete_node_by_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx);
+static inline void rec_rb_tree_s___rotate_left(rec_rb_tree_s *this,unsigned a_idx);
+static inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_idx);
+static inline unsigned rec_rb_tree_s___get_new_index(rec_rb_tree_s *this);
+unsigned rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,record_s *a_value,int a_unique);
+static inline void rec_rb_tree_s___replace_delete_node_by_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx);
 void rec_rb_tree_s___remove_black_black(rec_rb_tree_s *this,unsigned a_idx);
-inline void rec_rb_tree_s___remove_one_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx);
+static inline void rec_rb_tree_s___remove_one_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx);
 void rec_rb_tree_s___insert_operation(rec_rb_tree_s *this,unsigned a_idx);
-inline int rec_rb_tree_s___compare_value(rec_rb_tree_s *this,record_s *a_first,record_s *a_second);
-inline void rec_rb_tree_s_init(rec_rb_tree_s *this);
-inline void rec_rb_tree_s_clear(rec_rb_tree_s *this);
-inline void rec_rb_tree_s_flush(rec_rb_tree_s *this);
-inline void rec_rb_tree_s_flush_all(rec_rb_tree_s *this);
-inline void rec_rb_tree_s_swap(rec_rb_tree_s *this,rec_rb_tree_s *a_second);
-inline record_s *rec_rb_tree_s_at(rec_rb_tree_s *this,unsigned a_idx);
-inline unsigned rec_rb_tree_s_insert(rec_rb_tree_s *this,record_s *a_value);
-inline unsigned rec_rb_tree_s_swap_insert(rec_rb_tree_s *this,record_s *a_value);
+static inline int rec_rb_tree_s___compare_value(rec_rb_tree_s *this,record_s *a_first,record_s *a_second);
+static inline void rec_rb_tree_s_init(rec_rb_tree_s *this);
+static inline void rec_rb_tree_s_clear(rec_rb_tree_s *this);
+static inline void rec_rb_tree_s_flush(rec_rb_tree_s *this);
+static inline void rec_rb_tree_s_flush_all(rec_rb_tree_s *this);
+static inline void rec_rb_tree_s_swap(rec_rb_tree_s *this,rec_rb_tree_s *a_second);
+static inline record_s *rec_rb_tree_s_at(rec_rb_tree_s *this,unsigned a_idx);
+static inline unsigned rec_rb_tree_s_insert(rec_rb_tree_s *this,record_s *a_value);
+static inline unsigned rec_rb_tree_s_unique_insert(rec_rb_tree_s *this,record_s *a_value);
+static inline unsigned rec_rb_tree_s_swap_insert(rec_rb_tree_s *this,record_s *a_value);
+static inline unsigned rec_rb_tree_s_unique_swap_insert(rec_rb_tree_s *this,record_s *a_value);
 void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx);
 void rec_rb_tree_s_copy_resize(rec_rb_tree_s *this,unsigned a_size);
 unsigned rec_rb_tree_s_get_idx(rec_rb_tree_s *this,record_s *a_value);
@@ -264,11 +338,12 @@ unsigned rec_rb_tree_s_get_idx_left(rec_rb_tree_s *this,record_s *a_value);
 unsigned rec_rb_tree_s_get_gre_idx(rec_rb_tree_s *this,record_s *a_value);
 unsigned rec_rb_tree_s_get_lee_idx(rec_rb_tree_s *this,record_s *a_value);
 void rec_rb_tree_s_get_idxs(rec_rb_tree_s *this,record_s *a_value,ui_array_s *a_idxs_array);
-inline void rec_rb_tree_s_copy(rec_rb_tree_s *this,rec_rb_tree_s *a_src);
+static inline void rec_rb_tree_s_copy(rec_rb_tree_s *this,rec_rb_tree_s *a_src);
 int rec_rb_tree_s_compare(rec_rb_tree_s *this,rec_rb_tree_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+void rec_rb_tree_s_to_string(rec_rb_tree_s *this,bc_array_s *a_trg);
+#endif
 void rec_rb_tree_s_rehash_tree(rec_rb_tree_s *this);
-void rec_rb_tree_s_print_dot_code(rec_rb_tree_s *this,FILE *a_file);
-int rec_rb_tree_s_check_rb_tree_properties(rec_rb_tree_s *this);
 
 
 
@@ -279,20 +354,20 @@ int rec_rb_tree_s_check_rb_tree_properties(rec_rb_tree_s *this);
 // -- ui_array_s --
 // --- struct ui_array_s inline method definition ---
 
-inline void ui_array_s_init(ui_array_s *this)
+static inline void ui_array_s_init(ui_array_s *this)
 {/*{{{*/
    this->size = 0;
    this->used = 0;
    this->data = NULL;
 }/*}}}*/
 
-inline void ui_array_s_init_size(ui_array_s *this,unsigned a_size)
+static inline void ui_array_s_init_size(ui_array_s *this,unsigned a_size)
 {/*{{{*/
    ui_array_s_init(this);
    ui_array_s_copy_resize(this,a_size);
 }/*}}}*/
 
-inline void ui_array_s_clear(ui_array_s *this)
+static inline void ui_array_s_clear(ui_array_s *this)
 {/*{{{*/
    if (this->data != NULL) {
       cfree(this->data);
@@ -301,7 +376,7 @@ inline void ui_array_s_clear(ui_array_s *this)
    ui_array_s_init(this);
 }/*}}}*/
 
-inline void ui_array_s_set(ui_array_s *this,unsigned a_used,unsigned *a_data)
+static inline void ui_array_s_set(ui_array_s *this,unsigned a_used,unsigned *a_data)
 {/*{{{*/
    ui_array_s_clear(this);
    if (a_used == 0) return;
@@ -313,17 +388,17 @@ inline void ui_array_s_set(ui_array_s *this,unsigned a_used,unsigned *a_data)
    this->used = a_used;
 }/*}}}*/
 
-inline void ui_array_s_flush(ui_array_s *this)
+static inline void ui_array_s_flush(ui_array_s *this)
 {/*{{{*/
    ui_array_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void ui_array_s_flush_all(ui_array_s *this)
+static inline void ui_array_s_flush_all(ui_array_s *this)
 {/*{{{*/
    ui_array_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void ui_array_s_swap(ui_array_s *this,ui_array_s *a_second)
+static inline void ui_array_s_swap(ui_array_s *this,ui_array_s *a_second)
 {/*{{{*/
    unsigned tmp_unsigned = this->size;
    this->size = a_second->size;
@@ -338,13 +413,13 @@ inline void ui_array_s_swap(ui_array_s *this,ui_array_s *a_second)
    a_second->data = tmp_data;
 }/*}}}*/
 
-inline unsigned *ui_array_s_at(ui_array_s *this,unsigned a_idx)
+static inline unsigned *ui_array_s_at(ui_array_s *this,unsigned a_idx)
 {/*{{{*/
    debug_assert(a_idx < this->used);
    return this->data + a_idx;
 }/*}}}*/
 
-inline void ui_array_s_push(ui_array_s *this,unsigned a_value)
+static inline void ui_array_s_push(ui_array_s *this,unsigned a_value)
 {/*{{{*/
    if (this->used >= this->size) {
       ui_array_s_copy_resize(this,(this->size << 1) + c_array_add);
@@ -353,7 +428,7 @@ inline void ui_array_s_push(ui_array_s *this,unsigned a_value)
    this->data[this->used++] = a_value;
 }/*}}}*/
 
-inline void ui_array_s_push_blank(ui_array_s *this)
+static inline void ui_array_s_push_blank(ui_array_s *this)
 {/*{{{*/
    if (this->used >= this->size) {
       ui_array_s_copy_resize(this,(this->size << 1) + c_array_add);
@@ -362,7 +437,7 @@ inline void ui_array_s_push_blank(ui_array_s *this)
    this->used++;
 }/*}}}*/
 
-inline void ui_array_s_push_clear(ui_array_s *this)
+static inline void ui_array_s_push_clear(ui_array_s *this)
 {/*{{{*/
    if (this->used >= this->size) {
       ui_array_s_copy_resize(this,(this->size << 1) + c_array_add);
@@ -371,19 +446,19 @@ inline void ui_array_s_push_clear(ui_array_s *this)
    this->used++;
 }/*}}}*/
 
-inline unsigned ui_array_s_pop(ui_array_s *this)
+static inline unsigned ui_array_s_pop(ui_array_s *this)
 {/*{{{*/
    debug_assert(this->used > 0);
    return this->data[--this->used];
 }/*}}}*/
 
-inline unsigned *ui_array_s_last(ui_array_s *this)
+static inline unsigned *ui_array_s_last(ui_array_s *this)
 {/*{{{*/
    debug_assert(this->used > 0);
    return this->data + this->used - 1;
 }/*}}}*/
 
-inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src)
+static inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src)
 {/*{{{*/
    ui_array_s_clear(this);
 
@@ -395,7 +470,7 @@ inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src)
    this->used = a_src->used;
 }/*}}}*/
 
-inline int ui_array_s_compare(ui_array_s *this,ui_array_s *a_second)
+static inline int ui_array_s_compare(ui_array_s *this,ui_array_s *a_second)
 {/*{{{*/
    if (this->used != a_second->used) return 0;
    if (this->used == 0) return 1;
@@ -408,7 +483,7 @@ inline int ui_array_s_compare(ui_array_s *this,ui_array_s *a_second)
 // -- rec_rb_tree_s --
 // --- struct rec_rb_tree_s inline method definition ---
 
-inline unsigned rec_rb_tree_s___get_grandparent_idx(rec_rb_tree_s *this,unsigned a_idx)
+static inline unsigned rec_rb_tree_s___get_grandparent_idx(rec_rb_tree_s *this,unsigned a_idx)
 {/*{{{*/
    rec_rb_tree_s_node *node = this->data + a_idx;
 
@@ -420,7 +495,7 @@ inline unsigned rec_rb_tree_s___get_grandparent_idx(rec_rb_tree_s *this,unsigned
    }
 }/*}}}*/
 
-inline unsigned rec_rb_tree_s___get_uncle_idx(rec_rb_tree_s *this,unsigned a_idx)
+static inline unsigned rec_rb_tree_s___get_uncle_idx(rec_rb_tree_s *this,unsigned a_idx)
 {/*{{{*/
    unsigned gp_idx = rec_rb_tree_s___get_grandparent_idx(this,a_idx);
 
@@ -433,18 +508,18 @@ inline unsigned rec_rb_tree_s___get_uncle_idx(rec_rb_tree_s *this,unsigned a_idx
    }
 }/*}}}*/
 
-inline unsigned rec_rb_tree_s___get_sibling_idx(rec_rb_tree_s *this,unsigned a_idx)
+static inline unsigned rec_rb_tree_s___get_sibling_idx(rec_rb_tree_s *this,unsigned a_idx)
 {/*{{{*/
    rec_rb_tree_s_node *p = this->data + this->data[a_idx].parent_idx;
    return p->left_idx == a_idx?p->right_idx:p->left_idx;
 }/*}}}*/
 
-inline unsigned rec_rb_tree_s_get_descent_stack_size(rec_rb_tree_s *this)
+static inline unsigned rec_rb_tree_s_get_descent_stack_size(rec_rb_tree_s *this)
 {/*{{{*/
    return (unsigned)(logf(this->used)/c_log_of_2) << 1;
 }/*}}}*/
 
-inline unsigned rec_rb_tree_s_get_stack_next_idx(rec_rb_tree_s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)
+static inline unsigned rec_rb_tree_s_get_stack_next_idx(rec_rb_tree_s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)
 {/*{{{*/
    debug_assert(a_idx < this->used);
 
@@ -461,7 +536,7 @@ inline unsigned rec_rb_tree_s_get_stack_next_idx(rec_rb_tree_s *this,unsigned a_
    return c_idx_not_exist;
 }/*}}}*/
 
-inline void rec_rb_tree_s___rotate_left(rec_rb_tree_s *this,unsigned a_idx)
+static inline void rec_rb_tree_s___rotate_left(rec_rb_tree_s *this,unsigned a_idx)
 {/*{{{*/
    rec_rb_tree_s_node *root = this->data + a_idx;
    rec_rb_tree_s_node *pivot = this->data + root->right_idx;
@@ -473,12 +548,10 @@ inline void rec_rb_tree_s___rotate_left(rec_rb_tree_s *this,unsigned a_idx)
    else {
       rec_rb_tree_s_node *rp = this->data + root->parent_idx;
 
-      if (rp->right_idx == a_idx)
-      {
+      if (rp->right_idx == a_idx) {
          rp->right_idx = root->right_idx;
       }
-      else
-      {
+      else {
          rp->left_idx = root->right_idx;
       }
 
@@ -493,7 +566,7 @@ inline void rec_rb_tree_s___rotate_left(rec_rb_tree_s *this,unsigned a_idx)
    pivot->left_idx = a_idx;
 }/*}}}*/
 
-inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_idx)
+static inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_idx)
 {/*{{{*/
    rec_rb_tree_s_node *root = this->data + a_idx;
    rec_rb_tree_s_node *pivot = this->data + root->left_idx;
@@ -505,12 +578,10 @@ inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_idx)
    else {
       rec_rb_tree_s_node *rp = this->data + root->parent_idx;
 
-      if (rp->right_idx == a_idx)
-      {
+      if (rp->right_idx == a_idx) {
          rp->right_idx = root->left_idx;
       }
-      else
-      {
+      else {
          rp->left_idx = root->left_idx;
       }
 
@@ -525,7 +596,7 @@ inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_idx)
    pivot->right_idx = a_idx;
 }/*}}}*/
 
-inline unsigned rec_rb_tree_s___get_new_index(rec_rb_tree_s *this)
+static inline unsigned rec_rb_tree_s___get_new_index(rec_rb_tree_s *this)
 {/*{{{*/
    if (this->free_idx != c_idx_not_exist) {
       unsigned new_idx = this->free_idx;
@@ -542,19 +613,17 @@ inline unsigned rec_rb_tree_s___get_new_index(rec_rb_tree_s *this)
    }
 }/*}}}*/
 
-inline void rec_rb_tree_s___replace_delete_node_by_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx)
+static inline void rec_rb_tree_s___replace_delete_node_by_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx)
 {/*{{{*/
    rec_rb_tree_s_node *node = this->data + a_idx;
 
    if (node->parent_idx != c_idx_not_exist) {
       rec_rb_tree_s_node *parent = this->data + node->parent_idx;
 
-      if (parent->left_idx == a_idx)
-      {
+      if (parent->left_idx == a_idx) {
          parent->left_idx = a_ch_idx;
       }
-      else
-      {
+      else {
          parent->right_idx = a_ch_idx;
       }
 
@@ -566,7 +635,7 @@ inline void rec_rb_tree_s___replace_delete_node_by_child(rec_rb_tree_s *this,uns
    }
 }/*}}}*/
 
-inline void rec_rb_tree_s___remove_one_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx)
+static inline void rec_rb_tree_s___remove_one_child(rec_rb_tree_s *this,unsigned a_idx,unsigned a_ch_idx)
 {/*{{{*/
    rec_rb_tree_s_node *node = this->data + a_idx;
    rec_rb_tree_s___replace_delete_node_by_child(this,a_idx,a_ch_idx);
@@ -586,7 +655,7 @@ inline void rec_rb_tree_s___remove_one_child(rec_rb_tree_s *this,unsigned a_idx,
    }
 }/*}}}*/
 
-inline void rec_rb_tree_s_init(rec_rb_tree_s *this)
+static inline void rec_rb_tree_s_init(rec_rb_tree_s *this)
 {/*{{{*/
    this->size = 0;
    this->used = 0;
@@ -596,7 +665,7 @@ inline void rec_rb_tree_s_init(rec_rb_tree_s *this)
    this->leaf_idx = c_idx_not_exist;
 }/*}}}*/
 
-inline void rec_rb_tree_s_clear(rec_rb_tree_s *this)
+static inline void rec_rb_tree_s_clear(rec_rb_tree_s *this)
 {/*{{{*/
    if (this->data != NULL) {
       cfree(this->data);
@@ -605,17 +674,17 @@ inline void rec_rb_tree_s_clear(rec_rb_tree_s *this)
    rec_rb_tree_s_init(this);
 }/*}}}*/
 
-inline void rec_rb_tree_s_flush(rec_rb_tree_s *this)
+static inline void rec_rb_tree_s_flush(rec_rb_tree_s *this)
 {/*{{{*/
    rec_rb_tree_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void rec_rb_tree_s_flush_all(rec_rb_tree_s *this)
+static inline void rec_rb_tree_s_flush_all(rec_rb_tree_s *this)
 {/*{{{*/
    rec_rb_tree_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void rec_rb_tree_s_swap(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
+static inline void rec_rb_tree_s_swap(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
 {/*{{{*/
    unsigned tmp_unsigned = this->size;
    this->size = a_second->size;
@@ -642,17 +711,17 @@ inline void rec_rb_tree_s_swap(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
    a_second->leaf_idx = tmp_unsigned;
 }/*}}}*/
 
-inline record_s *rec_rb_tree_s_at(rec_rb_tree_s *this,unsigned a_idx)
+static inline record_s *rec_rb_tree_s_at(rec_rb_tree_s *this,unsigned a_idx)
 {/*{{{*/
    debug_assert(a_idx < this->used);
    return &this->data[a_idx].object;
 }/*}}}*/
 
-inline unsigned rec_rb_tree_s_insert(rec_rb_tree_s *this,record_s *a_value)
+static inline unsigned rec_rb_tree_s_insert(rec_rb_tree_s *this,record_s *a_value)
 {/*{{{*/
    unsigned new_node_idx = rec_rb_tree_s___get_new_index(this);
 
-   rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value);
+   rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value,0);
    rec_rb_tree_s___insert_operation(this,new_node_idx);
 
    record_s_copy(&this->data[new_node_idx].object,a_value);
@@ -660,11 +729,11 @@ inline unsigned rec_rb_tree_s_insert(rec_rb_tree_s *this,record_s *a_value)
    return new_node_idx;
 }/*}}}*/
 
-inline unsigned rec_rb_tree_s_swap_insert(rec_rb_tree_s *this,record_s *a_value)
+static inline unsigned rec_rb_tree_s_swap_insert(rec_rb_tree_s *this,record_s *a_value)
 {/*{{{*/
    unsigned new_node_idx = rec_rb_tree_s___get_new_index(this);
 
-   rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value);
+   rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value,0);
    rec_rb_tree_s___insert_operation(this,new_node_idx);
 
    record_s_swap(&this->data[new_node_idx].object,a_value);
@@ -672,7 +741,49 @@ inline unsigned rec_rb_tree_s_swap_insert(rec_rb_tree_s *this,record_s *a_value)
    return new_node_idx;
 }/*}}}*/
 
-inline void rec_rb_tree_s_copy(rec_rb_tree_s *this,rec_rb_tree_s *a_src)
+static inline unsigned rec_rb_tree_s_unique_insert(rec_rb_tree_s *this,record_s *a_value)
+{/*{{{*/
+   unsigned new_node_idx = rec_rb_tree_s___get_new_index(this);
+   unsigned old_node_idx = rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value,1);
+
+   if (old_node_idx != c_idx_not_exist) {
+      rec_rb_tree_s_node *new_node = this->data + new_node_idx;
+
+      new_node->parent_idx = this->free_idx;
+      this->free_idx = new_node_idx;
+
+      return old_node_idx;
+   }
+
+   rec_rb_tree_s___insert_operation(this,new_node_idx);
+
+   record_s_copy(&this->data[new_node_idx].object,a_value);
+
+  return new_node_idx;
+}/*}}}*/
+
+static inline unsigned rec_rb_tree_s_unique_swap_insert(rec_rb_tree_s *this,record_s *a_value)
+{/*{{{*/
+   unsigned new_node_idx = rec_rb_tree_s___get_new_index(this);
+   unsigned old_node_idx = rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value,1);
+
+   if (old_node_idx != c_idx_not_exist) {
+      rec_rb_tree_s_node *new_node = this->data + new_node_idx;
+
+      new_node->parent_idx = this->free_idx;
+      this->free_idx = new_node_idx;
+
+      return old_node_idx;
+   }
+
+   rec_rb_tree_s___insert_operation(this,new_node_idx);
+
+   record_s_swap(&this->data[new_node_idx].object,a_value);
+
+  return new_node_idx;
+}/*}}}*/
+
+static inline void rec_rb_tree_s_copy(rec_rb_tree_s *this,rec_rb_tree_s *a_src)
 {/*{{{*/
    rec_rb_tree_s_clear(this);
 
@@ -746,24 +857,16 @@ void ui_array_s_copy_resize(ui_array_s *this,unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= this->used);
 
-   unsigned *n_data;
-
    if (a_size == 0) {
-      n_data = NULL;
+      if (this->data != NULL) {
+         cfree(this->data);
+      }
+      this->data = NULL;
    }
    else {
-      n_data = (unsigned *)cmalloc(a_size*sizeof(unsigned));
+      this->data = (unsigned *)crealloc(this->data,a_size*sizeof(unsigned));
    }
 
-   if (this->used != 0) {
-      memcpy(n_data,this->data,this->used*sizeof(unsigned));
-   }
-
-   if (this->size != 0) {
-      cfree(this->data);
-   }
-
-   this->data = n_data;
    this->size = a_size;
 }/*}}}*/
 
@@ -796,6 +899,29 @@ unsigned ui_array_s_get_idx(ui_array_s *this,unsigned a_value)
 
    return c_idx_not_exist;
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+void ui_array_s_to_string(ui_array_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'[');
+
+   if (this->used != 0) {
+      unsigned *ptr = this->data;
+      unsigned *ptr_end = this->data + this->used;
+
+      do {
+         unsigned_to_string(ptr,a_trg);
+
+         if (++ptr >= ptr_end)
+            break;
+         
+         bc_array_s_push(a_trg,',');
+      } while(1);
+   }
+
+   bc_array_s_push(a_trg,']');
+}/*}}}*/
+#endif
 
 
 
@@ -907,7 +1033,7 @@ unsigned rec_rb_tree_s_get_prev_idx(rec_rb_tree_s *this,unsigned a_idx)
    }
 }/*}}}*/
 
-void rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,record_s *a_value)
+unsigned rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,record_s *a_value,int a_unique)
 {/*{{{*/
    if (this->root_idx == c_idx_not_exist) {
       if (this->leaf_idx == c_idx_not_exist) {
@@ -930,7 +1056,8 @@ void rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,r
       do {
          rec_rb_tree_s_node *node = this->data + node_idx;
 
-         if (rec_rb_tree_s___compare_value(this,a_value,&node->object) < 0) {
+         int comp_result = rec_rb_tree_s___compare_value(this,a_value,&node->object);
+         if (comp_result < 0) {
             if (node->left_idx == this->leaf_idx) {
                node->left_idx = a_new_idx;
                break;
@@ -938,6 +1065,10 @@ void rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,r
             node_idx = node->left_idx;
          }
          else {
+            if (a_unique && comp_result == 0) {
+               return node_idx;
+            }
+
             if (node->right_idx == this->leaf_idx) {
                node->right_idx = a_new_idx;
                break;
@@ -953,6 +1084,8 @@ void rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,r
    new_node->left_idx = this->leaf_idx;
    new_node->right_idx = this->leaf_idx;
    new_node->color = 0;
+
+   return c_idx_not_exist;
 }/*}}}*/
 
 void rec_rb_tree_s___remove_black_black(rec_rb_tree_s *this,unsigned a_idx)
@@ -1120,12 +1253,10 @@ void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx)
          if (del_node->parent_idx != c_idx_not_exist) {
             rec_rb_tree_s_node *del_node_parent = this->data + del_node->parent_idx;
 
-            if (del_node_parent->left_idx == a_idx)
-            {
+            if (del_node_parent->left_idx == a_idx) {
                del_node_parent->left_idx = found_idx;
             }
-            else
-            {
+            else {
                del_node_parent->right_idx = found_idx;
             }
          }
@@ -1162,12 +1293,10 @@ void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx)
             /* - process found_node parent - */
             rec_rb_tree_s_node *found_node_parent = this->data + found_node->parent_idx;
 
-            if (found_node_parent->left_idx == found_idx)
-            {
+            if (found_node_parent->left_idx == found_idx) {
                found_node_parent->left_idx = a_idx;
             }
-            else
-            {
+            else {
                found_node_parent->right_idx = a_idx;
             }
 
@@ -1207,24 +1336,16 @@ void rec_rb_tree_s_copy_resize(rec_rb_tree_s *this,unsigned a_size)
 {/*{{{*/
    debug_assert(a_size >= this->used);
 
-   rec_rb_tree_s_node *n_data;
-
    if (a_size == 0) {
-      n_data = NULL;
+      if (this->data != NULL) {
+         cfree(this->data);
+      }
+      this->data = NULL;
    }
    else {
-      n_data = (rec_rb_tree_s_node *)cmalloc(a_size*sizeof(rec_rb_tree_s_node));
+      this->data = (rec_rb_tree_s_node *)crealloc(this->data,a_size*sizeof(rec_rb_tree_s_node));
    }
 
-   if (this->used != 0) {
-      memcpy(n_data,this->data,this->used*sizeof(rec_rb_tree_s_node));
-   }
-
-   if (this->size != 0) {
-      cfree(this->data);
-   }
-
-   this->data = n_data;
    this->size = a_size;
 }/*}}}*/
 
@@ -1400,7 +1521,7 @@ int rec_rb_tree_s_compare(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
       unsigned node_idx = rec_rb_tree_s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);
       unsigned s_node_idx = rec_rb_tree_s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);
       do {
-         if (rec_rb_tree_s___compare_value(this,&this->data[node_idx].object,&a_second->data[s_node_idx].object) != 0) {
+         if (!record_s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object)) {
             return 0;
          }
 
@@ -1415,6 +1536,31 @@ int rec_rb_tree_s_compare(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
 
    return 1;
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+void rec_rb_tree_s_to_string(rec_rb_tree_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'[');
+
+   if (this->root_idx != c_idx_not_exist) {
+      unsigned stack[rec_rb_tree_s_get_descent_stack_size(this)];
+      unsigned *stack_ptr = stack;
+
+      unsigned idx = rec_rb_tree_s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);
+      do {
+         record_s_to_string(&(this->data + idx)->object,a_trg);
+
+         idx = rec_rb_tree_s_get_stack_next_idx(this,idx,&stack_ptr,stack);
+         if (idx == c_idx_not_exist)
+            break;
+
+         bc_array_s_push(a_trg,',');
+      } while(1);
+   }
+
+   bc_array_s_push(a_trg,']');
+}/*}}}*/
+#endif
 
 void rec_rb_tree_s_rehash_tree(rec_rb_tree_s *this)
 {/*{{{*/
@@ -1437,7 +1583,7 @@ void rec_rb_tree_s_rehash_tree(rec_rb_tree_s *this)
 
    this->root_idx = c_idx_not_exist;
 
-   char processed[indexes.used];
+   char *processed = (char *)cmalloc(indexes.used);
    memset(processed,0,indexes.used*sizeof(char));
 
    unsigned step = indexes.used >> 1;
@@ -1448,7 +1594,7 @@ void rec_rb_tree_s_rehash_tree(rec_rb_tree_s *this)
             if (!processed[idx]) {
                unsigned node_idx = indexes.data[idx];
 
-               rec_rb_tree_s___binary_tree_insert(this,node_idx,&this->data[node_idx].object);
+               rec_rb_tree_s___binary_tree_insert(this,node_idx,&this->data[node_idx].object,0);
                rec_rb_tree_s___insert_operation(this,node_idx);
 
                processed[idx] = 1;
@@ -1458,188 +1604,11 @@ void rec_rb_tree_s_rehash_tree(rec_rb_tree_s *this)
    }
 
    unsigned node_idx = indexes.data[0];
-   rec_rb_tree_s___binary_tree_insert(this,node_idx,&this->data[node_idx].object);
+   rec_rb_tree_s___binary_tree_insert(this,node_idx,&this->data[node_idx].object,0);
    rec_rb_tree_s___insert_operation(this,node_idx);
 
+   cfree(processed);
    ui_array_s_clear(&indexes);
-}/*}}}*/
-
-void rec_rb_tree_s_print_dot_code(rec_rb_tree_s *this,FILE *a_file)
-{/*{{{*/
-   fprintf(a_file,
-"digraph G {\n"
-"   rankdir = TD\n"
-"   node [ shape = circle margin = 0.0 fixedsize = true width = 0.7 height = 0.7]\n"
-"\n"
-   );
-
-   const char *node_colors[] = {
-      "red",
-      "black",
-   };
-
-   fprintf(a_file,
-"   root_idx [label = \"R\" ]\n"
-"   root_idx -> node_%u\n"
-   ,this->root_idx);
-
-   if (this->root_idx != c_idx_not_exist) {
-      ui_array_s stack;
-      ui_array_s_init(&stack);
-
-      ui_array_s_push(&stack,this->root_idx);
-      do {
-         unsigned node_idx = ui_array_s_pop(&stack);
-         rec_rb_tree_s_node *node = this->data + node_idx;
-
-         /* - print node - */
-         fprintf(a_file,
-"   node_%u [ color = \"%s\" label = \"%u\" ]\n"
-         ,node_idx,node_colors[(int)node->color],node_idx);
-
-         if (node->parent_idx != c_idx_not_exist) {
-            fprintf(a_file,
-"   node_%u -> node_%u [ color = green ] \n"
-            ,node_idx,node->parent_idx);
-         }
-
-         if (node->left_idx != this->leaf_idx) {
-            fprintf(a_file,
-"   node_%u -> node_%u [ label = \"L\" ]\n"
-            ,node_idx,node->left_idx);
-
-            ui_array_s_push(&stack,node->left_idx);
-         }
-
-         if (node->right_idx != this->leaf_idx) {
-            fprintf(a_file,
-"   node_%u -> node_%u [ label = \"R\" ]\n"
-            ,node_idx,node->right_idx);
-
-            ui_array_s_push(&stack,node->right_idx);
-         }
-      } while(stack.used > 0);
-
-      ui_array_s_clear(&stack);
-   }
-
-   fprintf(a_file,
-"}\n"
-"\n");
-
-}/*}}}*/
-
-int rec_rb_tree_s_check_rb_tree_properties(rec_rb_tree_s *this)
-{/*{{{*/
-   rec_rb_tree_s_node *leaf = this->data + this->leaf_idx;
-   if (!leaf->color) {
-      fprintf(stderr,"ERROR: leaf_node color\n");
-      return 0;
-   }
-
-   if (leaf->left_idx != c_idx_not_exist || leaf->right_idx != c_idx_not_exist) {
-      fprintf(stderr,"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\n");
-      return 0;
-   }
-
-   if (this->root_idx != c_idx_not_exist) {
-
-      /* - check if root node is black - */
-      rec_rb_tree_s_node *r_node = this->data + this->root_idx;
-      if (!r_node->color) {
-         fprintf(stderr,"ERROR: root node is not black\n");
-         return 0;
-      }
-
-      /* - create node index and path length stacks - */
-      ui_array_s ni_stack;
-      ui_array_s pl_stack;
-
-      ui_array_s_init(&ni_stack);
-      ui_array_s_init(&pl_stack);
-
-      /* - insert root on stack - */
-      ui_array_s_push(&ni_stack,this->root_idx);
-      ui_array_s_push(&pl_stack,0);
-
-      unsigned r_path_length = c_idx_not_exist;
-      do {
-         unsigned node_idx = ui_array_s_pop(&ni_stack);
-         unsigned path_length = ui_array_s_pop(&pl_stack);
-         unsigned stack_depth = ni_stack.used;
-
-         rec_rb_tree_s_node *node = this->data + node_idx;
-
-         if (node->color) {
-            path_length++;
-         }
-         else {
-            if (node->left_idx == c_idx_not_exist || node->right_idx == c_idx_not_exist) {
-               fprintf(stderr,"ERROR: red node has not two childs!\n");
-               ui_array_s_clear(&ni_stack);
-               ui_array_s_clear(&pl_stack);
-               return 0;
-            }
-
-            if (!this->data[node->left_idx].color || !this->data[node->right_idx].color) {
-               fprintf(stderr,"ERROR: child of red node is not black!\n");
-               ui_array_s_clear(&ni_stack);
-               ui_array_s_clear(&pl_stack);
-               return 0;
-            }
-         }
-
-         if (node->left_idx != c_idx_not_exist) {
-            ui_array_s_push(&ni_stack,node->left_idx);
-            ui_array_s_push(&pl_stack,path_length);
-         }
-
-         if (node->right_idx != c_idx_not_exist) {
-            ui_array_s_push(&ni_stack,node->right_idx);
-            ui_array_s_push(&pl_stack,path_length);
-         }
-
-         /* - if node is leaf node - */
-         if (stack_depth == ni_stack.used) {
-            if (r_path_length != c_idx_not_exist) {
-               if (r_path_length != path_length) {
-                  fprintf(stderr,"ERROR: all path have no same length!\n");
-                  ui_array_s_clear(&ni_stack);
-                  ui_array_s_clear(&pl_stack);
-                  return 0;
-               }
-            }
-            else {
-               r_path_length = path_length;
-            }
-         }
-
-      } while(ni_stack.used > 0);
-
-      ui_array_s_clear(&ni_stack);
-      ui_array_s_clear(&pl_stack);
-   }
-
-   /* - test if are node values sorted - */
-   if (this->root_idx != c_idx_not_exist) {
-      unsigned stack[rec_rb_tree_s_get_descent_stack_size(this)];
-      unsigned *stack_ptr = stack;
-
-      unsigned idx = rec_rb_tree_s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);
-      do {
-         unsigned l_idx = idx;
-         idx = rec_rb_tree_s_get_stack_next_idx(this,idx,&stack_ptr,stack);
-         if (idx == c_idx_not_exist) {
-            break;
-         }
-         if (rec_rb_tree_s___compare_value(this,&this->data[l_idx].object,&this->data[idx].object) == 1) {
-            fprintf(stderr,"ERROR: values in rb_tree are not sorted\n");
-            return 0;
-         }
-      } while(1);
-   }
-
-   return 1;
 }/*}}}*/
 
 

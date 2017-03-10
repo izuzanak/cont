@@ -13,6 +13,62 @@ typedef float bf;
 typedef double bd;
 typedef long double ld;
 
+#define INIT_ARRAY \
+.size = 0,\
+.used = 0,\
+.data = NULL
+
+#define INIT_QUEUE \
+.size = 0,\
+.used = 0,\
+.begin = 0,\
+.data = NULL\
+
+#define INIT_LIST \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_RB_TREE \
+.size = 0,\
+.used = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define INIT_SAFE_LIST \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.first_idx = c_idx_not_exist,\
+.last_idx = c_idx_not_exist
+
+#define INIT_SAFE_RB_TREE \
+.size = 0,\
+.used = 0,\
+.count = 0,\
+.data = NULL,\
+.free_idx = c_idx_not_exist,\
+.root_idx = c_idx_not_exist,\
+.leaf_idx = c_idx_not_exist
+
+#define CONT_INIT(TYPE,NAME) \
+  TYPE NAME;\
+  TYPE ## _init(&NAME);
+
+#define CONT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;
+
+#define CONT_INIT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\
+  TYPE ## _init(&NAME);
+
 
 
 #ifndef __QUEUE_H
@@ -32,9 +88,12 @@ typedef long double ld;
 #include "assert.h"
 #include "math.h"
 
+#define ENABLED 1
+
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc
+#define crealloc realloc
 #define cfree free
 
 // - constants used by generated code of containers -
@@ -77,13 +136,16 @@ struct record_s
    unsigned value; //!< member - 1
 };
 
-inline void record_s_init(record_s *this);
-inline void record_s_clear(record_s *this);
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
-inline void record_s_flush_all(record_s *this);
-inline void record_s_swap(record_s *this,record_s *a_second);
-inline void record_s_copy(record_s *this,record_s *a_src);
-inline int record_s_compare(record_s *this,record_s *a_second);
+static inline void record_s_init(record_s *this);
+static inline void record_s_clear(record_s *this);
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value);
+static inline void record_s_flush_all(record_s *this);
+static inline void record_s_swap(record_s *this,record_s *a_second);
+static inline void record_s_copy(record_s *this,record_s *a_src);
+static inline int record_s_compare(record_s *this,record_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg);
+#endif
 
 inline unsigned record_s_get_index();
 inline unsigned record_s_get_value();
@@ -98,27 +160,27 @@ inline unsigned record_s_get_value();
 // -- record_s --
 // --- struct record_s inline method definition ---
 
-inline void record_s_init(record_s *this)
+static inline void record_s_init(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_clear(record_s *this)
+static inline void record_s_clear(record_s *this)
 {/*{{{*/
 
    record_s_init(this);
 }/*}}}*/
 
-inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
+static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
 {/*{{{*/
    this->index = a_index;
    this->value = a_value;
 }/*}}}*/
 
-inline void record_s_flush_all(record_s *this)
+static inline void record_s_flush_all(record_s *this)
 {/*{{{*/
 }/*}}}*/
 
-inline void record_s_swap(record_s *this,record_s *a_second)
+static inline void record_s_swap(record_s *this,record_s *a_second)
 {/*{{{*/
    unsigned tmp_index = this->index;
    this->index = a_second->index;
@@ -129,16 +191,27 @@ inline void record_s_swap(record_s *this,record_s *a_second)
    a_second->value = tmp_value;
 }/*}}}*/
 
-inline void record_s_copy(record_s *this,record_s *a_src)
+static inline void record_s_copy(record_s *this,record_s *a_src)
 {/*{{{*/
    this->index = a_src->index;
    this->value = a_src->value;
 }/*}}}*/
 
-inline int record_s_compare(record_s *this,record_s *a_second)
+static inline int record_s_compare(record_s *this,record_s *a_second)
 {/*{{{*/
    return (this->index == a_second->index && this->value == a_second->value);
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+static inline void record_s_to_string(record_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'{');
+   unsigned_to_string(&this->index,a_trg);
+   bc_array_s_push(a_trg,',');
+   unsigned_to_string(&this->value,a_trg);
+   bc_array_s_push(a_trg,'}');
+}/*}}}*/
+#endif
 
 
 
@@ -179,19 +252,22 @@ struct rec_queue_s
    record_s *data; //!< pointer to queue elements
 };
 
-inline void rec_queue_s_init(rec_queue_s *this);
-inline void rec_queue_s_init_size(rec_queue_s *this,unsigned a_size);
-inline void rec_queue_s_clear(rec_queue_s *this);
-inline void rec_queue_s_flush(rec_queue_s *this);
-inline void rec_queue_s_flush_all(rec_queue_s *this);
-inline void rec_queue_s_swap(rec_queue_s *this,rec_queue_s *a_second);
-inline void rec_queue_s_insert(rec_queue_s *this,record_s *a_value);
-inline void rec_queue_s_insert_blank(rec_queue_s *this);
-inline record_s *rec_queue_s_next(rec_queue_s *this);
-inline record_s *rec_queue_s_last(rec_queue_s *this);
+static inline void rec_queue_s_init(rec_queue_s *this);
+static inline void rec_queue_s_init_size(rec_queue_s *this,unsigned a_size);
+static inline void rec_queue_s_clear(rec_queue_s *this);
+static inline void rec_queue_s_flush(rec_queue_s *this);
+static inline void rec_queue_s_flush_all(rec_queue_s *this);
+static inline void rec_queue_s_swap(rec_queue_s *this,rec_queue_s *a_second);
+static inline unsigned rec_queue_s_insert(rec_queue_s *this,record_s *a_value);
+static inline unsigned rec_queue_s_insert_blank(rec_queue_s *this);
+static inline record_s *rec_queue_s_next(rec_queue_s *this);
+static inline record_s *rec_queue_s_last(rec_queue_s *this);
 void rec_queue_s_copy_resize(rec_queue_s *this,unsigned a_size);
-inline void rec_queue_s_copy(rec_queue_s *this,rec_queue_s *a_src);
+static inline void rec_queue_s_copy(rec_queue_s *this,rec_queue_s *a_src);
 int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second);
+#if OPTION_TO_STRING == ENABLED
+void rec_queue_s_to_string(rec_queue_s *this,bc_array_s *a_trg);
+#endif
 
 
 
@@ -202,7 +278,7 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second);
 // -- rec_queue_s --
 // --- struct rec_queue_s inline method definition ---
 
-inline void rec_queue_s_init(rec_queue_s *this)
+static inline void rec_queue_s_init(rec_queue_s *this)
 {/*{{{*/
    this->size = 0;
    this->used = 0;
@@ -210,13 +286,13 @@ inline void rec_queue_s_init(rec_queue_s *this)
    this->data = NULL;
 }/*}}}*/
 
-inline void rec_queue_s_init_size(rec_queue_s *this,unsigned a_size)
+static inline void rec_queue_s_init_size(rec_queue_s *this,unsigned a_size)
 {/*{{{*/
    rec_queue_s_init(this);
    rec_queue_s_copy_resize(this,a_size);
 }/*}}}*/
 
-inline void rec_queue_s_clear(rec_queue_s *this)
+static inline void rec_queue_s_clear(rec_queue_s *this)
 {/*{{{*/
    if (this->data != NULL) {
       cfree(this->data);
@@ -225,17 +301,17 @@ inline void rec_queue_s_clear(rec_queue_s *this)
    rec_queue_s_init(this);
 }/*}}}*/
 
-inline void rec_queue_s_flush(rec_queue_s *this)
+static inline void rec_queue_s_flush(rec_queue_s *this)
 {/*{{{*/
    rec_queue_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void rec_queue_s_flush_all(rec_queue_s *this)
+static inline void rec_queue_s_flush_all(rec_queue_s *this)
 {/*{{{*/
    rec_queue_s_copy_resize(this,this->used);
 }/*}}}*/
 
-inline void rec_queue_s_swap(rec_queue_s *this,rec_queue_s *a_second)
+static inline void rec_queue_s_swap(rec_queue_s *this,rec_queue_s *a_second)
 {/*{{{*/
    unsigned tmp_unsigned = this->size;
    this->size = a_second->size;
@@ -254,32 +330,39 @@ inline void rec_queue_s_swap(rec_queue_s *this,rec_queue_s *a_second)
    a_second->data = tmp_data;
 }/*}}}*/
 
-inline void rec_queue_s_insert(rec_queue_s *this,record_s *a_value)
+static inline unsigned rec_queue_s_insert(rec_queue_s *this,record_s *a_value)
 {/*{{{*/
    if (this->used >= this->size) {
       rec_queue_s_copy_resize(this,(this->size << 1) + c_array_add);
    }
 
-   if (this->begin + this->used >= this->size) {
-      record_s_copy(this->data + this->begin + this->used - this->size,a_value);
-   }
-   else {
-      record_s_copy(this->data + this->begin + this->used,a_value);
+   unsigned inserted_idx = this->begin + this->used++;
+
+   if (inserted_idx >= this->size) {
+      inserted_idx -= this->size;
    }
 
-   this->used++;
+   record_s_copy(this->data + inserted_idx,a_value);
+
+   return inserted_idx;
 }/*}}}*/
 
-inline void rec_queue_s_insert_blank(rec_queue_s *this)
+static inline unsigned rec_queue_s_insert_blank(rec_queue_s *this)
 {/*{{{*/
    if (this->used >= this->size) {
       rec_queue_s_copy_resize(this,(this->size << 1) + c_array_add);
    }
 
-   this->used++;
+   unsigned inserted_idx = this->begin + this->used++;
+
+   if (inserted_idx >= this->size) {
+      inserted_idx -= this->size;
+   }
+
+   return inserted_idx;
 }/*}}}*/
 
-inline record_s *rec_queue_s_next(rec_queue_s *this)
+static inline record_s *rec_queue_s_next(rec_queue_s *this)
 {/*{{{*/
    debug_assert(this->used > 0);
 
@@ -294,7 +377,7 @@ inline record_s *rec_queue_s_next(rec_queue_s *this)
    return this->data + ret_idx;
 }/*}}}*/
 
-inline record_s *rec_queue_s_last(rec_queue_s *this)
+static inline record_s *rec_queue_s_last(rec_queue_s *this)
 {/*{{{*/
    debug_assert(this->used > 0);
 
@@ -307,7 +390,7 @@ inline record_s *rec_queue_s_last(rec_queue_s *this)
    }
 }/*}}}*/
 
-inline void rec_queue_s_copy(rec_queue_s *this,rec_queue_s *a_src)
+static inline void rec_queue_s_copy(rec_queue_s *this,rec_queue_s *a_src)
 {/*{{{*/
    rec_queue_s_clear(this);
 
@@ -480,6 +563,50 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
       }
    } while(1);
 }/*}}}*/
+
+#if OPTION_TO_STRING == ENABLED
+void rec_queue_s_to_string(rec_queue_s *this,bc_array_s *a_trg)
+{/*{{{*/
+   bc_array_s_push(a_trg,'[');
+
+   if (this->used != 0)
+   {
+      unsigned sec_cnt;
+      record_s *ptr = this->data + this->begin;
+      record_s *ptr_end;
+
+      if (this->begin + this->used > this->size) {
+         ptr_end = this->data + this->size;
+         sec_cnt = this->begin + this->used - this->size;
+      }
+      else {
+         ptr_end = ptr + this->used;
+         sec_cnt = 0;
+      }
+
+      do {
+         record_s_to_string(ptr,a_trg);
+
+         if (++ptr >= ptr_end)
+            break;
+
+         bc_array_s_push(a_trg,',');
+      } while(1);
+
+      if (sec_cnt != 0) {
+         ptr = this->data;
+         ptr_end = ptr + sec_cnt;
+
+         do {
+            bc_array_s_push(a_trg,',');
+            record_s_to_string(ptr,a_trg);
+         } while(++ptr < ptr_end);
+      }
+   }
+
+   bc_array_s_push(a_trg,']');
+}/*}}}*/
+#endif
 
 
 
