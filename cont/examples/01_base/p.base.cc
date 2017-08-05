@@ -17,18 +17,18 @@ typedef long double ld;
 #define INIT_ARRAY \
 .size = 0,\
 .used = 0,\
-.data = NULL
+.data = nullptr
 
 #define INIT_QUEUE \
 .size = 0,\
 .used = 0,\
 .begin = 0,\
-.data = NULL\
+.data = nullptr\
 
 #define INIT_LIST \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -36,7 +36,7 @@ typedef long double ld;
 #define INIT_RB_TREE \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -45,7 +45,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -54,7 +54,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist

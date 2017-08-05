@@ -17,18 +17,18 @@ typedef long double ld;
 #define INIT_ARRAY \
 .size = 0,\
 .used = 0,\
-.data = NULL
+.data = nullptr
 
 #define INIT_QUEUE \
 .size = 0,\
 .used = 0,\
 .begin = 0,\
-.data = NULL\
+.data = nullptr\
 
 #define INIT_LIST \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -36,7 +36,7 @@ typedef long double ld;
 #define INIT_RB_TREE \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -45,7 +45,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -54,7 +54,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -353,7 +353,7 @@ inline void rec_queue_s::init()
    size = 0;
    used = 0;
    begin = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void rec_queue_s::init_size(unsigned a_size)
@@ -364,7 +364,7 @@ inline void rec_queue_s::init_size(unsigned a_size)
 
 inline void rec_queue_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -514,7 +514,7 @@ void rec_queue_s::copy_resize(unsigned a_size)
    record_s *n_data;
 
    if (a_size == 0) {
-      n_data = NULL;
+      n_data = nullptr;
    }
    else {
       n_data = (record_s *)cmalloc(a_size*sizeof(record_s));

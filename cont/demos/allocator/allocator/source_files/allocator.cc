@@ -4,7 +4,7 @@ include "allocator.h"
 @end
 
 // - global allocator pointer -
-allocator_s *allocator_ptr = NULL;
+allocator_s *allocator_ptr = nullptr;
 
 /*
  * methods of generated structures
@@ -37,7 +37,7 @@ void block_list_s::safe_copy_resize(unsigned a_size)
    block_list_s_element *n_data;
 
    if (a_size == 0) {
-      n_data = NULL;
+      n_data = nullptr;
    }
    else {
       n_data = (block_list_s_element *)cmalloc(a_size*sizeof(block_list_s_element));
@@ -47,7 +47,7 @@ void block_list_s::safe_copy_resize(unsigned a_size)
       memcpy(n_data,data,used*sizeof(block_list_s_element));
    }
 
-   block_list_s_element *rm_data = size != 0 ? data : NULL;
+   block_list_s_element *rm_data = size != 0 ? data : nullptr;
 
    data = n_data;
    size = a_size;
@@ -101,7 +101,7 @@ void free_tree_s::safe_copy_resize(unsigned a_size)
    free_tree_s_node *n_data;
 
    if (a_size == 0) {
-      n_data = NULL;
+      n_data = nullptr;
    }
    else {
       n_data = (free_tree_s_node *)cmalloc(a_size*sizeof(free_tree_s_node));
@@ -111,7 +111,7 @@ void free_tree_s::safe_copy_resize(unsigned a_size)
       memcpy(n_data,data,used*sizeof(free_tree_s_node));
    }
 
-   free_tree_s_node *rm_data = size != 0 ? data : NULL;
+   free_tree_s_node *rm_data = size != 0 ? data : nullptr;
 
    data = n_data;
    size = a_size;
@@ -159,7 +159,7 @@ void alloc_tree_s::safe_copy_resize(unsigned a_size)
    alloc_tree_s_node *n_data;
 
    if (a_size == 0) {
-      n_data = NULL;
+      n_data = nullptr;
    }
    else {
       n_data = (alloc_tree_s_node *)cmalloc(a_size*sizeof(alloc_tree_s_node));
@@ -169,7 +169,7 @@ void alloc_tree_s::safe_copy_resize(unsigned a_size)
       memcpy(n_data,data,used*sizeof(alloc_tree_s_node));
    }
 
-   alloc_tree_s_node *rm_data = size != 0 ? data : NULL;
+   alloc_tree_s_node *rm_data = size != 0 ? data : nullptr;
 
    data = n_data;
    size = a_size;
@@ -283,15 +283,15 @@ void allocator_s::destroy()
 {/*{{{*/
 
   // - destroy block list -
-  block_list.data = NULL;
+  block_list.data = nullptr;
   block_list.size = 0;
 
   // - destroy free tree -
-  free_tree.data = NULL;
+  free_tree.data = nullptr;
   free_tree.size = 0;
 
   // - destroy alloc tree -
-  alloc_tree.data = NULL;
+  alloc_tree.data = nullptr;
   alloc_tree.size = 0;
 
 }/*}}}*/

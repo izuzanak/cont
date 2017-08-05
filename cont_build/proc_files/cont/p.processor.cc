@@ -17,18 +17,18 @@ typedef long double ld;
 #define INIT_ARRAY \
 .size = 0,\
 .used = 0,\
-.data = NULL
+.data = nullptr
 
 #define INIT_QUEUE \
 .size = 0,\
 .used = 0,\
 .begin = 0,\
-.data = NULL\
+.data = nullptr\
 
 #define INIT_LIST \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -36,7 +36,7 @@ typedef long double ld;
 #define INIT_RB_TREE \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -45,7 +45,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -54,7 +54,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -971,7 +971,7 @@ inline void ui_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void ui_array_s::init_size(unsigned a_size)
@@ -982,7 +982,7 @@ inline void ui_array_s::init_size(unsigned a_size)
 
 inline void ui_array_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -994,7 +994,7 @@ inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    memcpy(data,a_data,a_used*sizeof(unsigned));
@@ -1315,7 +1315,7 @@ inline void mc_block_rb_tree_s::init()
    size = 0;
    used = 0;
    count = 0;
-   data = NULL;
+   data = nullptr;
    free_idx = c_idx_not_exist;
    root_idx = c_idx_not_exist;
    leaf_idx = c_idx_not_exist;
@@ -1323,7 +1323,7 @@ inline void mc_block_rb_tree_s::init()
 
 inline void mc_block_rb_tree_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -2188,7 +2188,7 @@ inline void string_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void string_array_s::init_size(unsigned a_size)
@@ -2989,7 +2989,7 @@ inline void data_type_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void data_type_array_s::init_size(unsigned a_size)
@@ -3121,7 +3121,7 @@ inline void abbreviation_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void abbreviation_array_s::init_size(unsigned a_size)
@@ -3712,7 +3712,7 @@ inline void lalr_stack_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void lalr_stack_s::init_size(unsigned a_size)
@@ -3723,7 +3723,7 @@ inline void lalr_stack_s::init_size(unsigned a_size)
 
 inline void lalr_stack_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -3735,7 +3735,7 @@ inline void lalr_stack_s::set(unsigned a_used,lalr_stack_element_s *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    memcpy(data,a_data,a_used*sizeof(lalr_stack_element_s));
@@ -4045,7 +4045,7 @@ const char *c_cont_postfixes[c_cont_cnt] = {
 
 void data_type_array_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       data_type_s *ptr = data;
       data_type_s *ptr_end = ptr + size;
 
@@ -4064,7 +4064,7 @@ void data_type_array_s::set(unsigned a_used,data_type_s *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    data_type_s *ptr = data;
@@ -4132,10 +4132,10 @@ void data_type_array_s::copy_resize(unsigned a_size)
    }
 
    if (a_size == 0) {
-      if (data != NULL) {
+      if (data != nullptr) {
          cfree(data);
       }
-      data = NULL;
+      data = nullptr;
    }
    else {
       data = (data_type_s *)crealloc(data,a_size*sizeof(data_type_s));
@@ -4248,7 +4248,7 @@ unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
 
 void abbreviation_array_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       abbreviation_s *ptr = data;
       abbreviation_s *ptr_end = ptr + size;
 
@@ -4267,7 +4267,7 @@ void abbreviation_array_s::set(unsigned a_used,abbreviation_s *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    abbreviation_s *ptr = data;
@@ -4323,10 +4323,10 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
    }
 
    if (a_size == 0) {
-      if (data != NULL) {
+      if (data != nullptr) {
          cfree(data);
       }
-      data = NULL;
+      data = nullptr;
    }
    else {
       data = (abbreviation_s *)crealloc(data,a_size*sizeof(abbreviation_s));
@@ -4450,7 +4450,7 @@ printf(
 "{/*{{{*/\n"
 "   size = 0;\n"
 "   used = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -4482,7 +4482,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -4522,7 +4522,7 @@ printf(
 "   clear();\n"
 "   if (a_used == 0) return;\n"
 "   \n"
-"   debug_assert(a_data != NULL);\n"
+"   debug_assert(a_data != nullptr);\n"
 "   copy_resize(a_used);\n"
 "\n"
 );
@@ -4768,7 +4768,7 @@ printf(
 "   %s *n_data;\n"
 "\n"
 "   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
+"      n_data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
@@ -4839,10 +4839,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
@@ -5623,7 +5623,7 @@ printf(
 "   size = 0;\n"
 "   used = 0;\n"
 "   begin = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -5655,7 +5655,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -5850,7 +5850,7 @@ printf(
 "   %s *n_data;\n"
 "\n"
 "   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
+"      n_data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
@@ -5902,7 +5902,7 @@ printf(
 "      if (begin + used >= size) {\n"
 "         ptr = data + (begin + used - size);\n"
 "         ptr_end = data + begin;\n"
-"         s_ptr = NULL;\n"
+"         s_ptr = nullptr;\n"
 "      }\n"
 "      else {\n"
 "         ptr = data;\n"
@@ -5916,7 +5916,7 @@ printf(
 "         } while(++ptr < ptr_end);\n"
 "      }\n"
 "\n"
-"      if (s_ptr != NULL) {\n"
+"      if (s_ptr != nullptr) {\n"
 "         %s *s_ptr_end = data + size;\n"
 "         do {\n"
 "            s_ptr->clear();\n"
@@ -6582,7 +6582,7 @@ printf(
 "{/*{{{*/\n"
 "   size = 0;\n"
 "   used = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "   free_idx = c_idx_not_exist;\n"
 "   first_idx = c_idx_not_exist;\n"
 "   last_idx = c_idx_not_exist;\n"
@@ -6617,7 +6617,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -7172,10 +7172,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
@@ -9041,7 +9041,7 @@ printf(
 "{/*{{{*/\n"
 "   size = 0;\n"
 "   used = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "   free_idx = c_idx_not_exist;\n"
 "   root_idx = c_idx_not_exist;\n"
 "   leaf_idx = c_idx_not_exist;\n"
@@ -9076,7 +9076,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -9469,10 +9469,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
@@ -10938,7 +10938,7 @@ printf(
 "   size = 0;\n"
 "   used = 0;\n"
 "   count = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "   free_idx = c_idx_not_exist;\n"
 "   first_idx = c_idx_not_exist;\n"
 "   last_idx = c_idx_not_exist;\n"
@@ -10973,7 +10973,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -11553,10 +11553,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
@@ -12854,7 +12854,7 @@ printf(
 "   size = 0;\n"
 "   used = 0;\n"
 "   count = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "   free_idx = c_idx_not_exist;\n"
 "   root_idx = c_idx_not_exist;\n"
 "   leaf_idx = c_idx_not_exist;\n"
@@ -12889,7 +12889,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -13289,10 +13289,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
@@ -14917,7 +14917,7 @@ bool processor_s::find_include_file(const char *a_file, string_s &a_file_path)
     // - brute file existence test -
     FILE *f = fopen(file_path.data,"rb");
 
-    if (f != NULL) {
+    if (f != nullptr) {
       fclose(f);
 
       // - set target file path -
@@ -15000,18 +15000,18 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 "#define INIT_ARRAY \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
-".data = NULL\n"
+".data = nullptr\n"
 "\n"
 "#define INIT_QUEUE \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
 ".begin = 0,\\\n"
-".data = NULL\\\n"
+".data = nullptr\\\n"
 "\n"
 "#define INIT_LIST \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".first_idx = c_idx_not_exist,\\\n"
 ".last_idx = c_idx_not_exist\n"
@@ -15019,7 +15019,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 "#define INIT_RB_TREE \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".root_idx = c_idx_not_exist,\\\n"
 ".leaf_idx = c_idx_not_exist\n"
@@ -15028,7 +15028,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 ".size = 0,\\\n"
 ".used = 0,\\\n"
 ".count = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".first_idx = c_idx_not_exist,\\\n"
 ".last_idx = c_idx_not_exist\n"
@@ -15037,7 +15037,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 ".size = 0,\\\n"
 ".used = 0,\\\n"
 ".count = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".root_idx = c_idx_not_exist,\\\n"
 ".leaf_idx = c_idx_not_exist\n"

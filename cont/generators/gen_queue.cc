@@ -10,7 +10,7 @@ printf(
 "   size = 0;\n"
 "   used = 0;\n"
 "   begin = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -42,7 +42,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -237,7 +237,7 @@ printf(
 "   %s *n_data;\n"
 "\n"
 "   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
+"      n_data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
@@ -289,7 +289,7 @@ printf(
 "      if (begin + used >= size) {\n"
 "         ptr = data + (begin + used - size);\n"
 "         ptr_end = data + begin;\n"
-"         s_ptr = NULL;\n"
+"         s_ptr = nullptr;\n"
 "      }\n"
 "      else {\n"
 "         ptr = data;\n"
@@ -303,7 +303,7 @@ printf(
 "         } while(++ptr < ptr_end);\n"
 "      }\n"
 "\n"
-"      if (s_ptr != NULL) {\n"
+"      if (s_ptr != nullptr) {\n"
 "         %s *s_ptr_end = data + size;\n"
 "         do {\n"
 "            s_ptr->clear();\n"

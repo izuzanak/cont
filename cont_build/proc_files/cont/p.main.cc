@@ -17,18 +17,18 @@ typedef long double ld;
 #define INIT_ARRAY \
 .size = 0,\
 .used = 0,\
-.data = NULL
+.data = nullptr
 
 #define INIT_QUEUE \
 .size = 0,\
 .used = 0,\
 .begin = 0,\
-.data = NULL\
+.data = nullptr\
 
 #define INIT_LIST \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -36,7 +36,7 @@ typedef long double ld;
 #define INIT_RB_TREE \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -45,7 +45,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -54,7 +54,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -971,7 +971,7 @@ inline void ui_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void ui_array_s::init_size(unsigned a_size)
@@ -982,7 +982,7 @@ inline void ui_array_s::init_size(unsigned a_size)
 
 inline void ui_array_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -994,7 +994,7 @@ inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    memcpy(data,a_data,a_used*sizeof(unsigned));
@@ -1315,7 +1315,7 @@ inline void mc_block_rb_tree_s::init()
    size = 0;
    used = 0;
    count = 0;
-   data = NULL;
+   data = nullptr;
    free_idx = c_idx_not_exist;
    root_idx = c_idx_not_exist;
    leaf_idx = c_idx_not_exist;
@@ -1323,7 +1323,7 @@ inline void mc_block_rb_tree_s::init()
 
 inline void mc_block_rb_tree_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -2188,7 +2188,7 @@ inline void string_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void string_array_s::init_size(unsigned a_size)
@@ -2993,7 +2993,7 @@ inline void data_type_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void data_type_array_s::init_size(unsigned a_size)
@@ -3125,7 +3125,7 @@ inline void abbreviation_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void abbreviation_array_s::init_size(unsigned a_size)

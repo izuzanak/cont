@@ -9,7 +9,7 @@ printf(
 "{/*{{{*/\n"
 "   size = 0;\n"
 "   used = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "   free_idx = c_idx_not_exist;\n"
 "   first_idx = c_idx_not_exist;\n"
 "   last_idx = c_idx_not_exist;\n"
@@ -44,7 +44,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -599,10 +599,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"

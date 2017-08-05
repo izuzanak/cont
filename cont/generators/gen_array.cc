@@ -9,7 +9,7 @@ printf(
 "{/*{{{*/\n"
 "   size = 0;\n"
 "   used = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -41,7 +41,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -81,7 +81,7 @@ printf(
 "   clear();\n"
 "   if (a_used == 0) return;\n"
 "   \n"
-"   debug_assert(a_data != NULL);\n"
+"   debug_assert(a_data != nullptr);\n"
 "   copy_resize(a_used);\n"
 "\n"
 );
@@ -327,7 +327,7 @@ printf(
 "   %s *n_data;\n"
 "\n"
 "   if (a_size == 0) {\n"
-"      n_data = NULL;\n"
+"      n_data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
@@ -398,10 +398,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s *)crealloc(data,a_size*sizeof(%s));\n"

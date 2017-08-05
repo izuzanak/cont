@@ -92,7 +92,7 @@ void DEMO_data(xml_parser_s &xml)
       const char *data = element.data();
 
       // - print element name -
-      if (data != NULL)
+      if (data != nullptr)
       {
         const char *name = element.name();
         printf("<%s>%s</%s>\n",name,data,name);

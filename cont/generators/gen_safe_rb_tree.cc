@@ -584,7 +584,7 @@ printf(
 "   size = 0;\n"
 "   used = 0;\n"
 "   count = 0;\n"
-"   data = NULL;\n"
+"   data = nullptr;\n"
 "   free_idx = c_idx_not_exist;\n"
 "   root_idx = c_idx_not_exist;\n"
 "   leaf_idx = c_idx_not_exist;\n"
@@ -619,7 +619,7 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != NULL) {\n"
+"   if (data != nullptr) {\n"
 );
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -1019,10 +1019,10 @@ printf(
 printf(
 "\n"
 "   if (a_size == 0) {\n"
-"      if (data != NULL) {\n"
+"      if (data != nullptr) {\n"
 "         cfree(data);\n"
 "      }\n"
-"      data = NULL;\n"
+"      data = nullptr;\n"
 "   }\n"
 "   else {\n"
 "      data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"

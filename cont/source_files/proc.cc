@@ -2164,7 +2164,7 @@ bool process_s::run_on(const char *a_file_name)
   do {
     char *b_ptr = strstr(source_string.data + source_idx,c_begin_str);
 
-    if (b_ptr == NULL) {
+    if (b_ptr == nullptr) {
       fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
       break;
     }
@@ -2176,7 +2176,7 @@ bool process_s::run_on(const char *a_file_name)
       source_idx = b_ptr - source_string.data;
 
       char *e_ptr = strstr(source_string.data + source_idx,c_end_str);
-      if (e_ptr == NULL) {
+      if (e_ptr == nullptr) {
         fprintf(stderr,"ERROR: Cannot find ending mark \"%s\".\n",c_end_str);
         return false;
       }

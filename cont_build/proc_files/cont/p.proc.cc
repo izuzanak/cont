@@ -17,18 +17,18 @@ typedef long double ld;
 #define INIT_ARRAY \
 .size = 0,\
 .used = 0,\
-.data = NULL
+.data = nullptr
 
 #define INIT_QUEUE \
 .size = 0,\
 .used = 0,\
 .begin = 0,\
-.data = NULL\
+.data = nullptr\
 
 #define INIT_LIST \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -36,7 +36,7 @@ typedef long double ld;
 #define INIT_RB_TREE \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -45,7 +45,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -54,7 +54,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -971,7 +971,7 @@ inline void ui_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void ui_array_s::init_size(unsigned a_size)
@@ -982,7 +982,7 @@ inline void ui_array_s::init_size(unsigned a_size)
 
 inline void ui_array_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -994,7 +994,7 @@ inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    memcpy(data,a_data,a_used*sizeof(unsigned));
@@ -1315,7 +1315,7 @@ inline void mc_block_rb_tree_s::init()
    size = 0;
    used = 0;
    count = 0;
-   data = NULL;
+   data = nullptr;
    free_idx = c_idx_not_exist;
    root_idx = c_idx_not_exist;
    leaf_idx = c_idx_not_exist;
@@ -1323,7 +1323,7 @@ inline void mc_block_rb_tree_s::init()
 
 inline void mc_block_rb_tree_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -2188,7 +2188,7 @@ inline void string_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void string_array_s::init_size(unsigned a_size)
@@ -2993,7 +2993,7 @@ inline void data_type_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void data_type_array_s::init_size(unsigned a_size)
@@ -3125,7 +3125,7 @@ inline void abbreviation_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void abbreviation_array_s::init_size(unsigned a_size)
@@ -3712,7 +3712,7 @@ inline void lalr_stack_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void lalr_stack_s::init_size(unsigned a_size)
@@ -3723,7 +3723,7 @@ inline void lalr_stack_s::init_size(unsigned a_size)
 
 inline void lalr_stack_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       cfree(data);
    }
 
@@ -3735,7 +3735,7 @@ inline void lalr_stack_s::set(unsigned a_used,lalr_stack_element_s *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    memcpy(data,a_data,a_used*sizeof(lalr_stack_element_s));
@@ -4065,10 +4065,10 @@ void lalr_stack_s::copy_resize(unsigned a_size)
    debug_assert(a_size >= used);
 
    if (a_size == 0) {
-      if (data != NULL) {
+      if (data != nullptr) {
          cfree(data);
       }
-      data = NULL;
+      data = nullptr;
    }
    else {
       data = (lalr_stack_element_s *)crealloc(data,a_size*sizeof(lalr_stack_element_s));
@@ -6161,7 +6161,7 @@ bool process_s::run_on(const char *a_file_name)
   do {
     char *b_ptr = strstr(source_string.data + source_idx,c_begin_str);
 
-    if (b_ptr == NULL) {
+    if (b_ptr == nullptr) {
       fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
       break;
     }
@@ -6173,7 +6173,7 @@ bool process_s::run_on(const char *a_file_name)
       source_idx = b_ptr - source_string.data;
 
       char *e_ptr = strstr(source_string.data + source_idx,c_end_str);
-      if (e_ptr == NULL) {
+      if (e_ptr == nullptr) {
         fprintf(stderr,"ERROR: Cannot find ending mark \"%s\".\n",c_end_str);
         return false;
       }

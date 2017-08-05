@@ -17,18 +17,18 @@ typedef long double ld;
 #define INIT_ARRAY \
 .size = 0,\
 .used = 0,\
-.data = NULL
+.data = nullptr
 
 #define INIT_QUEUE \
 .size = 0,\
 .used = 0,\
 .begin = 0,\
-.data = NULL\
+.data = nullptr\
 
 #define INIT_LIST \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -36,7 +36,7 @@ typedef long double ld;
 #define INIT_RB_TREE \
 .size = 0,\
 .used = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -45,7 +45,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .first_idx = c_idx_not_exist,\
 .last_idx = c_idx_not_exist
@@ -54,7 +54,7 @@ typedef long double ld;
 .size = 0,\
 .used = 0,\
 .count = 0,\
-.data = NULL,\
+.data = nullptr,\
 .free_idx = c_idx_not_exist,\
 .root_idx = c_idx_not_exist,\
 .leaf_idx = c_idx_not_exist
@@ -494,7 +494,7 @@ inline void string_array_s::init()
 {/*{{{*/
    size = 0;
    used = 0;
-   data = NULL;
+   data = nullptr;
 }/*}}}*/
 
 inline void string_array_s::init_size(unsigned a_size)
@@ -601,7 +601,7 @@ const char c_string_terminating_char = '\0';
 
 void string_array_s::clear()
 {/*{{{*/
-   if (data != NULL) {
+   if (data != nullptr) {
       string_s *ptr = data;
       string_s *ptr_end = ptr + size;
 
@@ -620,7 +620,7 @@ void string_array_s::set(unsigned a_used,string_s *a_data)
    clear();
    if (a_used == 0) return;
    
-   debug_assert(a_data != NULL);
+   debug_assert(a_data != nullptr);
    copy_resize(a_used);
 
    string_s *ptr = data;
@@ -676,10 +676,10 @@ void string_array_s::copy_resize(unsigned a_size)
    }
 
    if (a_size == 0) {
-      if (data != NULL) {
+      if (data != nullptr) {
          cfree(data);
       }
-      data = NULL;
+      data = nullptr;
    }
    else {
       data = (string_s *)crealloc(data,a_size*sizeof(string_s));

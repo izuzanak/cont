@@ -344,7 +344,7 @@ bool processor_s::find_include_file(const char *a_file, string_s &a_file_path)
     // - brute file existence test -
     FILE *f = fopen(file_path.data,"rb");
 
-    if (f != NULL) {
+    if (f != nullptr) {
       fclose(f);
 
       // - set target file path -
@@ -427,18 +427,18 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 "#define INIT_ARRAY \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
-".data = NULL\n"
+".data = nullptr\n"
 "\n"
 "#define INIT_QUEUE \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
 ".begin = 0,\\\n"
-".data = NULL\\\n"
+".data = nullptr\\\n"
 "\n"
 "#define INIT_LIST \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".first_idx = c_idx_not_exist,\\\n"
 ".last_idx = c_idx_not_exist\n"
@@ -446,7 +446,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 "#define INIT_RB_TREE \\\n"
 ".size = 0,\\\n"
 ".used = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".root_idx = c_idx_not_exist,\\\n"
 ".leaf_idx = c_idx_not_exist\n"
@@ -455,7 +455,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 ".size = 0,\\\n"
 ".used = 0,\\\n"
 ".count = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".first_idx = c_idx_not_exist,\\\n"
 ".last_idx = c_idx_not_exist\n"
@@ -464,7 +464,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 ".size = 0,\\\n"
 ".used = 0,\\\n"
 ".count = 0,\\\n"
-".data = NULL,\\\n"
+".data = nullptr,\\\n"
 ".free_idx = c_idx_not_exist,\\\n"
 ".root_idx = c_idx_not_exist,\\\n"
 ".leaf_idx = c_idx_not_exist\n"
