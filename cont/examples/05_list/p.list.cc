@@ -417,7 +417,8 @@ inline void rec_list_s::init_size(unsigned a_size)
 
 inline void rec_list_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -471,12 +472,15 @@ inline unsigned rec_list_s::prepend(record_s &a_value)
 {/*{{{*/
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -488,10 +492,12 @@ inline unsigned rec_list_s::prepend(record_s &a_value)
   new_element.next_idx = first_idx;
   new_element.prev_idx = c_idx_not_exist;
 
-  if (first_idx != c_idx_not_exist) {
+  if (first_idx != c_idx_not_exist)
+  {
     data[first_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     last_idx = new_idx;
   }
 
@@ -506,12 +512,15 @@ inline unsigned rec_list_s::append(record_s &a_value)
 {/*{{{*/
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -523,10 +532,12 @@ inline unsigned rec_list_s::append(record_s &a_value)
   new_element.next_idx = c_idx_not_exist;
   new_element.prev_idx = last_idx;
 
-  if (last_idx != c_idx_not_exist) {
+  if (last_idx != c_idx_not_exist)
+  {
     data[last_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     first_idx = new_idx;
   }
 
@@ -543,12 +554,15 @@ inline unsigned rec_list_s::insert_before(unsigned a_idx,record_s &a_value)
 
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -561,10 +575,12 @@ inline unsigned rec_list_s::insert_before(unsigned a_idx,record_s &a_value)
   new_element.next_idx = a_idx;
   new_element.prev_idx = idx_element.prev_idx;
 
-  if (idx_element.prev_idx != c_idx_not_exist) {
+  if (idx_element.prev_idx != c_idx_not_exist)
+  {
     data[idx_element.prev_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     first_idx = new_idx;
   }
 
@@ -581,12 +597,15 @@ inline unsigned rec_list_s::insert_after(unsigned a_idx,record_s &a_value)
 
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -599,10 +618,12 @@ inline unsigned rec_list_s::insert_after(unsigned a_idx,record_s &a_value)
   new_element.next_idx = idx_element.next_idx;
   new_element.prev_idx = a_idx;
 
-  if (idx_element.next_idx != c_idx_not_exist) {
+  if (idx_element.next_idx != c_idx_not_exist)
+  {
     data[idx_element.next_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     last_idx = new_idx;
   }
 
@@ -617,12 +638,15 @@ inline unsigned rec_list_s::prepend_blank()
 {/*{{{*/
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -634,10 +658,12 @@ inline unsigned rec_list_s::prepend_blank()
   new_element.next_idx = first_idx;
   new_element.prev_idx = c_idx_not_exist;
 
-  if (first_idx != c_idx_not_exist) {
+  if (first_idx != c_idx_not_exist)
+  {
     data[first_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     last_idx = new_idx;
   }
 
@@ -650,12 +676,15 @@ inline unsigned rec_list_s::append_blank()
 {/*{{{*/
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -667,10 +696,12 @@ inline unsigned rec_list_s::append_blank()
   new_element.next_idx = c_idx_not_exist;
   new_element.prev_idx = last_idx;
 
-  if (last_idx != c_idx_not_exist) {
+  if (last_idx != c_idx_not_exist)
+  {
     data[last_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     first_idx = new_idx;
   }
 
@@ -685,12 +716,15 @@ inline unsigned rec_list_s::insert_blank_before(unsigned a_idx)
 
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -703,10 +737,12 @@ inline unsigned rec_list_s::insert_blank_before(unsigned a_idx)
   new_element.next_idx = a_idx;
   new_element.prev_idx = idx_element.prev_idx;
 
-  if (idx_element.prev_idx != c_idx_not_exist) {
+  if (idx_element.prev_idx != c_idx_not_exist)
+  {
     data[idx_element.prev_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     first_idx = new_idx;
   }
 
@@ -721,12 +757,15 @@ inline unsigned rec_list_s::insert_blank_after(unsigned a_idx)
 
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].next_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -739,10 +778,12 @@ inline unsigned rec_list_s::insert_blank_after(unsigned a_idx)
   new_element.next_idx = idx_element.next_idx;
   new_element.prev_idx = a_idx;
 
-  if (idx_element.next_idx != c_idx_not_exist) {
+  if (idx_element.next_idx != c_idx_not_exist)
+  {
     data[idx_element.next_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     last_idx = new_idx;
   }
 
@@ -757,17 +798,21 @@ inline void rec_list_s::remove(unsigned a_idx)
 
   rec_list_s_element &rm_element = data[a_idx];
 
-  if (rm_element.next_idx != c_idx_not_exist) {
+  if (rm_element.next_idx != c_idx_not_exist)
+  {
     data[rm_element.next_idx].prev_idx = rm_element.prev_idx;
   }
-  else {
+  else
+  {
     last_idx = rm_element.prev_idx;
   }
 
-  if (rm_element.prev_idx != c_idx_not_exist) {
+  if (rm_element.prev_idx != c_idx_not_exist)
+  {
     data[rm_element.prev_idx].next_idx = rm_element.next_idx;
   }
-  else {
+  else
+  {
     first_idx = rm_element.next_idx;
   }
 
@@ -789,7 +834,10 @@ inline rec_list_s &rec_list_s::operator=(rec_list_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(rec_list_s_element));
@@ -825,13 +873,16 @@ void rec_list_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (rec_list_s_element *)crealloc(data,a_size*sizeof(rec_list_s_element));
   }
 
@@ -840,13 +891,17 @@ void rec_list_s::copy_resize(unsigned a_size)
 
 unsigned rec_list_s::get_idx(record_s &a_value)
 {/*{{{*/
-  if (first_idx == c_idx_not_exist) return c_idx_not_exist;
+  if (first_idx == c_idx_not_exist)
+  {
+    return c_idx_not_exist;
+  }
 
   unsigned idx = first_idx;
   do {
     rec_list_s_element &element = data[idx];
 
-    if (element.object == a_value) {
+    if (element.object == a_value)
+    {
       return idx;
     }
 
@@ -858,11 +913,13 @@ unsigned rec_list_s::get_idx(record_s &a_value)
 
 bool rec_list_s::operator==(rec_list_s &a_second)
 {/*{{{*/
-  if (first_idx == c_idx_not_exist) {
+  if (first_idx == c_idx_not_exist)
+  {
     return a_second.first_idx == c_idx_not_exist;
   }
 
-  if (a_second.first_idx == c_idx_not_exist) {
+  if (a_second.first_idx == c_idx_not_exist)
+  {
     return false;
   }
 
@@ -873,7 +930,8 @@ bool rec_list_s::operator==(rec_list_s &a_second)
     rec_list_s_element &element = data[idx];
     rec_list_s_element &s_element = a_second.data[s_idx];
 
-    if (!(element.object == s_element.object)) {
+    if (!(element.object == s_element.object))
+    {
       return false;
     }
 

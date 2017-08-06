@@ -1169,25 +1169,21 @@ inline unsigned mc_block_rb_tree_s::__get_grandparent_idx(unsigned a_idx)
   {
     return data[node.parent_idx].parent_idx;
   }
-  else
-  {
-    return c_idx_not_exist;
-  }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::__get_uncle_idx(unsigned a_idx)
 {/*{{{*/
   unsigned gp_idx = __get_grandparent_idx(a_idx);
 
-  if (gp_idx == c_idx_not_exist)
-  {
-    return c_idx_not_exist;
-  }
-  else
+  if (gp_idx != c_idx_not_exist)
   {
     mc_block_rb_tree_s_node &gp = data[gp_idx];
     return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
   }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::__get_sibling_idx(unsigned a_idx)
@@ -1895,25 +1891,23 @@ unsigned mc_block_rb_tree_s::get_next_idx(unsigned a_idx)
   {
     return get_min_value_idx(node.right_idx);
   }
-  else
-  {
-    unsigned node_idx = a_idx;
-    do {
-      mc_block_rb_tree_s_node &node = data[node_idx];
 
-      if (node.parent_idx == c_idx_not_exist)
-      {
-        return c_idx_not_exist;
-      }
+  unsigned node_idx = a_idx;
+  do {
+    mc_block_rb_tree_s_node &node = data[node_idx];
 
-      if (data[node.parent_idx].right_idx != node_idx)
-      {
-        return node.parent_idx;
-      }
+    if (node.parent_idx == c_idx_not_exist)
+    {
+      return c_idx_not_exist;
+    }
 
-      node_idx = node.parent_idx;
-    } while(1);
-  }
+    if (data[node.parent_idx].right_idx != node_idx)
+    {
+      return node.parent_idx;
+    }
+
+    node_idx = node.parent_idx;
+  } while(1);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
@@ -1926,25 +1920,23 @@ unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
   {
     return get_max_value_idx(node.left_idx);
   }
-  else
-  {
-    unsigned node_idx = a_idx;
-    do {
-      mc_block_rb_tree_s_node &node = data[node_idx];
 
-      if (node.parent_idx == c_idx_not_exist)
-      {
-        return c_idx_not_exist;
-      }
+  unsigned node_idx = a_idx;
+  do {
+    mc_block_rb_tree_s_node &node = data[node_idx];
 
-      if (data[node.parent_idx].left_idx != node_idx)
-      {
-        return node.parent_idx;
-      }
+    if (node.parent_idx == c_idx_not_exist)
+    {
+      return c_idx_not_exist;
+    }
 
-      node_idx = node.parent_idx;
-    } while(1);
-  }
+    if (data[node.parent_idx].left_idx != node_idx)
+    {
+      return node.parent_idx;
+    }
+
+    node_idx = node.parent_idx;
+  } while(1);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique)
@@ -2114,60 +2106,56 @@ void mc_block_rb_tree_s::__insert_operation(unsigned a_idx)
       node.color = true;
       return;
     }
+
+    if (data[node.parent_idx].color)
+    {
+      return;
+    }
+
+    unsigned uncle_idx = __get_uncle_idx(node_idx);
+    if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color)
+    {
+      data[node.parent_idx].color = true;
+      data[uncle_idx].color = true;
+
+      node_idx = __get_grandparent_idx(node_idx);
+      data[node_idx].color = false;
+
+      continue;
+    }
     else
     {
-      if (data[node.parent_idx].color)
+      unsigned grandparent_idx = __get_grandparent_idx(node_idx);
+
+      if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx)
       {
-        return;
+        __rotate_left(node.parent_idx);
+        node_idx = node.left_idx;
       }
-      else
+      else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx)
       {
-        unsigned uncle_idx = __get_uncle_idx(node_idx);
-        if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color)
+        __rotate_right(node.parent_idx);
+        node_idx = node.right_idx;
+      }
+
+      {
+        unsigned grandparent_idx = __get_grandparent_idx(node_idx);
+        mc_block_rb_tree_s_node &node = data[node_idx];
+
+        data[node.parent_idx].color = true;
+        data[grandparent_idx].color = false;
+
+        if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx)
         {
-          data[node.parent_idx].color = true;
-          data[uncle_idx].color = true;
-
-          node_idx = __get_grandparent_idx(node_idx);
-          data[node_idx].color = false;
-
-          continue;
+          __rotate_right(grandparent_idx);
         }
         else
         {
-          unsigned grandparent_idx = __get_grandparent_idx(node_idx);
-
-          if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx)
-          {
-            __rotate_left(node.parent_idx);
-            node_idx = node.left_idx;
-          }
-          else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx)
-          {
-            __rotate_right(node.parent_idx);
-            node_idx = node.right_idx;
-          }
-
-          {
-            unsigned grandparent_idx = __get_grandparent_idx(node_idx);
-            mc_block_rb_tree_s_node &node = data[node_idx];
-
-            data[node.parent_idx].color = true;
-            data[grandparent_idx].color = false;
-
-            if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx)
-            {
-              __rotate_right(grandparent_idx);
-            }
-            else
-            {
-              __rotate_left(grandparent_idx);
-            }
-          }
-
-          return;
+          __rotate_left(grandparent_idx);
         }
       }
+
+      return;
     }
   } while(1);
 }/*}}}*/

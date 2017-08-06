@@ -364,7 +364,8 @@ inline void rec_queue_s::init_size(unsigned a_size)
 
 inline void rec_queue_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -402,12 +403,14 @@ inline void rec_queue_s::swap(rec_queue_s &a_second)
 
 inline unsigned rec_queue_s::insert(record_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
   unsigned inserted_idx = begin + used++;
-  if (inserted_idx >= size) {
+  if (inserted_idx >= size)
+  {
     inserted_idx -= size;
   }
 
@@ -418,12 +421,14 @@ inline unsigned rec_queue_s::insert(record_s &a_value)
 
 inline unsigned rec_queue_s::insert_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
   unsigned inserted_idx = begin + used++;
-  if (inserted_idx >= size) {
+  if (inserted_idx >= size)
+  {
     inserted_idx -= size;
   }
 
@@ -436,7 +441,8 @@ inline record_s &rec_queue_s::next()
 
   unsigned ret_idx = begin;
 
-  if (++begin >= size) {
+  if (++begin >= size)
+  {
     begin = 0;
   }
 
@@ -450,37 +456,43 @@ inline record_s &rec_queue_s::last()
   debug_assert(used > 0);
 
   unsigned last_idx = begin + (used - 1);
-  if (last_idx >= size) {
+  if (last_idx >= size)
+  {
     return data[last_idx - size];
   }
-  else {
-    return data[last_idx];
-  }
+
+  return data[last_idx];
 }/*}}}*/
 
 inline rec_queue_s &rec_queue_s::operator=(rec_queue_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
 
   unsigned fir_cnt;
   unsigned sec_cnt;
 
-  if (a_src.begin + a_src.used > a_src.size) {
+  if (a_src.begin + a_src.used > a_src.size)
+  {
     sec_cnt = a_src.begin + a_src.used - a_src.size;
     fir_cnt = a_src.used - sec_cnt;
   }
-  else {
+  else
+  {
     fir_cnt = a_src.used;
     sec_cnt = 0;
   }
 
   memcpy(data,a_src.data + a_src.begin,fir_cnt*sizeof(record_s));
 
-  if (sec_cnt != 0) {
+  if (sec_cnt != 0)
+  {
     memcpy(data + fir_cnt,a_src.data,sec_cnt*sizeof(record_s));
   }
 
@@ -513,34 +525,41 @@ void rec_queue_s::copy_resize(unsigned a_size)
 
   record_s *n_data;
 
-  if (a_size == 0) {
+  if (a_size == 0)
+  {
     n_data = nullptr;
   }
-  else {
+  else
+  {
     n_data = (record_s *)cmalloc(a_size*sizeof(record_s));
   }
 
-  if (used != 0) {
+  if (used != 0)
+  {
     unsigned fir_cnt;
     unsigned sec_cnt;
 
-    if (begin + used > size) {
+    if (begin + used > size)
+    {
       sec_cnt = begin + used - size;
       fir_cnt = used - sec_cnt;
     }
-    else {
+    else
+    {
       fir_cnt = used;
       sec_cnt = 0;
     }
 
     memcpy(n_data,data + begin,fir_cnt*sizeof(record_s));
 
-    if (sec_cnt != 0) {
+    if (sec_cnt != 0)
+    {
       memcpy(n_data + fir_cnt,data,sec_cnt*sizeof(record_s));
     }
   }
 
-  if (size != 0) {
+  if (size != 0)
+  {
     cfree(data);
   }
 
@@ -551,8 +570,15 @@ void rec_queue_s::copy_resize(unsigned a_size)
 
 bool rec_queue_s::operator==(rec_queue_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   bool _break;
   bool s_break;
@@ -565,22 +591,28 @@ bool rec_queue_s::operator==(rec_queue_s &a_second)
   pos = begin;
   s_pos = a_second.begin;
 
-  if (_break) {
+  if (_break)
+  {
     pos_end = begin + used - size;
   }
-  else {
+  else
+  {
     pos_end = begin + used;
   }
 
   do {
-    if (_break) {
+    if (_break)
+    {
       unsigned offset = size - pos;
 
-      if (s_break) {
+      if (s_break)
+      {
         unsigned s_offset = a_second.size = s_pos;
 
-        if (offset < s_offset) {
-          if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(record_s)) != 0) {
+        if (offset < s_offset)
+        {
+          if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(record_s)) != 0)
+          {
             return false;
           }
 
@@ -588,12 +620,15 @@ bool rec_queue_s::operator==(rec_queue_s &a_second)
           pos = 0;
           _break = false;
         }
-        else {
-          if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(record_s)) != 0) {
+        else
+        {
+          if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(record_s)) != 0)
+          {
             return false;
           }
 
-          if (pos += s_offset >= size) {
+          if (pos += s_offset >= size)
+          {
             pos = 0;
             _break = false;
           }
@@ -601,8 +636,10 @@ bool rec_queue_s::operator==(rec_queue_s &a_second)
           s_break = false;
         }
       }
-      else {
-        if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(record_s)) != 0) {
+      else
+      {
+        if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(record_s)) != 0)
+        {
           return false;
         }
         s_pos += offset;
@@ -610,24 +647,23 @@ bool rec_queue_s::operator==(rec_queue_s &a_second)
         _break = false;
       }
     }
-    else {
-      if (s_break) {
+    else
+    {
+      if (s_break)
+      {
         unsigned s_offset = a_second.size - s_pos;
 
-        if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(record_s)) != 0) {
+        if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(record_s)) != 0)
+        {
           return false;
         }
         pos += s_offset;
         s_pos = 0;
         s_break = false;
       }
-      else {
-        if (memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(record_s)) != 0) {
-          return false;
-        }
-        else {
-          return true;
-        }
+      else
+      {
+        return memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(record_s)) == 0;
       }
     }
   } while(1);

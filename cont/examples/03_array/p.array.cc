@@ -403,7 +403,8 @@ inline void rec_array_s::init_size(unsigned a_size)
 
 inline void rec_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -413,7 +414,10 @@ inline void rec_array_s::clear()
 inline void rec_array_s::set(unsigned a_used,record_s *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -455,7 +459,8 @@ inline record_s &rec_array_s::operator[](unsigned a_idx)
 
 inline void rec_array_s::push(record_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -464,7 +469,8 @@ inline void rec_array_s::push(record_s &a_value)
 
 inline void rec_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -473,7 +479,8 @@ inline void rec_array_s::push_blank()
 
 inline void rec_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -496,7 +503,10 @@ inline rec_array_s &rec_array_s::operator=(rec_array_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(record_s));
@@ -507,8 +517,15 @@ inline rec_array_s &rec_array_s::operator=(rec_array_s &a_src)
 
 inline bool rec_array_s::operator==(rec_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   return (memcmp(data,a_second.data,used*sizeof(record_s)) == 0);
 }/*}}}*/
@@ -535,7 +552,8 @@ void print_array(rec_array_s &rec_array,const char *name);
 void rec_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -548,7 +566,8 @@ void rec_array_s::reserve(unsigned a_cnt)
 void rec_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -564,13 +583,16 @@ void rec_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (record_s *)crealloc(data,a_size*sizeof(record_s));
   }
 
@@ -579,7 +601,10 @@ void rec_array_s::copy_resize(unsigned a_size)
 
 void rec_array_s::fill(record_s &a_value)
 {/*{{{*/
-  if (size == 0) return;
+  if (size == 0)
+  {
+    return;
+  }
 
   record_s *ptr = data;
   record_s *ptr_end = data + size;
@@ -593,13 +618,17 @@ void rec_array_s::fill(record_s &a_value)
 
 unsigned rec_array_s::get_idx(record_s &a_value)
 {/*{{{*/
-  if (used == 0) return c_idx_not_exist;
+  if (used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   record_s *ptr = data;
   record_s *ptr_end = data + used;
 
   do {
-    if (*ptr == a_value) {
+    if (*ptr == a_value)
+    {
       return ptr - data;
     }
   } while(++ptr < ptr_end);

@@ -536,7 +536,8 @@ inline string_s &string_array_s::operator[](unsigned a_idx)
 
 inline void string_array_s::push(string_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -545,7 +546,8 @@ inline void string_array_s::push(string_s &a_value)
 
 inline void string_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -554,7 +556,8 @@ inline void string_array_s::push_blank()
 
 inline void string_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -601,7 +604,8 @@ const char c_string_terminating_char = '\0';
 
 void string_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     string_s *ptr = data;
     string_s *ptr_end = ptr + size;
 
@@ -618,7 +622,10 @@ void string_array_s::clear()
 void string_array_s::set(unsigned a_used,string_s *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -637,7 +644,8 @@ void string_array_s::set(unsigned a_used,string_s *a_data)
 void string_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -650,7 +658,8 @@ void string_array_s::reserve(unsigned a_cnt)
 void string_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -666,7 +675,8 @@ void string_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (size > a_size) {
+  if (size > a_size)
+  {
     string_s *ptr = data + a_size;
     string_s *ptr_end = data + size;
 
@@ -675,17 +685,21 @@ void string_array_s::copy_resize(unsigned a_size)
     } while(++ptr < ptr_end);
   }
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (string_s *)crealloc(data,a_size*sizeof(string_s));
   }
 
-  if (a_size > size) {
+  if (a_size > size)
+  {
     string_s *ptr = data + size;
     string_s *ptr_end = data + a_size;
 
@@ -699,7 +713,10 @@ void string_array_s::copy_resize(unsigned a_size)
 
 void string_array_s::fill(string_s &a_value)
 {/*{{{*/
-  if (size == 0) return;
+  if (size == 0)
+  {
+    return;
+  }
 
   string_s *ptr = data;
   string_s *ptr_end = data + size;
@@ -713,13 +730,17 @@ void string_array_s::fill(string_s &a_value)
 
 unsigned string_array_s::get_idx(string_s &a_value)
 {/*{{{*/
-  if (used == 0) return c_idx_not_exist;
+  if (used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   string_s *ptr = data;
   string_s *ptr_end = data + used;
 
   do {
-    if (*ptr == a_value) {
+    if (*ptr == a_value)
+    {
       return ptr - data;
     }
   } while(++ptr < ptr_end);
@@ -731,7 +752,10 @@ string_array_s &string_array_s::operator=(string_array_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
 
@@ -749,15 +773,23 @@ string_array_s &string_array_s::operator=(string_array_s &a_src)
 
 bool string_array_s::operator==(string_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   string_s *ptr = data;
   string_s *ptr_end = ptr + used;
   string_s *s_ptr = a_second.data;
 
   do {
-    if (!(*ptr == *s_ptr)) {
+    if (!(*ptr == *s_ptr))
+    {
       return false;
     }
   } while(++s_ptr,++ptr < ptr_end);

@@ -743,7 +743,8 @@ inline void ui_array_s::init_size(unsigned a_size)
 
 inline void ui_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -753,7 +754,10 @@ inline void ui_array_s::clear()
 inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -795,7 +799,8 @@ inline unsigned &ui_array_s::operator[](unsigned a_idx)
 
 inline void ui_array_s::push(unsigned a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -804,7 +809,8 @@ inline void ui_array_s::push(unsigned a_value)
 
 inline void ui_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -813,7 +819,8 @@ inline void ui_array_s::push_blank()
 
 inline void ui_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -836,7 +843,10 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
@@ -847,8 +857,15 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 
 inline bool ui_array_s::operator==(ui_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
@@ -911,25 +928,25 @@ inline unsigned int_string_map_s::__get_grandparent_idx(unsigned a_idx)
 {/*{{{*/
   int_string_map_s_node &node = data[a_idx];
 
-  if (node.parent_idx != c_idx_not_exist) {
+  if (node.parent_idx != c_idx_not_exist)
+  {
     return data[node.parent_idx].parent_idx;
   }
-  else {
-    return c_idx_not_exist;
-  }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 inline unsigned int_string_map_s::__get_uncle_idx(unsigned a_idx)
 {/*{{{*/
   unsigned gp_idx = __get_grandparent_idx(a_idx);
 
-  if (gp_idx == c_idx_not_exist) {
-    return c_idx_not_exist;
-  }
-  else {
+  if (gp_idx != c_idx_not_exist)
+  {
     int_string_map_s_node &gp = data[gp_idx];
     return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
   }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 inline unsigned int_string_map_s::__get_sibling_idx(unsigned a_idx)
@@ -949,11 +966,13 @@ inline unsigned int_string_map_s::get_stack_next_idx(unsigned a_idx,unsigned **a
 
   int_string_map_s_node &node = data[a_idx];
 
-  if (node.right_idx != leaf_idx) {
+  if (node.right_idx != leaf_idx)
+  {
     return get_stack_min_value_idx(node.right_idx,a_s_ptr);
   }
 
-  if (*a_s_ptr > a_stack_base) {
+  if (*a_s_ptr > a_stack_base)
+  {
     return *(--(*a_s_ptr));
   }
 
@@ -965,11 +984,13 @@ inline void int_string_map_s::__rotate_left(unsigned a_idx)
   int_string_map_s_node &root = data[a_idx];
   int_string_map_s_node &pivot = data[root.right_idx];
 
-  if (a_idx == root_idx) {
+  if (a_idx == root_idx)
+  {
     root_idx = root.right_idx;
     pivot.parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     int_string_map_s_node &rp = data[root.parent_idx];
     (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;
 
@@ -989,11 +1010,13 @@ inline void int_string_map_s::__rotate_right(unsigned a_idx)
   int_string_map_s_node &root = data[a_idx];
   int_string_map_s_node &pivot = data[root.left_idx];
 
-  if (a_idx == root_idx) {
+  if (a_idx == root_idx)
+  {
     root_idx = root.left_idx;
     pivot.parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     int_string_map_s_node &rp = data[root.parent_idx];
     (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;
 
@@ -1010,32 +1033,35 @@ inline void int_string_map_s::__rotate_right(unsigned a_idx)
 
 inline unsigned int_string_map_s::__get_new_index()
 {/*{{{*/
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     unsigned new_idx = free_idx;
     free_idx = data[new_idx].parent_idx;
 
     return new_idx;
   }
-  else {
-    if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-    }
 
-    return used++;
+  if (used >= size)
+  {
+    copy_resize((size << 1) + c_array_add);
   }
+
+  return used++;
 }/*}}}*/
 
 inline void int_string_map_s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)
 {/*{{{*/
   int_string_map_s_node &node = data[a_idx];
 
-  if (node.parent_idx != c_idx_not_exist) {
+  if (node.parent_idx != c_idx_not_exist)
+  {
     int_string_map_s_node &parent = data[node.parent_idx];
     (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;
 
     data[a_ch_idx].parent_idx = node.parent_idx;
   }
-  else {
+  else
+  {
     root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;
     data[a_ch_idx].parent_idx = c_idx_not_exist;
   }
@@ -1049,13 +1075,16 @@ inline void int_string_map_s::__remove_one_child(unsigned a_idx,unsigned a_ch_id
   node.parent_idx = free_idx;
   free_idx = a_idx;
 
-  if (node.color) {
+  if (node.color)
+  {
     int_string_map_s_node &child_node = data[a_ch_idx];
 
-    if (!child_node.color) {
+    if (!child_node.color)
+    {
       child_node.color = true;
     }
-    else {
+    else
+    {
       __remove_black_black(a_ch_idx);
     }
   }
@@ -1143,7 +1172,8 @@ inline unsigned int_string_map_s::unique_insert(int_string_s &a_value)
   unsigned new_node_idx = __get_new_index();
   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     int_string_map_s_node &new_node = data[new_node_idx];
 
     new_node.parent_idx = free_idx;
@@ -1164,7 +1194,8 @@ inline unsigned int_string_map_s::unique_swap_insert(int_string_s &a_value)
   unsigned new_node_idx = __get_new_index();
   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     int_string_map_s_node &new_node = data[new_node_idx];
 
     new_node.parent_idx = free_idx;
@@ -1251,7 +1282,8 @@ void string_s::setf(const char *format,...)
 void ui_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -1264,7 +1296,8 @@ void ui_array_s::reserve(unsigned a_cnt)
 void ui_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -1280,13 +1313,16 @@ void ui_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (unsigned *)crealloc(data,a_size*sizeof(unsigned));
   }
 
@@ -1295,7 +1331,10 @@ void ui_array_s::copy_resize(unsigned a_size)
 
 void ui_array_s::fill(unsigned a_value)
 {/*{{{*/
-  if (size == 0) return;
+  if (size == 0)
+  {
+    return;
+  }
 
   unsigned *ptr = data;
   unsigned *ptr_end = data + size;
@@ -1309,13 +1348,17 @@ void ui_array_s::fill(unsigned a_value)
 
 unsigned ui_array_s::get_idx(unsigned a_value)
 {/*{{{*/
-  if (used == 0) return c_idx_not_exist;
+  if (used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   unsigned *ptr = data;
   unsigned *ptr_end = data + used;
 
   do {
-    if (*ptr == a_value) {
+    if (*ptr == a_value)
+    {
       return ptr - data;
     }
   } while(++ptr < ptr_end);
@@ -1341,7 +1384,8 @@ unsigned int_string_map_s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s
   do {
     int_string_map_s_node &node = data[node_idx];
 
-    if (node.left_idx == leaf_idx) {
+    if (node.left_idx == leaf_idx)
+    {
       return node_idx;
     }
 
@@ -1358,7 +1402,8 @@ unsigned int_string_map_s::get_min_value_idx(unsigned a_idx)
   do {
     int_string_map_s_node &node = data[node_idx];
 
-    if (node.left_idx == leaf_idx) {
+    if (node.left_idx == leaf_idx)
+    {
       return node_idx;
     }
 
@@ -1374,7 +1419,8 @@ unsigned int_string_map_s::get_max_value_idx(unsigned a_idx)
   do {
     int_string_map_s_node &node = data[node_idx];
 
-    if (node.right_idx == leaf_idx) {
+    if (node.right_idx == leaf_idx)
+    {
       return node_idx;
     }
 
@@ -1388,26 +1434,27 @@ unsigned int_string_map_s::get_next_idx(unsigned a_idx)
 
   int_string_map_s_node &node = data[a_idx];
 
-  if (node.right_idx != leaf_idx) {
+  if (node.right_idx != leaf_idx)
+  {
     return get_min_value_idx(node.right_idx);
   }
-  else {
 
-    unsigned node_idx = a_idx;
-    do {
-      int_string_map_s_node &node = data[node_idx];
+  unsigned node_idx = a_idx;
+  do {
+    int_string_map_s_node &node = data[node_idx];
 
-      if (node.parent_idx == c_idx_not_exist) {
-        return c_idx_not_exist;
-      }
+    if (node.parent_idx == c_idx_not_exist)
+    {
+      return c_idx_not_exist;
+    }
 
-      if (data[node.parent_idx].right_idx != node_idx) {
-        return node.parent_idx;
-      }
+    if (data[node.parent_idx].right_idx != node_idx)
+    {
+      return node.parent_idx;
+    }
 
-      node_idx = node.parent_idx;
-    } while(1);
-  }
+    node_idx = node.parent_idx;
+  } while(1);
 }/*}}}*/
 
 unsigned int_string_map_s::get_prev_idx(unsigned a_idx)
@@ -1416,32 +1463,35 @@ unsigned int_string_map_s::get_prev_idx(unsigned a_idx)
 
   int_string_map_s_node &node = data[a_idx];
 
-  if (node.left_idx != leaf_idx) {
+  if (node.left_idx != leaf_idx)
+  {
     return get_max_value_idx(node.left_idx);
   }
-  else {
 
-    unsigned node_idx = a_idx;
-    do {
-      int_string_map_s_node &node = data[node_idx];
+  unsigned node_idx = a_idx;
+  do {
+    int_string_map_s_node &node = data[node_idx];
 
-      if (node.parent_idx == c_idx_not_exist) {
-        return c_idx_not_exist;
-      }
+    if (node.parent_idx == c_idx_not_exist)
+    {
+      return c_idx_not_exist;
+    }
 
-      if (data[node.parent_idx].left_idx != node_idx) {
-        return node.parent_idx;
-      }
+    if (data[node.parent_idx].left_idx != node_idx)
+    {
+      return node.parent_idx;
+    }
 
-      node_idx = node.parent_idx;
-    } while(1);
-  }
+    node_idx = node.parent_idx;
+  } while(1);
 }/*}}}*/
 
 unsigned int_string_map_s::__binary_tree_insert(unsigned a_new_idx,int_string_s &a_value,bool a_unique)
 {/*{{{*/
-  if (root_idx == c_idx_not_exist) {
-    if (leaf_idx == c_idx_not_exist) {
+  if (root_idx == c_idx_not_exist)
+  {
+    if (leaf_idx == c_idx_not_exist)
+    {
       leaf_idx = __get_new_index();
       int_string_map_s_node &leaf = data[leaf_idx];
 
@@ -1456,25 +1506,31 @@ unsigned int_string_map_s::__binary_tree_insert(unsigned a_new_idx,int_string_s 
     data[a_new_idx].parent_idx = c_idx_not_exist;
     root_idx = a_new_idx;
   }
-  else  {
+  else 
+  {
     unsigned node_idx = root_idx;
     do {
       int_string_map_s_node &node = data[node_idx];
 
       int comp_result = __compare_value(a_value,node.object);
-      if (comp_result < 0) {
-        if (node.left_idx == leaf_idx) {
+      if (comp_result < 0)
+      {
+        if (node.left_idx == leaf_idx)
+        {
           node.left_idx = a_new_idx;
           break;
         }
         node_idx = node.left_idx;
       }
-      else {
-        if (a_unique && comp_result == 0) {
+      else
+      {
+        if (a_unique && comp_result == 0)
+        {
           return node_idx;
         }
 
-        if (node.right_idx == leaf_idx) {
+        if (node.right_idx == leaf_idx)
+        {
           node.right_idx = a_new_idx;
           break;
         }
@@ -1499,7 +1555,8 @@ void int_string_map_s::__remove_black_black(unsigned a_idx)
   do {
     int_string_map_s_node &node = data[node_idx];
 
-    if (node.parent_idx == c_idx_not_exist) {
+    if (node.parent_idx == c_idx_not_exist)
+    {
       return;
     }
 
@@ -1510,14 +1567,17 @@ void int_string_map_s::__remove_black_black(unsigned a_idx)
       unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;
       int_string_map_s_node &sibling = data[sibling_idx];
 
-      if (!sibling.color) {
+      if (!sibling.color)
+      {
         parent.color = false;
         sibling.color = true;
 
-        if (node_idx == parent.left_idx) {
+        if (node_idx == parent.left_idx)
+        {
           __rotate_left(parent_idx);
         }
-        else {
+        else
+        {
           __rotate_right(parent_idx);
         }
       }
@@ -1527,23 +1587,28 @@ void int_string_map_s::__remove_black_black(unsigned a_idx)
       unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;
       int_string_map_s_node& sibling = data[sibling_idx];
 
-      if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {
+      if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color)
+      {
         sibling.color = false;
         node_idx = parent_idx;
         continue;
       }
-      else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {
+      else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color)
+      {
         sibling.color = false;
         parent.color = true;
         return;
       }
-      else if (sibling.color) {
-        if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {
+      else if (sibling.color)
+      {
+        if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color)
+        {
           sibling.color = false;
           data[sibling.left_idx].color = true;
           __rotate_right(sibling_idx);
         }
-        else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {
+        else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color)
+        {
           sibling.color = false;
           data[sibling.right_idx].color = true;
           __rotate_left(sibling_idx);
@@ -1557,11 +1622,13 @@ void int_string_map_s::__remove_black_black(unsigned a_idx)
         sibling.color = parent.color;
         parent.color = true;
 
-        if (node_idx == parent.left_idx) {
+        if (node_idx == parent.left_idx)
+        {
           data[sibling.right_idx].color = true;
           __rotate_left(parent_idx);
         }
-        else {
+        else
+        {
           data[sibling.left_idx].color = true;
           __rotate_right(parent_idx);
         }
@@ -1579,62 +1646,69 @@ void int_string_map_s::__insert_operation(unsigned a_idx)
   do {
     int_string_map_s_node &node = data[node_idx];
 
-    if (node.parent_idx == c_idx_not_exist) {
+    if (node.parent_idx == c_idx_not_exist)
+    {
       node.color = true;
       return;
     }
-    else {
-      if (data[node.parent_idx].color) {
-        return;
+
+    if (data[node.parent_idx].color)
+    {
+      return;
+    }
+
+    unsigned uncle_idx = __get_uncle_idx(node_idx);
+    if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color)
+    {
+      data[node.parent_idx].color = true;
+      data[uncle_idx].color = true;
+
+      node_idx = __get_grandparent_idx(node_idx);
+      data[node_idx].color = false;
+
+      continue;
+    }
+    else
+    {
+      unsigned grandparent_idx = __get_grandparent_idx(node_idx);
+
+      if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx)
+      {
+        __rotate_left(node.parent_idx);
+        node_idx = node.left_idx;
       }
-      else {
-        unsigned uncle_idx = __get_uncle_idx(node_idx);
-        if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {
-          data[node.parent_idx].color = true;
-          data[uncle_idx].color = true;
+      else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx)
+      {
+        __rotate_right(node.parent_idx);
+        node_idx = node.right_idx;
+      }
 
-          node_idx = __get_grandparent_idx(node_idx);
-          data[node_idx].color = false;
+      {
+        unsigned grandparent_idx = __get_grandparent_idx(node_idx);
+        int_string_map_s_node &node = data[node_idx];
 
-          continue;
+        data[node.parent_idx].color = true;
+        data[grandparent_idx].color = false;
+
+        if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx)
+        {
+          __rotate_right(grandparent_idx);
         }
-        else {
-          unsigned grandparent_idx = __get_grandparent_idx(node_idx);
-
-          if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {
-            __rotate_left(node.parent_idx);
-            node_idx = node.left_idx;
-          }
-          else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {
-            __rotate_right(node.parent_idx);
-            node_idx = node.right_idx;
-          }
-
-          {
-            unsigned grandparent_idx = __get_grandparent_idx(node_idx);
-            int_string_map_s_node &node = data[node_idx];
-
-            data[node.parent_idx].color = true;
-            data[grandparent_idx].color = false;
-
-            if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {
-              __rotate_right(grandparent_idx);
-            }
-            else {
-              __rotate_left(grandparent_idx);
-            }
-          }
-
-          return;
+        else
+        {
+          __rotate_left(grandparent_idx);
         }
       }
+
+      return;
     }
   } while(1);
 }/*}}}*/
 
 void int_string_map_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     int_string_map_s_node *ptr = data;
     int_string_map_s_node *ptr_end = ptr + size;
 
@@ -1654,14 +1728,16 @@ void int_string_map_s::remove(unsigned a_idx)
 
   int_string_map_s_node &del_node = data[a_idx];
 
-  if (del_node.left_idx != leaf_idx) {
-    if (del_node.right_idx != leaf_idx) {
-
+  if (del_node.left_idx != leaf_idx)
+  {
+    if (del_node.right_idx != leaf_idx)
+    {
       unsigned found_idx = del_node.right_idx;
       do {
         int_string_map_s_node &node = data[found_idx];
 
-        if (node.left_idx == leaf_idx) {
+        if (node.left_idx == leaf_idx)
+        {
           break;
         }
 
@@ -1671,11 +1747,13 @@ void int_string_map_s::remove(unsigned a_idx)
       int_string_map_s_node &found_node = data[found_idx];
 
       /* - process del_node parent_idx - */
-      if (del_node.parent_idx != c_idx_not_exist) {
+      if (del_node.parent_idx != c_idx_not_exist)
+      {
         int_string_map_s_node &del_node_parent = data[del_node.parent_idx];
         (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;
       }
-      else {
+      else
+      {
         root_idx = found_idx;
       }
 
@@ -1683,12 +1761,13 @@ void int_string_map_s::remove(unsigned a_idx)
       data[del_node.left_idx].parent_idx = found_idx;
 
       /* - process found_node right_idx - */
-      if (found_node.right_idx != leaf_idx) {
+      if (found_node.right_idx != leaf_idx)
+      {
         data[found_node.right_idx].parent_idx = a_idx;
       }
 
-      if (del_node.right_idx == found_idx) {
-
+      if (del_node.right_idx == found_idx)
+      {
         /* - found node is right child of deleted node - */
         del_node.right_idx = found_node.right_idx;
         found_node.right_idx = a_idx;
@@ -1703,8 +1782,8 @@ void int_string_map_s::remove(unsigned a_idx)
         found_node.color = del_node.color;
         del_node.color = tmp_bool;
       }
-      else {
-
+      else
+      {
         /* - process found_node parent - */
         int_string_map_s_node &found_node_parent = data[found_node.parent_idx];
         (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;
@@ -1731,11 +1810,13 @@ void int_string_map_s::remove(unsigned a_idx)
 
       __remove_one_child(a_idx,del_node.right_idx);
     }
-    else {
+    else
+    {
       __remove_one_child(a_idx,del_node.left_idx);
     }
   }
-  else {
+  else
+  {
     __remove_one_child(a_idx,del_node.right_idx);
   }
 
@@ -1745,7 +1826,8 @@ void int_string_map_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (size > a_size) {
+  if (size > a_size)
+  {
     int_string_map_s_node *ptr = data + a_size;
     int_string_map_s_node *ptr_end = data + size;
 
@@ -1754,17 +1836,21 @@ void int_string_map_s::copy_resize(unsigned a_size)
     } while(++ptr < ptr_end);
   }
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (int_string_map_s_node *)crealloc(data,a_size*sizeof(int_string_map_s_node));
   }
 
-  if (a_size > size) {
+  if (a_size > size)
+  {
     int_string_map_s_node *ptr = data + size;
     int_string_map_s_node *ptr_end = data + a_size;
 
@@ -1778,7 +1864,8 @@ void int_string_map_s::copy_resize(unsigned a_size)
 
 unsigned int_string_map_s::get_idx(int_string_s &a_value)
 {/*{{{*/
-  if (root_idx == c_idx_not_exist) {
+  if (root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1787,11 +1874,14 @@ unsigned int_string_map_s::get_idx(int_string_s &a_value)
     int_string_map_s_node &node = data[node_idx];
 
     int comp_result = __compare_value(a_value,node.object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       node_idx = node.left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         return node_idx;
       }
 
@@ -1804,7 +1894,8 @@ unsigned int_string_map_s::get_idx(int_string_s &a_value)
 
 unsigned int_string_map_s::get_idx_left(int_string_s &a_value)
 {/*{{{*/
-  if (root_idx == c_idx_not_exist) {
+  if (root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1814,15 +1905,19 @@ unsigned int_string_map_s::get_idx_left(int_string_s &a_value)
     int_string_map_s_node &node = data[node_idx];
 
     int comp_result = __compare_value(a_value,node.object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       node_idx = node.left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         good_idx = node_idx;
         node_idx = node.left_idx;
       }
-      else {
+      else
+      {
         node_idx = node.right_idx;
       }
     }
@@ -1833,7 +1928,8 @@ unsigned int_string_map_s::get_idx_left(int_string_s &a_value)
 
 unsigned int_string_map_s::get_gre_idx(int_string_s &a_value)
 {/*{{{*/
-  if (root_idx == c_idx_not_exist) {
+  if (root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1843,12 +1939,15 @@ unsigned int_string_map_s::get_gre_idx(int_string_s &a_value)
     int_string_map_s_node &node = data[node_idx];
 
     int comp_result = __compare_value(a_value,node.object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       good_idx = node_idx;
       node_idx = node.left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         return node_idx;
       }
 
@@ -1861,7 +1960,8 @@ unsigned int_string_map_s::get_gre_idx(int_string_s &a_value)
 
 unsigned int_string_map_s::get_lee_idx(int_string_s &a_value)
 {/*{{{*/
-  if (root_idx == c_idx_not_exist) {
+  if (root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1871,11 +1971,14 @@ unsigned int_string_map_s::get_lee_idx(int_string_s &a_value)
     int_string_map_s_node &node = data[node_idx];
 
     int comp_result = __compare_value(a_value,node.object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       node_idx = node.left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         return node_idx;
       }
 
@@ -1891,7 +1994,8 @@ void int_string_map_s::get_idxs(int_string_s &a_value,ui_array_s &a_idxs_array)
 {/*{{{*/
   a_idxs_array.used = 0;
 
-  if (root_idx == c_idx_not_exist) {
+  if (root_idx == c_idx_not_exist)
+  {
     return;
   }
 
@@ -1904,21 +2008,27 @@ void int_string_map_s::get_idxs(int_string_s &a_value,ui_array_s &a_idxs_array)
     int_string_map_s_node &node = data[node_idx];
 
     int comp_result = __compare_value(a_value,node.object);
-    if (comp_result < 0) {
-      if (node.left_idx != leaf_idx) {
+    if (comp_result < 0)
+    {
+      if (node.left_idx != leaf_idx)
+      {
         *(stack_ptr++) = node.left_idx;
       }
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         a_idxs_array.push(node_idx);
 
-        if (node.left_idx != leaf_idx) {
+        if (node.left_idx != leaf_idx)
+        {
           *(stack_ptr++) = node.left_idx;
         }
       }
 
-      if (node.right_idx != leaf_idx) {
+      if (node.right_idx != leaf_idx)
+      {
         *(stack_ptr++) = node.right_idx;
       }
     }
@@ -1931,7 +2041,10 @@ int_string_map_s &int_string_map_s::operator=(int_string_map_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.root_idx == c_idx_not_exist) return *this;
+  if (a_src.root_idx == c_idx_not_exist)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
 
@@ -1957,13 +2070,17 @@ int_string_map_s &int_string_map_s::operator=(int_string_map_s &a_src)
 
 bool int_string_map_s::operator==(int_string_map_s &a_second)
 {/*{{{*/
-  if (root_idx == c_idx_not_exist) {
-    if (a_second.root_idx != c_idx_not_exist) {
+  if (root_idx == c_idx_not_exist)
+  {
+    if (a_second.root_idx != c_idx_not_exist)
+    {
       return false;
     }
   }
-  else {
-    if (a_second.root_idx == c_idx_not_exist) {
+  else
+  {
+    if (a_second.root_idx == c_idx_not_exist)
+    {
       return false;
     }
 
@@ -1976,7 +2093,8 @@ bool int_string_map_s::operator==(int_string_map_s &a_second)
     unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);
     unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);
     do {
-      if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {
+      if (!(data[node_idx].object == a_second.data[s_node_idx].object))
+      {
         return false;
       }
 
@@ -1984,7 +2102,8 @@ bool int_string_map_s::operator==(int_string_map_s &a_second)
       s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);
     } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);
 
-    if (node_idx != s_node_idx) {
+    if (node_idx != s_node_idx)
+    {
       return false;
     }
   }
@@ -1994,7 +2113,10 @@ bool int_string_map_s::operator==(int_string_map_s &a_second)
 
 void int_string_map_s::rehash_tree()
 {/*{{{*/
-  if (root_idx == c_idx_not_exist) return;
+  if (root_idx == c_idx_not_exist)
+  {
+    return;
+  }
 
   ui_array_s indexes;
   indexes.init();
@@ -2017,11 +2139,13 @@ void int_string_map_s::rehash_tree()
   memset(processed,false,indexes.used*sizeof(bool));
 
   unsigned step = indexes.used >> 1;
-  if (step > 0) {
+  if (step > 0)
+  {
     do {
       unsigned idx = step;
       do {
-        if (!processed[idx]) {
+        if (!processed[idx])
+        {
           unsigned node_idx = indexes[idx];
 
           __binary_tree_insert(node_idx,data[node_idx].object,false);

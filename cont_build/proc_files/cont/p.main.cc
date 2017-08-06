@@ -1173,25 +1173,21 @@ inline unsigned mc_block_rb_tree_s::__get_grandparent_idx(unsigned a_idx)
   {
     return data[node.parent_idx].parent_idx;
   }
-  else
-  {
-    return c_idx_not_exist;
-  }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::__get_uncle_idx(unsigned a_idx)
 {/*{{{*/
   unsigned gp_idx = __get_grandparent_idx(a_idx);
 
-  if (gp_idx == c_idx_not_exist)
-  {
-    return c_idx_not_exist;
-  }
-  else
+  if (gp_idx != c_idx_not_exist)
   {
     mc_block_rb_tree_s_node &gp = data[gp_idx];
     return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
   }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::__get_sibling_idx(unsigned a_idx)
