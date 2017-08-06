@@ -694,25 +694,21 @@ static inline unsigned int_string_map_s___get_grandparent_idx(int_string_map_s *
   {
     return this->data[node->parent_idx].parent_idx;
   }
-  else
-  {
-    return c_idx_not_exist;
-  }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 static inline unsigned int_string_map_s___get_uncle_idx(int_string_map_s *this,unsigned a_idx)
 {/*{{{*/
   unsigned gp_idx = int_string_map_s___get_grandparent_idx(this,a_idx);
 
-  if (gp_idx == c_idx_not_exist)
-  {
-    return c_idx_not_exist;
-  }
-  else
+  if (gp_idx != c_idx_not_exist)
   {
     int_string_map_s_node *gp = this->data + gp_idx;
     return gp->left_idx == this->data[a_idx].parent_idx?gp->right_idx:gp->left_idx;
   }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 static inline unsigned int_string_map_s___get_sibling_idx(int_string_map_s *this,unsigned a_idx)
@@ -822,15 +818,13 @@ static inline unsigned int_string_map_s___get_new_index(int_string_map_s *this)
 
     return new_idx;
   }
-  else
-  {
-    if (this->used >= this->size)
-    {
-      int_string_map_s_copy_resize(this,(this->size << 1) + c_array_add);
-    }
 
-    return this->used++;
+  if (this->used >= this->size)
+  {
+    int_string_map_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
+
+  return this->used++;
 }/*}}}*/
 
 static inline void int_string_map_s___replace_delete_node_by_child(int_string_map_s *this,unsigned a_idx,unsigned a_ch_idx)

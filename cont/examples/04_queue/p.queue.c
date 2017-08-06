@@ -392,10 +392,8 @@ static inline record_s *rec_queue_s_last(rec_queue_s *this)
   {
     return this->data + last_idx - this->size;
   }
-  else
-  {
-    return this->data + last_idx;
-  }
+
+  return this->data + last_idx;
 }/*}}}*/
 
 static inline void rec_queue_s_copy(rec_queue_s *this,rec_queue_s *a_src)
