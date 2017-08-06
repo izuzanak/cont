@@ -495,127 +495,127 @@ inline void cfree(void *a_location);
  */
 struct ui_array_s
 {
-   unsigned size; //!< actual size of allocated space in array
-   unsigned used; //!< count of used space in array
-   unsigned *data; //!< pointer to array elements
+  unsigned size; //!< actual size of allocated space in array
+  unsigned used; //!< count of used space in array
+  unsigned *data; //!< pointer to array elements
 
-   /*!
+  /*!
     * \brief __GEN initialize array
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN initialize array of requested size
     * \param a_size - requested size of array
     */
-   inline void init_size(unsigned a_size);
+  inline void init_size(unsigned a_size);
 
-   /*!
+  /*!
     * \brief __GEN release memory used by array
     */
-   inline void clear();
+  inline void clear();
 
-   /*!
+  /*!
     * \brief __GEN set array content from element pointer
     * \param a_used - number of elements stored at pointed location
     * \param a_data - pointer to elements
     */
-   inline void set(unsigned a_used,unsigned *a_data);
+  inline void set(unsigned a_used,unsigned *a_data);
 
-   /*!
+  /*!
     * \brief __GEN flush array memory usage
     */
-   inline void flush();
+  inline void flush();
 
-   /*!
+  /*!
     * \brief __GEN flush array memory usage, recursive on elemenets
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap array members with another array
     * \param a_second - reference to another array
     */
-   inline void swap(ui_array_s &a_second);
+  inline void swap(ui_array_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN select element of array
     * \param a_idx - index of element in array
     * \return reference to element of array
     */
-   inline unsigned &operator[](unsigned a_idx);
+  inline unsigned &operator[](unsigned a_idx);
 
-   /*!
+  /*!
     * \brief __GEN insert element to end of array
     * \param a_value - value of inserted element
     */
-   inline void push(unsigned a_value);
+  inline void push(unsigned a_value);
 
-   /*!
+  /*!
     * \brief __GEN insert blank element to end of array
     */
-   inline void push_blank();
+  inline void push_blank();
 
-   /*!
+  /*!
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-   void reserve(unsigned a_cnt);
+  void reserve(unsigned a_cnt);
 
-   /*!
+  /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-   void push_blanks(unsigned a_cnt);
+  void push_blanks(unsigned a_cnt);
 
-   /*!
+  /*!
     * \brief __GEN insert and clear element to end of array
     */
-   inline void push_clear();
+  inline void push_clear();
 
-   /*!
+  /*!
     * \brief __GEN return value of last element in array, and remove it
     * \return reference to last element
     */
-   inline unsigned &pop();
+  inline unsigned &pop();
 
-   /*!
+  /*!
     * \brief __GEN return value of last element in array
     * \return reference to last element
     */
-   inline unsigned &last();
+  inline unsigned &last();
 
-   /*!
+  /*!
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-   void copy_resize(unsigned a_size);
+  void copy_resize(unsigned a_size);
 
-   /*!
+  /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-   void fill(unsigned a_value);
+  void fill(unsigned a_value);
 
-   /*!
+  /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-   unsigned get_idx(unsigned a_value);
+  unsigned get_idx(unsigned a_value);
 
-   /*!
+  /*!
     * \brief __GEN copy array from another array
     * \param a_src - reference to another array
     * \return reference to this array
     */
-   inline ui_array_s &operator=(ui_array_s &a_src);
+  inline ui_array_s &operator=(ui_array_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
     * \return result of comparison
     */
-   inline bool operator==(ui_array_s &a_second);
+  inline bool operator==(ui_array_s &a_second);
 
 };
 
@@ -631,46 +631,46 @@ struct ui_array_s
  */
 struct mc_block_s
 {
-   pointer location; //!< member - 0
-   unsigned size; //!< member - 1
+  pointer location; //!< member - 0
+  unsigned size; //!< member - 1
 
-   /*!
+  /*!
     * \brief __GEN initialize structure
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN release memory used by structure
     */
-   inline void clear();
+  inline void clear();
 
-   /*!
+  /*!
     * \brief __GEN set structure members
     */
-   inline void set(pointer a_location,unsigned a_size);
-   /*!
+  inline void set(pointer a_location,unsigned a_size);
+  /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(mc_block_s &a_second);
+  inline void swap(mc_block_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN copy structure from another structure
     * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline mc_block_s &operator=(mc_block_s &a_src);
+  inline mc_block_s &operator=(mc_block_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN compare structure with another structure
     * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(mc_block_s &a_second);
+  inline bool operator==(mc_block_s &a_second);
 
 };
 
@@ -685,12 +685,12 @@ struct mc_block_s
 
 struct mc_block_rb_tree_s_node
 {
-   mc_block_s object;
-   bool valid;
-   unsigned parent_idx;
-   unsigned left_idx;
-   unsigned right_idx;
-   bool color;
+  mc_block_s object;
+  bool valid;
+  unsigned parent_idx;
+  unsigned left_idx;
+  unsigned right_idx;
+  bool color;
 };
 
 /*!
@@ -698,166 +698,166 @@ struct mc_block_rb_tree_s_node
  */
 struct mc_block_rb_tree_s
 {
-   unsigned size;
-   unsigned used;
-   unsigned count;
-   mc_block_rb_tree_s_node *data;
-   unsigned free_idx;
-   unsigned root_idx;
-   unsigned leaf_idx;
+  unsigned size;
+  unsigned used;
+  unsigned count;
+  mc_block_rb_tree_s_node *data;
+  unsigned free_idx;
+  unsigned root_idx;
+  unsigned leaf_idx;
 
-   // - internal support methods -
-   inline unsigned __get_grandparent_idx(unsigned a_idx);
-   inline unsigned __get_uncle_idx(unsigned a_idx);
-   inline unsigned __get_sibling_idx(unsigned a_idx);
+  // - internal support methods -
+  inline unsigned __get_grandparent_idx(unsigned a_idx);
+  inline unsigned __get_uncle_idx(unsigned a_idx);
+  inline unsigned __get_sibling_idx(unsigned a_idx);
 
-   inline unsigned get_descent_stack_size();
-   unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
-   inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
+  inline unsigned get_descent_stack_size();
+  unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
+  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
 
-   unsigned get_min_value_idx(unsigned a_idx);
-   unsigned get_max_value_idx(unsigned a_idx);
-   unsigned get_next_idx(unsigned a_idx);
-   unsigned get_prev_idx(unsigned a_idx);
+  unsigned get_min_value_idx(unsigned a_idx);
+  unsigned get_max_value_idx(unsigned a_idx);
+  unsigned get_next_idx(unsigned a_idx);
+  unsigned get_prev_idx(unsigned a_idx);
 
-   inline void __rotate_left(unsigned a_idx);
-   inline void __rotate_right(unsigned a_idx);
+  inline void __rotate_left(unsigned a_idx);
+  inline void __rotate_right(unsigned a_idx);
 
-   inline unsigned __get_new_index();
-   unsigned __binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique);
+  inline unsigned __get_new_index();
+  unsigned __binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique);
 
-   inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);
-   void __remove_black_black(unsigned a_idx);
+  inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);
+  void __remove_black_black(unsigned a_idx);
 
-   inline void __remove_one_child(unsigned a_idx,unsigned a_ch_idx);
+  inline void __remove_one_child(unsigned a_idx,unsigned a_ch_idx);
 
-   void __insert_operation(unsigned a_idx);
+  void __insert_operation(unsigned a_idx);
 
-   inline int __compare_value(mc_block_s &a_first,mc_block_s &a_second);
+  inline int __compare_value(mc_block_s &a_first,mc_block_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN initialize rb_tree
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN release memory used by rb_tree
     */
-   inline void clear();
+  inline void clear();
 
-   /*!
+  /*!
     * \brief __GEN flush rb_tree memory usage
     */
-   inline void flush();
+  inline void flush();
 
-   /*!
+  /*!
     * \brief __GEN flush rb_tree memory usage, recursive on nodes
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap members of rb_tree with another rb_tree
     * \param a_second - reference to another rb_tree
     */
-   inline void swap(mc_block_rb_tree_s &a_second);
+  inline void swap(mc_block_rb_tree_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN select ode of rb_tree
     * \param a_idx - index of node in rb_tree
     * \return reference to node of rb_tree
     */
-   inline mc_block_s &operator[](unsigned a_idx);
+  inline mc_block_s &operator[](unsigned a_idx);
 
-   /*!
+  /*!
     * \brief __GEN insert node to rb_tree
     * \param a_value - reference to value inserted to rb_tree
     * \return - position of node in rb_tree
     */
-   inline unsigned insert(mc_block_s &a_value);
+  inline unsigned insert(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN insert node to rb_tree if it not exist yet
     * \param a_value - reference to value inserted to rb_tree
     * \return - position of node in rb_tree
     */
-   inline unsigned unique_insert(mc_block_s &a_value);
+  inline unsigned unique_insert(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN insert node to rb_tree by swapping
     * \param a_value - reference to value inserted to rb_tree
     * \return - position of node in rb_tree
     */
-   inline unsigned swap_insert(mc_block_s &a_value);
+  inline unsigned swap_insert(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN insert node to rb_tree by swapping if it not exist yet
     * \param a_value - reference to value inserted to rb_tree
     * \return - position of node in rb_tree
     */
-   inline unsigned unique_swap_insert(mc_block_s &a_value);
+  inline unsigned unique_swap_insert(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN remove node at index from rb_tree
     * \param a_idx - index of node to remove
     */
-   void remove(unsigned a_idx);
+  void remove(unsigned a_idx);
 
-   /*!
+  /*!
     * \brief __GEN resize rb_tree capacity
     * \param a_size - requested rb_tree capacity
     */
-   void copy_resize(unsigned a_size);
+  void copy_resize(unsigned a_size);
 
-   /*!
+  /*!
     * \brief __GEN search for index of node
     * \param a_value - value which index is searched
     */
-   unsigned get_idx(mc_block_s &a_value);
+  unsigned get_idx(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN search for leftmost index of node
     * \param a_value - value which index is searched
     */
-   unsigned get_idx_left(mc_block_s &a_value);
+  unsigned get_idx_left(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN search for index of node with greater or equal value
     * \param a_value - value which index is searched
     */
-   unsigned get_gre_idx(mc_block_s &a_value);
+  unsigned get_gre_idx(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN search for index of node with less or equal value
     * \param a_value - value which index is searched
     */
-   unsigned get_lee_idx(mc_block_s &a_value);
+  unsigned get_lee_idx(mc_block_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN search for all indexes of node
     * \param a_value - value of searched index
     */
-   void get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array);
+  void get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array);
 
-   /*!
+  /*!
     * \brief __GEN copy rb_tree from another rb_tree
     * \param a_src - reference to another rb_tree
     * \return reference to this rb_tree
     */
-   inline mc_block_rb_tree_s &operator=(mc_block_rb_tree_s &a_src);
+  inline mc_block_rb_tree_s &operator=(mc_block_rb_tree_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN compare rb_tree with another rb_tree
     * \param a_second - reference to another rb_tree
     * \return result of comparision
     */
-   bool operator==(mc_block_rb_tree_s &a_second);
+  bool operator==(mc_block_rb_tree_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN rehash tree (after invalidation by change of object value)
     */
     void rehash_tree();
 
-   
+  
       
       /*!
        * \brief cmalloc for mc_block_rb_tree_s structure overriding global
@@ -888,51 +888,51 @@ struct mc_block_rb_tree_s
  */
 struct mc_struct_s
 {
-   mutex_s mutex; //!< member - 0
-   mc_block_rb_tree_s mc_block_set; //!< member - 1
-   unsigned alloc_size; //!< member - 2
-   unsigned max_alloc_size; //!< member - 3
-   unsigned act_alloc_size; //!< member - 4
+  mutex_s mutex; //!< member - 0
+  mc_block_rb_tree_s mc_block_set; //!< member - 1
+  unsigned alloc_size; //!< member - 2
+  unsigned max_alloc_size; //!< member - 3
+  unsigned act_alloc_size; //!< member - 4
 
-   /*!
+  /*!
     * \brief __GEN initialize structure
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN release memory used by structure
     */
-   inline void clear();
+  inline void clear();
 
-   /*!
+  /*!
     * \brief __GEN set structure members
     */
-   inline void set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size);
-   /*!
+  inline void set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size);
+  /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(mc_struct_s &a_second);
+  inline void swap(mc_struct_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN copy structure from another structure
     * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline mc_struct_s &operator=(mc_struct_s &a_src);
+  inline mc_struct_s &operator=(mc_struct_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN compare structure with another structure
     * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(mc_struct_s &a_second);
+  inline bool operator==(mc_struct_s &a_second);
 
-   
+  
       
       /*!
        * \brief return location of new allocated memory block of size a_size
@@ -969,127 +969,127 @@ struct mc_struct_s
 
 inline void ui_array_s::init()
 {/*{{{*/
-   size = 0;
-   used = 0;
-   data = nullptr;
+  size = 0;
+  used = 0;
+  data = nullptr;
 }/*}}}*/
 
 inline void ui_array_s::init_size(unsigned a_size)
 {/*{{{*/
-   init();
-   copy_resize(a_size);
+  init();
+  copy_resize(a_size);
 }/*}}}*/
 
 inline void ui_array_s::clear()
 {/*{{{*/
-   if (data != nullptr) {
-      cfree(data);
-   }
+  if (data != nullptr) {
+    cfree(data);
+  }
 
-   init();
+  init();
 }/*}}}*/
 
 inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 {/*{{{*/
-   clear();
-   if (a_used == 0) return;
-   
-   debug_assert(a_data != nullptr);
-   copy_resize(a_used);
+  clear();
+  if (a_used == 0) return;
 
-   memcpy(data,a_data,a_used*sizeof(unsigned));
-   used = a_used;
+  debug_assert(a_data != nullptr);
+  copy_resize(a_used);
+
+  memcpy(data,a_data,a_used*sizeof(unsigned));
+  used = a_used;
 }/*}}}*/
 
 inline void ui_array_s::flush()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void ui_array_s::flush_all()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void ui_array_s::swap(ui_array_s &a_second)
 {/*{{{*/
-   unsigned tmp_unsigned = size;
-   size = a_second.size;
-   a_second.size = tmp_unsigned;
+  unsigned tmp_unsigned = size;
+  size = a_second.size;
+  a_second.size = tmp_unsigned;
 
-   tmp_unsigned = used;
-   used = a_second.used;
-   a_second.used = tmp_unsigned;
+  tmp_unsigned = used;
+  used = a_second.used;
+  a_second.used = tmp_unsigned;
 
-   unsigned *tmp_data = data;
-   data = a_second.data;
-   a_second.data = tmp_data;
+  unsigned *tmp_data = data;
+  data = a_second.data;
+  a_second.data = tmp_data;
 }/*}}}*/
 
 inline unsigned &ui_array_s::operator[](unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < used);
-   return data[a_idx];
+  debug_assert(a_idx < used);
+  return data[a_idx];
 }/*}}}*/
 
 inline void ui_array_s::push(unsigned a_value)
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   data[used++] = a_value;
+  data[used++] = a_value;
 }/*}}}*/
 
 inline void ui_array_s::push_blank()
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   used++;
+  used++;
 }/*}}}*/
 
 inline void ui_array_s::push_clear()
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   used++;
+  used++;
 }/*}}}*/
 
 inline unsigned &ui_array_s::pop()
 {/*{{{*/
-   debug_assert(used > 0);
-   return data[--used];
+  debug_assert(used > 0);
+  return data[--used];
 }/*}}}*/
 
 inline unsigned &ui_array_s::last()
 {/*{{{*/
-   debug_assert(used > 0);
-   return data[used - 1];
+  debug_assert(used > 0);
+  return data[used - 1];
 }/*}}}*/
 
 inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 {/*{{{*/
-   clear();
+  clear();
 
-   if (a_src.used == 0) return *this;
+  if (a_src.used == 0) return *this;
 
-   copy_resize(a_src.used);
-   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
+  copy_resize(a_src.used);
+  memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
 
-   used = a_src.used;
-   return *this;
+  used = a_src.used;
+  return *this;
 }/*}}}*/
 
 inline bool ui_array_s::operator==(ui_array_s &a_second)
 {/*{{{*/
-   if (used != a_second.used) return false;
-   if (used == 0) return true;
+  if (used != a_second.used) return false;
+  if (used == 0) return true;
 
-   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
+  return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
 
 
@@ -1106,13 +1106,13 @@ inline void mc_block_s::init()
 inline void mc_block_s::clear()
 {/*{{{*/
 
-   init();
+  init();
 }/*}}}*/
 
 inline void mc_block_s::set(pointer a_location,unsigned a_size)
 {/*{{{*/
-   location = a_location;
-   size = a_size;
+  location = a_location;
+  size = a_size;
 }/*}}}*/
 
 inline void mc_block_s::flush_all()
@@ -1121,26 +1121,26 @@ inline void mc_block_s::flush_all()
 
 inline void mc_block_s::swap(mc_block_s &a_second)
 {/*{{{*/
-   pointer tmp_location = location;
-   location = a_second.location;
-   a_second.location = tmp_location;
+  pointer tmp_location = location;
+  location = a_second.location;
+  a_second.location = tmp_location;
 
-   unsigned tmp_size = size;
-   size = a_second.size;
-   a_second.size = tmp_size;
+  unsigned tmp_size = size;
+  size = a_second.size;
+  a_second.size = tmp_size;
 }/*}}}*/
 
 inline mc_block_s &mc_block_s::operator=(mc_block_s &a_src)
 {/*{{{*/
-   location = a_src.location;
-   size = a_src.size;
+  location = a_src.location;
+  size = a_src.size;
 
-   return *this;
+  return *this;
 }/*}}}*/
 
 inline bool mc_block_s::operator==(mc_block_s &a_second)
 {/*{{{*/
-   return (location == a_second.location && size == a_second.size);
+  return (location == a_second.location && size == a_second.size);
 }/*}}}*/
 
 
@@ -1150,321 +1150,321 @@ inline bool mc_block_s::operator==(mc_block_s &a_second)
 
 inline unsigned mc_block_rb_tree_s::__get_grandparent_idx(unsigned a_idx)
 {/*{{{*/
-   mc_block_rb_tree_s_node &node = data[a_idx];
+  mc_block_rb_tree_s_node &node = data[a_idx];
 
-   if (node.parent_idx != c_idx_not_exist) {
-      return data[node.parent_idx].parent_idx;
-   }
-   else {
-      return c_idx_not_exist;
-   }
+  if (node.parent_idx != c_idx_not_exist) {
+    return data[node.parent_idx].parent_idx;
+  }
+  else {
+    return c_idx_not_exist;
+  }
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::__get_uncle_idx(unsigned a_idx)
 {/*{{{*/
-   unsigned gp_idx = __get_grandparent_idx(a_idx);
+  unsigned gp_idx = __get_grandparent_idx(a_idx);
 
-   if (gp_idx == c_idx_not_exist) {
-      return c_idx_not_exist;
-   }
-   else {
-      mc_block_rb_tree_s_node &gp = data[gp_idx];
-      return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
-   }
+  if (gp_idx == c_idx_not_exist) {
+    return c_idx_not_exist;
+  }
+  else {
+    mc_block_rb_tree_s_node &gp = data[gp_idx];
+    return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
+  }
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::__get_sibling_idx(unsigned a_idx)
 {/*{{{*/
-   mc_block_rb_tree_s_node &p = data[data[a_idx].parent_idx];
-   return p.left_idx == a_idx?p.right_idx:p.left_idx;
+  mc_block_rb_tree_s_node &p = data[data[a_idx].parent_idx];
+  return p.left_idx == a_idx?p.right_idx:p.left_idx;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::get_descent_stack_size()
 {/*{{{*/
-   return (unsigned)(logf(used)/c_log_of_2) << 1;
+  return (unsigned)(logf(used)/c_log_of_2) << 1;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)
 {/*{{{*/
-   debug_assert(a_idx < used && data[a_idx].valid);
+  debug_assert(a_idx < used && data[a_idx].valid);
 
-   mc_block_rb_tree_s_node &node = data[a_idx];
+  mc_block_rb_tree_s_node &node = data[a_idx];
 
-   if (node.right_idx != leaf_idx) {
-      return get_stack_min_value_idx(node.right_idx,a_s_ptr);
-   }
+  if (node.right_idx != leaf_idx) {
+    return get_stack_min_value_idx(node.right_idx,a_s_ptr);
+  }
 
-   if (*a_s_ptr > a_stack_base) {
-      return *(--(*a_s_ptr));
-   }
-   
-   return c_idx_not_exist;
+  if (*a_s_ptr > a_stack_base) {
+    return *(--(*a_s_ptr));
+  }
+
+  return c_idx_not_exist;
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::__rotate_left(unsigned a_idx)
 {/*{{{*/
-   mc_block_rb_tree_s_node &root = data[a_idx];
-   mc_block_rb_tree_s_node &pivot = data[root.right_idx];
+  mc_block_rb_tree_s_node &root = data[a_idx];
+  mc_block_rb_tree_s_node &pivot = data[root.right_idx];
 
-   if (a_idx == root_idx) {
-      root_idx = root.right_idx;
-      pivot.parent_idx = c_idx_not_exist;
-   }
-   else {
-      mc_block_rb_tree_s_node &rp = data[root.parent_idx];
-      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;
+  if (a_idx == root_idx) {
+    root_idx = root.right_idx;
+    pivot.parent_idx = c_idx_not_exist;
+  }
+  else {
+    mc_block_rb_tree_s_node &rp = data[root.parent_idx];
+    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;
 
-      pivot.parent_idx = root.parent_idx;
-   }
+    pivot.parent_idx = root.parent_idx;
+  }
 
-   root.parent_idx = root.right_idx;
+  root.parent_idx = root.right_idx;
 
-   root.right_idx = pivot.left_idx;
-   data[root.right_idx].parent_idx = a_idx;
+  root.right_idx = pivot.left_idx;
+  data[root.right_idx].parent_idx = a_idx;
 
-   pivot.left_idx = a_idx;
+  pivot.left_idx = a_idx;
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::__rotate_right(unsigned a_idx)
 {/*{{{*/
-   mc_block_rb_tree_s_node &root = data[a_idx];
-   mc_block_rb_tree_s_node &pivot = data[root.left_idx];
+  mc_block_rb_tree_s_node &root = data[a_idx];
+  mc_block_rb_tree_s_node &pivot = data[root.left_idx];
 
-   if (a_idx == root_idx) {
-      root_idx = root.left_idx;
-      pivot.parent_idx = c_idx_not_exist;
-   }
-   else {
-      mc_block_rb_tree_s_node &rp = data[root.parent_idx];
-      (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;
+  if (a_idx == root_idx) {
+    root_idx = root.left_idx;
+    pivot.parent_idx = c_idx_not_exist;
+  }
+  else {
+    mc_block_rb_tree_s_node &rp = data[root.parent_idx];
+    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;
 
-      pivot.parent_idx = root.parent_idx;
-   }
+    pivot.parent_idx = root.parent_idx;
+  }
 
-   root.parent_idx = root.left_idx;
+  root.parent_idx = root.left_idx;
 
-   root.left_idx = pivot.right_idx;
-   data[root.left_idx].parent_idx = a_idx;
+  root.left_idx = pivot.right_idx;
+  data[root.left_idx].parent_idx = a_idx;
 
-   pivot.right_idx = a_idx;
+  pivot.right_idx = a_idx;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::__get_new_index()
 {/*{{{*/
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (free_idx != c_idx_not_exist) {
-      new_idx = free_idx;
-      free_idx = data[new_idx].parent_idx;
-   }
-   else {
-      if (used >= size) {
-         copy_resize((size << 1) + c_array_add);
-      }
+  if (free_idx != c_idx_not_exist) {
+    new_idx = free_idx;
+    free_idx = data[new_idx].parent_idx;
+  }
+  else {
+    if (used >= size) {
+      copy_resize((size << 1) + c_array_add);
+    }
 
-      new_idx = used++;
-   }
+    new_idx = used++;
+  }
 
-   data[new_idx].valid = true;
-   count++;
+  data[new_idx].valid = true;
+  count++;
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)
 {/*{{{*/
-   mc_block_rb_tree_s_node &node = data[a_idx];
+  mc_block_rb_tree_s_node &node = data[a_idx];
 
-   if (node.parent_idx != c_idx_not_exist) {
-      mc_block_rb_tree_s_node &parent = data[node.parent_idx];
-      (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;
+  if (node.parent_idx != c_idx_not_exist) {
+    mc_block_rb_tree_s_node &parent = data[node.parent_idx];
+    (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;
 
-      data[a_ch_idx].parent_idx = node.parent_idx;
-   }
-   else {
-      root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;
-      data[a_ch_idx].parent_idx = c_idx_not_exist;
-   }
+    data[a_ch_idx].parent_idx = node.parent_idx;
+  }
+  else {
+    root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;
+    data[a_ch_idx].parent_idx = c_idx_not_exist;
+  }
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)
 {/*{{{*/
-   mc_block_rb_tree_s_node &node = data[a_idx];
-   __replace_delete_node_by_child(a_idx,a_ch_idx);
+  mc_block_rb_tree_s_node &node = data[a_idx];
+  __replace_delete_node_by_child(a_idx,a_ch_idx);
 
-   node.parent_idx = free_idx;
-   free_idx = a_idx;
+  node.parent_idx = free_idx;
+  free_idx = a_idx;
 
-   node.valid = false;
-   count--;
+  node.valid = false;
+  count--;
 
-   if (node.color) {
-      mc_block_rb_tree_s_node &child_node = data[a_ch_idx];
+  if (node.color) {
+    mc_block_rb_tree_s_node &child_node = data[a_ch_idx];
 
-      if (!child_node.color) {
-         child_node.color = true;
-      }
-      else {
-         __remove_black_black(a_ch_idx);
-      }
-   }
+    if (!child_node.color) {
+      child_node.color = true;
+    }
+    else {
+      __remove_black_black(a_ch_idx);
+    }
+  }
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::init()
 {/*{{{*/
-   size = 0;
-   used = 0;
-   count = 0;
-   data = nullptr;
-   free_idx = c_idx_not_exist;
-   root_idx = c_idx_not_exist;
-   leaf_idx = c_idx_not_exist;
+  size = 0;
+  used = 0;
+  count = 0;
+  data = nullptr;
+  free_idx = c_idx_not_exist;
+  root_idx = c_idx_not_exist;
+  leaf_idx = c_idx_not_exist;
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::clear()
 {/*{{{*/
-   if (data != nullptr) {
-      cfree(data);
-   }
+  if (data != nullptr) {
+    cfree(data);
+  }
 
-   init();
+  init();
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::flush()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::flush_all()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::swap(mc_block_rb_tree_s &a_second)
 {/*{{{*/
-   unsigned tmp_unsigned = size;
-   size = a_second.size;
-   a_second.size = tmp_unsigned;
+  unsigned tmp_unsigned = size;
+  size = a_second.size;
+  a_second.size = tmp_unsigned;
 
-   tmp_unsigned = used;
-   used = a_second.used;
-   a_second.used = tmp_unsigned;
+  tmp_unsigned = used;
+  used = a_second.used;
+  a_second.used = tmp_unsigned;
 
-   tmp_unsigned = count;
-   count = a_second.count;
-   a_second.count = tmp_unsigned;
+  tmp_unsigned = count;
+  count = a_second.count;
+  a_second.count = tmp_unsigned;
 
-   mc_block_rb_tree_s_node *tmp_data = data;
-   data = a_second.data;
-   a_second.data = tmp_data;
+  mc_block_rb_tree_s_node *tmp_data = data;
+  data = a_second.data;
+  a_second.data = tmp_data;
 
-   tmp_unsigned = free_idx;
-   free_idx = a_second.free_idx;
-   a_second.free_idx = tmp_unsigned;
+  tmp_unsigned = free_idx;
+  free_idx = a_second.free_idx;
+  a_second.free_idx = tmp_unsigned;
 
-   tmp_unsigned = root_idx;
-   root_idx = a_second.root_idx;
-   a_second.root_idx = tmp_unsigned;
+  tmp_unsigned = root_idx;
+  root_idx = a_second.root_idx;
+  a_second.root_idx = tmp_unsigned;
 
-   tmp_unsigned = leaf_idx;
-   leaf_idx = a_second.leaf_idx;
-   a_second.leaf_idx = tmp_unsigned;
+  tmp_unsigned = leaf_idx;
+  leaf_idx = a_second.leaf_idx;
+  a_second.leaf_idx = tmp_unsigned;
 }/*}}}*/
 
 inline mc_block_s &mc_block_rb_tree_s::operator[](unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < used && data[a_idx].valid);
-   return data[a_idx].object;
+  debug_assert(a_idx < used && data[a_idx].valid);
+  return data[a_idx].object;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::insert(mc_block_s &a_value)
 {/*{{{*/
-   unsigned new_node_idx = __get_new_index();
+  unsigned new_node_idx = __get_new_index();
 
-   __binary_tree_insert(new_node_idx,a_value,false);
-   __insert_operation(new_node_idx);
+  __binary_tree_insert(new_node_idx,a_value,false);
+  __insert_operation(new_node_idx);
 
-   data[new_node_idx].object = a_value;
+  data[new_node_idx].object = a_value;
 
-   return new_node_idx;
+  return new_node_idx;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::swap_insert(mc_block_s &a_value)
 {/*{{{*/
-   unsigned new_node_idx = __get_new_index();
+  unsigned new_node_idx = __get_new_index();
 
-   __binary_tree_insert(new_node_idx,a_value,false);
-   __insert_operation(new_node_idx);
+  __binary_tree_insert(new_node_idx,a_value,false);
+  __insert_operation(new_node_idx);
 
-   data[new_node_idx].object.swap(a_value);
+  data[new_node_idx].object.swap(a_value);
 
-   return new_node_idx;
+  return new_node_idx;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::unique_insert(mc_block_s &a_value)
 {/*{{{*/
-   unsigned new_node_idx = __get_new_index();
-   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+  unsigned new_node_idx = __get_new_index();
+  unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-   if (old_node_idx != c_idx_not_exist) {
-      mc_block_rb_tree_s_node &new_node = data[new_node_idx];
+  if (old_node_idx != c_idx_not_exist) {
+    mc_block_rb_tree_s_node &new_node = data[new_node_idx];
 
-      new_node.parent_idx = free_idx;
-      free_idx = new_node_idx;
+    new_node.parent_idx = free_idx;
+    free_idx = new_node_idx;
 
-      new_node.valid = false;
-      count--;
+    new_node.valid = false;
+    count--;
 
-      return old_node_idx;
-   }
+    return old_node_idx;
+  }
 
-   __insert_operation(new_node_idx);
+  __insert_operation(new_node_idx);
 
-   data[new_node_idx].object = a_value;
+  data[new_node_idx].object = a_value;
 
   return new_node_idx;
 }/*}}}*/
 
 inline unsigned mc_block_rb_tree_s::unique_swap_insert(mc_block_s &a_value)
 {/*{{{*/
-   unsigned new_node_idx = __get_new_index();
-   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+  unsigned new_node_idx = __get_new_index();
+  unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-   if (old_node_idx != c_idx_not_exist) {
-      mc_block_rb_tree_s_node &new_node = data[new_node_idx];
+  if (old_node_idx != c_idx_not_exist) {
+    mc_block_rb_tree_s_node &new_node = data[new_node_idx];
 
-      new_node.parent_idx = free_idx;
-      free_idx = new_node_idx;
+    new_node.parent_idx = free_idx;
+    free_idx = new_node_idx;
 
-      new_node.valid = false;
-      count--;
+    new_node.valid = false;
+    count--;
 
-      return old_node_idx;
-   }
+    return old_node_idx;
+  }
 
-   __insert_operation(new_node_idx);
+  __insert_operation(new_node_idx);
 
-   data[new_node_idx].object.swap(a_value);
+  data[new_node_idx].object.swap(a_value);
 
   return new_node_idx;
 }/*}}}*/
 
 inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_src)
 {/*{{{*/
-   clear();
+  clear();
 
-   if (a_src.root_idx == c_idx_not_exist) return *this;
+  if (a_src.root_idx == c_idx_not_exist) return *this;
 
-   copy_resize(a_src.used);
-   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
+  copy_resize(a_src.used);
+  memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
-   used = a_src.used;
-   count = a_src.count;
-   free_idx = a_src.free_idx;
-   root_idx = a_src.root_idx;
-   leaf_idx = a_src.leaf_idx;
+  used = a_src.used;
+  count = a_src.count;
+  free_idx = a_src.free_idx;
+  root_idx = a_src.root_idx;
+  leaf_idx = a_src.leaf_idx;
 
-   return *this;
+  return *this;
 }/*}}}*/
 
 
@@ -1497,65 +1497,65 @@ int mc_block_rb_tree_s::__compare_value(mc_block_s &a_first,mc_block_s &a_second
 
 inline void mc_struct_s::init()
 {/*{{{*/
-   mutex.init();
-   mc_block_set.init();
+  mutex.init();
+  mc_block_set.init();
 }/*}}}*/
 
 inline void mc_struct_s::clear()
 {/*{{{*/
-   mutex.clear();
-   mc_block_set.clear();
+  mutex.clear();
+  mc_block_set.clear();
 
-   init();
+  init();
 }/*}}}*/
 
 inline void mc_struct_s::set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size)
 {/*{{{*/
-   mutex = a_mutex;
-   mc_block_set = a_mc_block_set;
-   alloc_size = a_alloc_size;
-   max_alloc_size = a_max_alloc_size;
-   act_alloc_size = a_act_alloc_size;
+  mutex = a_mutex;
+  mc_block_set = a_mc_block_set;
+  alloc_size = a_alloc_size;
+  max_alloc_size = a_max_alloc_size;
+  act_alloc_size = a_act_alloc_size;
 }/*}}}*/
 
 inline void mc_struct_s::flush_all()
 {/*{{{*/
-   mc_block_set.flush_all();
+  mc_block_set.flush_all();
 }/*}}}*/
 
 inline void mc_struct_s::swap(mc_struct_s &a_second)
 {/*{{{*/
-   mutex.swap(a_second.mutex);
+  mutex.swap(a_second.mutex);
 
-   mc_block_set.swap(a_second.mc_block_set);
+  mc_block_set.swap(a_second.mc_block_set);
 
-   unsigned tmp_alloc_size = alloc_size;
-   alloc_size = a_second.alloc_size;
-   a_second.alloc_size = tmp_alloc_size;
+  unsigned tmp_alloc_size = alloc_size;
+  alloc_size = a_second.alloc_size;
+  a_second.alloc_size = tmp_alloc_size;
 
-   unsigned tmp_max_alloc_size = max_alloc_size;
-   max_alloc_size = a_second.max_alloc_size;
-   a_second.max_alloc_size = tmp_max_alloc_size;
+  unsigned tmp_max_alloc_size = max_alloc_size;
+  max_alloc_size = a_second.max_alloc_size;
+  a_second.max_alloc_size = tmp_max_alloc_size;
 
-   unsigned tmp_act_alloc_size = act_alloc_size;
-   act_alloc_size = a_second.act_alloc_size;
-   a_second.act_alloc_size = tmp_act_alloc_size;
+  unsigned tmp_act_alloc_size = act_alloc_size;
+  act_alloc_size = a_second.act_alloc_size;
+  a_second.act_alloc_size = tmp_act_alloc_size;
 }/*}}}*/
 
 inline mc_struct_s &mc_struct_s::operator=(mc_struct_s &a_src)
 {/*{{{*/
-   mutex = a_src.mutex;
-   mc_block_set = a_src.mc_block_set;
-   alloc_size = a_src.alloc_size;
-   max_alloc_size = a_src.max_alloc_size;
-   act_alloc_size = a_src.act_alloc_size;
+  mutex = a_src.mutex;
+  mc_block_set = a_src.mc_block_set;
+  alloc_size = a_src.alloc_size;
+  max_alloc_size = a_src.max_alloc_size;
+  act_alloc_size = a_src.act_alloc_size;
 
-   return *this;
+  return *this;
 }/*}}}*/
 
 inline bool mc_struct_s::operator==(mc_struct_s &a_second)
 {/*{{{*/
-   return (mutex == a_second.mutex && mc_block_set == a_second.mc_block_set && alloc_size == a_second.alloc_size && max_alloc_size == a_second.max_alloc_size && act_alloc_size == a_second.act_alloc_size);
+  return (mutex == a_second.mutex && mc_block_set == a_second.mc_block_set && alloc_size == a_second.alloc_size && max_alloc_size == a_second.max_alloc_size && act_alloc_size == a_second.act_alloc_size);
 }/*}}}*/
 
 
@@ -1894,125 +1894,125 @@ struct string_s
  */
 struct string_array_s
 {
-   unsigned size; //!< actual size of allocated space in array
-   unsigned used; //!< count of used space in array
-   string_s *data; //!< pointer to array elements
+  unsigned size; //!< actual size of allocated space in array
+  unsigned used; //!< count of used space in array
+  string_s *data; //!< pointer to array elements
 
-   /*!
+  /*!
     * \brief __GEN initialize array
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN initialize array of requested size
     * \param a_size - requested size of array
     */
-   inline void init_size(unsigned a_size);
+  inline void init_size(unsigned a_size);
 
-   /*!
+  /*!
     * \brief __GEN release memory used by array
     */
-   void clear();
+  void clear();
 
-   /*!
+  /*!
     * \brief __GEN set array content from element pointer
     * \param a_used - number of elements stored at pointed location
     * \param a_data - pointer to elements
     */
-   void set(unsigned a_used,string_s *a_data);
+  void set(unsigned a_used,string_s *a_data);
 
-   /*!
+  /*!
     * \brief __GEN flush array memory usage
     */
-   inline void flush();
+  inline void flush();
 
-   /*!
+  /*!
     * \brief __GEN flush array memory usage, recursive on elemenets
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap array members with another array
     * \param a_second - reference to another array
     */
-   inline void swap(string_array_s &a_second);
+  inline void swap(string_array_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN select element of array
     * \param a_idx - index of element in array
     * \return reference to element of array
     */
-   inline string_s &operator[](unsigned a_idx);
+  inline string_s &operator[](unsigned a_idx);
 
-   /*!
+  /*!
     * \brief __GEN insert element to end of array
     * \param a_value - reference to inserted value
     */
-   inline void push(string_s &a_value);
+  inline void push(string_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN insert blank element to end of array
     */
-   inline void push_blank();
+  inline void push_blank();
 
-   /*!
+  /*!
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-   void reserve(unsigned a_cnt);
+  void reserve(unsigned a_cnt);
 
-   /*!
+  /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-   void push_blanks(unsigned a_cnt);
+  void push_blanks(unsigned a_cnt);
 
-   /*!
+  /*!
     * \brief __GEN insert and clear element to end of array
     */
-   inline void push_clear();
+  inline void push_clear();
 
-   /*!
+  /*!
     * \brief __GEN return value of last element in array, and remove it
     * \return reference to last element
     */
-   inline string_s &pop();
+  inline string_s &pop();
 
-   /*!
+  /*!
     * \brief __GEN return value of last element in array
     * \return reference to last element
     */
-   inline string_s &last();
+  inline string_s &last();
 
-   /*!
+  /*!
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-   void copy_resize(unsigned a_size);
+  void copy_resize(unsigned a_size);
 
-   /*!
+  /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-   void fill(string_s &a_value);
+  void fill(string_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-   unsigned get_idx(string_s &a_value);
+  unsigned get_idx(string_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN copy array from another array
     * \param a_src - reference to another array
     */
-   string_array_s &operator=(string_array_s &a_src);
+  string_array_s &operator=(string_array_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
     */
-   bool operator==(string_array_s &a_second);
+  bool operator==(string_array_s &a_second);
 
 };
 
@@ -2182,85 +2182,85 @@ inline bool string_s::save_text_file(const char *a_file)
 
 inline void string_array_s::init()
 {/*{{{*/
-   size = 0;
-   used = 0;
-   data = nullptr;
+  size = 0;
+  used = 0;
+  data = nullptr;
 }/*}}}*/
 
 inline void string_array_s::init_size(unsigned a_size)
 {/*{{{*/
-   init();
-   copy_resize(a_size);
+  init();
+  copy_resize(a_size);
 }/*}}}*/
 
 inline void string_array_s::flush()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void string_array_s::flush_all()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void string_array_s::swap(string_array_s &a_second)
 {/*{{{*/
-   unsigned tmp_unsigned = size;
-   size = a_second.size;
-   a_second.size = tmp_unsigned;
+  unsigned tmp_unsigned = size;
+  size = a_second.size;
+  a_second.size = tmp_unsigned;
 
-   tmp_unsigned = used;
-   used = a_second.used;
-   a_second.used = tmp_unsigned;
+  tmp_unsigned = used;
+  used = a_second.used;
+  a_second.used = tmp_unsigned;
 
-   string_s *tmp_data = data;
-   data = a_second.data;
-   a_second.data = tmp_data;
+  string_s *tmp_data = data;
+  data = a_second.data;
+  a_second.data = tmp_data;
 }/*}}}*/
 
 inline string_s &string_array_s::operator[](unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < used);
-   return data[a_idx];
+  debug_assert(a_idx < used);
+  return data[a_idx];
 }/*}}}*/
 
 inline void string_array_s::push(string_s &a_value)
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   data[used++] = a_value;
+  data[used++] = a_value;
 }/*}}}*/
 
 inline void string_array_s::push_blank()
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   used++;
+  used++;
 }/*}}}*/
 
 inline void string_array_s::push_clear()
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   data[used++].clear();
+  data[used++].clear();
 }/*}}}*/
 
 inline string_s &string_array_s::pop()
 {/*{{{*/
-   debug_assert(used > 0);
-   return data[--used];
+  debug_assert(used > 0);
+  return data[--used];
 }/*}}}*/
 
 inline string_s &string_array_s::last()
 {/*{{{*/
-   debug_assert(used > 0);
-   return data[used - 1];
+  debug_assert(used > 0);
+  return data[used - 1];
 }/*}}}*/
 
 
@@ -2630,168 +2630,168 @@ unsigned string_s::get_character_line_end(unsigned c_idx)
 
 void string_array_s::clear()
 {/*{{{*/
-   if (data != nullptr) {
-      string_s *ptr = data;
-      string_s *ptr_end = ptr + size;
+  if (data != nullptr) {
+    string_s *ptr = data;
+    string_s *ptr_end = ptr + size;
 
-      do {
-         ptr->clear();
-      } while(++ptr < ptr_end);
+    do {
+      ptr->clear();
+    } while(++ptr < ptr_end);
 
-      cfree(data);
-   }
+    cfree(data);
+  }
 
-   init();
+  init();
 }/*}}}*/
 
 void string_array_s::set(unsigned a_used,string_s *a_data)
 {/*{{{*/
-   clear();
-   if (a_used == 0) return;
-   
-   debug_assert(a_data != nullptr);
-   copy_resize(a_used);
+  clear();
+  if (a_used == 0) return;
 
-   string_s *ptr = data;
-   string_s *ptr_end = ptr + a_used;
-   string_s *a_ptr = a_data;
+  debug_assert(a_data != nullptr);
+  copy_resize(a_used);
 
-   do {
-      *ptr = *a_ptr;
-   } while(++a_ptr,++ptr < ptr_end);
+  string_s *ptr = data;
+  string_s *ptr_end = ptr + a_used;
+  string_s *a_ptr = a_data;
 
-   used = a_used;
+  do {
+    *ptr = *a_ptr;
+  } while(++a_ptr,++ptr < ptr_end);
+
+  used = a_used;
 }/*}}}*/
 
 void string_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
-   unsigned required_cnt = used + a_cnt;
-   if (required_cnt > size) {
-      unsigned r_size = size;
-      do {
-         r_size = (r_size << 1) + c_array_add;
-      } while(r_size < required_cnt);
+  unsigned required_cnt = used + a_cnt;
+  if (required_cnt > size) {
+    unsigned r_size = size;
+    do {
+      r_size = (r_size << 1) + c_array_add;
+    } while(r_size < required_cnt);
 
-      copy_resize(r_size);
-   }
+    copy_resize(r_size);
+  }
 }/*}}}*/
 
 void string_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
-   unsigned required_cnt = used + a_cnt;
-   if (required_cnt > size) {
-      unsigned r_size = size;
-      do {
-         r_size = (r_size << 1) + c_array_add;
-      } while(r_size < required_cnt);
+  unsigned required_cnt = used + a_cnt;
+  if (required_cnt > size) {
+    unsigned r_size = size;
+    do {
+      r_size = (r_size << 1) + c_array_add;
+    } while(r_size < required_cnt);
 
-      copy_resize(r_size);
-   }
+    copy_resize(r_size);
+  }
 
-   used += a_cnt;
+  used += a_cnt;
 }/*}}}*/
 
 void string_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
-   debug_assert(a_size >= used);
+  debug_assert(a_size >= used);
 
-   if (size > a_size) {
-      string_s *ptr = data + a_size;
-      string_s *ptr_end = data + size;
+  if (size > a_size) {
+    string_s *ptr = data + a_size;
+    string_s *ptr_end = data + size;
 
-      do {
-         ptr->clear();
-      } while(++ptr < ptr_end);
-   }
+    do {
+      ptr->clear();
+    } while(++ptr < ptr_end);
+  }
 
-   if (a_size == 0) {
-      if (data != nullptr) {
-         cfree(data);
-      }
-      data = nullptr;
-   }
-   else {
-      data = (string_s *)crealloc(data,a_size*sizeof(string_s));
-   }
+  if (a_size == 0) {
+    if (data != nullptr) {
+      cfree(data);
+    }
+    data = nullptr;
+  }
+  else {
+    data = (string_s *)crealloc(data,a_size*sizeof(string_s));
+  }
 
-   if (a_size > size) {
-      string_s *ptr = data + size;
-      string_s *ptr_end = data + a_size;
+  if (a_size > size) {
+    string_s *ptr = data + size;
+    string_s *ptr_end = data + a_size;
 
-      do {
-         ptr->init();
-      } while(++ptr < ptr_end);
-   }
+    do {
+      ptr->init();
+    } while(++ptr < ptr_end);
+  }
 
-   size = a_size;
+  size = a_size;
 }/*}}}*/
 
 void string_array_s::fill(string_s &a_value)
 {/*{{{*/
-   if (size == 0) return;
+  if (size == 0) return;
 
-   string_s *ptr = data;
-   string_s *ptr_end = data + size;
+  string_s *ptr = data;
+  string_s *ptr_end = data + size;
 
-   do {
-      *ptr = a_value;
-   } while(++ptr < ptr_end);
+  do {
+    *ptr = a_value;
+  } while(++ptr < ptr_end);
 
-   used = size;
+  used = size;
 }/*}}}*/
 
 unsigned string_array_s::get_idx(string_s &a_value)
 {/*{{{*/
-   if (used == 0) return c_idx_not_exist;
+  if (used == 0) return c_idx_not_exist;
 
-   string_s *ptr = data;
-   string_s *ptr_end = data + used;
+  string_s *ptr = data;
+  string_s *ptr_end = data + used;
 
-   do {
-      if (*ptr == a_value) {
-         return ptr - data;
-      }
-   } while(++ptr < ptr_end);
+  do {
+    if (*ptr == a_value) {
+      return ptr - data;
+    }
+  } while(++ptr < ptr_end);
 
-   return c_idx_not_exist;
+  return c_idx_not_exist;
 }/*}}}*/
 
 string_array_s &string_array_s::operator=(string_array_s &a_src)
 {/*{{{*/
-   clear();
+  clear();
 
-   if (a_src.used == 0) return *this;
+  if (a_src.used == 0) return *this;
 
-   copy_resize(a_src.used);
+  copy_resize(a_src.used);
 
-   string_s *ptr = data;
-   string_s *s_ptr = a_src.data;
-   string_s *s_ptr_end = s_ptr + a_src.used;
+  string_s *ptr = data;
+  string_s *s_ptr = a_src.data;
+  string_s *s_ptr_end = s_ptr + a_src.used;
 
-   do {
-      *ptr = *s_ptr;
-   } while(++ptr,++s_ptr < s_ptr_end);
+  do {
+    *ptr = *s_ptr;
+  } while(++ptr,++s_ptr < s_ptr_end);
 
-   used = a_src.used;
-   return *this;
+  used = a_src.used;
+  return *this;
 }/*}}}*/
 
 bool string_array_s::operator==(string_array_s &a_second)
 {/*{{{*/
-   if (used != a_second.used) return false;
-   if (used == 0) return true;
+  if (used != a_second.used) return false;
+  if (used == 0) return true;
 
-   string_s *ptr = data;
-   string_s *ptr_end = ptr + used;
-   string_s *s_ptr = a_second.data;
+  string_s *ptr = data;
+  string_s *ptr_end = ptr + used;
+  string_s *s_ptr = a_second.data;
 
-   do {
-      if (!(*ptr == *s_ptr)) {
-         return false;
-      }
-   } while(++s_ptr,++ptr < ptr_end);
+  do {
+    if (!(*ptr == *s_ptr)) {
+      return false;
+    }
+  } while(++s_ptr,++ptr < ptr_end);
 
-   return true;
+  return true;
 }/*}}}*/
 
 

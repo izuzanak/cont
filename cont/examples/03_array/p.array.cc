@@ -121,48 +121,48 @@ int main(int argc, char **argv);
  */
 struct record_s
 {
-   unsigned index; //!< member - 0
-   unsigned value; //!< member - 1
+  unsigned index; //!< member - 0
+  unsigned value; //!< member - 1
 
-   /*!
+  /*!
     * \brief __GEN initialize structure
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN release memory used by structure
     */
-   inline void clear();
+  inline void clear();
 
-   /*!
+  /*!
     * \brief __GEN set structure members
     */
-   inline void set(unsigned a_index,unsigned a_value);
-   /*!
+  inline void set(unsigned a_index,unsigned a_value);
+  /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(record_s &a_second);
+  inline void swap(record_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN copy structure from another structure
     * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline record_s &operator=(record_s &a_src);
+  inline record_s &operator=(record_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN compare structure with another structure
     * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(record_s &a_second);
+  inline bool operator==(record_s &a_second);
 
-   
+  
   inline unsigned get_index();
   inline unsigned get_value();
 
@@ -184,13 +184,13 @@ inline void record_s::init()
 inline void record_s::clear()
 {/*{{{*/
 
-   init();
+  init();
 }/*}}}*/
 
 inline void record_s::set(unsigned a_index,unsigned a_value)
 {/*{{{*/
-   index = a_index;
-   value = a_value;
+  index = a_index;
+  value = a_value;
 }/*}}}*/
 
 inline void record_s::flush_all()
@@ -199,26 +199,26 @@ inline void record_s::flush_all()
 
 inline void record_s::swap(record_s &a_second)
 {/*{{{*/
-   unsigned tmp_index = index;
-   index = a_second.index;
-   a_second.index = tmp_index;
+  unsigned tmp_index = index;
+  index = a_second.index;
+  a_second.index = tmp_index;
 
-   unsigned tmp_value = value;
-   value = a_second.value;
-   a_second.value = tmp_value;
+  unsigned tmp_value = value;
+  value = a_second.value;
+  a_second.value = tmp_value;
 }/*}}}*/
 
 inline record_s &record_s::operator=(record_s &a_src)
 {/*{{{*/
-   index = a_src.index;
-   value = a_src.value;
+  index = a_src.index;
+  value = a_src.value;
 
-   return *this;
+  return *this;
 }/*}}}*/
 
 inline bool record_s::operator==(record_s &a_second)
 {/*{{{*/
-   return (index == a_second.index && value == a_second.value);
+  return (index == a_second.index && value == a_second.value);
 }/*}}}*/
 
 
@@ -255,127 +255,127 @@ int main(int argc, char **argv);
  */
 struct rec_array_s
 {
-   unsigned size; //!< actual size of allocated space in array
-   unsigned used; //!< count of used space in array
-   record_s *data; //!< pointer to array elements
+  unsigned size; //!< actual size of allocated space in array
+  unsigned used; //!< count of used space in array
+  record_s *data; //!< pointer to array elements
 
-   /*!
+  /*!
     * \brief __GEN initialize array
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN initialize array of requested size
     * \param a_size - requested size of array
     */
-   inline void init_size(unsigned a_size);
+  inline void init_size(unsigned a_size);
 
-   /*!
+  /*!
     * \brief __GEN release memory used by array
     */
-   inline void clear();
+  inline void clear();
 
-   /*!
+  /*!
     * \brief __GEN set array content from element pointer
     * \param a_used - number of elements stored at pointed location
     * \param a_data - pointer to elements
     */
-   inline void set(unsigned a_used,record_s *a_data);
+  inline void set(unsigned a_used,record_s *a_data);
 
-   /*!
+  /*!
     * \brief __GEN flush array memory usage
     */
-   inline void flush();
+  inline void flush();
 
-   /*!
+  /*!
     * \brief __GEN flush array memory usage, recursive on elemenets
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap array members with another array
     * \param a_second - reference to another array
     */
-   inline void swap(rec_array_s &a_second);
+  inline void swap(rec_array_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN select element of array
     * \param a_idx - index of element in array
     * \return reference to element of array
     */
-   inline record_s &operator[](unsigned a_idx);
+  inline record_s &operator[](unsigned a_idx);
 
-   /*!
+  /*!
     * \brief __GEN insert element to end of array
     * \param a_value - reference to inserted value
     */
-   inline void push(record_s &a_value);
+  inline void push(record_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN insert blank element to end of array
     */
-   inline void push_blank();
+  inline void push_blank();
 
-   /*!
+  /*!
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-   void reserve(unsigned a_cnt);
+  void reserve(unsigned a_cnt);
 
-   /*!
+  /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-   void push_blanks(unsigned a_cnt);
+  void push_blanks(unsigned a_cnt);
 
-   /*!
+  /*!
     * \brief __GEN insert and clear element to end of array
     */
-   inline void push_clear();
+  inline void push_clear();
 
-   /*!
+  /*!
     * \brief __GEN return value of last element in array, and remove it
     * \return reference to last element
     */
-   inline record_s &pop();
+  inline record_s &pop();
 
-   /*!
+  /*!
     * \brief __GEN return value of last element in array
     * \return reference to last element
     */
-   inline record_s &last();
+  inline record_s &last();
 
-   /*!
+  /*!
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-   void copy_resize(unsigned a_size);
+  void copy_resize(unsigned a_size);
 
-   /*!
+  /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-   void fill(record_s &a_value);
+  void fill(record_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-   unsigned get_idx(record_s &a_value);
+  unsigned get_idx(record_s &a_value);
 
-   /*!
+  /*!
     * \brief __GEN copy array from another array
     * \param a_src - reference to another array
     * \return reference to this array
     */
-   inline rec_array_s &operator=(rec_array_s &a_src);
+  inline rec_array_s &operator=(rec_array_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
     * \return result of comparison
     */
-   inline bool operator==(rec_array_s &a_second);
+  inline bool operator==(rec_array_s &a_second);
 
 };
 
@@ -390,127 +390,127 @@ struct rec_array_s
 
 inline void rec_array_s::init()
 {/*{{{*/
-   size = 0;
-   used = 0;
-   data = nullptr;
+  size = 0;
+  used = 0;
+  data = nullptr;
 }/*}}}*/
 
 inline void rec_array_s::init_size(unsigned a_size)
 {/*{{{*/
-   init();
-   copy_resize(a_size);
+  init();
+  copy_resize(a_size);
 }/*}}}*/
 
 inline void rec_array_s::clear()
 {/*{{{*/
-   if (data != nullptr) {
-      cfree(data);
-   }
+  if (data != nullptr) {
+    cfree(data);
+  }
 
-   init();
+  init();
 }/*}}}*/
 
 inline void rec_array_s::set(unsigned a_used,record_s *a_data)
 {/*{{{*/
-   clear();
-   if (a_used == 0) return;
-   
-   debug_assert(a_data != nullptr);
-   copy_resize(a_used);
+  clear();
+  if (a_used == 0) return;
 
-   memcpy(data,a_data,a_used*sizeof(record_s));
-   used = a_used;
+  debug_assert(a_data != nullptr);
+  copy_resize(a_used);
+
+  memcpy(data,a_data,a_used*sizeof(record_s));
+  used = a_used;
 }/*}}}*/
 
 inline void rec_array_s::flush()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void rec_array_s::flush_all()
 {/*{{{*/
-   copy_resize(used);
+  copy_resize(used);
 }/*}}}*/
 
 inline void rec_array_s::swap(rec_array_s &a_second)
 {/*{{{*/
-   unsigned tmp_unsigned = size;
-   size = a_second.size;
-   a_second.size = tmp_unsigned;
+  unsigned tmp_unsigned = size;
+  size = a_second.size;
+  a_second.size = tmp_unsigned;
 
-   tmp_unsigned = used;
-   used = a_second.used;
-   a_second.used = tmp_unsigned;
+  tmp_unsigned = used;
+  used = a_second.used;
+  a_second.used = tmp_unsigned;
 
-   record_s *tmp_data = data;
-   data = a_second.data;
-   a_second.data = tmp_data;
+  record_s *tmp_data = data;
+  data = a_second.data;
+  a_second.data = tmp_data;
 }/*}}}*/
 
 inline record_s &rec_array_s::operator[](unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < used);
-   return data[a_idx];
+  debug_assert(a_idx < used);
+  return data[a_idx];
 }/*}}}*/
 
 inline void rec_array_s::push(record_s &a_value)
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   data[used++] = a_value;
+  data[used++] = a_value;
 }/*}}}*/
 
 inline void rec_array_s::push_blank()
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   used++;
+  used++;
 }/*}}}*/
 
 inline void rec_array_s::push_clear()
 {/*{{{*/
-   if (used >= size) {
-      copy_resize((size << 1) + c_array_add);
-   }
+  if (used >= size) {
+    copy_resize((size << 1) + c_array_add);
+  }
 
-   used++;
+  used++;
 }/*}}}*/
 
 inline record_s &rec_array_s::pop()
 {/*{{{*/
-   debug_assert(used > 0);
-   return data[--used];
+  debug_assert(used > 0);
+  return data[--used];
 }/*}}}*/
 
 inline record_s &rec_array_s::last()
 {/*{{{*/
-   debug_assert(used > 0);
-   return data[used - 1];
+  debug_assert(used > 0);
+  return data[used - 1];
 }/*}}}*/
 
 inline rec_array_s &rec_array_s::operator=(rec_array_s &a_src)
 {/*{{{*/
-   clear();
+  clear();
 
-   if (a_src.used == 0) return *this;
+  if (a_src.used == 0) return *this;
 
-   copy_resize(a_src.used);
-   memcpy(data,a_src.data,a_src.used*sizeof(record_s));
+  copy_resize(a_src.used);
+  memcpy(data,a_src.data,a_src.used*sizeof(record_s));
 
-   used = a_src.used;
-   return *this;
+  used = a_src.used;
+  return *this;
 }/*}}}*/
 
 inline bool rec_array_s::operator==(rec_array_s &a_second)
 {/*{{{*/
-   if (used != a_second.used) return false;
-   if (used == 0) return true;
+  if (used != a_second.used) return false;
+  if (used == 0) return true;
 
-   return (memcmp(data,a_second.data,used*sizeof(record_s)) == 0);
+  return (memcmp(data,a_second.data,used*sizeof(record_s)) == 0);
 }/*}}}*/
 
 
@@ -534,77 +534,77 @@ void print_array(rec_array_s &rec_array,const char *name);
 
 void rec_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
-   unsigned required_cnt = used + a_cnt;
-   if (required_cnt > size) {
-      unsigned r_size = size;
-      do {
-         r_size = (r_size << 1) + c_array_add;
-      } while(r_size < required_cnt);
+  unsigned required_cnt = used + a_cnt;
+  if (required_cnt > size) {
+    unsigned r_size = size;
+    do {
+      r_size = (r_size << 1) + c_array_add;
+    } while(r_size < required_cnt);
 
-      copy_resize(r_size);
-   }
+    copy_resize(r_size);
+  }
 }/*}}}*/
 
 void rec_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
-   unsigned required_cnt = used + a_cnt;
-   if (required_cnt > size) {
-      unsigned r_size = size;
-      do {
-         r_size = (r_size << 1) + c_array_add;
-      } while(r_size < required_cnt);
+  unsigned required_cnt = used + a_cnt;
+  if (required_cnt > size) {
+    unsigned r_size = size;
+    do {
+      r_size = (r_size << 1) + c_array_add;
+    } while(r_size < required_cnt);
 
-      copy_resize(r_size);
-   }
+    copy_resize(r_size);
+  }
 
-   used += a_cnt;
+  used += a_cnt;
 }/*}}}*/
 
 void rec_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
-   debug_assert(a_size >= used);
+  debug_assert(a_size >= used);
 
-   if (a_size == 0) {
-      if (data != nullptr) {
-         cfree(data);
-      }
-      data = nullptr;
-   }
-   else {
-      data = (record_s *)crealloc(data,a_size*sizeof(record_s));
-   }
+  if (a_size == 0) {
+    if (data != nullptr) {
+      cfree(data);
+    }
+    data = nullptr;
+  }
+  else {
+    data = (record_s *)crealloc(data,a_size*sizeof(record_s));
+  }
 
-   size = a_size;
+  size = a_size;
 }/*}}}*/
 
 void rec_array_s::fill(record_s &a_value)
 {/*{{{*/
-   if (size == 0) return;
+  if (size == 0) return;
 
-   record_s *ptr = data;
-   record_s *ptr_end = data + size;
+  record_s *ptr = data;
+  record_s *ptr_end = data + size;
 
-   do {
-      *ptr = a_value;
-   } while(++ptr < ptr_end);
+  do {
+    *ptr = a_value;
+  } while(++ptr < ptr_end);
 
-   used = size;
+  used = size;
 }/*}}}*/
 
 unsigned rec_array_s::get_idx(record_s &a_value)
 {/*{{{*/
-   if (used == 0) return c_idx_not_exist;
+  if (used == 0) return c_idx_not_exist;
 
-   record_s *ptr = data;
-   record_s *ptr_end = data + used;
+  record_s *ptr = data;
+  record_s *ptr_end = data + used;
 
-   do {
-      if (*ptr == a_value) {
-         return ptr - data;
-      }
-   } while(++ptr < ptr_end);
+  do {
+    if (*ptr == a_value) {
+      return ptr - data;
+    }
+  } while(++ptr < ptr_end);
 
-   return c_idx_not_exist;
+  return c_idx_not_exist;
 }/*}}}*/
 
 

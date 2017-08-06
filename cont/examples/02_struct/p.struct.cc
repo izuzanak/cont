@@ -117,48 +117,48 @@ int main(int argc, char **argv);
  */
 struct record_s
 {
-   unsigned index; //!< member - 0
-   unsigned value; //!< member - 1
+  unsigned index; //!< member - 0
+  unsigned value; //!< member - 1
 
-   /*!
+  /*!
     * \brief __GEN initialize structure
     */
-   inline void init();
+  inline void init();
 
-   /*!
+  /*!
     * \brief __GEN release memory used by structure
     */
-   inline void clear();
+  inline void clear();
 
-   /*!
+  /*!
     * \brief __GEN set structure members
     */
-   inline void set(unsigned a_index,unsigned a_value);
-   /*!
+  inline void set(unsigned a_index,unsigned a_value);
+  /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
-   inline void flush_all();
+  inline void flush_all();
 
-   /*!
+  /*!
     * \brief __GEN swap structure members with another structure
     */
-   inline void swap(record_s &a_second);
+  inline void swap(record_s &a_second);
 
-   /*!
+  /*!
     * \brief __GEN copy structure from another structure
     * \param a_src - reference to another structure
     * \return reference to this structure
     */
-   inline record_s &operator=(record_s &a_src);
+  inline record_s &operator=(record_s &a_src);
 
-   /*!
+  /*!
     * \brief __GEN compare structure with another structure
     * \param a_second - reference to another structure
     * \return result of comparison
     */
-   inline bool operator==(record_s &a_second);
+  inline bool operator==(record_s &a_second);
 
-   
+  
   inline unsigned get_index();
   inline unsigned get_value();
 
@@ -180,13 +180,13 @@ inline void record_s::init()
 inline void record_s::clear()
 {/*{{{*/
 
-   init();
+  init();
 }/*}}}*/
 
 inline void record_s::set(unsigned a_index,unsigned a_value)
 {/*{{{*/
-   index = a_index;
-   value = a_value;
+  index = a_index;
+  value = a_value;
 }/*}}}*/
 
 inline void record_s::flush_all()
@@ -195,26 +195,26 @@ inline void record_s::flush_all()
 
 inline void record_s::swap(record_s &a_second)
 {/*{{{*/
-   unsigned tmp_index = index;
-   index = a_second.index;
-   a_second.index = tmp_index;
+  unsigned tmp_index = index;
+  index = a_second.index;
+  a_second.index = tmp_index;
 
-   unsigned tmp_value = value;
-   value = a_second.value;
-   a_second.value = tmp_value;
+  unsigned tmp_value = value;
+  value = a_second.value;
+  a_second.value = tmp_value;
 }/*}}}*/
 
 inline record_s &record_s::operator=(record_s &a_src)
 {/*{{{*/
-   index = a_src.index;
-   value = a_src.value;
+  index = a_src.index;
+  value = a_src.value;
 
-   return *this;
+  return *this;
 }/*}}}*/
 
 inline bool record_s::operator==(record_s &a_second)
 {/*{{{*/
-   return (index == a_second.index && value == a_second.value);
+  return (index == a_second.index && value == a_second.value);
 }/*}}}*/
 
 

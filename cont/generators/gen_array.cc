@@ -7,9 +7,9 @@ void ARRAY_INIT(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::init()\n"
 "{/*{{{*/\n"
-"   size = 0;\n"
-"   used = 0;\n"
-"   data = nullptr;\n"
+"  size = 0;\n"
+"  used = 0;\n"
+"  data = nullptr;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -20,8 +20,8 @@ void ARRAY_INIT_SIZE(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::init_size(unsigned a_size)\n"
 "{/*{{{*/\n"
-"   init();\n"
-"   copy_resize(a_size);\n"
+"  init();\n"
+"  copy_resize(a_size);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -41,24 +41,24 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (data != nullptr) {\n"
+"  if (data != nullptr) {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
-"      %s *ptr = data;\n"
-"      %s *ptr_end = ptr + size;\n"
+"    %s *ptr = data;\n"
+"    %s *ptr_end = ptr + size;\n"
 "\n"
-"      do {\n"
-"         ptr->clear();\n"
-"      } while(++ptr < ptr_end);\n"
+"    do {\n"
+"      ptr->clear();\n"
+"    } while(++ptr < ptr_end);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
    }
 printf(
-"      cfree(data);\n"
-"   }\n"
+"    cfree(data);\n"
+"  }\n"
 "\n"
-"   init();\n"
+"  init();\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -78,32 +78,32 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   clear();\n"
-"   if (a_used == 0) return;\n"
-"   \n"
-"   debug_assert(a_data != nullptr);\n"
-"   copy_resize(a_used);\n"
+"  clear();\n"
+"  if (a_used == 0) return;\n"
+"\n"
+"  debug_assert(a_data != nullptr);\n"
+"  copy_resize(a_used);\n"
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"   memcpy(data,a_data,a_used*sizeof(%s));\n"
+"  memcpy(data,a_data,a_used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {
 printf(
-"   %s *ptr = data;\n"
-"   %s *ptr_end = ptr + a_used;\n"
-"   %s *a_ptr = a_data;\n"
+"  %s *ptr = data;\n"
+"  %s *ptr_end = ptr + a_used;\n"
+"  %s *a_ptr = a_data;\n"
 "\n"
-"   do {\n"
-"      *ptr = *a_ptr;\n"
-"   } while(++a_ptr,++ptr < ptr_end);\n"
+"  do {\n"
+"    *ptr = *a_ptr;\n"
+"  } while(++a_ptr,++ptr < ptr_end);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 printf(
-"   used = a_used;\n"
+"  used = a_used;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -114,7 +114,7 @@ void ARRAY_FLUSH(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::flush()\n"
 "{/*{{{*/\n"
-"   copy_resize(used);\n"
+"  copy_resize(used);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -137,17 +137,17 @@ printf(
 );
    if (TYPE_NUMBER & c_type_flushable) {
 printf(
-"   %s *ptr = data;\n"
-"   %s *ptr_end = ptr + used;\n"
+"  %s *ptr = data;\n"
+"  %s *ptr_end = ptr + used;\n"
 "\n"
-"   do {\n"
-"      ptr->flush_all();\n"
-"   } while(++ptr < ptr_end);\n"
+"  do {\n"
+"    ptr->flush_all();\n"
+"  } while(++ptr < ptr_end);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
    }
 printf(
-"   copy_resize(used);\n"
+"  copy_resize(used);\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -158,17 +158,17 @@ void ARRAY_SWAP(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::swap(%s &a_second)\n"
 "{/*{{{*/\n"
-"   unsigned tmp_unsigned = size;\n"
-"   size = a_second.size;\n"
-"   a_second.size = tmp_unsigned;\n"
+"  unsigned tmp_unsigned = size;\n"
+"  size = a_second.size;\n"
+"  a_second.size = tmp_unsigned;\n"
 "\n"
-"   tmp_unsigned = used;\n"
-"   used = a_second.used;\n"
-"   a_second.used = tmp_unsigned;\n"
+"  tmp_unsigned = used;\n"
+"  used = a_second.used;\n"
+"  a_second.used = tmp_unsigned;\n"
 "\n"
-"   %s *tmp_data = data;\n"
-"   data = a_second.data;\n"
-"   a_second.data = tmp_data;\n"
+"  %s *tmp_data = data;\n"
+"  data = a_second.data;\n"
+"  a_second.data = tmp_data;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
@@ -179,8 +179,8 @@ void ARRAY_OPERATOR_LE_BR_RE_BR(ARRAY_GEN_PARAMS)
 printf(
 "inline %s &%s::operator[](unsigned a_idx)\n"
 "{/*{{{*/\n"
-"   debug_assert(a_idx < used);\n"
-"   return data[a_idx];\n"
+"  debug_assert(a_idx < used);\n"
+"  return data[a_idx];\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,IM_STRUCT_NAME);
@@ -200,11 +200,11 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (used >= size) {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
-"   }\n"
+"  if (used >= size) {\n"
+"    copy_resize((size << 1) + c_array_add);\n"
+"  }\n"
 "\n"
-"   data[used++] = a_value;\n"
+"  data[used++] = a_value;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -215,11 +215,11 @@ void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::push_blank()\n"
 "{/*{{{*/\n"
-"   if (used >= size) {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
-"   }\n"
+"  if (used >= size) {\n"
+"    copy_resize((size << 1) + c_array_add);\n"
+"  }\n"
 "\n"
-"   used++;\n"
+"  used++;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -230,15 +230,15 @@ void ARRAY_RESERVE(ARRAY_GEN_PARAMS)
 printf(
 "void %s::reserve(unsigned a_cnt)\n"
 "{/*{{{*/\n"
-"   unsigned required_cnt = used + a_cnt;\n"
-"   if (required_cnt > size) {\n"
-"      unsigned r_size = size;\n"
-"      do {\n"
-"         r_size = (r_size << 1) + c_array_add;\n"
-"      } while(r_size < required_cnt);\n"
+"  unsigned required_cnt = used + a_cnt;\n"
+"  if (required_cnt > size) {\n"
+"    unsigned r_size = size;\n"
+"    do {\n"
+"      r_size = (r_size << 1) + c_array_add;\n"
+"    } while(r_size < required_cnt);\n"
 "\n"
-"      copy_resize(r_size);\n"
-"   }\n"
+"    copy_resize(r_size);\n"
+"  }\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -249,17 +249,17 @@ void ARRAY_PUSH_BLANKS(ARRAY_GEN_PARAMS)
 printf(
 "void %s::push_blanks(unsigned a_cnt)\n"
 "{/*{{{*/\n"
-"   unsigned required_cnt = used + a_cnt;\n"
-"   if (required_cnt > size) {\n"
-"      unsigned r_size = size;\n"
-"      do {\n"
-"         r_size = (r_size << 1) + c_array_add;\n"
-"      } while(r_size < required_cnt);\n"
+"  unsigned required_cnt = used + a_cnt;\n"
+"  if (required_cnt > size) {\n"
+"    unsigned r_size = size;\n"
+"    do {\n"
+"      r_size = (r_size << 1) + c_array_add;\n"
+"    } while(r_size < required_cnt);\n"
 "\n"
-"      copy_resize(r_size);\n"
-"   }\n"
+"    copy_resize(r_size);\n"
+"  }\n"
 "\n"
-"   used += a_cnt;\n"
+"  used += a_cnt;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -270,19 +270,19 @@ void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::push_clear()\n"
 "{/*{{{*/\n"
-"   if (used >= size) {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
-"   }\n"
+"  if (used >= size) {\n"
+"    copy_resize((size << 1) + c_array_add);\n"
+"  }\n"
 "\n"
 ,IM_STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"   used++;\n"
+"  used++;\n"
 );
    }
    else {
 printf(
-"   data[used++].clear();\n"
+"  data[used++].clear();\n"
 );
    }
 printf(
@@ -296,8 +296,8 @@ void ARRAY_POP(ARRAY_GEN_PARAMS)
 printf(
 "inline %s &%s::pop()\n"
 "{/*{{{*/\n"
-"   debug_assert(used > 0);\n"
-"   return data[--used];\n"
+"  debug_assert(used > 0);\n"
+"  return data[--used];\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,IM_STRUCT_NAME);
@@ -308,8 +308,8 @@ void ARRAY_LAST(ARRAY_GEN_PARAMS)
 printf(
 "inline %s &%s::last()\n"
 "{/*{{{*/\n"
-"   debug_assert(used > 0);\n"
-"   return data[used - 1];\n"
+"  debug_assert(used > 0);\n"
+"  return data[used - 1];\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,IM_STRUCT_NAME);
@@ -322,55 +322,55 @@ if (TYPE_NUMBER & c_type_option_strict_dynamic)
 printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
-"   debug_assert(a_size >= used);\n"
+"  debug_assert(a_size >= used);\n"
 "\n"
-"   %s *n_data;\n"
+"  %s *n_data;\n"
 "\n"
-"   if (a_size == 0) {\n"
-"      n_data = nullptr;\n"
-"   }\n"
-"   else {\n"
-"      n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
+"  if (a_size == 0) {\n"
+"    n_data = nullptr;\n"
+"  }\n"
+"  else {\n"
+"    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
 "\n"
-"      %s *ptr = n_data;\n"
-"      %s *ptr_end = n_data + a_size;\n"
+"    %s *ptr = n_data;\n"
+"    %s *ptr_end = n_data + a_size;\n"
 "\n"
-"      do {\n"
-"         ptr->init();\n"
-"      } while(++ptr < ptr_end);\n"
-"   }\n"
+"    do {\n"
+"      ptr->init();\n"
+"    } while(++ptr < ptr_end);\n"
+"  }\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
 printf(
-"   if (used > 0) {\n"
-"      %s *ptr = data;\n"
-"      %s *ptr_end = ptr + used;\n"
-"      %s *n_ptr = n_data;\n"
+"  if (used > 0) {\n"
+"    %s *ptr = data;\n"
+"    %s *ptr_end = ptr + used;\n"
+"    %s *n_ptr = n_data;\n"
 "\n"
-"      do {\n"
-"         n_ptr->swap(*ptr);\n"
-"      } while(++n_ptr,++ptr < ptr_end);\n"
-"   }\n"
+"    do {\n"
+"      n_ptr->swap(*ptr);\n"
+"    } while(++n_ptr,++ptr < ptr_end);\n"
+"  }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
 "\n"
-"   if (size > used) {\n"
-"      %s *ptr = data + used;\n"
-"      %s *ptr_end = data + size;\n"
+"  if (size > used) {\n"
+"    %s *ptr = data + used;\n"
+"    %s *ptr_end = data + size;\n"
 "\n"
-"      do {\n"
-"         ptr->clear();\n"
-"      } while(++ptr < ptr_end);\n"
-"   }\n"
+"    do {\n"
+"      ptr->clear();\n"
+"    } while(++ptr < ptr_end);\n"
+"  }\n"
 "\n"
-"   if (size != 0) {\n"
-"      cfree(data);\n"
-"   }\n"
+"  if (size != 0) {\n"
+"    cfree(data);\n"
+"  }\n"
 "\n"
-"   data = n_data;\n"
-"   size = a_size;\n"
+"  data = n_data;\n"
+"  size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
@@ -380,49 +380,49 @@ else
 printf(
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
-"   debug_assert(a_size >= used);\n"
+"  debug_assert(a_size >= used);\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (size > a_size) {\n"
-"      %s *ptr = data + a_size;\n"
-"      %s *ptr_end = data + size;\n"
+"  if (size > a_size) {\n"
+"    %s *ptr = data + a_size;\n"
+"    %s *ptr_end = data + size;\n"
 "\n"
-"      do {\n"
-"         ptr->clear();\n"
-"      } while(++ptr < ptr_end);\n"
-"   }\n"
+"    do {\n"
+"      ptr->clear();\n"
+"    } while(++ptr < ptr_end);\n"
+"  }\n"
 ,TYPE_NAME,TYPE_NAME);
    }
 printf(
 "\n"
-"   if (a_size == 0) {\n"
-"      if (data != nullptr) {\n"
-"         cfree(data);\n"
-"      }\n"
-"      data = nullptr;\n"
-"   }\n"
-"   else {\n"
-"      data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
-"   }\n"
+"  if (a_size == 0) {\n"
+"    if (data != nullptr) {\n"
+"      cfree(data);\n"
+"    }\n"
+"    data = nullptr;\n"
+"  }\n"
+"  else {\n"
+"    data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
+"  }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"   if (a_size > size) {\n"
-"      %s *ptr = data + size;\n"
-"      %s *ptr_end = data + a_size;\n"
+"  if (a_size > size) {\n"
+"    %s *ptr = data + size;\n"
+"    %s *ptr_end = data + a_size;\n"
 "\n"
-"      do {\n"
-"         ptr->init();\n"
-"      } while(++ptr < ptr_end);\n"
-"   }\n"
+"    do {\n"
+"      ptr->init();\n"
+"    } while(++ptr < ptr_end);\n"
+"  }\n"
 ,TYPE_NAME,TYPE_NAME);
    }
 printf(
 "\n"
-"   size = a_size;\n"
+"  size = a_size;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -450,27 +450,27 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (size == 0) return;\n"
+"  if (size == 0) return;\n"
 "\n"
 );
    if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
 printf(
-"   memset(data,a_value,size);\n"
+"  memset(data,a_value,size);\n"
 );
    }
    else {
 printf(
-"   %s *ptr = data;\n"
-"   %s *ptr_end = data + size;\n"
+"  %s *ptr = data;\n"
+"  %s *ptr_end = data + size;\n"
 "\n"
-"   do {\n"
-"      *ptr = a_value;\n"
-"   } while(++ptr < ptr_end);\n"
+"  do {\n"
+"    *ptr = a_value;\n"
+"  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME);
    }
 printf(
 "\n"
-"   used = size;\n"
+"  used = size;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -490,18 +490,18 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (used == 0) return c_idx_not_exist;\n"
+"  if (used == 0) return c_idx_not_exist;\n"
 "\n"
-"   %s *ptr = data;\n"
-"   %s *ptr_end = data + used;\n"
+"  %s *ptr = data;\n"
+"  %s *ptr_end = data + used;\n"
 "\n"
-"   do {\n"
-"      if (*ptr == a_value) {\n"
-"         return ptr - data;\n"
-"      }\n"
-"   } while(++ptr < ptr_end);\n"
+"  do {\n"
+"    if (*ptr == a_value) {\n"
+"      return ptr - data;\n"
+"    }\n"
+"  } while(++ptr < ptr_end);\n"
 "\n"
-"   return c_idx_not_exist;\n"
+"  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
@@ -521,33 +521,33 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   clear();\n"
+"  clear();\n"
 "\n"
-"   if (a_src.used == 0) return *this;\n"
+"  if (a_src.used == 0) return *this;\n"
 "\n"
-"   copy_resize(a_src.used);\n"
+"  copy_resize(a_src.used);\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
-"   memcpy(data,a_src.data,a_src.used*sizeof(%s));\n"
+"  memcpy(data,a_src.data,a_src.used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {
 printf(
 "\n"
-"   %s *ptr = data;\n"
-"   %s *s_ptr = a_src.data;\n"
-"   %s *s_ptr_end = s_ptr + a_src.used;\n"
+"  %s *ptr = data;\n"
+"  %s *s_ptr = a_src.data;\n"
+"  %s *s_ptr_end = s_ptr + a_src.used;\n"
 "\n"
-"   do {\n"
-"      *ptr = *s_ptr;\n"
-"   } while(++ptr,++s_ptr < s_ptr_end);\n"
+"  do {\n"
+"    *ptr = *s_ptr;\n"
+"  } while(++ptr,++s_ptr < s_ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 printf(
 "\n"
-"   used = a_src.used;\n"
-"   return *this;\n"
+"  used = a_src.used;\n"
+"  return *this;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -567,29 +567,29 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"   if (used != a_second.used) return false;\n"
-"   if (used == 0) return true;\n"
+"  if (used != a_second.used) return false;\n"
+"  if (used == 0) return true;\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "\n"
-"   return (memcmp(data,a_second.data,used*sizeof(%s)) == 0);\n"
+"  return (memcmp(data,a_second.data,used*sizeof(%s)) == 0);\n"
 ,TYPE_NAME);
    }
    else {
 printf(
 "\n"
-"   %s *ptr = data;\n"
-"   %s *ptr_end = ptr + used;\n"
-"   %s *s_ptr = a_second.data;\n"
+"  %s *ptr = data;\n"
+"  %s *ptr_end = ptr + used;\n"
+"  %s *s_ptr = a_second.data;\n"
 "\n"
-"   do {\n"
-"      if (!(*ptr == *s_ptr)) {\n"
-"         return false;\n"
-"      }\n"
-"   } while(++s_ptr,++ptr < ptr_end);\n"
+"  do {\n"
+"    if (!(*ptr == *s_ptr)) {\n"
+"      return false;\n"
+"    }\n"
+"  } while(++s_ptr,++ptr < ptr_end);\n"
 "\n"
-"   return true;\n"
+"  return true;\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 printf(
@@ -706,265 +706,265 @@ printf(
 " */\n"
 "struct %s\n"
 "{\n"
-"   unsigned size; //!< actual size of allocated space in array\n"
-"   unsigned used; //!< count of used space in array\n"
-"   %s *data; //!< pointer to array elements\n"
+"  unsigned size; //!< actual size of allocated space in array\n"
+"  unsigned used; //!< count of used space in array\n"
+"  %s *data; //!< pointer to array elements\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
    if (!(data_type.properties & c_type_option_nogen_init)) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN initialize array\n"
 "    */\n"
-"   inline void init();\n"
+"  inline void init();\n"
 "\n"
 );
    }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN initialize array of requested size\n"
 "    * \\param a_size - requested size of array\n"
 "    */\n"
-"   inline void init_size(unsigned a_size);\n"
+"  inline void init_size(unsigned a_size);\n"
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN release memory used by array\n"
 "    */\n"
-"   inline void clear();\n"
+"  inline void clear();\n"
 "\n"
 );
       }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN set array content from element pointer\n"
 "    * \\param a_used - number of elements stored at pointed location\n"
 "    * \\param a_data - pointer to elements\n"
 "    */\n"
-"   inline void set(unsigned a_used,%s *a_data);\n"
+"  inline void set(unsigned a_used,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
    }
    else {
       if (!(data_type.properties & c_type_option_nogen_clear)) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN release memory used by array\n"
 "    */\n"
-"   void clear();\n"
+"  void clear();\n"
 "\n"
 );
       }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN set array content from element pointer\n"
 "    * \\param a_used - number of elements stored at pointed location\n"
 "    * \\param a_data - pointer to elements\n"
 "    */\n"
-"   void set(unsigned a_used,%s *a_data);\n"
+"  void set(unsigned a_used,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
    }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN flush array memory usage\n"
 "    */\n"
-"   inline void flush();\n"
+"  inline void flush();\n"
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_flushable)) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN flush array memory usage, recursive on elemenets\n"
 "    */\n"
-"   inline void flush_all();\n"
+"  inline void flush_all();\n"
 "\n"
 );
    }
    else {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN flush array memory usage, recursive on elemenets\n"
 "    */\n"
-"   void flush_all();\n"
+"  void flush_all();\n"
 "\n"
 );
    }
    if (!(data_type.properties & c_type_option_nogen_swap)) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN swap array members with another array\n"
 "    * \\param a_second - reference to another array\n"
 "    */\n"
-"   inline void swap(%s &a_second);\n"
+"  inline void swap(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN select element of array\n"
 "    * \\param a_idx - index of element in array\n"
 "    * \\return reference to element of array\n"
 "    */\n"
-"   inline %s &operator[](unsigned a_idx);\n"
+"  inline %s &operator[](unsigned a_idx);\n"
 "\n"
 ,TYPE_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN insert element to end of array\n"
 "    * \\param a_value - value of inserted element\n"
 "    */\n"
-"   inline void push(%s a_value);\n"
+"  inline void push(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
    else {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN insert element to end of array\n"
 "    * \\param a_value - reference to inserted value\n"
 "    */\n"
-"   inline void push(%s &a_value);\n"
+"  inline void push(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN insert blank element to end of array\n"
 "    */\n"
-"   inline void push_blank();\n"
+"  inline void push_blank();\n"
 "\n"
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN reserve requested count of elements at end of array\n"
 "    * \\param a_cnt - count of elements to be reserved\n"
 "    */\n"
-"   void reserve(unsigned a_cnt);\n"
+"  void reserve(unsigned a_cnt);\n"
 "\n"
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN insert blank elements to end of array\n"
 "    * \\param a_cnt - count of elements inserted to array\n"
 "    */\n"
-"   void push_blanks(unsigned a_cnt);\n"
+"  void push_blanks(unsigned a_cnt);\n"
 "\n"
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN insert and clear element to end of array\n"
 "    */\n"
-"   inline void push_clear();\n"
+"  inline void push_clear();\n"
 "\n"
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN return value of last element in array, and remove it\n"
 "    * \\return reference to last element\n"
 "    */\n"
-"   inline %s &pop();\n"
+"  inline %s &pop();\n"
 "\n"
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN return value of last element in array\n"
 "    * \\return reference to last element\n"
 "    */\n"
-"   inline %s &last();\n"
+"  inline %s &last();\n"
 "\n"
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN change array capacity\n"
 "    * \\param a_size - requested array capacity\n"
 "    */\n"
-"   void copy_resize(unsigned a_size);\n"
+"  void copy_resize(unsigned a_size);\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
    if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN set all elements of array to given value\n"
 "    * \\param a_value - new value of all elements\n"
 "    */\n"
-"   inline void fill(%s a_value);\n"
+"  inline void fill(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
    else {
       if (TYPE_NUMBER & c_type_basic) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN set all elements of array to given value\n"
 "    * \\param a_value - new value of all elements\n"
 "    */\n"
-"   void fill(%s a_value);\n"
+"  void fill(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
       }
       else {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN set all elements of array to given value\n"
 "    * \\param a_value - new value of all elements\n"
 "    */\n"
-"   void fill(%s &a_value);\n"
+"  void fill(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
       }
    }
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"   unsigned get_idx(%s a_value);\n"
+"  unsigned get_idx(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
    else {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"   unsigned get_idx(%s &a_value);\n"
+"  unsigned get_idx(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN copy array from another array\n"
 "    * \\param a_src - reference to another array\n"
 "    * \\return reference to this array\n"
 "    */\n"
-"   inline %s &operator=(%s &a_src);\n"
+"  inline %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN comparison of array with another array\n"
 "    * \\param a_second - reference to another array\n"
 "    * \\return result of comparison\n"
 "    */\n"
-"   inline bool operator==(%s &a_second);\n"
+"  inline bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
    else {
       if (!(data_type.properties & c_type_option_nogen_copy)) {
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN copy array from another array\n"
 "    * \\param a_src - reference to another array\n"
 "    */\n"
-"   %s &operator=(%s &a_src);\n"
+"  %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
 printf(
-"   /*!\n"
+"  /*!\n"
 "    * \\brief __GEN comparison of array with another array\n"
 "    * \\param a_second - reference to another array\n"
 "    */\n"
-"   bool operator==(%s &a_second);\n"
+"  bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -972,7 +972,7 @@ printf(
       unsigned f_idx = 0;
       do {
 printf(
-"   %s\n"
+"  %s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
