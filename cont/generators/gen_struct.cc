@@ -12,7 +12,7 @@ printf(
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 printf(
-"   %s_init(&this->%s);\n"
+"  %s_init(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
@@ -32,13 +32,13 @@ printf(
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 printf(
-"   %s_clear(&this->%s);\n"
+"  %s_clear(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
 printf(
 "\n"
-"   %s_init(this);\n"
+"  %s_init(this);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -82,12 +82,12 @@ printf(
    do {
        if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 printf(
-"   this->%s = a_%s;\n"
+"  this->%s = a_%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
 printf(
-"   %s_copy(&this->%s,a_%s);\n"
+"  %s_copy(&this->%s,a_%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
@@ -107,7 +107,7 @@ printf(
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
 printf(
-"   %s_flush_all(&this->%s);\n"
+"  %s_flush_all(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
@@ -130,14 +130,14 @@ printf(
 );
       if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 printf(
-"   %s tmp_%s = this->%s;\n"
-"   this->%s = a_second->%s;\n"
-"   a_second->%s = tmp_%s;\n"
+"  %s tmp_%s = this->%s;\n"
+"  this->%s = a_second->%s;\n"
+"  a_second->%s = tmp_%s;\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       }
       else {
 printf(
-"   %s_swap(&this->%s,&a_second->%s);\n"
+"  %s_swap(&this->%s,&a_second->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
@@ -157,12 +157,12 @@ printf(
    do {
        if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 printf(
-"   this->%s = a_src->%s;\n"
+"  this->%s = a_src->%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
 printf(
-"   %s_copy(&this->%s,&a_src->%s);\n"
+"  %s_copy(&this->%s,&a_src->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
@@ -180,12 +180,12 @@ printf(
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 printf(
-"   return (this->%s == a_second->%s"
+"  return (this->%s == a_second->%s"
 ,VAR_NAMES(0),VAR_NAMES(0));
    }
    else {
 printf(
-"   return (%s_compare(&this->%s,&a_second->%s)"
+"  return (%s_compare(&this->%s,&a_second->%s)"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
    }
    if (TYPE_CNT > 1) {
@@ -218,20 +218,20 @@ printf(
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
 printf(
-"   bc_array_s_push(a_trg,'{');\n"
-"   %s_to_string(&this->%s,a_trg);\n"
+"  bc_array_s_push(a_trg,'{');\n"
+"  %s_to_string(&this->%s,a_trg);\n"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 printf(
-"   bc_array_s_push(a_trg,',');\n"
-"   %s_to_string(&this->%s,a_trg);\n"
+"  bc_array_s_push(a_trg,',');\n"
+"  %s_to_string(&this->%s,a_trg);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 printf(
-"   bc_array_s_push(a_trg,'}');\n"
+"  bc_array_s_push(a_trg,'}');\n"
 );
 printf(
 "}/*}}}*/\n"
@@ -427,7 +427,7 @@ printf(
    unsigned t_idx = 0;
    do {
 printf(
-"   %s %s; //!< member - %u\n"
+"  %s %s; //!< member - %u\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
 printf(

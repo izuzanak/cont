@@ -128,8 +128,8 @@ typedef struct record_s record_s;
 
 struct record_s
 {
-   unsigned index; //!< member - 0
-   unsigned value; //!< member - 1
+  unsigned index; //!< member - 0
+  unsigned value; //!< member - 1
 };
 
 static inline void record_s_init(record_s *this);
@@ -163,13 +163,13 @@ static inline void record_s_init(record_s *this)
 static inline void record_s_clear(record_s *this)
 {/*{{{*/
 
-   record_s_init(this);
+  record_s_init(this);
 }/*}}}*/
 
 static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
 {/*{{{*/
-   this->index = a_index;
-   this->value = a_value;
+  this->index = a_index;
+  this->value = a_value;
 }/*}}}*/
 
 static inline void record_s_flush_all(record_s *this)
@@ -178,34 +178,34 @@ static inline void record_s_flush_all(record_s *this)
 
 static inline void record_s_swap(record_s *this,record_s *a_second)
 {/*{{{*/
-   unsigned tmp_index = this->index;
-   this->index = a_second->index;
-   a_second->index = tmp_index;
+  unsigned tmp_index = this->index;
+  this->index = a_second->index;
+  a_second->index = tmp_index;
 
-   unsigned tmp_value = this->value;
-   this->value = a_second->value;
-   a_second->value = tmp_value;
+  unsigned tmp_value = this->value;
+  this->value = a_second->value;
+  a_second->value = tmp_value;
 }/*}}}*/
 
 static inline void record_s_copy(record_s *this,record_s *a_src)
 {/*{{{*/
-   this->index = a_src->index;
-   this->value = a_src->value;
+  this->index = a_src->index;
+  this->value = a_src->value;
 }/*}}}*/
 
 static inline int record_s_compare(record_s *this,record_s *a_second)
 {/*{{{*/
-   return (this->index == a_second->index && this->value == a_second->value);
+  return (this->index == a_second->index && this->value == a_second->value);
 }/*}}}*/
 
 #if OPTION_TO_STRING == ENABLED
 static inline void record_s_to_string(record_s *this,bc_array_s *a_trg)
 {/*{{{*/
-   bc_array_s_push(a_trg,'{');
-   unsigned_to_string(&this->index,a_trg);
-   bc_array_s_push(a_trg,',');
-   unsigned_to_string(&this->value,a_trg);
-   bc_array_s_push(a_trg,'}');
+  bc_array_s_push(a_trg,'{');
+  unsigned_to_string(&this->index,a_trg);
+  bc_array_s_push(a_trg,',');
+  unsigned_to_string(&this->value,a_trg);
+  bc_array_s_push(a_trg,'}');
 }/*}}}*/
 #endif
 

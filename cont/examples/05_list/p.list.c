@@ -132,8 +132,8 @@ typedef struct record_s record_s;
 
 struct record_s
 {
-   unsigned index; //!< member - 0
-   unsigned value; //!< member - 1
+  unsigned index; //!< member - 0
+  unsigned value; //!< member - 1
 };
 
 static inline void record_s_init(record_s *this);
@@ -167,13 +167,13 @@ static inline void record_s_init(record_s *this)
 static inline void record_s_clear(record_s *this)
 {/*{{{*/
 
-   record_s_init(this);
+  record_s_init(this);
 }/*}}}*/
 
 static inline void record_s_set(record_s *this,unsigned a_index,unsigned a_value)
 {/*{{{*/
-   this->index = a_index;
-   this->value = a_value;
+  this->index = a_index;
+  this->value = a_value;
 }/*}}}*/
 
 static inline void record_s_flush_all(record_s *this)
@@ -182,34 +182,34 @@ static inline void record_s_flush_all(record_s *this)
 
 static inline void record_s_swap(record_s *this,record_s *a_second)
 {/*{{{*/
-   unsigned tmp_index = this->index;
-   this->index = a_second->index;
-   a_second->index = tmp_index;
+  unsigned tmp_index = this->index;
+  this->index = a_second->index;
+  a_second->index = tmp_index;
 
-   unsigned tmp_value = this->value;
-   this->value = a_second->value;
-   a_second->value = tmp_value;
+  unsigned tmp_value = this->value;
+  this->value = a_second->value;
+  a_second->value = tmp_value;
 }/*}}}*/
 
 static inline void record_s_copy(record_s *this,record_s *a_src)
 {/*{{{*/
-   this->index = a_src->index;
-   this->value = a_src->value;
+  this->index = a_src->index;
+  this->value = a_src->value;
 }/*}}}*/
 
 static inline int record_s_compare(record_s *this,record_s *a_second)
 {/*{{{*/
-   return (this->index == a_second->index && this->value == a_second->value);
+  return (this->index == a_second->index && this->value == a_second->value);
 }/*}}}*/
 
 #if OPTION_TO_STRING == ENABLED
 static inline void record_s_to_string(record_s *this,bc_array_s *a_trg)
 {/*{{{*/
-   bc_array_s_push(a_trg,'{');
-   unsigned_to_string(&this->index,a_trg);
-   bc_array_s_push(a_trg,',');
-   unsigned_to_string(&this->value,a_trg);
-   bc_array_s_push(a_trg,'}');
+  bc_array_s_push(a_trg,'{');
+  unsigned_to_string(&this->index,a_trg);
+  bc_array_s_push(a_trg,',');
+  unsigned_to_string(&this->value,a_trg);
+  bc_array_s_push(a_trg,'}');
 }/*}}}*/
 #endif
 
@@ -247,19 +247,19 @@ typedef struct rec_list_s rec_list_s;
 
 struct rec_list_s_element
 {
-   record_s object;
-   unsigned next_idx;
-   unsigned prev_idx;
+  record_s object;
+  unsigned next_idx;
+  unsigned prev_idx;
 };
 
 struct rec_list_s
 {
-   unsigned size; //!< actual size of allocated space (element count)
-   unsigned used; //!< used part of allocated space
-   rec_list_s_element *data; //!< pointer to list elements
-   unsigned free_idx; //!< index of first free element
-   unsigned first_idx; //!< index of first element
-   unsigned last_idx; //!< index of last element
+  unsigned size; //!< actual size of allocated space (element count)
+  unsigned used; //!< used part of allocated space
+  rec_list_s_element *data; //!< pointer to list elements
+  unsigned free_idx; //!< index of first free element
+  unsigned first_idx; //!< index of first element
+  unsigned last_idx; //!< index of last element
 };
 
 static inline void rec_list_s_init(rec_list_s *this);
@@ -299,403 +299,403 @@ void rec_list_s_to_string(rec_list_s *this,bc_array_s *a_trg);
 
 static inline void rec_list_s_init(rec_list_s *this)
 {/*{{{*/
-   this->size = 0;
-   this->used = 0;
-   this->data = NULL;
-   this->free_idx = c_idx_not_exist;
-   this->first_idx = c_idx_not_exist;
-   this->last_idx = c_idx_not_exist;
+  this->size = 0;
+  this->used = 0;
+  this->data = NULL;
+  this->free_idx = c_idx_not_exist;
+  this->first_idx = c_idx_not_exist;
+  this->last_idx = c_idx_not_exist;
 }/*}}}*/
 
 static inline void rec_list_s_init_size(rec_list_s *this,unsigned a_size)
 {/*{{{*/
-   rec_list_s_init(this);
-   rec_list_s_copy_resize(this,a_size);
+  rec_list_s_init(this);
+  rec_list_s_copy_resize(this,a_size);
 }/*}}}*/
 
 static inline void rec_list_s_clear(rec_list_s *this)
 {/*{{{*/
-   if (this->data != NULL) {
-      cfree(this->data);
-   }
+  if (this->data != NULL) {
+    cfree(this->data);
+  }
 
-   rec_list_s_init(this);
+  rec_list_s_init(this);
 }/*}}}*/
 
 static inline void rec_list_s_flush(rec_list_s *this)
 {/*{{{*/
-   rec_list_s_copy_resize(this,this->used);
+  rec_list_s_copy_resize(this,this->used);
 }/*}}}*/
 
 static inline void rec_list_s_flush_all(rec_list_s *this)
 {/*{{{*/
-   rec_list_s_copy_resize(this,this->used);
+  rec_list_s_copy_resize(this,this->used);
 }/*}}}*/
 
 static inline void rec_list_s_swap(rec_list_s *this,rec_list_s *a_second)
 {/*{{{*/
-   unsigned tmp_unsigned = this->size;
-   this->size = a_second->size;
-   a_second->size = tmp_unsigned;
+  unsigned tmp_unsigned = this->size;
+  this->size = a_second->size;
+  a_second->size = tmp_unsigned;
 
-   tmp_unsigned = this->used;
-   this->used = a_second->used;
-   a_second->used = tmp_unsigned;
+  tmp_unsigned = this->used;
+  this->used = a_second->used;
+  a_second->used = tmp_unsigned;
 
-   rec_list_s_element *tmp_data = this->data;
-   this->data = a_second->data;
-   a_second->data = tmp_data;
+  rec_list_s_element *tmp_data = this->data;
+  this->data = a_second->data;
+  a_second->data = tmp_data;
 
-   tmp_unsigned = this->free_idx;
-   this->free_idx = a_second->free_idx;
-   a_second->free_idx = tmp_unsigned;
+  tmp_unsigned = this->free_idx;
+  this->free_idx = a_second->free_idx;
+  a_second->free_idx = tmp_unsigned;
 
-   tmp_unsigned = this->first_idx;
-   this->first_idx = a_second->first_idx;
-   a_second->first_idx = tmp_unsigned;
+  tmp_unsigned = this->first_idx;
+  this->first_idx = a_second->first_idx;
+  a_second->first_idx = tmp_unsigned;
 
-   tmp_unsigned = this->last_idx;
-   this->last_idx = a_second->last_idx;
-   a_second->last_idx = tmp_unsigned;
+  tmp_unsigned = this->last_idx;
+  this->last_idx = a_second->last_idx;
+  a_second->last_idx = tmp_unsigned;
 }/*}}}*/
 
 static inline record_s *rec_list_s_at(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < this->used);
-   return &this->data[a_idx].object;
+  debug_assert(a_idx < this->used);
+  return &this->data[a_idx].object;
 }/*}}}*/
 
 static inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value)
 {/*{{{*/
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = this->first_idx;
-   new_element->prev_idx = c_idx_not_exist;
+  new_element->next_idx = this->first_idx;
+  new_element->prev_idx = c_idx_not_exist;
 
-   if (this->first_idx != c_idx_not_exist) {
-      this->data[this->first_idx].prev_idx = new_idx;
-   }
-   else {
-      this->last_idx = new_idx;
-   }
+  if (this->first_idx != c_idx_not_exist) {
+    this->data[this->first_idx].prev_idx = new_idx;
+  }
+  else {
+    this->last_idx = new_idx;
+  }
 
-   this->first_idx = new_idx;
+  this->first_idx = new_idx;
 
-   record_s_copy(&new_element->object,a_value);
+  record_s_copy(&new_element->object,a_value);
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value)
 {/*{{{*/
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = c_idx_not_exist;
-   new_element->prev_idx = this->last_idx;
+  new_element->next_idx = c_idx_not_exist;
+  new_element->prev_idx = this->last_idx;
 
-   if (this->last_idx != c_idx_not_exist) {
-      this->data[this->last_idx].next_idx = new_idx;
-   }
-   else {
-      this->first_idx = new_idx;
-   }
+  if (this->last_idx != c_idx_not_exist) {
+    this->data[this->last_idx].next_idx = new_idx;
+  }
+  else {
+    this->first_idx = new_idx;
+  }
 
-   this->last_idx = new_idx;
+  this->last_idx = new_idx;
 
-   record_s_copy(&new_element->object,a_value);
+  record_s_copy(&new_element->object,a_value);
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,record_s *a_value)
 {/*{{{*/
-   debug_assert(a_idx < this->used);
+  debug_assert(a_idx < this->used);
 
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *idx_element = this->data + a_idx;
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *idx_element = this->data + a_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = a_idx;
-   new_element->prev_idx = idx_element->prev_idx;
+  new_element->next_idx = a_idx;
+  new_element->prev_idx = idx_element->prev_idx;
 
-   if (idx_element->prev_idx != c_idx_not_exist) {
-      this->data[idx_element->prev_idx].next_idx = new_idx;
-   }
-   else {
-      this->first_idx = new_idx;
-   }
+  if (idx_element->prev_idx != c_idx_not_exist) {
+    this->data[idx_element->prev_idx].next_idx = new_idx;
+  }
+  else {
+    this->first_idx = new_idx;
+  }
 
-   idx_element->prev_idx = new_idx;
+  idx_element->prev_idx = new_idx;
 
-   record_s_copy(&new_element->object,a_value);
+  record_s_copy(&new_element->object,a_value);
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,record_s *a_value)
 {/*{{{*/
-   debug_assert(a_idx < this->used);
+  debug_assert(a_idx < this->used);
 
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *idx_element = this->data + a_idx;
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *idx_element = this->data + a_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = idx_element->next_idx;
-   new_element->prev_idx = a_idx;
+  new_element->next_idx = idx_element->next_idx;
+  new_element->prev_idx = a_idx;
 
-   if (idx_element->next_idx != c_idx_not_exist) {
-      this->data[idx_element->next_idx].prev_idx = new_idx;
-   }
-   else {
-      this->last_idx = new_idx;
-   }
+  if (idx_element->next_idx != c_idx_not_exist) {
+    this->data[idx_element->next_idx].prev_idx = new_idx;
+  }
+  else {
+    this->last_idx = new_idx;
+  }
 
-   idx_element->next_idx = new_idx;
+  idx_element->next_idx = new_idx;
 
-   record_s_copy(&new_element->object,a_value);
+  record_s_copy(&new_element->object,a_value);
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_prepend_blank(rec_list_s *this)
 {/*{{{*/
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = this->first_idx;
-   new_element->prev_idx = c_idx_not_exist;
+  new_element->next_idx = this->first_idx;
+  new_element->prev_idx = c_idx_not_exist;
 
-   if (this->first_idx != c_idx_not_exist) {
-      this->data[this->first_idx].prev_idx = new_idx;
-   }
-   else {
-      this->last_idx = new_idx;
-   }
+  if (this->first_idx != c_idx_not_exist) {
+    this->data[this->first_idx].prev_idx = new_idx;
+  }
+  else {
+    this->last_idx = new_idx;
+  }
 
-   this->first_idx = new_idx;
+  this->first_idx = new_idx;
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_append_blank(rec_list_s *this)
 {/*{{{*/
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = c_idx_not_exist;
-   new_element->prev_idx = this->last_idx;
+  new_element->next_idx = c_idx_not_exist;
+  new_element->prev_idx = this->last_idx;
 
-   if (this->last_idx != c_idx_not_exist) {
-      this->data[this->last_idx].next_idx = new_idx;
-   }
-   else {
-      this->first_idx = new_idx;
-   }
+  if (this->last_idx != c_idx_not_exist) {
+    this->data[this->last_idx].next_idx = new_idx;
+  }
+  else {
+    this->first_idx = new_idx;
+  }
 
-   this->last_idx = new_idx;
+  this->last_idx = new_idx;
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_insert_blank_before(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < this->used);
+  debug_assert(a_idx < this->used);
 
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *idx_element = this->data + a_idx;
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *idx_element = this->data + a_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = a_idx;
-   new_element->prev_idx = idx_element->prev_idx;
+  new_element->next_idx = a_idx;
+  new_element->prev_idx = idx_element->prev_idx;
 
-   if (idx_element->prev_idx != c_idx_not_exist) {
-      this->data[idx_element->prev_idx].next_idx = new_idx;
-   }
-   else {
-      this->first_idx = new_idx;
-   }
+  if (idx_element->prev_idx != c_idx_not_exist) {
+    this->data[idx_element->prev_idx].next_idx = new_idx;
+  }
+  else {
+    this->first_idx = new_idx;
+  }
 
-   idx_element->prev_idx = new_idx;
+  idx_element->prev_idx = new_idx;
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_insert_blank_after(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < this->used);
+  debug_assert(a_idx < this->used);
 
-   unsigned new_idx;
+  unsigned new_idx;
 
-   if (this->free_idx != c_idx_not_exist) {
-      new_idx = this->free_idx;
-      this->free_idx = this->data[new_idx].next_idx;
-   }
-   else {
-      if (this->used >= this->size) {
-         rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
-      }
+  if (this->free_idx != c_idx_not_exist) {
+    new_idx = this->free_idx;
+    this->free_idx = this->data[new_idx].next_idx;
+  }
+  else {
+    if (this->used >= this->size) {
+      rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
+    }
 
-      new_idx = this->used++;
-   }
+    new_idx = this->used++;
+  }
 
-   rec_list_s_element *idx_element = this->data + a_idx;
-   rec_list_s_element *new_element = this->data + new_idx;
+  rec_list_s_element *idx_element = this->data + a_idx;
+  rec_list_s_element *new_element = this->data + new_idx;
 
-   new_element->next_idx = idx_element->next_idx;
-   new_element->prev_idx = a_idx;
+  new_element->next_idx = idx_element->next_idx;
+  new_element->prev_idx = a_idx;
 
-   if (idx_element->next_idx != c_idx_not_exist) {
-      this->data[idx_element->next_idx].prev_idx = new_idx;
-   }
-   else {
-      this->last_idx = new_idx;
-   }
+  if (idx_element->next_idx != c_idx_not_exist) {
+    this->data[idx_element->next_idx].prev_idx = new_idx;
+  }
+  else {
+    this->last_idx = new_idx;
+  }
 
-   idx_element->next_idx = new_idx;
+  idx_element->next_idx = new_idx;
 
-   return new_idx;
+  return new_idx;
 }/*}}}*/
 
 static inline void rec_list_s_remove(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
-   debug_assert(a_idx < this->used);
+  debug_assert(a_idx < this->used);
 
-   rec_list_s_element *rm_element = this->data + a_idx;
+  rec_list_s_element *rm_element = this->data + a_idx;
 
-   if (rm_element->next_idx != c_idx_not_exist) {
-      this->data[rm_element->next_idx].prev_idx = rm_element->prev_idx;
-   }
-   else {
-      this->last_idx = rm_element->prev_idx;
-   }
+  if (rm_element->next_idx != c_idx_not_exist) {
+    this->data[rm_element->next_idx].prev_idx = rm_element->prev_idx;
+  }
+  else {
+    this->last_idx = rm_element->prev_idx;
+  }
 
-   if (rm_element->prev_idx != c_idx_not_exist) {
-      this->data[rm_element->prev_idx].next_idx = rm_element->next_idx;
-   }
-   else {
-      this->first_idx = rm_element->next_idx;
-   }
+  if (rm_element->prev_idx != c_idx_not_exist) {
+    this->data[rm_element->prev_idx].next_idx = rm_element->next_idx;
+  }
+  else {
+    this->first_idx = rm_element->next_idx;
+  }
 
-   rm_element->next_idx = this->free_idx;
-   this->free_idx = a_idx;
+  rm_element->next_idx = this->free_idx;
+  this->free_idx = a_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_next_idx(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
-   return this->data[a_idx].next_idx;
+  return this->data[a_idx].next_idx;
 }/*}}}*/
 
 static inline unsigned rec_list_s_prev_idx(rec_list_s *this,unsigned a_idx)
 {/*{{{*/
-   return this->data[a_idx].prev_idx;
+  return this->data[a_idx].prev_idx;
 }/*}}}*/
 
 static inline void rec_list_s_copy(rec_list_s *this,rec_list_s *a_src)
 {/*{{{*/
-   rec_list_s_clear(this);
+  rec_list_s_clear(this);
 
-   if (a_src->used == 0) return;
+  if (a_src->used == 0) return;
 
-   rec_list_s_copy_resize(this,a_src->used);
-   memcpy(this->data,a_src->data,a_src->used*sizeof(rec_list_s_element));
+  rec_list_s_copy_resize(this,a_src->used);
+  memcpy(this->data,a_src->data,a_src->used*sizeof(rec_list_s_element));
 
-   this->used = a_src->used;
-   this->free_idx = a_src->free_idx;
-   this->first_idx = a_src->first_idx;
-   this->last_idx = a_src->last_idx;
+  this->used = a_src->used;
+  this->free_idx = a_src->free_idx;
+  this->first_idx = a_src->first_idx;
+  this->last_idx = a_src->last_idx;
 }/*}}}*/
 
 
@@ -719,88 +719,88 @@ void print_list(rec_list_s *rec_list,const char *name);
 
 void rec_list_s_copy_resize(rec_list_s *this,unsigned a_size)
 {/*{{{*/
-   debug_assert(a_size >= this->used);
+  debug_assert(a_size >= this->used);
 
-   if (a_size == 0) {
-      if (this->data != NULL) {
-         cfree(this->data);
-      }
-      this->data = NULL;
-   }
-   else {
-      this->data = (rec_list_s_element *)crealloc(this->data,a_size*sizeof(rec_list_s_element));
-   }
+  if (a_size == 0) {
+    if (this->data != NULL) {
+      cfree(this->data);
+    }
+    this->data = NULL;
+  }
+  else {
+    this->data = (rec_list_s_element *)crealloc(this->data,a_size*sizeof(rec_list_s_element));
+  }
 
-   this->size = a_size;
+  this->size = a_size;
 }/*}}}*/
 
 unsigned rec_list_s_get_idx(rec_list_s *this,record_s *a_value)
 {/*{{{*/
-   if (this->first_idx == c_idx_not_exist) return c_idx_not_exist;
+  if (this->first_idx == c_idx_not_exist) return c_idx_not_exist;
 
-   unsigned idx = this->first_idx;
-   do {
-      rec_list_s_element *element = this->data + idx;
+  unsigned idx = this->first_idx;
+  do {
+    rec_list_s_element *element = this->data + idx;
 
-      if (record_s_compare(&element->object,a_value)) {
-         return idx;
-      }
+    if (record_s_compare(&element->object,a_value)) {
+      return idx;
+    }
 
-      idx = element->next_idx;
-   } while(idx != c_idx_not_exist);
+    idx = element->next_idx;
+  } while(idx != c_idx_not_exist);
 
-   return c_idx_not_exist;
+  return c_idx_not_exist;
 }/*}}}*/
 
 int rec_list_s_compare(rec_list_s *this,rec_list_s *a_second)
 {/*{{{*/
-   if (this->first_idx == c_idx_not_exist) {
-      return a_second->first_idx == c_idx_not_exist;
-   }
+  if (this->first_idx == c_idx_not_exist) {
+    return a_second->first_idx == c_idx_not_exist;
+  }
 
-   if (a_second->first_idx == c_idx_not_exist) {
+  if (a_second->first_idx == c_idx_not_exist) {
+    return 0;
+  }
+
+  unsigned idx = this->first_idx;
+  unsigned s_idx = a_second->first_idx;
+
+  do {
+    rec_list_s_element *element = this->data + idx;
+    rec_list_s_element *s_element = a_second->data + s_idx;
+
+    if (!record_s_compare(&element->object,&s_element->object)) {
       return 0;
-   }
+    }
 
-   unsigned idx = this->first_idx;
-   unsigned s_idx = a_second->first_idx;
+    idx = element->next_idx;
+    s_idx = s_element->next_idx;
 
-   do {
-      rec_list_s_element *element = this->data + idx;
-      rec_list_s_element *s_element = a_second->data + s_idx;
+  } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);
 
-      if (!record_s_compare(&element->object,&s_element->object)) {
-         return 0;
-      }
-
-      idx = element->next_idx;
-      s_idx = s_element->next_idx;
-
-   } while(idx != c_idx_not_exist || s_idx != c_idx_not_exist);
-
-   return idx == s_idx;
+  return idx == s_idx;
 }/*}}}*/
 
 #if OPTION_TO_STRING == ENABLED
 void rec_list_s_to_string(rec_list_s *this,bc_array_s *a_trg)
 {/*{{{*/
-   bc_array_s_push(a_trg,'[');
+  bc_array_s_push(a_trg,'[');
 
-   if (this->first_idx != c_idx_not_exist) {
-      unsigned idx = this->first_idx;
+  if (this->first_idx != c_idx_not_exist) {
+    unsigned idx = this->first_idx;
 
-      do {
-         rec_list_s_element *element = this->data + idx;
-         record_s_to_string(&element->object,a_trg);
+    do {
+      rec_list_s_element *element = this->data + idx;
+      record_s_to_string(&element->object,a_trg);
 
-         if ((idx = element->next_idx) == c_idx_not_exist)
-            break;
+      if ((idx = element->next_idx) == c_idx_not_exist)
+        break;
 
-         bc_array_s_push(a_trg,',');
-      } while(1);
-   }
+      bc_array_s_push(a_trg,',');
+    } while(1);
+  }
 
-   bc_array_s_push(a_trg,']');
+  bc_array_s_push(a_trg,']');
 }/*}}}*/
 #endif
 
