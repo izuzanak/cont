@@ -982,7 +982,8 @@ inline void ui_array_s::init_size(unsigned a_size)
 
 inline void ui_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -992,7 +993,10 @@ inline void ui_array_s::clear()
 inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -1034,7 +1038,8 @@ inline unsigned &ui_array_s::operator[](unsigned a_idx)
 
 inline void ui_array_s::push(unsigned a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -1043,7 +1048,8 @@ inline void ui_array_s::push(unsigned a_value)
 
 inline void ui_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -1052,7 +1058,8 @@ inline void ui_array_s::push_blank()
 
 inline void ui_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -1075,7 +1082,10 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
@@ -1086,8 +1096,15 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 
 inline bool ui_array_s::operator==(ui_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
@@ -1152,10 +1169,12 @@ inline unsigned mc_block_rb_tree_s::__get_grandparent_idx(unsigned a_idx)
 {/*{{{*/
   mc_block_rb_tree_s_node &node = data[a_idx];
 
-  if (node.parent_idx != c_idx_not_exist) {
+  if (node.parent_idx != c_idx_not_exist)
+  {
     return data[node.parent_idx].parent_idx;
   }
-  else {
+  else
+  {
     return c_idx_not_exist;
   }
 }/*}}}*/
@@ -1164,10 +1183,12 @@ inline unsigned mc_block_rb_tree_s::__get_uncle_idx(unsigned a_idx)
 {/*{{{*/
   unsigned gp_idx = __get_grandparent_idx(a_idx);
 
-  if (gp_idx == c_idx_not_exist) {
+  if (gp_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
-  else {
+  else
+  {
     mc_block_rb_tree_s_node &gp = data[gp_idx];
     return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
   }
@@ -1190,11 +1211,13 @@ inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned *
 
   mc_block_rb_tree_s_node &node = data[a_idx];
 
-  if (node.right_idx != leaf_idx) {
+  if (node.right_idx != leaf_idx)
+  {
     return get_stack_min_value_idx(node.right_idx,a_s_ptr);
   }
 
-  if (*a_s_ptr > a_stack_base) {
+  if (*a_s_ptr > a_stack_base)
+  {
     return *(--(*a_s_ptr));
   }
 
@@ -1206,11 +1229,13 @@ inline void mc_block_rb_tree_s::__rotate_left(unsigned a_idx)
   mc_block_rb_tree_s_node &root = data[a_idx];
   mc_block_rb_tree_s_node &pivot = data[root.right_idx];
 
-  if (a_idx == root_idx) {
+  if (a_idx == root_idx)
+  {
     root_idx = root.right_idx;
     pivot.parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     mc_block_rb_tree_s_node &rp = data[root.parent_idx];
     (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;
 
@@ -1230,11 +1255,13 @@ inline void mc_block_rb_tree_s::__rotate_right(unsigned a_idx)
   mc_block_rb_tree_s_node &root = data[a_idx];
   mc_block_rb_tree_s_node &pivot = data[root.left_idx];
 
-  if (a_idx == root_idx) {
+  if (a_idx == root_idx)
+  {
     root_idx = root.left_idx;
     pivot.parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     mc_block_rb_tree_s_node &rp = data[root.parent_idx];
     (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;
 
@@ -1253,12 +1280,15 @@ inline unsigned mc_block_rb_tree_s::__get_new_index()
 {/*{{{*/
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].parent_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -1275,13 +1305,15 @@ inline void mc_block_rb_tree_s::__replace_delete_node_by_child(unsigned a_idx,un
 {/*{{{*/
   mc_block_rb_tree_s_node &node = data[a_idx];
 
-  if (node.parent_idx != c_idx_not_exist) {
+  if (node.parent_idx != c_idx_not_exist)
+  {
     mc_block_rb_tree_s_node &parent = data[node.parent_idx];
     (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;
 
     data[a_ch_idx].parent_idx = node.parent_idx;
   }
-  else {
+  else
+  {
     root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;
     data[a_ch_idx].parent_idx = c_idx_not_exist;
   }
@@ -1298,13 +1330,16 @@ inline void mc_block_rb_tree_s::__remove_one_child(unsigned a_idx,unsigned a_ch_
   node.valid = false;
   count--;
 
-  if (node.color) {
+  if (node.color)
+  {
     mc_block_rb_tree_s_node &child_node = data[a_ch_idx];
 
-    if (!child_node.color) {
+    if (!child_node.color)
+    {
       child_node.color = true;
     }
-    else {
+    else
+    {
       __remove_black_black(a_ch_idx);
     }
   }
@@ -1323,7 +1358,8 @@ inline void mc_block_rb_tree_s::init()
 
 inline void mc_block_rb_tree_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -1406,7 +1442,8 @@ inline unsigned mc_block_rb_tree_s::unique_insert(mc_block_s &a_value)
   unsigned new_node_idx = __get_new_index();
   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     mc_block_rb_tree_s_node &new_node = data[new_node_idx];
 
     new_node.parent_idx = free_idx;
@@ -1430,7 +1467,8 @@ inline unsigned mc_block_rb_tree_s::unique_swap_insert(mc_block_s &a_value)
   unsigned new_node_idx = __get_new_index();
   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     mc_block_rb_tree_s_node &new_node = data[new_node_idx];
 
     new_node.parent_idx = free_idx;
@@ -1453,7 +1491,10 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
 {/*{{{*/
   clear();
 
-  if (a_src.root_idx == c_idx_not_exist) return *this;
+  if (a_src.root_idx == c_idx_not_exist)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
@@ -2230,7 +2271,8 @@ inline string_s &string_array_s::operator[](unsigned a_idx)
 
 inline void string_array_s::push(string_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -2239,7 +2281,8 @@ inline void string_array_s::push(string_s &a_value)
 
 inline void string_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -2248,7 +2291,8 @@ inline void string_array_s::push_blank()
 
 inline void string_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3026,7 +3070,8 @@ inline data_type_s &data_type_array_s::operator[](unsigned a_idx)
 
 inline void data_type_array_s::push(data_type_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3035,7 +3080,8 @@ inline void data_type_array_s::push(data_type_s &a_value)
 
 inline void data_type_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3044,7 +3090,8 @@ inline void data_type_array_s::push_blank()
 
 inline void data_type_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3163,7 +3210,8 @@ inline abbreviation_s &abbreviation_array_s::operator[](unsigned a_idx)
 
 inline void abbreviation_array_s::push(abbreviation_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3172,7 +3220,8 @@ inline void abbreviation_array_s::push(abbreviation_s &a_value)
 
 inline void abbreviation_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3181,7 +3230,8 @@ inline void abbreviation_array_s::push_blank()
 
 inline void abbreviation_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3723,7 +3773,8 @@ inline void lalr_stack_s::init_size(unsigned a_size)
 
 inline void lalr_stack_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -3733,7 +3784,10 @@ inline void lalr_stack_s::clear()
 inline void lalr_stack_s::set(unsigned a_used,lalr_stack_element_s *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -3775,7 +3829,8 @@ inline lalr_stack_element_s &lalr_stack_s::operator[](unsigned a_idx)
 
 inline void lalr_stack_s::push(lalr_stack_element_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3784,7 +3839,8 @@ inline void lalr_stack_s::push(lalr_stack_element_s &a_value)
 
 inline void lalr_stack_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3793,7 +3849,8 @@ inline void lalr_stack_s::push_blank()
 
 inline void lalr_stack_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -3816,7 +3873,10 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(lalr_stack_element_s));
@@ -3827,8 +3887,15 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
 
 inline bool lalr_stack_s::operator==(lalr_stack_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   return (memcmp(data,a_second.data,used*sizeof(lalr_stack_element_s)) == 0);
 }/*}}}*/
@@ -4045,7 +4112,8 @@ const char *c_cont_postfixes[c_cont_cnt] = {
 
 void data_type_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     data_type_s *ptr = data;
     data_type_s *ptr_end = ptr + size;
 
@@ -4062,7 +4130,10 @@ void data_type_array_s::clear()
 void data_type_array_s::set(unsigned a_used,data_type_s *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -4093,7 +4164,8 @@ void data_type_array_s::flush_all()
 void data_type_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -4106,7 +4178,8 @@ void data_type_array_s::reserve(unsigned a_cnt)
 void data_type_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -4122,7 +4195,8 @@ void data_type_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (size > a_size) {
+  if (size > a_size)
+  {
     data_type_s *ptr = data + a_size;
     data_type_s *ptr_end = data + size;
 
@@ -4131,17 +4205,21 @@ void data_type_array_s::copy_resize(unsigned a_size)
     } while(++ptr < ptr_end);
   }
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (data_type_s *)crealloc(data,a_size*sizeof(data_type_s));
   }
 
-  if (a_size > size) {
+  if (a_size > size)
+  {
     data_type_s *ptr = data + size;
     data_type_s *ptr_end = data + a_size;
 
@@ -4155,7 +4233,10 @@ void data_type_array_s::copy_resize(unsigned a_size)
 
 void data_type_array_s::fill(data_type_s &a_value)
 {/*{{{*/
-  if (size == 0) return;
+  if (size == 0)
+  {
+    return;
+  }
 
   data_type_s *ptr = data;
   data_type_s *ptr_end = data + size;
@@ -4169,13 +4250,17 @@ void data_type_array_s::fill(data_type_s &a_value)
 
 unsigned data_type_array_s::get_idx(data_type_s &a_value)
 {/*{{{*/
-  if (used == 0) return c_idx_not_exist;
+  if (used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   data_type_s *ptr = data;
   data_type_s *ptr_end = data + used;
 
   do {
-    if (*ptr == a_value) {
+    if (*ptr == a_value)
+    {
       return ptr - data;
     }
   } while(++ptr < ptr_end);
@@ -4187,7 +4272,10 @@ data_type_array_s &data_type_array_s::operator=(data_type_array_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
 
@@ -4205,15 +4293,23 @@ data_type_array_s &data_type_array_s::operator=(data_type_array_s &a_src)
 
 bool data_type_array_s::operator==(data_type_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   data_type_s *ptr = data;
   data_type_s *ptr_end = ptr + used;
   data_type_s *s_ptr = a_second.data;
 
   do {
-    if (!(*ptr == *s_ptr)) {
+    if (!(*ptr == *s_ptr))
+    {
       return false;
     }
   } while(++s_ptr,++ptr < ptr_end);
@@ -4248,7 +4344,8 @@ unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
 
 void abbreviation_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     abbreviation_s *ptr = data;
     abbreviation_s *ptr_end = ptr + size;
 
@@ -4265,7 +4362,10 @@ void abbreviation_array_s::clear()
 void abbreviation_array_s::set(unsigned a_used,abbreviation_s *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -4284,7 +4384,8 @@ void abbreviation_array_s::set(unsigned a_used,abbreviation_s *a_data)
 void abbreviation_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -4297,7 +4398,8 @@ void abbreviation_array_s::reserve(unsigned a_cnt)
 void abbreviation_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -4313,7 +4415,8 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (size > a_size) {
+  if (size > a_size)
+  {
     abbreviation_s *ptr = data + a_size;
     abbreviation_s *ptr_end = data + size;
 
@@ -4322,17 +4425,21 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
     } while(++ptr < ptr_end);
   }
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (abbreviation_s *)crealloc(data,a_size*sizeof(abbreviation_s));
   }
 
-  if (a_size > size) {
+  if (a_size > size)
+  {
     abbreviation_s *ptr = data + size;
     abbreviation_s *ptr_end = data + a_size;
 
@@ -4346,7 +4453,10 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
 
 void abbreviation_array_s::fill(abbreviation_s &a_value)
 {/*{{{*/
-  if (size == 0) return;
+  if (size == 0)
+  {
+    return;
+  }
 
   abbreviation_s *ptr = data;
   abbreviation_s *ptr_end = data + size;
@@ -4360,13 +4470,17 @@ void abbreviation_array_s::fill(abbreviation_s &a_value)
 
 unsigned abbreviation_array_s::get_idx(abbreviation_s &a_value)
 {/*{{{*/
-  if (used == 0) return c_idx_not_exist;
+  if (used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   abbreviation_s *ptr = data;
   abbreviation_s *ptr_end = data + used;
 
   do {
-    if (*ptr == a_value) {
+    if (*ptr == a_value)
+    {
       return ptr - data;
     }
   } while(++ptr < ptr_end);
@@ -4378,7 +4492,10 @@ abbreviation_array_s &abbreviation_array_s::operator=(abbreviation_array_s &a_sr
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
 
@@ -4396,15 +4513,23 @@ abbreviation_array_s &abbreviation_array_s::operator=(abbreviation_array_s &a_sr
 
 bool abbreviation_array_s::operator==(abbreviation_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   abbreviation_s *ptr = data;
   abbreviation_s *ptr_end = ptr + used;
   abbreviation_s *s_ptr = a_second.data;
 
   do {
-    if (!(*ptr == *s_ptr)) {
+    if (!(*ptr == *s_ptr))
+    {
       return false;
     }
   } while(++s_ptr,++ptr < ptr_end);
@@ -4482,7 +4607,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (data != nullptr) {\n"
+"  if (data != nullptr)\n"
+"  {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -4520,7 +4646,10 @@ printf(
 printf(
 "{/*{{{*/\n"
 "  clear();\n"
-"  if (a_used == 0) return;\n"
+"  if (a_used == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 "  debug_assert(a_data != nullptr);\n"
 "  copy_resize(a_used);\n"
@@ -4641,7 +4770,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -4656,7 +4786,8 @@ void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::push_blank()\n"
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -4672,7 +4803,8 @@ printf(
 "void %s::reserve(unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = used + a_cnt;\n"
-"  if (required_cnt > size) {\n"
+"  if (required_cnt > size)\n"
+"  {\n"
 "    unsigned r_size = size;\n"
 "    do {\n"
 "      r_size = (r_size << 1) + c_array_add;\n"
@@ -4691,7 +4823,8 @@ printf(
 "void %s::push_blanks(unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = used + a_cnt;\n"
-"  if (required_cnt > size) {\n"
+"  if (required_cnt > size)\n"
+"  {\n"
 "    unsigned r_size = size;\n"
 "    do {\n"
 "      r_size = (r_size << 1) + c_array_add;\n"
@@ -4711,7 +4844,8 @@ void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::push_clear()\n"
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -4767,10 +4901,12 @@ printf(
 "\n"
 "  %s *n_data;\n"
 "\n"
-"  if (a_size == 0) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
 "    n_data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
@@ -4785,7 +4921,8 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME);
 printf(
-"  if (used > 0) {\n"
+"  if (used > 0)\n"
+"  {\n"
 "    %s *ptr = data;\n"
 "    %s *ptr_end = ptr + used;\n"
 "    %s *n_ptr = n_data;\n"
@@ -4797,7 +4934,8 @@ printf(
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
 "\n"
-"  if (size > used) {\n"
+"  if (size > used)\n"
+"  {\n"
 "    %s *ptr = data + used;\n"
 "    %s *ptr_end = data + size;\n"
 "\n"
@@ -4806,7 +4944,8 @@ printf(
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
 "\n"
-"  if (size != 0) {\n"
+"  if (size != 0)\n"
+"  {\n"
 "    cfree(data);\n"
 "  }\n"
 "\n"
@@ -4826,7 +4965,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (size > a_size) {\n"
+"  if (size > a_size)\n"
+"  {\n"
 "    %s *ptr = data + a_size;\n"
 "    %s *ptr_end = data + size;\n"
 "\n"
@@ -4838,20 +4978,24 @@ printf(
    }
 printf(
 "\n"
-"  if (a_size == 0) {\n"
-"    if (data != nullptr) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
+"    if (data != nullptr)\n"
+"    {\n"
 "      cfree(data);\n"
 "    }\n"
 "    data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
 "  }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (a_size > size) {\n"
+"  if (a_size > size)\n"
+"  {\n"
 "    %s *ptr = data + size;\n"
 "    %s *ptr_end = data + a_size;\n"
 "\n"
@@ -4891,7 +5035,10 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (size == 0) return;\n"
+"  if (size == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 );
    if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
@@ -4931,13 +5078,17 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (used == 0) return c_idx_not_exist;\n"
+"  if (used == 0)\n"
+"  {\n"
+"    return c_idx_not_exist;\n"
+"  }\n"
 "\n"
 "  %s *ptr = data;\n"
 "  %s *ptr_end = data + used;\n"
 "\n"
 "  do {\n"
-"    if (*ptr == a_value) {\n"
+"    if (*ptr == a_value)\n"
+"    {\n"
 "      return ptr - data;\n"
 "    }\n"
 "  } while(++ptr < ptr_end);\n"
@@ -4964,7 +5115,10 @@ printf(
 "{/*{{{*/\n"
 "  clear();\n"
 "\n"
-"  if (a_src.used == 0) return *this;\n"
+"  if (a_src.used == 0)\n"
+"  {\n"
+"    return *this;\n"
+"  }\n"
 "\n"
 "  copy_resize(a_src.used);\n"
 );
@@ -5008,8 +5162,15 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (used != a_second.used) return false;\n"
-"  if (used == 0) return true;\n"
+"  if (used != a_second.used)\n"
+"  {\n"
+"    return false;\n"
+"  }\n"
+"\n"
+"  if (used == 0)\n"
+"  {\n"
+"    return true;\n"
+"  }\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
@@ -5025,7 +5186,8 @@ printf(
 "  %s *s_ptr = a_second.data;\n"
 "\n"
 "  do {\n"
-"    if (!(*ptr == *s_ptr)) {\n"
+"    if (!(*ptr == *s_ptr))\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "  } while(++s_ptr,++ptr < ptr_end);\n"
@@ -5655,7 +5817,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (data != nullptr) {\n"
+"  if (data != nullptr)\n"
+"  {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -5708,7 +5871,10 @@ printf(
    if (TYPE_NUMBER & c_type_flushable) {
 printf(
 "\n"
-"  if (used == 0) return;\n"
+"  if (used == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 "  %s *ptr = data;\n"
 "  %s *ptr_end = ptr + used;\n"
@@ -5763,12 +5929,14 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
 "  unsigned inserted_idx = begin + used++;\n"
-"  if (inserted_idx >= size) {\n"
+"  if (inserted_idx >= size)\n"
+"  {\n"
 "    inserted_idx -= size;\n"
 "  }\n"
 "\n"
@@ -5785,12 +5953,14 @@ void  QUEUE_INSERT_BLANK(QUEUE_GEN_PARAMS)
 printf(
 "inline unsigned %s::insert_blank()\n"
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
 "  unsigned inserted_idx = begin + used++;\n"
-"  if (inserted_idx >= size) {\n"
+"  if (inserted_idx >= size)\n"
+"  {\n"
 "    inserted_idx -= size;\n"
 "  }\n"
 "\n"
@@ -5809,7 +5979,8 @@ printf(
 "\n"
 "  unsigned ret_idx = begin;\n"
 "\n"
-"  if (++begin >= size) {\n"
+"  if (++begin >= size)\n"
+"  {\n"
 "    begin = 0;\n"
 "  }\n"
 "\n"
@@ -5829,10 +6000,12 @@ printf(
 "  debug_assert(used > 0);\n"
 "\n"
 "  unsigned last_idx = begin + (used - 1);\n"
-"  if (last_idx >= size) {\n"
+"  if (last_idx >= size)\n"
+"  {\n"
 "    return data[last_idx - size];\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    return data[last_idx];\n"
 "  }\n"
 "}/*}}}*/\n"
@@ -5849,16 +6022,19 @@ printf(
 "\n"
 "  %s *n_data;\n"
 "\n"
-"  if (a_size == 0) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
 "    n_data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"    if (a_size > used) {\n"
+"    if (a_size > used)\n"
+"    {\n"
 "      %s *ptr = n_data + used;\n"
 "      %s *ptr_end = n_data + a_size;\n"
 "\n"
@@ -5871,22 +6047,26 @@ printf(
 printf(
 "  }\n"
 "\n"
-"  if (used != 0) {\n"
+"  if (used != 0)\n"
+"  {\n"
 "    unsigned fir_cnt;\n"
 "    unsigned sec_cnt;\n"
 "\n"
-"    if (begin + used > size) {\n"
+"    if (begin + used > size)\n"
+"    {\n"
 "      sec_cnt = begin + used - size;\n"
 "      fir_cnt = used - sec_cnt;\n"
 "    }\n"
-"    else {\n"
+"    else\n"
+"    {\n"
 "      fir_cnt = used;\n"
 "      sec_cnt = 0;\n"
 "    }\n"
 "\n"
 "    memcpy(n_data,data + begin,fir_cnt*sizeof(%s));\n"
 "\n"
-"    if (sec_cnt != 0) {\n"
+"    if (sec_cnt != 0)\n"
+"    {\n"
 "      memcpy(n_data + fir_cnt,data,sec_cnt*sizeof(%s));\n"
 "    }\n"
 "  }\n"
@@ -5894,29 +6074,34 @@ printf(
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
-"  if (size > used) {\n"
+"  if (size > used)\n"
+"  {\n"
 "    %s *ptr;\n"
 "    %s *ptr_end;\n"
 "    %s *s_ptr;\n"
 "\n"
-"    if (begin + used >= size) {\n"
+"    if (begin + used >= size)\n"
+"    {\n"
 "      ptr = data + (begin + used - size);\n"
 "      ptr_end = data + begin;\n"
 "      s_ptr = nullptr;\n"
 "    }\n"
-"    else {\n"
+"    else\n"
+"    {\n"
 "      ptr = data;\n"
 "      ptr_end = data + begin;\n"
 "      s_ptr = ptr_end + used;\n"
 "    }\n"
 "\n"
-"    if (ptr < ptr_end) {\n"
+"    if (ptr < ptr_end)\n"
+"    {\n"
 "      do {\n"
 "        ptr->clear();\n"
 "      } while(++ptr < ptr_end);\n"
 "    }\n"
 "\n"
-"    if (s_ptr != nullptr) {\n"
+"    if (s_ptr != nullptr)\n"
+"    {\n"
 "      %s *s_ptr_end = data + size;\n"
 "      do {\n"
 "        s_ptr->clear();\n"
@@ -5927,7 +6112,8 @@ printf(
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 printf(
-"  if (size != 0) {\n"
+"  if (size != 0)\n"
+"  {\n"
 "    cfree(data);\n"
 "  }\n"
 "\n"
@@ -5955,7 +6141,10 @@ printf(
 "{/*{{{*/\n"
 "  clear();\n"
 "\n"
-"  if (a_src.used == 0) return *this;\n"
+"  if (a_src.used == 0)\n"
+"  {\n"
+"    return *this;\n"
+"  }\n"
 "\n"
 "  copy_resize(a_src.used);\n"
 "\n"
@@ -5965,18 +6154,21 @@ printf(
 "  unsigned fir_cnt;\n"
 "  unsigned sec_cnt;\n"
 "\n"
-"  if (a_src.begin + a_src.used > a_src.size) {\n"
+"  if (a_src.begin + a_src.used > a_src.size)\n"
+"  {\n"
 "    sec_cnt = a_src.begin + a_src.used - a_src.size;\n"
 "    fir_cnt = a_src.used - sec_cnt;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    fir_cnt = a_src.used;\n"
 "    sec_cnt = 0;\n"
 "  }\n"
 "\n"
 "  memcpy(data,a_src.data + a_src.begin,fir_cnt*sizeof(%s));\n"
 "\n"
-"  if (sec_cnt != 0) {\n"
+"  if (sec_cnt != 0)\n"
+"  {\n"
 "    memcpy(data + fir_cnt,a_src.data,sec_cnt*sizeof(%s));\n"
 "  }\n"
 "\n"
@@ -5989,11 +6181,13 @@ printf(
 "  %s *s_ptr = a_src.data + a_src.begin;\n"
 "  %s *s_ptr_end;\n"
 "\n"
-"  if (a_src.begin + a_src.used > a_src.size) {\n"
+"  if (a_src.begin + a_src.used > a_src.size)\n"
+"  {\n"
 "    s_ptr_end = a_src.data + a_src.size;\n"
 "    sec_cnt = a_src.begin + a_src.used - a_src.size;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    s_ptr_end = s_ptr + a_src.used;\n"
 "    sec_cnt = 0;\n"
 "  }\n"
@@ -6002,7 +6196,8 @@ printf(
 "    *ptr = *s_ptr; \n"
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
 "\n"
-"  if (sec_cnt != 0) {\n"
+"  if (sec_cnt != 0)\n"
+"  {\n"
 "    s_ptr = a_src.data;\n"
 "    s_ptr_end = s_ptr + sec_cnt;\n"
 "\n"
@@ -6026,8 +6221,15 @@ void  QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
-"  if (used != a_second.used) return false;\n"
-"  if (used == 0) return true;\n"
+"  if (used != a_second.used)\n"
+"  {\n"
+"    return false;\n"
+"  }\n"
+"\n"
+"  if (used == 0)\n"
+"  {\n"
+"    return true;\n"
+"  }\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
@@ -6043,22 +6245,28 @@ printf(
 "  pos = begin;\n"
 "  s_pos = a_second.begin;\n"
 "\n"
-"  if (_break) {\n"
+"  if (_break)\n"
+"  {\n"
 "    pos_end = begin + used - size;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    pos_end = begin + used;\n"
 "  }\n"
 "\n"
 "  do {\n"
-"    if (_break) {\n"
+"    if (_break)\n"
+"    {\n"
 "      unsigned offset = size - pos;\n"
 "\n"
-"      if (s_break) {\n"
+"      if (s_break)\n"
+"      {\n"
 "        unsigned s_offset = a_second.size = s_pos;\n"
 "\n"
-"        if (offset < s_offset) {\n"
-"          if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"
+"        if (offset < s_offset)\n"
+"        {\n"
+"          if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0)\n"
+"          {\n"
 "            return false;\n"
 "          }\n"
 "\n"
@@ -6066,12 +6274,15 @@ printf(
 "          pos = 0;\n"
 "          _break = false;\n"
 "        }\n"
-"        else {\n"
-"          if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"
+"        else\n"
+"        {\n"
+"          if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0)\n"
+"          {\n"
 "            return false;\n"
 "          }\n"
 "\n"
-"          if (pos += s_offset >= size) {\n"
+"          if (pos += s_offset >= size)\n"
+"          {\n"
 "            pos = 0;\n"
 "            _break = false;\n"
 "          }\n"
@@ -6079,8 +6290,10 @@ printf(
 "          s_break = false;\n"
 "        }\n"
 "      }\n"
-"      else {\n"
-"        if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0) {\n"
+"      else\n"
+"      {\n"
+"        if (memcmp(data + pos,a_second.data + s_pos,offset*sizeof(%s)) != 0)\n"
+"        {\n"
 "          return false;\n"
 "        }\n"
 "        s_pos += offset;\n"
@@ -6088,22 +6301,28 @@ printf(
 "        _break = false;\n"
 "      }\n"
 "    }\n"
-"    else {\n"
-"      if (s_break) {\n"
+"    else\n"
+"    {\n"
+"      if (s_break)\n"
+"      {\n"
 "        unsigned s_offset = a_second.size - s_pos;\n"
 "\n"
-"        if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0) {\n"
+"        if (memcmp(data + pos,a_second.data + s_pos,s_offset*sizeof(%s)) != 0)\n"
+"        {\n"
 "          return false;\n"
 "        }\n"
 "        pos += s_offset;\n"
 "        s_pos = 0;\n"
 "        s_break = false;\n"
 "      }\n"
-"      else {\n"
-"        if (memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0) {\n"
+"      else\n"
+"      {\n"
+"        if (memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(%s)) != 0)\n"
+"        {\n"
 "          return false;\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          return true;\n"
 "        }\n"
 "      }\n"
@@ -6119,23 +6338,28 @@ printf(
 "  %s *s_ptr = a_second.data + a_second.begin;\n"
 "  %s *s_ptr_break = a_second.data + a_second.size;\n"
 "\n"
-"  if (begin + used > size) {\n"
+"  if (begin + used > size)\n"
+"  {\n"
 "    ptr_end = data + (begin + used - size);\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    ptr_end = ptr + used;\n"
 "  }\n"
 "\n"
 "  do {\n"
-"    if (!(*ptr == *s_ptr)) {\n"
+"    if (!(*ptr == *s_ptr))\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "\n"
-"    if (++ptr >= ptr_break) {\n"
+"    if (++ptr >= ptr_break)\n"
+"    {\n"
 "      ptr = data;\n"
 "    }\n"
 "\n"
-"    if (++s_ptr >= s_ptr_break) {\n"
+"    if (++s_ptr >= s_ptr_break)\n"
+"    {\n"
 "      s_ptr = a_second.data;\n"
 "    }\n"
 "\n"
@@ -6617,7 +6841,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (data != nullptr) {\n"
+"  if (data != nullptr)\n"
+"  {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -6745,12 +6970,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -6762,10 +6990,12 @@ printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
-"  if (first_idx != c_idx_not_exist) {\n"
+"  if (first_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[first_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -6795,12 +7025,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -6812,10 +7045,12 @@ printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
-"  if (last_idx != c_idx_not_exist) {\n"
+"  if (last_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[last_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -6847,12 +7082,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -6865,10 +7103,12 @@ printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
-"  if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"  if (idx_element.prev_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.prev_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -6900,12 +7140,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -6918,10 +7161,12 @@ printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
-"  if (idx_element.next_idx != c_idx_not_exist) {\n"
+"  if (idx_element.next_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.next_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -6942,12 +7187,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -6959,10 +7207,12 @@ printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
-"  if (first_idx != c_idx_not_exist) {\n"
+"  if (first_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[first_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -6981,12 +7231,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -6998,10 +7251,12 @@ printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
-"  if (last_idx != c_idx_not_exist) {\n"
+"  if (last_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[last_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -7022,12 +7277,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -7040,10 +7298,12 @@ printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
-"  if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"  if (idx_element.prev_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.prev_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -7064,12 +7324,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -7082,10 +7345,12 @@ printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
-"  if (idx_element.next_idx != c_idx_not_exist) {\n"
+"  if (idx_element.next_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.next_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -7106,17 +7371,21 @@ printf(
 "\n"
 "  %s_element &rm_element = data[a_idx];\n"
 "\n"
-"  if (rm_element.next_idx != c_idx_not_exist) {\n"
+"  if (rm_element.next_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = rm_element.prev_idx;\n"
 "  }\n"
 "\n"
-"  if (rm_element.prev_idx != c_idx_not_exist) {\n"
+"  if (rm_element.prev_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = rm_element.next_idx;\n"
 "  }\n"
 "\n"
@@ -7159,7 +7428,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (size > a_size) {\n"
+"  if (size > a_size)\n"
+"  {\n"
 "    %s_element *ptr = data + a_size;\n"
 "    %s_element *ptr_end = data + size;\n"
 "\n"
@@ -7171,20 +7441,24 @@ printf(
    }
 printf(
 "\n"
-"  if (a_size == 0) {\n"
-"    if (data != nullptr) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
+"    if (data != nullptr)\n"
+"    {\n"
 "      cfree(data);\n"
 "    }\n"
 "    data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (a_size > size) {\n"
+"  if (a_size > size)\n"
+"  {\n"
 "    %s_element *ptr = data + size;\n"
 "    %s_element *ptr_end = data + a_size;\n"
 "\n"
@@ -7216,13 +7490,17 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"
+"  if (first_idx == c_idx_not_exist)\n"
+"  {\n"
+"    return c_idx_not_exist;\n"
+"  }\n"
 "\n"
 "  unsigned idx = first_idx;\n"
 "  do {\n"
 "    %s_element &element = data[idx];\n"
 "\n"
-"    if (element.object == a_value) {\n"
+"    if (element.object == a_value)\n"
+"    {\n"
 "      return idx;\n"
 "    }\n"
 "\n"
@@ -7251,7 +7529,10 @@ printf(
 "{/*{{{*/\n"
 "  clear();\n"
 "\n"
-"  if (a_src.used == 0) return *this;\n"
+"  if (a_src.used == 0)\n"
+"  {\n"
+"    return *this;\n"
+"  }\n"
 "\n"
 "  copy_resize(a_src.used);\n"
 );
@@ -7292,11 +7573,13 @@ void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
-"  if (first_idx == c_idx_not_exist) {\n"
+"  if (first_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return a_second.first_idx == c_idx_not_exist;\n"
 "  }\n"
 "\n"
-"  if (a_second.first_idx == c_idx_not_exist) {\n"
+"  if (a_second.first_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return false;\n"
 "  }\n"
 "\n"
@@ -7307,7 +7590,8 @@ printf(
 "    %s_element &element = data[idx];\n"
 "    %s_element &s_element = a_second.data[s_idx];\n"
 "\n"
-"    if (!(element.object == s_element.object)) {\n"
+"    if (!(element.object == s_element.object))\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "\n"
@@ -8480,10 +8764,12 @@ printf(
 "{/*{{{*/\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.parent_idx != c_idx_not_exist) {\n"
+"  if (node.parent_idx != c_idx_not_exist)\n"
+"  {\n"
 "    return data[node.parent_idx].parent_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "}/*}}}*/\n"
@@ -8498,10 +8784,12 @@ printf(
 "{/*{{{*/\n"
 "  unsigned gp_idx = __get_grandparent_idx(a_idx);\n"
 "\n"
-"  if (gp_idx == c_idx_not_exist) {\n"
+"  if (gp_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    %s_node &gp = data[gp_idx];\n"
 "    return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"
 "  }\n"
@@ -8544,7 +8832,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.left_idx == leaf_idx) {\n"
+"    if (node.left_idx == leaf_idx)\n"
+"    {\n"
 "      return node_idx;\n"
 "    }\n"
 "\n"
@@ -8565,11 +8854,13 @@ printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.right_idx != leaf_idx) {\n"
+"  if (node.right_idx != leaf_idx)\n"
+"  {\n"
 "    return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"
 "  }\n"
 "\n"
-"  if (*a_s_ptr > a_stack_base) {\n"
+"  if (*a_s_ptr > a_stack_base)\n"
+"  {\n"
 "    return *(--(*a_s_ptr));\n"
 "  }\n"
 "\n"
@@ -8590,7 +8881,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.left_idx == leaf_idx) {\n"
+"    if (node.left_idx == leaf_idx)\n"
+"    {\n"
 "      return node_idx;\n"
 "    }\n"
 "\n"
@@ -8612,7 +8904,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.right_idx == leaf_idx) {\n"
+"    if (node.right_idx == leaf_idx)\n"
+"    {\n"
 "      return node_idx;\n"
 "    }\n"
 "\n"
@@ -8632,20 +8925,23 @@ printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.right_idx != leaf_idx) {\n"
+"  if (node.right_idx != leaf_idx)\n"
+"  {\n"
 "    return get_min_value_idx(node.right_idx);\n"
 "  }\n"
-"  else {\n"
-"\n"
+"  else\n"
+"  {\n"
 "    unsigned node_idx = a_idx;\n"
 "    do {\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
-"      if (node.parent_idx == c_idx_not_exist) {\n"
+"      if (node.parent_idx == c_idx_not_exist)\n"
+"      {\n"
 "        return c_idx_not_exist;\n"
 "      }\n"
 "\n"
-"      if (data[node.parent_idx].right_idx != node_idx) {\n"
+"      if (data[node.parent_idx].right_idx != node_idx)\n"
+"      {\n"
 "        return node.parent_idx;\n"
 "      }\n"
 "\n"
@@ -8666,20 +8962,23 @@ printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.left_idx != leaf_idx) {\n"
+"  if (node.left_idx != leaf_idx)\n"
+"  {\n"
 "    return get_max_value_idx(node.left_idx);\n"
 "  }\n"
-"  else {\n"
-"\n"
+"  else\n"
+"  {\n"
 "    unsigned node_idx = a_idx;\n"
 "    do {\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
-"      if (node.parent_idx == c_idx_not_exist) {\n"
+"      if (node.parent_idx == c_idx_not_exist)\n"
+"      {\n"
 "        return c_idx_not_exist;\n"
 "      }\n"
 "\n"
-"      if (data[node.parent_idx].left_idx != node_idx) {\n"
+"      if (data[node.parent_idx].left_idx != node_idx)\n"
+"      {\n"
 "        return node.parent_idx;\n"
 "      }\n"
 "\n"
@@ -8699,11 +8998,13 @@ printf(
 "  %s_node &root = data[a_idx];\n"
 "  %s_node &pivot = data[root.right_idx];\n"
 "\n"
-"  if (a_idx == root_idx) {\n"
+"  if (a_idx == root_idx)\n"
+"  {\n"
 "    root_idx = root.right_idx;\n"
 "    pivot.parent_idx = c_idx_not_exist;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    %s_node &rp = data[root.parent_idx];\n"
 "    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"
 "\n"
@@ -8729,11 +9030,13 @@ printf(
 "  %s_node &root = data[a_idx];\n"
 "  %s_node &pivot = data[root.left_idx];\n"
 "\n"
-"  if (a_idx == root_idx) {\n"
+"  if (a_idx == root_idx)\n"
+"  {\n"
 "    root_idx = root.left_idx;\n"
 "    pivot.parent_idx = c_idx_not_exist;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    %s_node &rp = data[root.parent_idx];\n"
 "    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"
 "\n"
@@ -8756,14 +9059,17 @@ void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
 printf(
 "inline unsigned %s::__get_new_index()\n"
 "{/*{{{*/\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    unsigned new_idx = free_idx;\n"
 "    free_idx = data[new_idx].parent_idx;\n"
 "\n"
 "    return new_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -8779,8 +9085,10 @@ void RB_TREE___BINARY_TREE_INSERT(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique)\n"
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
-"    if (leaf_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    if (leaf_idx == c_idx_not_exist)\n"
+"    {\n"
 "      leaf_idx = __get_new_index();\n"
 "      %s_node &leaf = data[leaf_idx];\n"
 "\n"
@@ -8795,25 +9103,31 @@ printf(
 "    data[a_new_idx].parent_idx = c_idx_not_exist;\n"
 "    root_idx = a_new_idx;\n"
 "  }\n"
-"  else  {\n"
+"  else \n"
+"  {\n"
 "    unsigned node_idx = root_idx;\n"
 "    do {\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
 "      int comp_result = __compare_value(a_value,node.object);\n"
-"      if (comp_result < 0) {\n"
-"        if (node.left_idx == leaf_idx) {\n"
+"      if (comp_result < 0)\n"
+"      {\n"
+"        if (node.left_idx == leaf_idx)\n"
+"        {\n"
 "          node.left_idx = a_new_idx;\n"
 "          break;\n"
 "        }\n"
 "        node_idx = node.left_idx;\n"
 "      }\n"
-"      else {\n"
-"        if (a_unique && comp_result == 0) {\n"
+"      else\n"
+"      {\n"
+"        if (a_unique && comp_result == 0)\n"
+"        {\n"
 "          return node_idx;\n"
 "        }\n"
 "\n"
-"        if (node.right_idx == leaf_idx) {\n"
+"        if (node.right_idx == leaf_idx)\n"
+"        {\n"
 "          node.right_idx = a_new_idx;\n"
 "          break;\n"
 "        }\n"
@@ -8842,13 +9156,15 @@ printf(
 "{/*{{{*/\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.parent_idx != c_idx_not_exist) {\n"
+"  if (node.parent_idx != c_idx_not_exist)\n"
+"  {\n"
 "    %s_node &parent = data[node.parent_idx];\n"
 "    (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"
 "\n"
 "    data[a_ch_idx].parent_idx = node.parent_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"
 "    data[a_ch_idx].parent_idx = c_idx_not_exist;\n"
 "  }\n"
@@ -8866,7 +9182,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.parent_idx == c_idx_not_exist) {\n"
+"    if (node.parent_idx == c_idx_not_exist)\n"
+"    {\n"
 "      return;\n"
 "    }\n"
 "\n"
@@ -8877,14 +9194,17 @@ printf(
 "      unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
 "      %s_node &sibling = data[sibling_idx];\n"
 "\n"
-"      if (!sibling.color) {\n"
+"      if (!sibling.color)\n"
+"      {\n"
 "        parent.color = false;\n"
 "        sibling.color = true;\n"
 "\n"
-"        if (node_idx == parent.left_idx) {\n"
+"        if (node_idx == parent.left_idx)\n"
+"        {\n"
 "          __rotate_left(parent_idx);\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          __rotate_right(parent_idx);\n"
 "        }\n"
 "      }\n"
@@ -8894,23 +9214,28 @@ printf(
 "      unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
 "      %s_node& sibling = data[sibling_idx];\n"
 "\n"
-"      if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"      if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color)\n"
+"      {\n"
 "        sibling.color = false;\n"
 "        node_idx = parent_idx;\n"
 "        continue;\n"
 "      }\n"
-"      else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"      else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color)\n"
+"      {\n"
 "        sibling.color = false;\n"
 "        parent.color = true;\n"
 "        return;\n"
 "      }\n"
-"      else if (sibling.color) {\n"
-"        if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"
+"      else if (sibling.color)\n"
+"      {\n"
+"        if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color)\n"
+"        {\n"
 "          sibling.color = false;\n"
 "          data[sibling.left_idx].color = true;\n"
 "          __rotate_right(sibling_idx);\n"
 "        }\n"
-"        else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"
+"        else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color)\n"
+"        {\n"
 "          sibling.color = false;\n"
 "          data[sibling.right_idx].color = true;\n"
 "          __rotate_left(sibling_idx);\n"
@@ -8924,11 +9249,13 @@ printf(
 "        sibling.color = parent.color;\n"
 "        parent.color = true;\n"
 "\n"
-"        if (node_idx == parent.left_idx) {\n"
+"        if (node_idx == parent.left_idx)\n"
+"        {\n"
 "          data[sibling.right_idx].color = true;\n"
 "          __rotate_left(parent_idx);\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          data[sibling.left_idx].color = true;\n"
 "          __rotate_right(parent_idx);\n"
 "        }\n"
@@ -8954,13 +9281,16 @@ printf(
 "  node.parent_idx = free_idx;\n"
 "  free_idx = a_idx;\n"
 "\n"
-"  if (node.color) {\n"
+"  if (node.color)\n"
+"  {\n"
 "    %s_node &child_node = data[a_ch_idx];\n"
 "\n"
-"    if (!child_node.color) {\n"
+"    if (!child_node.color)\n"
+"    {\n"
 "      child_node.color = true;\n"
 "    }\n"
-"    else {\n"
+"    else\n"
+"    {\n"
 "      __remove_black_black(a_ch_idx);\n"
 "    }\n"
 "  }\n"
@@ -8978,17 +9308,22 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.parent_idx == c_idx_not_exist) {\n"
+"    if (node.parent_idx == c_idx_not_exist)\n"
+"    {\n"
 "      node.color = true;\n"
 "      return;\n"
 "    }\n"
-"    else {\n"
-"      if (data[node.parent_idx].color) {\n"
+"    else\n"
+"    {\n"
+"      if (data[node.parent_idx].color)\n"
+"      {\n"
 "        return;\n"
 "      }\n"
-"      else {\n"
+"      else\n"
+"      {\n"
 "        unsigned uncle_idx = __get_uncle_idx(node_idx);\n"
-"        if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"
+"        if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color)\n"
+"        {\n"
 "          data[node.parent_idx].color = true;\n"
 "          data[uncle_idx].color = true;\n"
 "\n"
@@ -8997,14 +9332,17 @@ printf(
 "\n"
 "          continue;\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
 "\n"
-"          if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"          if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx)\n"
+"          {\n"
 "            __rotate_left(node.parent_idx);\n"
 "            node_idx = node.left_idx;\n"
 "          }\n"
-"          else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"
+"          else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx)\n"
+"          {\n"
 "            __rotate_right(node.parent_idx);\n"
 "            node_idx = node.right_idx;\n"
 "          }\n"
@@ -9016,10 +9354,12 @@ printf(
 "            data[node.parent_idx].color = true;\n"
 "            data[grandparent_idx].color = false;\n"
 "\n"
-"            if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"            if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx)\n"
+"            {\n"
 "              __rotate_right(grandparent_idx);\n"
 "            }\n"
-"            else {\n"
+"            else\n"
+"            {\n"
 "              __rotate_left(grandparent_idx);\n"
 "            }\n"
 "          }\n"
@@ -9076,7 +9416,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (data != nullptr) {\n"
+"  if (data != nullptr)\n"
+"  {\n"
 );
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -9306,7 +9647,8 @@ printf(\
 "  unsigned new_node_idx = __get_new_index();\n"\
 "  unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);\n"\
 "\n"\
-"  if (old_node_idx != c_idx_not_exist) {\n"\
+"  if (old_node_idx != c_idx_not_exist)\n"\
+"  {\n"\
 "    %s_node &new_node = data[new_node_idx];\n"\
 "\n"\
 "    new_node.parent_idx = free_idx;\n"\
@@ -9356,14 +9698,16 @@ printf(
 "\n"
 "  %s_node &del_node = data[a_idx];\n"
 "\n"
-"  if (del_node.left_idx != leaf_idx) {\n"
-"    if (del_node.right_idx != leaf_idx) {\n"
-"\n"
+"  if (del_node.left_idx != leaf_idx)\n"
+"  {\n"
+"    if (del_node.right_idx != leaf_idx)\n"
+"    {\n"
 "      unsigned found_idx = del_node.right_idx;\n"
 "      do {\n"
 "        %s_node &node = data[found_idx];\n"
 "\n"
-"        if (node.left_idx == leaf_idx) {\n"
+"        if (node.left_idx == leaf_idx)\n"
+"        {\n"
 "          break;\n"
 "        }\n"
 "\n"
@@ -9373,11 +9717,13 @@ printf(
 "      %s_node &found_node = data[found_idx];\n"
 "\n"
 "      /* - process del_node parent_idx - */\n"
-"      if (del_node.parent_idx != c_idx_not_exist) {\n"
+"      if (del_node.parent_idx != c_idx_not_exist)\n"
+"      {\n"
 "        %s_node &del_node_parent = data[del_node.parent_idx];\n"
 "        (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"
 "      }\n"
-"      else {\n"
+"      else\n"
+"      {\n"
 "        root_idx = found_idx;\n"
 "      }\n"
 "\n"
@@ -9385,12 +9731,13 @@ printf(
 "      data[del_node.left_idx].parent_idx = found_idx;\n"
 "\n"
 "      /* - process found_node right_idx - */\n"
-"      if (found_node.right_idx != leaf_idx) {\n"
+"      if (found_node.right_idx != leaf_idx)\n"
+"      {\n"
 "        data[found_node.right_idx].parent_idx = a_idx;\n"
 "      }\n"
 "\n"
-"      if (del_node.right_idx == found_idx) {\n"
-"\n"
+"      if (del_node.right_idx == found_idx)\n"
+"      {\n"
 "        /* - found node is right child of deleted node - */\n"
 "        del_node.right_idx = found_node.right_idx;\n"
 "        found_node.right_idx = a_idx;\n"
@@ -9405,8 +9752,8 @@ printf(
 "        found_node.color = del_node.color;\n"
 "        del_node.color = tmp_bool;\n"
 "      }\n"
-"      else {\n"
-"\n"
+"      else\n"
+"      {\n"
 "        /* - process found_node parent - */\n"
 "        %s_node &found_node_parent = data[found_node.parent_idx];\n"
 "        (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"
@@ -9433,11 +9780,13 @@ printf(
 "\n"
 "      __remove_one_child(a_idx,del_node.right_idx);\n"
 "    }\n"
-"    else {\n"
+"    else\n"
+"    {\n"
 "      __remove_one_child(a_idx,del_node.left_idx);\n"
 "    }\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    __remove_one_child(a_idx,del_node.right_idx);\n"
 "  }\n"
 "\n"
@@ -9456,7 +9805,8 @@ printf(
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"  if (size > a_size) {\n"
+"  if (size > a_size)\n"
+"  {\n"
 "    %s_node *ptr = data + a_size;\n"
 "    %s_node *ptr_end = data + size;\n"
 "\n"
@@ -9468,20 +9818,24 @@ printf(
    }
 printf(
 "\n"
-"  if (a_size == 0) {\n"
-"    if (data != nullptr) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
+"    if (data != nullptr)\n"
+"    {\n"
 "      cfree(data);\n"
 "    }\n"
 "    data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"  if (a_size > size) {\n"
+"  if (a_size > size)\n"
+"  {\n"
 "    %s_node *ptr = data + size;\n"
 "    %s_node *ptr_end = data + a_size;\n"
 "\n"
@@ -9513,7 +9867,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -9522,11 +9877,14 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        return node_idx;\n"
 "      }\n"
 "\n"
@@ -9554,7 +9912,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -9564,15 +9923,19 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        good_idx = node_idx;\n"
 "        node_idx = node.left_idx;\n"
 "      }\n"
-"      else {\n"
+"      else\n"
+"      {\n"
 "        node_idx = node.right_idx;\n"
 "      }\n"
 "    }\n"
@@ -9598,7 +9961,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -9608,12 +9972,15 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      good_idx = node_idx;\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        return node_idx;\n"
 "      }\n"
 "\n"
@@ -9641,7 +10008,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -9651,11 +10019,14 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        return node_idx;\n"
 "      }\n"
 "\n"
@@ -9686,7 +10057,8 @@ printf(
 "{/*{{{*/\n"
 "  a_idxs_array.used = 0;\n"
 "\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return;\n"
 "  }\n"
 "\n"
@@ -9699,21 +10071,27 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
-"      if (node.left_idx != leaf_idx) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
+"      if (node.left_idx != leaf_idx)\n"
+"      {\n"
 "        *(stack_ptr++) = node.left_idx;\n"
 "      }\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        a_idxs_array.push(node_idx);\n"
 "\n"
-"        if (node.left_idx != leaf_idx) {\n"
+"        if (node.left_idx != leaf_idx)\n"
+"        {\n"
 "          *(stack_ptr++) = node.left_idx;\n"
 "        }\n"
 "      }\n"
 "\n"
-"      if (node.right_idx != leaf_idx) {\n"
+"      if (node.right_idx != leaf_idx)\n"
+"      {\n"
 "        *(stack_ptr++) = node.right_idx;\n"
 "      }\n"
 "    }\n"
@@ -9741,7 +10119,10 @@ printf(
 "{/*{{{*/\n"
 "  clear();\n"
 "\n"
-"  if (a_src.root_idx == c_idx_not_exist) return *this;\n"
+"  if (a_src.root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    return *this;\n"
+"  }\n"
 "\n"
 "  copy_resize(a_src.used);\n"
 );
@@ -9798,13 +10179,17 @@ void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
-"    if (a_second.root_idx != c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    if (a_second.root_idx != c_idx_not_exist)\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "  }\n"
-"  else {\n"
-"    if (a_second.root_idx == c_idx_not_exist) {\n"
+"  else\n"
+"  {\n"
+"    if (a_second.root_idx == c_idx_not_exist)\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "\n"
@@ -9817,7 +10202,8 @@ printf(
 "    unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
 "    unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"
 "    do {\n"
-"      if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"
+"      if (!(data[node_idx].object == a_second.data[s_node_idx].object))\n"
+"      {\n"
 "        return false;\n"
 "      }\n"
 "\n"
@@ -9825,7 +10211,8 @@ printf(
 "      s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"
 "    } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"
 "\n"
-"    if (node_idx != s_node_idx) {\n"
+"    if (node_idx != s_node_idx)\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "  }\n"
@@ -9863,7 +10250,10 @@ void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
 printf(
 "void %s::rehash_tree()\n"
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) return;\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 "  ui_array_s indexes;\n"
 "  indexes.init();\n"
@@ -9886,11 +10276,13 @@ printf(
 "  memset(processed,false,indexes.used*sizeof(bool));\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
-"  if (step > 0) {\n"
+"  if (step > 0)\n"
+"  {\n"
 "    do {\n"
 "      unsigned idx = step;\n"
 "      do {\n"
-"        if (!processed[idx]) {\n"
+"        if (!processed[idx])\n"
+"        {\n"
 "          unsigned node_idx = indexes[idx];\n"
 "\n"
 "          __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
@@ -9935,7 +10327,8 @@ printf(
 "\"   root_idx -> node_%%u\\n\"\n"
 "  ,root_idx);\n"
 "\n"
-"  if (root_idx != c_idx_not_exist) {\n"
+"  if (root_idx != c_idx_not_exist)\n"
+"  {\n"
 "    ui_array_s stack;\n"
 "    stack.init();\n"
 "\n"
@@ -9949,13 +10342,15 @@ printf(
 "\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"
 "      ,node_idx,node_colors[node.color],node_idx);\n"
 "\n"
-"      if (node.parent_idx != c_idx_not_exist) {\n"
+"      if (node.parent_idx != c_idx_not_exist)\n"
+"      {\n"
 "        fprintf(a_file,\n"
 "\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"
 "        ,node_idx,node.parent_idx);\n"
 "      }\n"
 "\n"
-"      if (node.left_idx != leaf_idx) {\n"
+"      if (node.left_idx != leaf_idx)\n"
+"      {\n"
 "        fprintf(a_file,\n"
 "\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"
 "        ,node_idx,node.left_idx);\n"
@@ -9963,7 +10358,8 @@ printf(
 "        stack.push(node.left_idx);\n"
 "      }\n"
 "\n"
-"      if (node.right_idx != leaf_idx) {\n"
+"      if (node.right_idx != leaf_idx)\n"
+"      {\n"
 "        fprintf(a_file,\n"
 "\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"
 "        ,node_idx,node.right_idx);\n"
@@ -9990,21 +10386,24 @@ printf(
 "bool %s::check_rb_tree_properties()\n"
 "{/*{{{*/\n"
 "  %s_node &leaf = data[leaf_idx];\n"
-"  if (!leaf.color) {\n"
+"  if (!leaf.color)\n"
+"  {\n"
 "    fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"
 "    return false;\n"
 "  }\n"
 "\n"
-"  if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"
+"  if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist)\n"
+"  {\n"
 "    fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"
 "    return false;\n"
 "  }\n"
 "\n"
-"  if (root_idx != c_idx_not_exist) {\n"
-"\n"
+"  if (root_idx != c_idx_not_exist)\n"
+"  {\n"
 "    /* - check if root node is black - */\n"
 "    %s_node &r_node = data[root_idx];\n"
-"    if (!r_node.color) {\n"
+"    if (!r_node.color)\n"
+"    {\n"
 "      fprintf(stderr,\"ERROR: root node is not black\\n\");\n"
 "      return false;\n"
 "    }\n"
@@ -10028,18 +10427,22 @@ printf(
 "\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
-"      if (node.color) {\n"
+"      if (node.color)\n"
+"      {\n"
 "        path_length++;\n"
 "      }\n"
-"      else {\n"
-"        if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"
+"      else\n"
+"      {\n"
+"        if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist)\n"
+"        {\n"
 "          fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"
 "          ni_stack.clear();\n"
 "          pl_stack.clear();\n"
 "          return false;\n"
 "        }\n"
 "\n"
-"        if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"
+"        if (!data[node.left_idx].color || !data[node.right_idx].color)\n"
+"        {\n"
 "          fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"
 "          ni_stack.clear();\n"
 "          pl_stack.clear();\n"
@@ -10047,27 +10450,33 @@ printf(
 "        }\n"
 "      }\n"
 "\n"
-"      if (node.left_idx != c_idx_not_exist) {\n"
+"      if (node.left_idx != c_idx_not_exist)\n"
+"      {\n"
 "        ni_stack.push(node.left_idx);\n"
 "        pl_stack.push(path_length);\n"
 "      }\n"
 "\n"
-"      if (node.right_idx != c_idx_not_exist) {\n"
+"      if (node.right_idx != c_idx_not_exist)\n"
+"      {\n"
 "        ni_stack.push(node.right_idx);\n"
 "        pl_stack.push(path_length);\n"
 "      }\n"
 "\n"
 "      /* - if node is leaf node - */\n"
-"      if (stack_depth == ni_stack.used) {\n"
-"        if (r_path_length != c_idx_not_exist) {\n"
-"          if (r_path_length != path_length) {\n"
+"      if (stack_depth == ni_stack.used)\n"
+"      {\n"
+"        if (r_path_length != c_idx_not_exist)\n"
+"        {\n"
+"          if (r_path_length != path_length)\n"
+"          {\n"
 "            fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"
 "            ni_stack.clear();\n"
 "            pl_stack.clear();\n"
 "            return false;\n"
 "          }\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          r_path_length = path_length;\n"
 "        }\n"
 "      }\n"
@@ -10079,7 +10488,8 @@ printf(
 "  }\n"
 "\n"
 "  /* - test if are node values sorted - */\n"
-"  if (root_idx != c_idx_not_exist) {\n"
+"  if (root_idx != c_idx_not_exist)\n"
+"  {\n"
 "    unsigned stack[get_descent_stack_size()];\n"
 "    unsigned *stack_ptr = stack;\n"
 "\n"
@@ -10087,10 +10497,13 @@ printf(
 "    do {\n"
 "      unsigned l_idx = idx;\n"
 "      idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
-"      if (idx == c_idx_not_exist) {\n"
+"      if (idx == c_idx_not_exist)\n"
+"      {\n"
 "        break;\n"
 "      }\n"
-"      if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"
+"\n"
+"      if (__compare_value(data[l_idx].object,data[idx].object) == 1)\n"
+"      {\n"
 "        fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"
 "        return false;\n"
 "      }\n"
@@ -10973,7 +11386,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (data != nullptr) {\n"
+"  if (data != nullptr)\n"
+"  {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -11105,12 +11519,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11123,10 +11540,12 @@ printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
-"  if (first_idx != c_idx_not_exist) {\n"
+"  if (first_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[first_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11157,12 +11576,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11175,10 +11597,12 @@ printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
-"  if (last_idx != c_idx_not_exist) {\n"
+"  if (last_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[last_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11211,12 +11635,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11230,10 +11657,12 @@ printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
-"  if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"  if (idx_element.prev_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.prev_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11266,12 +11695,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11285,10 +11717,12 @@ printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
-"  if (idx_element.next_idx != c_idx_not_exist) {\n"
+"  if (idx_element.next_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.next_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11310,12 +11744,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11328,10 +11765,12 @@ printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
-"  if (first_idx != c_idx_not_exist) {\n"
+"  if (first_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[first_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11351,12 +11790,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11369,10 +11811,12 @@ printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
-"  if (last_idx != c_idx_not_exist) {\n"
+"  if (last_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[last_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11394,12 +11838,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11413,10 +11860,12 @@ printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
-"  if (idx_element.prev_idx != c_idx_not_exist) {\n"
+"  if (idx_element.prev_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.prev_idx].next_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11438,12 +11887,15 @@ printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].next_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -11457,10 +11909,12 @@ printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
-"  if (idx_element.next_idx != c_idx_not_exist) {\n"
+"  if (idx_element.next_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[idx_element.next_idx].prev_idx = new_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
@@ -11482,17 +11936,21 @@ printf(
 "\n"
 "  %s_element &rm_element = data[a_idx];\n"
 "\n"
-"  if (rm_element.next_idx != c_idx_not_exist) {\n"
+"  if (rm_element.next_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[rm_element.next_idx].prev_idx = rm_element.prev_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    last_idx = rm_element.prev_idx;\n"
 "  }\n"
 "\n"
-"  if (rm_element.prev_idx != c_idx_not_exist) {\n"
+"  if (rm_element.prev_idx != c_idx_not_exist)\n"
+"  {\n"
 "    data[rm_element.prev_idx].next_idx = rm_element.next_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    first_idx = rm_element.next_idx;\n"
 "  }\n"
 "\n"
@@ -11540,7 +11998,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (size > a_size) {\n"
+"  if (size > a_size)\n"
+"  {\n"
 "    %s_element *ptr = data + a_size;\n"
 "    %s_element *ptr_end = data + size;\n"
 "\n"
@@ -11552,20 +12011,24 @@ printf(
    }
 printf(
 "\n"
-"  if (a_size == 0) {\n"
-"    if (data != nullptr) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
+"    if (data != nullptr)\n"
+"    {\n"
 "      cfree(data);\n"
 "    }\n"
 "    data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    data = (%s_element *)crealloc(data,a_size*sizeof(%s_element));\n"
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (a_size > size) {\n"
+"  if (a_size > size)\n"
+"  {\n"
 "    %s_element *ptr = data + size;\n"
 "    %s_element *ptr_end = data + a_size;\n"
 "\n"
@@ -11597,13 +12060,17 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (first_idx == c_idx_not_exist) return c_idx_not_exist;\n"
+"  if (first_idx == c_idx_not_exist)\n"
+"  {\n"
+"    return c_idx_not_exist;\n"
+"  }\n"
 "\n"
 "  unsigned idx = first_idx;\n"
 "  do {\n"
 "    %s_element &element = data[idx];\n"
 "\n"
-"    if (element.object == a_value) {\n"
+"    if (element.object == a_value)\n"
+"    {\n"
 "      return idx;\n"
 "    }\n"
 "\n"
@@ -11632,7 +12099,10 @@ printf(
 "{/*{{{*/\n"
 "  clear();\n"
 "\n"
-"  if (a_src.used == 0) return *this;\n"
+"  if (a_src.used == 0)\n"
+"  {\n"
+"    return *this;\n"
+"  }\n"
 "\n"
 "  copy_resize(a_src.used);\n"
 );
@@ -11675,15 +12145,18 @@ void SAFE_LIST_OPERATOR_DOUBLE_EQUAL(SAFE_LIST_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
-"  if (count != a_second.count) {\n"
+"  if (count != a_second.count)\n"
+"  {\n"
 "    return false;\n"
 "  }\n"
 "\n"
-"  if (first_idx == c_idx_not_exist) {\n"
+"  if (first_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return a_second.first_idx == c_idx_not_exist;\n"
 "  }\n"
 "\n"
-"  if (a_second.first_idx == c_idx_not_exist) {\n"
+"  if (a_second.first_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return false;\n"
 "  }\n"
 "\n"
@@ -11694,7 +12167,8 @@ printf(
 "    %s_element &element = data[idx];\n"
 "    %s_element &s_element = a_second.data[s_idx];\n"
 "\n"
-"    if (!(element.object == s_element.object)) {\n"
+"    if (!(element.object == s_element.object))\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "\n"
@@ -12282,10 +12756,12 @@ printf(
 "{/*{{{*/\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.parent_idx != c_idx_not_exist) {\n"
+"  if (node.parent_idx != c_idx_not_exist)\n"
+"  {\n"
 "    return data[node.parent_idx].parent_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "}/*}}}*/\n"
@@ -12300,10 +12776,12 @@ printf(
 "{/*{{{*/\n"
 "  unsigned gp_idx = __get_grandparent_idx(a_idx);\n"
 "\n"
-"  if (gp_idx == c_idx_not_exist) {\n"
+"  if (gp_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    %s_node &gp = data[gp_idx];\n"
 "    return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;\n"
 "  }\n"
@@ -12346,7 +12824,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.left_idx == leaf_idx) {\n"
+"    if (node.left_idx == leaf_idx)\n"
+"    {\n"
 "      return node_idx;\n"
 "    }\n"
 "\n"
@@ -12367,11 +12846,13 @@ printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.right_idx != leaf_idx) {\n"
+"  if (node.right_idx != leaf_idx)\n"
+"  {\n"
 "    return get_stack_min_value_idx(node.right_idx,a_s_ptr);\n"
 "  }\n"
 "\n"
-"  if (*a_s_ptr > a_stack_base) {\n"
+"  if (*a_s_ptr > a_stack_base)\n"
+"  {\n"
 "    return *(--(*a_s_ptr));\n"
 "  }\n"
 "\n"
@@ -12392,7 +12873,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.left_idx == leaf_idx) {\n"
+"    if (node.left_idx == leaf_idx)\n"
+"    {\n"
 "      return node_idx;\n"
 "    }\n"
 "\n"
@@ -12414,7 +12896,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.right_idx == leaf_idx) {\n"
+"    if (node.right_idx == leaf_idx)\n"
+"    {\n"
 "      return node_idx;\n"
 "    }\n"
 "\n"
@@ -12434,20 +12917,23 @@ printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.right_idx != leaf_idx) {\n"
+"  if (node.right_idx != leaf_idx)\n"
+"  {\n"
 "    return get_min_value_idx(node.right_idx);\n"
 "  }\n"
-"  else {\n"
-"\n"
+"  else\n"
+"  {\n"
 "    unsigned node_idx = a_idx;\n"
 "    do {\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
-"      if (node.parent_idx == c_idx_not_exist) {\n"
+"      if (node.parent_idx == c_idx_not_exist)\n"
+"      {\n"
 "        return c_idx_not_exist;\n"
 "      }\n"
 "\n"
-"      if (data[node.parent_idx].right_idx != node_idx) {\n"
+"      if (data[node.parent_idx].right_idx != node_idx)\n"
+"      {\n"
 "        return node.parent_idx;\n"
 "      }\n"
 "\n"
@@ -12468,20 +12954,23 @@ printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.left_idx != leaf_idx) {\n"
+"  if (node.left_idx != leaf_idx)\n"
+"  {\n"
 "    return get_max_value_idx(node.left_idx);\n"
 "  }\n"
-"  else {\n"
-"\n"
+"  else\n"
+"  {\n"
 "    unsigned node_idx = a_idx;\n"
 "    do {\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
-"      if (node.parent_idx == c_idx_not_exist) {\n"
+"      if (node.parent_idx == c_idx_not_exist)\n"
+"      {\n"
 "        return c_idx_not_exist;\n"
 "      }\n"
 "\n"
-"      if (data[node.parent_idx].left_idx != node_idx) {\n"
+"      if (data[node.parent_idx].left_idx != node_idx)\n"
+"      {\n"
 "        return node.parent_idx;\n"
 "      }\n"
 "\n"
@@ -12501,11 +12990,13 @@ printf(
 "  %s_node &root = data[a_idx];\n"
 "  %s_node &pivot = data[root.right_idx];\n"
 "\n"
-"  if (a_idx == root_idx) {\n"
+"  if (a_idx == root_idx)\n"
+"  {\n"
 "    root_idx = root.right_idx;\n"
 "    pivot.parent_idx = c_idx_not_exist;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    %s_node &rp = data[root.parent_idx];\n"
 "    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;\n"
 "\n"
@@ -12531,11 +13022,13 @@ printf(
 "  %s_node &root = data[a_idx];\n"
 "  %s_node &pivot = data[root.left_idx];\n"
 "\n"
-"  if (a_idx == root_idx) {\n"
+"  if (a_idx == root_idx)\n"
+"  {\n"
 "    root_idx = root.left_idx;\n"
 "    pivot.parent_idx = c_idx_not_exist;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    %s_node &rp = data[root.parent_idx];\n"
 "    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;\n"
 "\n"
@@ -12560,12 +13053,15 @@ printf(
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
-"  if (free_idx != c_idx_not_exist) {\n"
+"  if (free_idx != c_idx_not_exist)\n"
+"  {\n"
 "    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].parent_idx;\n"
 "  }\n"
-"  else {\n"
-"    if (used >= size) {\n"
+"  else\n"
+"  {\n"
+"    if (used >= size)\n"
+"    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
 "\n"
@@ -12586,8 +13082,10 @@ void SAFE_RB_TREE___BINARY_TREE_INSERT(SAFE_RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::__binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique)\n"
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
-"    if (leaf_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    if (leaf_idx == c_idx_not_exist)\n"
+"    {\n"
 "      leaf_idx = __get_new_index();\n"
 "      %s_node &leaf = data[leaf_idx];\n"
 "\n"
@@ -12604,25 +13102,31 @@ printf(
 "    data[a_new_idx].parent_idx = c_idx_not_exist;\n"
 "    root_idx = a_new_idx;\n"
 "  }\n"
-"  else  {\n"
+"  else\n"
+"  {\n"
 "    unsigned node_idx = root_idx;\n"
 "    do {\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
 "      int comp_result = __compare_value(a_value,node.object);\n"
-"      if (comp_result < 0) {\n"
-"        if (node.left_idx == leaf_idx) {\n"
+"      if (comp_result < 0)\n"
+"      {\n"
+"        if (node.left_idx == leaf_idx)\n"
+"        {\n"
 "          node.left_idx = a_new_idx;\n"
 "          break;\n"
 "        }\n"
 "        node_idx = node.left_idx;\n"
 "      }\n"
-"      else {\n"
-"        if (a_unique && comp_result == 0) {\n"
+"      else\n"
+"      {\n"
+"        if (a_unique && comp_result == 0)\n"
+"        {\n"
 "          return node_idx;\n"
 "        }\n"
 "\n"
-"        if (node.right_idx == leaf_idx) {\n"
+"        if (node.right_idx == leaf_idx)\n"
+"        {\n"
 "          node.right_idx = a_new_idx;\n"
 "          break;\n"
 "        }\n"
@@ -12651,13 +13155,15 @@ printf(
 "{/*{{{*/\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
-"  if (node.parent_idx != c_idx_not_exist) {\n"
+"  if (node.parent_idx != c_idx_not_exist)\n"
+"  {\n"
 "    %s_node &parent = data[node.parent_idx];\n"
 "    (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;\n"
 "\n"
 "    data[a_ch_idx].parent_idx = node.parent_idx;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;\n"
 "    data[a_ch_idx].parent_idx = c_idx_not_exist;\n"
 "  }\n"
@@ -12675,7 +13181,8 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.parent_idx == c_idx_not_exist) {\n"
+"    if (node.parent_idx == c_idx_not_exist)\n"
+"    {\n"
 "      return;\n"
 "    }\n"
 "\n"
@@ -12686,14 +13193,17 @@ printf(
 "      unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
 "      %s_node &sibling = data[sibling_idx];\n"
 "\n"
-"      if (!sibling.color) {\n"
+"      if (!sibling.color)\n"
+"      {\n"
 "        parent.color = false;\n"
 "        sibling.color = true;\n"
 "\n"
-"        if (node_idx == parent.left_idx) {\n"
+"        if (node_idx == parent.left_idx)\n"
+"        {\n"
 "          __rotate_left(parent_idx);\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          __rotate_right(parent_idx);\n"
 "        }\n"
 "      }\n"
@@ -12703,23 +13213,28 @@ printf(
 "      unsigned sibling_idx = parent.left_idx == node_idx?parent.right_idx:parent.left_idx;\n"
 "      %s_node& sibling = data[sibling_idx];\n"
 "\n"
-"      if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"      if (parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color)\n"
+"      {\n"
 "        sibling.color = false;\n"
 "        node_idx = parent_idx;\n"
 "        continue;\n"
 "      }\n"
-"      else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color) {\n"
+"      else if (!parent.color && sibling.color && data[sibling.left_idx].color && data[sibling.right_idx].color)\n"
+"      {\n"
 "        sibling.color = false;\n"
 "        parent.color = true;\n"
 "        return;\n"
 "      }\n"
-"      else if (sibling.color) {\n"
-"        if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color) {\n"
+"      else if (sibling.color)\n"
+"      {\n"
+"        if (node_idx == parent.left_idx && data[sibling.right_idx].color && !data[sibling.left_idx].color)\n"
+"        {\n"
 "          sibling.color = false;\n"
 "          data[sibling.left_idx].color = true;\n"
 "          __rotate_right(sibling_idx);\n"
 "        }\n"
-"        else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color) {\n"
+"        else if (node_idx == parent.right_idx && data[sibling.left_idx].color && !data[sibling.right_idx].color)\n"
+"        {\n"
 "          sibling.color = false;\n"
 "          data[sibling.right_idx].color = true;\n"
 "          __rotate_left(sibling_idx);\n"
@@ -12733,11 +13248,13 @@ printf(
 "        sibling.color = parent.color;\n"
 "        parent.color = true;\n"
 "\n"
-"        if (node_idx == parent.left_idx) {\n"
+"        if (node_idx == parent.left_idx)\n"
+"        {\n"
 "          data[sibling.right_idx].color = true;\n"
 "          __rotate_left(parent_idx);\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          data[sibling.left_idx].color = true;\n"
 "          __rotate_right(parent_idx);\n"
 "        }\n"
@@ -12766,13 +13283,16 @@ printf(
 "  node.valid = false;\n"
 "  count--;\n"
 "\n"
-"  if (node.color) {\n"
+"  if (node.color)\n"
+"  {\n"
 "    %s_node &child_node = data[a_ch_idx];\n"
 "\n"
-"    if (!child_node.color) {\n"
+"    if (!child_node.color)\n"
+"    {\n"
 "      child_node.color = true;\n"
 "    }\n"
-"    else {\n"
+"    else\n"
+"    {\n"
 "      __remove_black_black(a_ch_idx);\n"
 "    }\n"
 "  }\n"
@@ -12790,17 +13310,22 @@ printf(
 "  do {\n"
 "    %s_node &node = data[node_idx];\n"
 "\n"
-"    if (node.parent_idx == c_idx_not_exist) {\n"
+"    if (node.parent_idx == c_idx_not_exist)\n"
+"    {\n"
 "      node.color = true;\n"
 "      return;\n"
 "    }\n"
-"    else {\n"
-"      if (data[node.parent_idx].color) {\n"
+"    else\n"
+"    {\n"
+"      if (data[node.parent_idx].color)\n"
+"      {\n"
 "        return;\n"
 "      }\n"
-"      else {\n"
+"      else\n"
+"      {\n"
 "        unsigned uncle_idx = __get_uncle_idx(node_idx);\n"
-"        if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color) {\n"
+"        if (uncle_idx != c_idx_not_exist && !data[uncle_idx].color)\n"
+"        {\n"
 "          data[node.parent_idx].color = true;\n"
 "          data[uncle_idx].color = true;\n"
 "\n"
@@ -12809,14 +13334,17 @@ printf(
 "\n"
 "          continue;\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          unsigned grandparent_idx = __get_grandparent_idx(node_idx);\n"
 "\n"
-"          if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"          if (node_idx == data[node.parent_idx].right_idx && node.parent_idx == data[grandparent_idx].left_idx)\n"
+"          {\n"
 "            __rotate_left(node.parent_idx);\n"
 "            node_idx = node.left_idx;\n"
 "          }\n"
-"          else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx) {\n"
+"          else if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].right_idx)\n"
+"          {\n"
 "            __rotate_right(node.parent_idx);\n"
 "            node_idx = node.right_idx;\n"
 "          }\n"
@@ -12828,10 +13356,12 @@ printf(
 "            data[node.parent_idx].color = true;\n"
 "            data[grandparent_idx].color = false;\n"
 "\n"
-"            if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx) {\n"
+"            if (node_idx == data[node.parent_idx].left_idx && node.parent_idx == data[grandparent_idx].left_idx)\n"
+"            {\n"
 "              __rotate_right(grandparent_idx);\n"
 "            }\n"
-"            else {\n"
+"            else\n"
+"            {\n"
 "              __rotate_left(grandparent_idx);\n"
 "            }\n"
 "          }\n"
@@ -12889,7 +13419,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (data != nullptr) {\n"
+"  if (data != nullptr)\n"
+"  {\n"
 );
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
@@ -13123,7 +13654,8 @@ printf(\
 "  unsigned new_node_idx = __get_new_index();\n"\
 "  unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);\n"\
 "\n"\
-"  if (old_node_idx != c_idx_not_exist) {\n"\
+"  if (old_node_idx != c_idx_not_exist)\n"\
+"  {\n"\
 "    %s_node &new_node = data[new_node_idx];\n"\
 "\n"\
 "    new_node.parent_idx = free_idx;\n"\
@@ -13176,14 +13708,16 @@ printf(
 "\n"
 "  %s_node &del_node = data[a_idx];\n"
 "\n"
-"  if (del_node.left_idx != leaf_idx) {\n"
-"    if (del_node.right_idx != leaf_idx) {\n"
-"\n"
+"  if (del_node.left_idx != leaf_idx)\n"
+"  {\n"
+"    if (del_node.right_idx != leaf_idx)\n"
+"    {\n"
 "      unsigned found_idx = del_node.right_idx;\n"
 "      do {\n"
 "        %s_node &node = data[found_idx];\n"
 "\n"
-"        if (node.left_idx == leaf_idx) {\n"
+"        if (node.left_idx == leaf_idx)\n"
+"        {\n"
 "          break;\n"
 "        }\n"
 "\n"
@@ -13193,11 +13727,13 @@ printf(
 "      %s_node &found_node = data[found_idx];\n"
 "\n"
 "      /* - process del_node parent_idx - */\n"
-"      if (del_node.parent_idx != c_idx_not_exist) {\n"
+"      if (del_node.parent_idx != c_idx_not_exist)\n"
+"      {\n"
 "        %s_node &del_node_parent = data[del_node.parent_idx];\n"
 "        (del_node_parent.left_idx == a_idx?del_node_parent.left_idx:del_node_parent.right_idx) = found_idx;\n"
 "      }\n"
-"      else {\n"
+"      else\n"
+"      {\n"
 "        root_idx = found_idx;\n"
 "      }\n"
 "\n"
@@ -13205,12 +13741,13 @@ printf(
 "      data[del_node.left_idx].parent_idx = found_idx;\n"
 "\n"
 "      /* - process found_node right_idx - */\n"
-"      if (found_node.right_idx != leaf_idx) {\n"
+"      if (found_node.right_idx != leaf_idx)\n"
+"      {\n"
 "        data[found_node.right_idx].parent_idx = a_idx;\n"
 "      }\n"
 "\n"
-"      if (del_node.right_idx == found_idx) {\n"
-"\n"
+"      if (del_node.right_idx == found_idx)\n"
+"      {\n"
 "        /* - found node is right child of deleted node - */\n"
 "        del_node.right_idx = found_node.right_idx;\n"
 "        found_node.right_idx = a_idx;\n"
@@ -13225,8 +13762,8 @@ printf(
 "        found_node.color = del_node.color;\n"
 "        del_node.color = tmp_bool;\n"
 "      }\n"
-"      else {\n"
-"\n"
+"      else\n"
+"      {\n"
 "        /* - process found_node parent - */\n"
 "        %s_node &found_node_parent = data[found_node.parent_idx];\n"
 "        (found_node_parent.left_idx == found_idx?found_node_parent.left_idx:found_node_parent.right_idx) = a_idx;\n"
@@ -13253,11 +13790,13 @@ printf(
 "\n"
 "      __remove_one_child(a_idx,del_node.right_idx);\n"
 "    }\n"
-"    else {\n"
+"    else\n"
+"    {\n"
 "      __remove_one_child(a_idx,del_node.left_idx);\n"
 "    }\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    __remove_one_child(a_idx,del_node.right_idx);\n"
 "  }\n"
 "\n"
@@ -13276,7 +13815,8 @@ printf(
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"  if (size > a_size) {\n"
+"  if (size > a_size)\n"
+"  {\n"
 "    %s_node *ptr = data + a_size;\n"
 "    %s_node *ptr_end = data + size;\n"
 "\n"
@@ -13288,20 +13828,24 @@ printf(
    }
 printf(
 "\n"
-"  if (a_size == 0) {\n"
-"    if (data != nullptr) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
+"    if (data != nullptr)\n"
+"    {\n"
 "      cfree(data);\n"
 "    }\n"
 "    data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "\n"
-"  if (a_size > size) {\n"
+"  if (a_size > size)\n"
+"  {\n"
 "    %s_node *ptr = data + size;\n"
 "    %s_node *ptr_end = data + a_size;\n"
 "\n"
@@ -13333,7 +13877,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -13342,11 +13887,14 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        return node_idx;\n"
 "      }\n"
 "\n"
@@ -13374,7 +13922,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -13384,15 +13933,19 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        good_idx = node_idx;\n"
 "        node_idx = node.left_idx;\n"
 "      }\n"
-"      else {\n"
+"      else\n"
+"      {\n"
 "        node_idx = node.right_idx;\n"
 "      }\n"
 "    }\n"
@@ -13418,7 +13971,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -13428,12 +13982,15 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      good_idx = node_idx;\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        return node_idx;\n"
 "      }\n"
 "\n"
@@ -13461,7 +14018,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return c_idx_not_exist;\n"
 "  }\n"
 "\n"
@@ -13471,11 +14029,14 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
 "      node_idx = node.left_idx;\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        return node_idx;\n"
 "      }\n"
 "\n"
@@ -13506,7 +14067,8 @@ printf(
 "{/*{{{*/\n"
 "  a_idxs_array.used = 0;\n"
 "\n"
-"  if (root_idx == c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
 "    return;\n"
 "  }\n"
 "\n"
@@ -13519,21 +14081,27 @@ printf(
 "    %s_node &node = data[node_idx];\n"
 "\n"
 "    int comp_result = __compare_value(a_value,node.object);\n"
-"    if (comp_result < 0) {\n"
-"      if (node.left_idx != leaf_idx) {\n"
+"    if (comp_result < 0)\n"
+"    {\n"
+"      if (node.left_idx != leaf_idx)\n"
+"      {\n"
 "        *(stack_ptr++) = node.left_idx;\n"
 "      }\n"
 "    }\n"
-"    else {\n"
-"      if (comp_result == 0) {\n"
+"    else\n"
+"    {\n"
+"      if (comp_result == 0)\n"
+"      {\n"
 "        a_idxs_array.push(node_idx);\n"
 "\n"
-"        if (node.left_idx != leaf_idx) {\n"
+"        if (node.left_idx != leaf_idx)\n"
+"        {\n"
 "          *(stack_ptr++) = node.left_idx;\n"
 "        }\n"
 "      }\n"
 "\n"
-"      if (node.right_idx != leaf_idx) {\n"
+"      if (node.right_idx != leaf_idx)\n"
+"      {\n"
 "        *(stack_ptr++) = node.right_idx;\n"
 "      }\n"
 "    }\n"
@@ -13561,7 +14129,10 @@ printf(
 "{/*{{{*/\n"
 "  clear();\n"
 "\n"
-"  if (a_src.root_idx == c_idx_not_exist) return *this;\n"
+"  if (a_src.root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    return *this;\n"
+"  }\n"
 "\n"
 "  copy_resize(a_src.used);\n"
 );
@@ -13620,17 +14191,22 @@ void SAFE_RB_TREE_OPERATOR_DOUBLE_EQUAL(SAFE_RB_TREE_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
-"  if (count != a_second.count) {\n"
+"  if (count != a_second.count)\n"
+"  {\n"
 "     return false;\n"
 "  }\n"
 "\n"
-"  if (root_idx == c_idx_not_exist) {\n"
-"    if (a_second.root_idx != c_idx_not_exist) {\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    if (a_second.root_idx != c_idx_not_exist)\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "  }\n"
-"  else {\n"
-"    if (a_second.root_idx == c_idx_not_exist) {\n"
+"  else\n"
+"  {\n"
+"    if (a_second.root_idx == c_idx_not_exist)\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "\n"
@@ -13643,7 +14219,8 @@ printf(
 "    unsigned node_idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
 "    unsigned s_node_idx = a_second.get_stack_min_value_idx(a_second.root_idx,&s_stack_ptr);\n"
 "    do {\n"
-"      if (!(data[node_idx].object == a_second.data[s_node_idx].object)) {\n"
+"      if (!(data[node_idx].object == a_second.data[s_node_idx].object))\n"
+"      {\n"
 "        return false;\n"
 "      }\n"
 "\n"
@@ -13651,7 +14228,8 @@ printf(
 "      s_node_idx = a_second.get_stack_next_idx(s_node_idx,&s_stack_ptr,s_stack);\n"
 "    } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"
 "\n"
-"    if (node_idx != s_node_idx) {\n"
+"    if (node_idx != s_node_idx)\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "  }\n"
@@ -13689,7 +14267,10 @@ void SAFE_RB_TREE_REHASH_TREE(SAFE_RB_TREE_GEN_PARAMS)
 printf(
 "void %s::rehash_tree()\n"
 "{/*{{{*/\n"
-"  if (root_idx == c_idx_not_exist) return;\n"
+"  if (root_idx == c_idx_not_exist)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 "  ui_array_s indexes;\n"
 "  indexes.init();\n"
@@ -13712,11 +14293,13 @@ printf(
 "  memset(processed,false,indexes.used*sizeof(bool));\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
-"  if (step > 0) {\n"
+"  if (step > 0)\n"
+"  {\n"
 "    do {\n"
 "      unsigned idx = step;\n"
 "      do {\n"
-"        if (!processed[idx]) {\n"
+"        if (!processed[idx])\n"
+"        {\n"
 "          unsigned node_idx = indexes[idx];\n"
 "\n"
 "          __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
@@ -13761,7 +14344,8 @@ printf(
 "\"   root_idx -> node_%%u\\n\"\n"
 "  ,root_idx);\n"
 "\n"
-"  if (root_idx != c_idx_not_exist) {\n"
+"  if (root_idx != c_idx_not_exist)\n"
+"  {\n"
 "    ui_array_s stack;\n"
 "    stack.init();\n"
 "\n"
@@ -13775,13 +14359,15 @@ printf(
 "\"   node_%%u [ color = \\\"%%s\\\" label = \\\"%%u\\\" ]\\n\"\n"
 "      ,node_idx,node_colors[node.color],node_idx);\n"
 "\n"
-"      if (node.parent_idx != c_idx_not_exist) {\n"
+"      if (node.parent_idx != c_idx_not_exist)\n"
+"      {\n"
 "        fprintf(a_file,\n"
 "\"   node_%%u -> node_%%u [ color = green ] \\n\"\n"
 "        ,node_idx,node.parent_idx);\n"
 "      }\n"
 "\n"
-"      if (node.left_idx != leaf_idx) {\n"
+"      if (node.left_idx != leaf_idx)\n"
+"      {\n"
 "        fprintf(a_file,\n"
 "\"   node_%%u -> node_%%u [ label = \\\"L\\\" ]\\n\"\n"
 "        ,node_idx,node.left_idx);\n"
@@ -13789,7 +14375,8 @@ printf(
 "        stack.push(node.left_idx);\n"
 "      }\n"
 "\n"
-"      if (node.right_idx != leaf_idx) {\n"
+"      if (node.right_idx != leaf_idx)\n"
+"      {\n"
 "        fprintf(a_file,\n"
 "\"   node_%%u -> node_%%u [ label = \\\"R\\\" ]\\n\"\n"
 "        ,node_idx,node.right_idx);\n"
@@ -13816,21 +14403,24 @@ printf(
 "bool %s::check_rb_tree_properties()\n"
 "{/*{{{*/\n"
 "  %s_node &leaf = data[leaf_idx];\n"
-"  if (!leaf.color) {\n"
+"  if (!leaf.color)\n"
+"  {\n"
 "    fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"
 "    return false;\n"
 "  }\n"
 "\n"
-"  if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist) {\n"
+"  if (leaf.left_idx != c_idx_not_exist || leaf.right_idx != c_idx_not_exist)\n"
+"  {\n"
 "    fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"
 "    return false;\n"
 "  }\n"
 "\n"
-"  if (root_idx != c_idx_not_exist) {\n"
-"\n"
+"  if (root_idx != c_idx_not_exist)\n"
+"  {\n"
 "    /* - check if root node is black - */\n"
 "    %s_node &r_node = data[root_idx];\n"
-"    if (!r_node.color) {\n"
+"    if (!r_node.color)\n"
+"    {\n"
 "      fprintf(stderr,\"ERROR: root node is not black\\n\");\n"
 "      return false;\n"
 "    }\n"
@@ -13854,18 +14444,22 @@ printf(
 "\n"
 "      %s_node &node = data[node_idx];\n"
 "\n"
-"      if (node.color) {\n"
+"      if (node.color)\n"
+"      {\n"
 "        path_length++;\n"
 "      }\n"
-"      else {\n"
-"        if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist) {\n"
+"      else\n"
+"      {\n"
+"        if (node.left_idx == c_idx_not_exist || node.right_idx == c_idx_not_exist)\n"
+"        {\n"
 "          fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"
 "          ni_stack.clear();\n"
 "          pl_stack.clear();\n"
 "          return false;\n"
 "        }\n"
 "\n"
-"        if (!data[node.left_idx].color || !data[node.right_idx].color) {\n"
+"        if (!data[node.left_idx].color || !data[node.right_idx].color)\n"
+"        {\n"
 "          fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"
 "          ni_stack.clear();\n"
 "          pl_stack.clear();\n"
@@ -13873,27 +14467,33 @@ printf(
 "        }\n"
 "      }\n"
 "\n"
-"      if (node.left_idx != c_idx_not_exist) {\n"
+"      if (node.left_idx != c_idx_not_exist)\n"
+"      {\n"
 "        ni_stack.push(node.left_idx);\n"
 "        pl_stack.push(path_length);\n"
 "      }\n"
 "\n"
-"      if (node.right_idx != c_idx_not_exist) {\n"
+"      if (node.right_idx != c_idx_not_exist)\n"
+"      {\n"
 "        ni_stack.push(node.right_idx);\n"
 "        pl_stack.push(path_length);\n"
 "      }\n"
 "\n"
 "      /* - if node is leaf node - */\n"
-"      if (stack_depth == ni_stack.used) {\n"
-"        if (r_path_length != c_idx_not_exist) {\n"
-"          if (r_path_length != path_length) {\n"
+"      if (stack_depth == ni_stack.used)\n"
+"      {\n"
+"        if (r_path_length != c_idx_not_exist)\n"
+"        {\n"
+"          if (r_path_length != path_length)\n"
+"          {\n"
 "            fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"
 "            ni_stack.clear();\n"
 "            pl_stack.clear();\n"
 "            return false;\n"
 "          }\n"
 "        }\n"
-"        else {\n"
+"        else\n"
+"        {\n"
 "          r_path_length = path_length;\n"
 "        }\n"
 "      }\n"
@@ -13905,7 +14505,8 @@ printf(
 "  }\n"
 "\n"
 "  /* - test if are node values sorted - */\n"
-"  if (root_idx != c_idx_not_exist) {\n"
+"  if (root_idx != c_idx_not_exist)\n"
+"  {\n"
 "    unsigned stack[get_descent_stack_size()];\n"
 "    unsigned *stack_ptr = stack;\n"
 "\n"
@@ -13913,10 +14514,13 @@ printf(
 "    do {\n"
 "      unsigned l_idx = idx;\n"
 "      idx = get_stack_next_idx(idx,&stack_ptr,stack);\n"
-"      if (idx == c_idx_not_exist) {\n"
+"      if (idx == c_idx_not_exist)\n"
+"      {\n"
 "        break;\n"
 "      }\n"
-"      if (__compare_value(data[l_idx].object,data[idx].object) == 1) {\n"
+"\n"
+"      if (__compare_value(data[l_idx].object,data[idx].object) == 1)\n"
+"      {\n"
 "        fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"
 "        return false;\n"
 "      }\n"

@@ -982,7 +982,8 @@ inline void ui_array_s::init_size(unsigned a_size)
 
 inline void ui_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -992,7 +993,10 @@ inline void ui_array_s::clear()
 inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -1034,7 +1038,8 @@ inline unsigned &ui_array_s::operator[](unsigned a_idx)
 
 inline void ui_array_s::push(unsigned a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -1043,7 +1048,8 @@ inline void ui_array_s::push(unsigned a_value)
 
 inline void ui_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -1052,7 +1058,8 @@ inline void ui_array_s::push_blank()
 
 inline void ui_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -1075,7 +1082,10 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
@@ -1086,8 +1096,15 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 
 inline bool ui_array_s::operator==(ui_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
@@ -1152,10 +1169,12 @@ inline unsigned mc_block_rb_tree_s::__get_grandparent_idx(unsigned a_idx)
 {/*{{{*/
   mc_block_rb_tree_s_node &node = data[a_idx];
 
-  if (node.parent_idx != c_idx_not_exist) {
+  if (node.parent_idx != c_idx_not_exist)
+  {
     return data[node.parent_idx].parent_idx;
   }
-  else {
+  else
+  {
     return c_idx_not_exist;
   }
 }/*}}}*/
@@ -1164,10 +1183,12 @@ inline unsigned mc_block_rb_tree_s::__get_uncle_idx(unsigned a_idx)
 {/*{{{*/
   unsigned gp_idx = __get_grandparent_idx(a_idx);
 
-  if (gp_idx == c_idx_not_exist) {
+  if (gp_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
-  else {
+  else
+  {
     mc_block_rb_tree_s_node &gp = data[gp_idx];
     return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
   }
@@ -1190,11 +1211,13 @@ inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned *
 
   mc_block_rb_tree_s_node &node = data[a_idx];
 
-  if (node.right_idx != leaf_idx) {
+  if (node.right_idx != leaf_idx)
+  {
     return get_stack_min_value_idx(node.right_idx,a_s_ptr);
   }
 
-  if (*a_s_ptr > a_stack_base) {
+  if (*a_s_ptr > a_stack_base)
+  {
     return *(--(*a_s_ptr));
   }
 
@@ -1206,11 +1229,13 @@ inline void mc_block_rb_tree_s::__rotate_left(unsigned a_idx)
   mc_block_rb_tree_s_node &root = data[a_idx];
   mc_block_rb_tree_s_node &pivot = data[root.right_idx];
 
-  if (a_idx == root_idx) {
+  if (a_idx == root_idx)
+  {
     root_idx = root.right_idx;
     pivot.parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     mc_block_rb_tree_s_node &rp = data[root.parent_idx];
     (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;
 
@@ -1230,11 +1255,13 @@ inline void mc_block_rb_tree_s::__rotate_right(unsigned a_idx)
   mc_block_rb_tree_s_node &root = data[a_idx];
   mc_block_rb_tree_s_node &pivot = data[root.left_idx];
 
-  if (a_idx == root_idx) {
+  if (a_idx == root_idx)
+  {
     root_idx = root.left_idx;
     pivot.parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     mc_block_rb_tree_s_node &rp = data[root.parent_idx];
     (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;
 
@@ -1253,12 +1280,15 @@ inline unsigned mc_block_rb_tree_s::__get_new_index()
 {/*{{{*/
   unsigned new_idx;
 
-  if (free_idx != c_idx_not_exist) {
+  if (free_idx != c_idx_not_exist)
+  {
     new_idx = free_idx;
     free_idx = data[new_idx].parent_idx;
   }
-  else {
-    if (used >= size) {
+  else
+  {
+    if (used >= size)
+    {
       copy_resize((size << 1) + c_array_add);
     }
 
@@ -1275,13 +1305,15 @@ inline void mc_block_rb_tree_s::__replace_delete_node_by_child(unsigned a_idx,un
 {/*{{{*/
   mc_block_rb_tree_s_node &node = data[a_idx];
 
-  if (node.parent_idx != c_idx_not_exist) {
+  if (node.parent_idx != c_idx_not_exist)
+  {
     mc_block_rb_tree_s_node &parent = data[node.parent_idx];
     (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;
 
     data[a_ch_idx].parent_idx = node.parent_idx;
   }
-  else {
+  else
+  {
     root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;
     data[a_ch_idx].parent_idx = c_idx_not_exist;
   }
@@ -1298,13 +1330,16 @@ inline void mc_block_rb_tree_s::__remove_one_child(unsigned a_idx,unsigned a_ch_
   node.valid = false;
   count--;
 
-  if (node.color) {
+  if (node.color)
+  {
     mc_block_rb_tree_s_node &child_node = data[a_ch_idx];
 
-    if (!child_node.color) {
+    if (!child_node.color)
+    {
       child_node.color = true;
     }
-    else {
+    else
+    {
       __remove_black_black(a_ch_idx);
     }
   }
@@ -1323,7 +1358,8 @@ inline void mc_block_rb_tree_s::init()
 
 inline void mc_block_rb_tree_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     cfree(data);
   }
 
@@ -1406,7 +1442,8 @@ inline unsigned mc_block_rb_tree_s::unique_insert(mc_block_s &a_value)
   unsigned new_node_idx = __get_new_index();
   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     mc_block_rb_tree_s_node &new_node = data[new_node_idx];
 
     new_node.parent_idx = free_idx;
@@ -1430,7 +1467,8 @@ inline unsigned mc_block_rb_tree_s::unique_swap_insert(mc_block_s &a_value)
   unsigned new_node_idx = __get_new_index();
   unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     mc_block_rb_tree_s_node &new_node = data[new_node_idx];
 
     new_node.parent_idx = free_idx;
@@ -1453,7 +1491,10 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
 {/*{{{*/
   clear();
 
-  if (a_src.root_idx == c_idx_not_exist) return *this;
+  if (a_src.root_idx == c_idx_not_exist)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
@@ -2226,7 +2267,8 @@ inline string_s &string_array_s::operator[](unsigned a_idx)
 
 inline void string_array_s::push(string_s &a_value)
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -2235,7 +2277,8 @@ inline void string_array_s::push(string_s &a_value)
 
 inline void string_array_s::push_blank()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -2244,7 +2287,8 @@ inline void string_array_s::push_blank()
 
 inline void string_array_s::push_clear()
 {/*{{{*/
-  if (used >= size) {
+  if (used >= size)
+  {
     copy_resize((size << 1) + c_array_add);
   }
 
@@ -2630,7 +2674,8 @@ unsigned string_s::get_character_line_end(unsigned c_idx)
 
 void string_array_s::clear()
 {/*{{{*/
-  if (data != nullptr) {
+  if (data != nullptr)
+  {
     string_s *ptr = data;
     string_s *ptr_end = ptr + size;
 
@@ -2647,7 +2692,10 @@ void string_array_s::clear()
 void string_array_s::set(unsigned a_used,string_s *a_data)
 {/*{{{*/
   clear();
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != nullptr);
   copy_resize(a_used);
@@ -2666,7 +2714,8 @@ void string_array_s::set(unsigned a_used,string_s *a_data)
 void string_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -2679,7 +2728,8 @@ void string_array_s::reserve(unsigned a_cnt)
 void string_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
-  if (required_cnt > size) {
+  if (required_cnt > size)
+  {
     unsigned r_size = size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -2695,7 +2745,8 @@ void string_array_s::copy_resize(unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= used);
 
-  if (size > a_size) {
+  if (size > a_size)
+  {
     string_s *ptr = data + a_size;
     string_s *ptr_end = data + size;
 
@@ -2704,17 +2755,21 @@ void string_array_s::copy_resize(unsigned a_size)
     } while(++ptr < ptr_end);
   }
 
-  if (a_size == 0) {
-    if (data != nullptr) {
+  if (a_size == 0)
+  {
+    if (data != nullptr)
+    {
       cfree(data);
     }
     data = nullptr;
   }
-  else {
+  else
+  {
     data = (string_s *)crealloc(data,a_size*sizeof(string_s));
   }
 
-  if (a_size > size) {
+  if (a_size > size)
+  {
     string_s *ptr = data + size;
     string_s *ptr_end = data + a_size;
 
@@ -2728,7 +2783,10 @@ void string_array_s::copy_resize(unsigned a_size)
 
 void string_array_s::fill(string_s &a_value)
 {/*{{{*/
-  if (size == 0) return;
+  if (size == 0)
+  {
+    return;
+  }
 
   string_s *ptr = data;
   string_s *ptr_end = data + size;
@@ -2742,13 +2800,17 @@ void string_array_s::fill(string_s &a_value)
 
 unsigned string_array_s::get_idx(string_s &a_value)
 {/*{{{*/
-  if (used == 0) return c_idx_not_exist;
+  if (used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   string_s *ptr = data;
   string_s *ptr_end = data + used;
 
   do {
-    if (*ptr == a_value) {
+    if (*ptr == a_value)
+    {
       return ptr - data;
     }
   } while(++ptr < ptr_end);
@@ -2760,7 +2822,10 @@ string_array_s &string_array_s::operator=(string_array_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.used == 0) return *this;
+  if (a_src.used == 0)
+  {
+    return *this;
+  }
 
   copy_resize(a_src.used);
 
@@ -2778,15 +2843,23 @@ string_array_s &string_array_s::operator=(string_array_s &a_src)
 
 bool string_array_s::operator==(string_array_s &a_second)
 {/*{{{*/
-  if (used != a_second.used) return false;
-  if (used == 0) return true;
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
 
   string_s *ptr = data;
   string_s *ptr_end = ptr + used;
   string_s *s_ptr = a_second.data;
 
   do {
-    if (!(*ptr == *s_ptr)) {
+    if (!(*ptr == *s_ptr))
+    {
       return false;
     }
   } while(++s_ptr,++ptr < ptr_end);

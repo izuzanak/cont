@@ -41,7 +41,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (data != nullptr) {\n"
+"  if (data != nullptr)\n"
+"  {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -79,7 +80,10 @@ printf(
 printf(
 "{/*{{{*/\n"
 "  clear();\n"
-"  if (a_used == 0) return;\n"
+"  if (a_used == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 "  debug_assert(a_data != nullptr);\n"
 "  copy_resize(a_used);\n"
@@ -200,7 +204,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -215,7 +220,8 @@ void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::push_blank()\n"
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -231,7 +237,8 @@ printf(
 "void %s::reserve(unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = used + a_cnt;\n"
-"  if (required_cnt > size) {\n"
+"  if (required_cnt > size)\n"
+"  {\n"
 "    unsigned r_size = size;\n"
 "    do {\n"
 "      r_size = (r_size << 1) + c_array_add;\n"
@@ -250,7 +257,8 @@ printf(
 "void %s::push_blanks(unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = used + a_cnt;\n"
-"  if (required_cnt > size) {\n"
+"  if (required_cnt > size)\n"
+"  {\n"
 "    unsigned r_size = size;\n"
 "    do {\n"
 "      r_size = (r_size << 1) + c_array_add;\n"
@@ -270,7 +278,8 @@ void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
 printf(
 "inline void %s::push_clear()\n"
 "{/*{{{*/\n"
-"  if (used >= size) {\n"
+"  if (used >= size)\n"
+"  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -326,10 +335,12 @@ printf(
 "\n"
 "  %s *n_data;\n"
 "\n"
-"  if (a_size == 0) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
 "    n_data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
@@ -344,7 +355,8 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME);
 printf(
-"  if (used > 0) {\n"
+"  if (used > 0)\n"
+"  {\n"
 "    %s *ptr = data;\n"
 "    %s *ptr_end = ptr + used;\n"
 "    %s *n_ptr = n_data;\n"
@@ -356,7 +368,8 @@ printf(
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
 "\n"
-"  if (size > used) {\n"
+"  if (size > used)\n"
+"  {\n"
 "    %s *ptr = data + used;\n"
 "    %s *ptr_end = data + size;\n"
 "\n"
@@ -365,7 +378,8 @@ printf(
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
 "\n"
-"  if (size != 0) {\n"
+"  if (size != 0)\n"
+"  {\n"
 "    cfree(data);\n"
 "  }\n"
 "\n"
@@ -385,7 +399,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (size > a_size) {\n"
+"  if (size > a_size)\n"
+"  {\n"
 "    %s *ptr = data + a_size;\n"
 "    %s *ptr_end = data + size;\n"
 "\n"
@@ -397,20 +412,24 @@ printf(
    }
 printf(
 "\n"
-"  if (a_size == 0) {\n"
-"    if (data != nullptr) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
+"    if (data != nullptr)\n"
+"    {\n"
 "      cfree(data);\n"
 "    }\n"
 "    data = nullptr;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    data = (%s *)crealloc(data,a_size*sizeof(%s));\n"
 "  }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (a_size > size) {\n"
+"  if (a_size > size)\n"
+"  {\n"
 "    %s *ptr = data + size;\n"
 "    %s *ptr_end = data + a_size;\n"
 "\n"
@@ -450,7 +469,10 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (size == 0) return;\n"
+"  if (size == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 );
    if (type_idx == c_bt_bool || type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
@@ -490,13 +512,17 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (used == 0) return c_idx_not_exist;\n"
+"  if (used == 0)\n"
+"  {\n"
+"    return c_idx_not_exist;\n"
+"  }\n"
 "\n"
 "  %s *ptr = data;\n"
 "  %s *ptr_end = data + used;\n"
 "\n"
 "  do {\n"
-"    if (*ptr == a_value) {\n"
+"    if (*ptr == a_value)\n"
+"    {\n"
 "      return ptr - data;\n"
 "    }\n"
 "  } while(++ptr < ptr_end);\n"
@@ -523,7 +549,10 @@ printf(
 "{/*{{{*/\n"
 "  clear();\n"
 "\n"
-"  if (a_src.used == 0) return *this;\n"
+"  if (a_src.used == 0)\n"
+"  {\n"
+"    return *this;\n"
+"  }\n"
 "\n"
 "  copy_resize(a_src.used);\n"
 );
@@ -567,8 +596,15 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (used != a_second.used) return false;\n"
-"  if (used == 0) return true;\n"
+"  if (used != a_second.used)\n"
+"  {\n"
+"    return false;\n"
+"  }\n"
+"\n"
+"  if (used == 0)\n"
+"  {\n"
+"    return true;\n"
+"  }\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
@@ -584,7 +620,8 @@ printf(
 "  %s *s_ptr = a_second.data;\n"
 "\n"
 "  do {\n"
-"    if (!(*ptr == *s_ptr)) {\n"
+"    if (!(*ptr == *s_ptr))\n"
+"    {\n"
 "      return false;\n"
 "    }\n"
 "  } while(++s_ptr,++ptr < ptr_end);\n"
