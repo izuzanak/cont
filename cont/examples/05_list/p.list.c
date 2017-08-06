@@ -315,7 +315,8 @@ static inline void rec_list_s_init_size(rec_list_s *this,unsigned a_size)
 
 static inline void rec_list_s_clear(rec_list_s *this)
 {/*{{{*/
-  if (this->data != NULL) {
+  if (this->data != NULL)
+  {
     cfree(this->data);
   }
 
@@ -369,12 +370,15 @@ static inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value)
 {/*{{{*/
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -386,10 +390,12 @@ static inline unsigned rec_list_s_prepend(rec_list_s *this,record_s *a_value)
   new_element->next_idx = this->first_idx;
   new_element->prev_idx = c_idx_not_exist;
 
-  if (this->first_idx != c_idx_not_exist) {
+  if (this->first_idx != c_idx_not_exist)
+  {
     this->data[this->first_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     this->last_idx = new_idx;
   }
 
@@ -404,12 +410,15 @@ static inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value)
 {/*{{{*/
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -421,10 +430,12 @@ static inline unsigned rec_list_s_append(rec_list_s *this,record_s *a_value)
   new_element->next_idx = c_idx_not_exist;
   new_element->prev_idx = this->last_idx;
 
-  if (this->last_idx != c_idx_not_exist) {
+  if (this->last_idx != c_idx_not_exist)
+  {
     this->data[this->last_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     this->first_idx = new_idx;
   }
 
@@ -441,12 +452,15 @@ static inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,
 
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -459,10 +473,12 @@ static inline unsigned rec_list_s_insert_before(rec_list_s *this,unsigned a_idx,
   new_element->next_idx = a_idx;
   new_element->prev_idx = idx_element->prev_idx;
 
-  if (idx_element->prev_idx != c_idx_not_exist) {
+  if (idx_element->prev_idx != c_idx_not_exist)
+  {
     this->data[idx_element->prev_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     this->first_idx = new_idx;
   }
 
@@ -479,12 +495,15 @@ static inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,r
 
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -497,10 +516,12 @@ static inline unsigned rec_list_s_insert_after(rec_list_s *this,unsigned a_idx,r
   new_element->next_idx = idx_element->next_idx;
   new_element->prev_idx = a_idx;
 
-  if (idx_element->next_idx != c_idx_not_exist) {
+  if (idx_element->next_idx != c_idx_not_exist)
+  {
     this->data[idx_element->next_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     this->last_idx = new_idx;
   }
 
@@ -515,12 +536,15 @@ static inline unsigned rec_list_s_prepend_blank(rec_list_s *this)
 {/*{{{*/
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -532,10 +556,12 @@ static inline unsigned rec_list_s_prepend_blank(rec_list_s *this)
   new_element->next_idx = this->first_idx;
   new_element->prev_idx = c_idx_not_exist;
 
-  if (this->first_idx != c_idx_not_exist) {
+  if (this->first_idx != c_idx_not_exist)
+  {
     this->data[this->first_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     this->last_idx = new_idx;
   }
 
@@ -548,12 +574,15 @@ static inline unsigned rec_list_s_append_blank(rec_list_s *this)
 {/*{{{*/
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -565,10 +594,12 @@ static inline unsigned rec_list_s_append_blank(rec_list_s *this)
   new_element->next_idx = c_idx_not_exist;
   new_element->prev_idx = this->last_idx;
 
-  if (this->last_idx != c_idx_not_exist) {
+  if (this->last_idx != c_idx_not_exist)
+  {
     this->data[this->last_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     this->first_idx = new_idx;
   }
 
@@ -583,12 +614,15 @@ static inline unsigned rec_list_s_insert_blank_before(rec_list_s *this,unsigned 
 
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -601,10 +635,12 @@ static inline unsigned rec_list_s_insert_blank_before(rec_list_s *this,unsigned 
   new_element->next_idx = a_idx;
   new_element->prev_idx = idx_element->prev_idx;
 
-  if (idx_element->prev_idx != c_idx_not_exist) {
+  if (idx_element->prev_idx != c_idx_not_exist)
+  {
     this->data[idx_element->prev_idx].next_idx = new_idx;
   }
-  else {
+  else
+  {
     this->first_idx = new_idx;
   }
 
@@ -619,12 +655,15 @@ static inline unsigned rec_list_s_insert_blank_after(rec_list_s *this,unsigned a
 
   unsigned new_idx;
 
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].next_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_list_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -637,10 +676,12 @@ static inline unsigned rec_list_s_insert_blank_after(rec_list_s *this,unsigned a
   new_element->next_idx = idx_element->next_idx;
   new_element->prev_idx = a_idx;
 
-  if (idx_element->next_idx != c_idx_not_exist) {
+  if (idx_element->next_idx != c_idx_not_exist)
+  {
     this->data[idx_element->next_idx].prev_idx = new_idx;
   }
-  else {
+  else
+  {
     this->last_idx = new_idx;
   }
 
@@ -655,17 +696,21 @@ static inline void rec_list_s_remove(rec_list_s *this,unsigned a_idx)
 
   rec_list_s_element *rm_element = this->data + a_idx;
 
-  if (rm_element->next_idx != c_idx_not_exist) {
+  if (rm_element->next_idx != c_idx_not_exist)
+  {
     this->data[rm_element->next_idx].prev_idx = rm_element->prev_idx;
   }
-  else {
+  else
+  {
     this->last_idx = rm_element->prev_idx;
   }
 
-  if (rm_element->prev_idx != c_idx_not_exist) {
+  if (rm_element->prev_idx != c_idx_not_exist)
+  {
     this->data[rm_element->prev_idx].next_idx = rm_element->next_idx;
   }
-  else {
+  else
+  {
     this->first_idx = rm_element->next_idx;
   }
 
@@ -687,7 +732,10 @@ static inline void rec_list_s_copy(rec_list_s *this,rec_list_s *a_src)
 {/*{{{*/
   rec_list_s_clear(this);
 
-  if (a_src->used == 0) return;
+  if (a_src->used == 0)
+  {
+    return;
+  }
 
   rec_list_s_copy_resize(this,a_src->used);
   memcpy(this->data,a_src->data,a_src->used*sizeof(rec_list_s_element));
@@ -721,13 +769,16 @@ void rec_list_s_copy_resize(rec_list_s *this,unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= this->used);
 
-  if (a_size == 0) {
-    if (this->data != NULL) {
+  if (a_size == 0)
+  {
+    if (this->data != NULL)
+    {
       cfree(this->data);
     }
     this->data = NULL;
   }
-  else {
+  else
+  {
     this->data = (rec_list_s_element *)crealloc(this->data,a_size*sizeof(rec_list_s_element));
   }
 
@@ -736,13 +787,17 @@ void rec_list_s_copy_resize(rec_list_s *this,unsigned a_size)
 
 unsigned rec_list_s_get_idx(rec_list_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->first_idx == c_idx_not_exist) return c_idx_not_exist;
+  if (this->first_idx == c_idx_not_exist)
+  {
+    return c_idx_not_exist;
+  }
 
   unsigned idx = this->first_idx;
   do {
     rec_list_s_element *element = this->data + idx;
 
-    if (record_s_compare(&element->object,a_value)) {
+    if (record_s_compare(&element->object,a_value))
+    {
       return idx;
     }
 
@@ -754,11 +809,13 @@ unsigned rec_list_s_get_idx(rec_list_s *this,record_s *a_value)
 
 int rec_list_s_compare(rec_list_s *this,rec_list_s *a_second)
 {/*{{{*/
-  if (this->first_idx == c_idx_not_exist) {
+  if (this->first_idx == c_idx_not_exist)
+  {
     return a_second->first_idx == c_idx_not_exist;
   }
 
-  if (a_second->first_idx == c_idx_not_exist) {
+  if (a_second->first_idx == c_idx_not_exist)
+  {
     return 0;
   }
 
@@ -769,7 +826,8 @@ int rec_list_s_compare(rec_list_s *this,rec_list_s *a_second)
     rec_list_s_element *element = this->data + idx;
     rec_list_s_element *s_element = a_second->data + s_idx;
 
-    if (!record_s_compare(&element->object,&s_element->object)) {
+    if (!record_s_compare(&element->object,&s_element->object))
+    {
       return 0;
     }
 
@@ -786,7 +844,8 @@ void rec_list_s_to_string(rec_list_s *this,bc_array_s *a_trg)
 {/*{{{*/
   bc_array_s_push(a_trg,'[');
 
-  if (this->first_idx != c_idx_not_exist) {
+  if (this->first_idx != c_idx_not_exist)
+  {
     unsigned idx = this->first_idx;
 
     do {
@@ -794,7 +853,9 @@ void rec_list_s_to_string(rec_list_s *this,bc_array_s *a_trg)
       record_s_to_string(&element->object,a_trg);
 
       if ((idx = element->next_idx) == c_idx_not_exist)
+      {
         break;
+      }
 
       bc_array_s_push(a_trg,',');
     } while(1);

@@ -369,7 +369,8 @@ static inline void ui_array_s_init_size(ui_array_s *this,unsigned a_size)
 
 static inline void ui_array_s_clear(ui_array_s *this)
 {/*{{{*/
-  if (this->data != NULL) {
+  if (this->data != NULL)
+  {
     cfree(this->data);
   }
 
@@ -379,7 +380,10 @@ static inline void ui_array_s_clear(ui_array_s *this)
 static inline void ui_array_s_set(ui_array_s *this,unsigned a_used,unsigned *a_data)
 {/*{{{*/
   ui_array_s_clear(this);
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != NULL);
   ui_array_s_copy_resize(this,a_used);
@@ -421,7 +425,8 @@ static inline unsigned *ui_array_s_at(ui_array_s *this,unsigned a_idx)
 
 static inline void ui_array_s_push(ui_array_s *this,unsigned a_value)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     ui_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -430,7 +435,8 @@ static inline void ui_array_s_push(ui_array_s *this,unsigned a_value)
 
 static inline void ui_array_s_push_blank(ui_array_s *this)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     ui_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -439,7 +445,8 @@ static inline void ui_array_s_push_blank(ui_array_s *this)
 
 static inline void ui_array_s_push_clear(ui_array_s *this)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     ui_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -462,7 +469,10 @@ static inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src)
 {/*{{{*/
   ui_array_s_clear(this);
 
-  if (a_src->used == 0) return;
+  if (a_src->used == 0)
+  {
+    return;
+  }
 
   ui_array_s_copy_resize(this,a_src->used);
   memcpy(this->data,a_src->data,a_src->used*sizeof(unsigned));
@@ -472,8 +482,15 @@ static inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src)
 
 static inline int ui_array_s_compare(ui_array_s *this,ui_array_s *a_second)
 {/*{{{*/
-  if (this->used != a_second->used) return 0;
-  if (this->used == 0) return 1;
+  if (this->used != a_second->used)
+  {
+    return 0;
+  }
+
+  if (this->used == 0)
+  {
+    return 1;
+  }
 
   return (memcmp(this->data,a_second->data,this->used*sizeof(unsigned)) == 0);
 }/*}}}*/
@@ -487,10 +504,12 @@ static inline unsigned rec_rb_tree_s___get_grandparent_idx(rec_rb_tree_s *this,u
 {/*{{{*/
   rec_rb_tree_s_node *node = this->data + a_idx;
 
-  if (node->parent_idx != c_idx_not_exist) {
+  if (node->parent_idx != c_idx_not_exist)
+  {
     return this->data[node->parent_idx].parent_idx;
   }
-  else {
+  else
+  {
     return c_idx_not_exist;
   }
 }/*}}}*/
@@ -499,10 +518,12 @@ static inline unsigned rec_rb_tree_s___get_uncle_idx(rec_rb_tree_s *this,unsigne
 {/*{{{*/
   unsigned gp_idx = rec_rb_tree_s___get_grandparent_idx(this,a_idx);
 
-  if (gp_idx == c_idx_not_exist) {
+  if (gp_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
-  else {
+  else
+  {
     rec_rb_tree_s_node *gp = this->data + gp_idx;
     return gp->left_idx == this->data[a_idx].parent_idx?gp->right_idx:gp->left_idx;
   }
@@ -525,11 +546,13 @@ static inline unsigned rec_rb_tree_s_get_stack_next_idx(rec_rb_tree_s *this,unsi
 
   rec_rb_tree_s_node *node = this->data + a_idx;
 
-  if (node->right_idx != this->leaf_idx) {
+  if (node->right_idx != this->leaf_idx)
+  {
     return rec_rb_tree_s_get_stack_min_value_idx(this,node->right_idx,a_s_ptr);
   }
 
-  if (*a_s_ptr > a_stack_base) {
+  if (*a_s_ptr > a_stack_base)
+  {
     return *(--(*a_s_ptr));
   }
 
@@ -541,17 +564,21 @@ static inline void rec_rb_tree_s___rotate_left(rec_rb_tree_s *this,unsigned a_id
   rec_rb_tree_s_node *root = this->data + a_idx;
   rec_rb_tree_s_node *pivot = this->data + root->right_idx;
 
-  if (a_idx == this->root_idx) {
+  if (a_idx == this->root_idx)
+  {
     this->root_idx = root->right_idx;
     pivot->parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     rec_rb_tree_s_node *rp = this->data + root->parent_idx;
 
-    if (rp->right_idx == a_idx) {
+    if (rp->right_idx == a_idx)
+    {
       rp->right_idx = root->right_idx;
     }
-    else {
+    else
+    {
       rp->left_idx = root->right_idx;
     }
 
@@ -571,17 +598,21 @@ static inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_i
   rec_rb_tree_s_node *root = this->data + a_idx;
   rec_rb_tree_s_node *pivot = this->data + root->left_idx;
 
-  if (a_idx == this->root_idx) {
+  if (a_idx == this->root_idx)
+  {
     this->root_idx = root->left_idx;
     pivot->parent_idx = c_idx_not_exist;
   }
-  else {
+  else
+  {
     rec_rb_tree_s_node *rp = this->data + root->parent_idx;
 
-    if (rp->right_idx == a_idx) {
+    if (rp->right_idx == a_idx)
+    {
       rp->right_idx = root->left_idx;
     }
-    else {
+    else
+    {
       rp->left_idx = root->left_idx;
     }
 
@@ -598,14 +629,17 @@ static inline void rec_rb_tree_s___rotate_right(rec_rb_tree_s *this,unsigned a_i
 
 static inline unsigned rec_rb_tree_s___get_new_index(rec_rb_tree_s *this)
 {/*{{{*/
-  if (this->free_idx != c_idx_not_exist) {
+  if (this->free_idx != c_idx_not_exist)
+  {
     unsigned new_idx = this->free_idx;
     this->free_idx = this->data[new_idx].parent_idx;
 
     return new_idx;
   }
-  else {
-    if (this->used >= this->size) {
+  else
+  {
+    if (this->used >= this->size)
+    {
       rec_rb_tree_s_copy_resize(this,(this->size << 1) + c_array_add);
     }
 
@@ -617,19 +651,23 @@ static inline void rec_rb_tree_s___replace_delete_node_by_child(rec_rb_tree_s *t
 {/*{{{*/
   rec_rb_tree_s_node *node = this->data + a_idx;
 
-  if (node->parent_idx != c_idx_not_exist) {
+  if (node->parent_idx != c_idx_not_exist)
+  {
     rec_rb_tree_s_node *parent = this->data + node->parent_idx;
 
-    if (parent->left_idx == a_idx) {
+    if (parent->left_idx == a_idx)
+    {
       parent->left_idx = a_ch_idx;
     }
-    else {
+    else
+    {
       parent->right_idx = a_ch_idx;
     }
 
     this->data[a_ch_idx].parent_idx = node->parent_idx;
   }
-  else {
+  else
+  {
     this->root_idx = a_ch_idx == this->leaf_idx?c_idx_not_exist:a_ch_idx;
     this->data[a_ch_idx].parent_idx = c_idx_not_exist;
   }
@@ -643,13 +681,16 @@ static inline void rec_rb_tree_s___remove_one_child(rec_rb_tree_s *this,unsigned
   node->parent_idx = this->free_idx;
   this->free_idx = a_idx;
 
-  if (node->color) {
+  if (node->color)
+  {
     rec_rb_tree_s_node *child_node = this->data + a_ch_idx;
 
-    if (!child_node->color) {
+    if (!child_node->color)
+    {
       child_node->color = 1;
     }
-    else {
+    else
+    {
       rec_rb_tree_s___remove_black_black(this,a_ch_idx);
     }
   }
@@ -667,7 +708,8 @@ static inline void rec_rb_tree_s_init(rec_rb_tree_s *this)
 
 static inline void rec_rb_tree_s_clear(rec_rb_tree_s *this)
 {/*{{{*/
-  if (this->data != NULL) {
+  if (this->data != NULL)
+  {
     cfree(this->data);
   }
 
@@ -746,7 +788,8 @@ static inline unsigned rec_rb_tree_s_unique_insert(rec_rb_tree_s *this,record_s 
   unsigned new_node_idx = rec_rb_tree_s___get_new_index(this);
   unsigned old_node_idx = rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value,1);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     rec_rb_tree_s_node *new_node = this->data + new_node_idx;
 
     new_node->parent_idx = this->free_idx;
@@ -767,7 +810,8 @@ static inline unsigned rec_rb_tree_s_unique_swap_insert(rec_rb_tree_s *this,reco
   unsigned new_node_idx = rec_rb_tree_s___get_new_index(this);
   unsigned old_node_idx = rec_rb_tree_s___binary_tree_insert(this,new_node_idx,a_value,1);
 
-  if (old_node_idx != c_idx_not_exist) {
+  if (old_node_idx != c_idx_not_exist)
+  {
     rec_rb_tree_s_node *new_node = this->data + new_node_idx;
 
     new_node->parent_idx = this->free_idx;
@@ -787,7 +831,10 @@ static inline void rec_rb_tree_s_copy(rec_rb_tree_s *this,rec_rb_tree_s *a_src)
 {/*{{{*/
   rec_rb_tree_s_clear(this);
 
-  if (a_src->root_idx == c_idx_not_exist) return;
+  if (a_src->root_idx == c_idx_not_exist)
+  {
+    return;
+  }
 
   rec_rb_tree_s_copy_resize(this,a_src->used);
   memcpy(this->data,a_src->data,a_src->used*sizeof(rec_rb_tree_s_node));
@@ -828,7 +875,8 @@ void print_tree(rec_rb_tree_s *rec_tree,const char *name);
 void ui_array_s_reserve(ui_array_s *this,unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = this->used + a_cnt;
-  if (required_cnt > this->size) {
+  if (required_cnt > this->size)
+  {
     unsigned r_size = this->size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -841,7 +889,8 @@ void ui_array_s_reserve(ui_array_s *this,unsigned a_cnt)
 void ui_array_s_push_blanks(ui_array_s *this,unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = this->used + a_cnt;
-  if (required_cnt > this->size) {
+  if (required_cnt > this->size)
+  {
     unsigned r_size = this->size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -857,13 +906,16 @@ void ui_array_s_copy_resize(ui_array_s *this,unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= this->used);
 
-  if (a_size == 0) {
-    if (this->data != NULL) {
+  if (a_size == 0)
+  {
+    if (this->data != NULL)
+    {
       cfree(this->data);
     }
     this->data = NULL;
   }
-  else {
+  else
+  {
     this->data = (unsigned *)crealloc(this->data,a_size*sizeof(unsigned));
   }
 
@@ -872,7 +924,10 @@ void ui_array_s_copy_resize(ui_array_s *this,unsigned a_size)
 
 void ui_array_s_fill(ui_array_s *this,unsigned a_value)
 {/*{{{*/
-  if (this->size == 0) return;
+  if (this->size == 0)
+  {
+    return;
+  }
 
   unsigned *ptr = this->data;
   unsigned *ptr_end = this->data + this->size;
@@ -886,13 +941,17 @@ void ui_array_s_fill(ui_array_s *this,unsigned a_value)
 
 unsigned ui_array_s_get_idx(ui_array_s *this,unsigned a_value)
 {/*{{{*/
-  if (this->used == 0) return c_idx_not_exist;
+  if (this->used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   unsigned *ptr = this->data;
   unsigned *ptr_end = this->data + this->used;
 
   do {
-    if (*ptr == a_value) {
+    if (*ptr == a_value)
+    {
       return ptr - this->data;
     }
   } while(++ptr < ptr_end);
@@ -905,7 +964,8 @@ void ui_array_s_to_string(ui_array_s *this,bc_array_s *a_trg)
 {/*{{{*/
   bc_array_s_push(a_trg,'[');
 
-  if (this->used != 0) {
+  if (this->used != 0)
+  {
     unsigned *ptr = this->data;
     unsigned *ptr_end = this->data + this->used;
 
@@ -913,7 +973,9 @@ void ui_array_s_to_string(ui_array_s *this,bc_array_s *a_trg)
       unsigned_to_string(ptr,a_trg);
 
       if (++ptr >= ptr_end)
+      {
         break;
+      }
 
       bc_array_s_push(a_trg,',');
     } while(1);
@@ -936,7 +998,8 @@ unsigned rec_rb_tree_s_get_stack_min_value_idx(rec_rb_tree_s *this,unsigned a_id
   do {
     rec_rb_tree_s_node *node = this->data + node_idx;
 
-    if (node->left_idx == this->leaf_idx) {
+    if (node->left_idx == this->leaf_idx)
+    {
       return node_idx;
     }
 
@@ -953,7 +1016,8 @@ unsigned rec_rb_tree_s_get_min_value_idx(rec_rb_tree_s *this,unsigned a_idx)
   do {
     rec_rb_tree_s_node *node = this->data + node_idx;
 
-    if (node->left_idx == this->leaf_idx) {
+    if (node->left_idx == this->leaf_idx)
+    {
       return node_idx;
     }
 
@@ -969,7 +1033,8 @@ unsigned rec_rb_tree_s_get_max_value_idx(rec_rb_tree_s *this,unsigned a_idx)
   do {
     rec_rb_tree_s_node *node = this->data + node_idx;
 
-    if (node->right_idx == this->leaf_idx) {
+    if (node->right_idx == this->leaf_idx)
+    {
       return node_idx;
     }
 
@@ -983,20 +1048,23 @@ unsigned rec_rb_tree_s_get_next_idx(rec_rb_tree_s *this,unsigned a_idx)
 
   rec_rb_tree_s_node *node = this->data + a_idx;
 
-  if (node->right_idx != this->leaf_idx) {
+  if (node->right_idx != this->leaf_idx)
+  {
     return rec_rb_tree_s_get_min_value_idx(this,node->right_idx);
   }
-  else {
-
+  else
+  {
     unsigned node_idx = a_idx;
     do {
       rec_rb_tree_s_node *node = this->data + node_idx;
 
-      if (node->parent_idx == c_idx_not_exist) {
+      if (node->parent_idx == c_idx_not_exist)
+      {
         return c_idx_not_exist;
       }
 
-      if (this->data[node->parent_idx].right_idx != node_idx) {
+      if (this->data[node->parent_idx].right_idx != node_idx)
+      {
         return node->parent_idx;
       }
 
@@ -1011,20 +1079,23 @@ unsigned rec_rb_tree_s_get_prev_idx(rec_rb_tree_s *this,unsigned a_idx)
 
   rec_rb_tree_s_node *node = this->data + a_idx;
 
-  if (node->left_idx != this->leaf_idx) {
+  if (node->left_idx != this->leaf_idx)
+  {
     return rec_rb_tree_s_get_max_value_idx(this,node->left_idx);
   }
-  else {
-
+  else
+  {
     unsigned node_idx = a_idx;
     do {
       rec_rb_tree_s_node *node = this->data + node_idx;
 
-      if (node->parent_idx == c_idx_not_exist) {
+      if (node->parent_idx == c_idx_not_exist)
+      {
         return c_idx_not_exist;
       }
 
-      if (this->data[node->parent_idx].left_idx != node_idx) {
+      if (this->data[node->parent_idx].left_idx != node_idx)
+      {
         return node->parent_idx;
       }
 
@@ -1035,8 +1106,10 @@ unsigned rec_rb_tree_s_get_prev_idx(rec_rb_tree_s *this,unsigned a_idx)
 
 unsigned rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,record_s *a_value,int a_unique)
 {/*{{{*/
-  if (this->root_idx == c_idx_not_exist) {
-    if (this->leaf_idx == c_idx_not_exist) {
+  if (this->root_idx == c_idx_not_exist)
+  {
+    if (this->leaf_idx == c_idx_not_exist)
+    {
       this->leaf_idx = rec_rb_tree_s___get_new_index(this);
       rec_rb_tree_s_node *leaf = this->data + this->leaf_idx;
 
@@ -1051,25 +1124,31 @@ unsigned rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_i
     this->data[a_new_idx].parent_idx = c_idx_not_exist;
     this->root_idx = a_new_idx;
   }
-  else  {
+  else
+  {
     unsigned node_idx = this->root_idx;
     do {
       rec_rb_tree_s_node *node = this->data + node_idx;
 
       int comp_result = rec_rb_tree_s___compare_value(this,a_value,&node->object);
-      if (comp_result < 0) {
-        if (node->left_idx == this->leaf_idx) {
+      if (comp_result < 0)
+      {
+        if (node->left_idx == this->leaf_idx)
+        {
           node->left_idx = a_new_idx;
           break;
         }
         node_idx = node->left_idx;
       }
-      else {
-        if (a_unique && comp_result == 0) {
+      else
+      {
+        if (a_unique && comp_result == 0)
+        {
           return node_idx;
         }
 
-        if (node->right_idx == this->leaf_idx) {
+        if (node->right_idx == this->leaf_idx)
+        {
           node->right_idx = a_new_idx;
           break;
         }
@@ -1094,7 +1173,8 @@ void rec_rb_tree_s___remove_black_black(rec_rb_tree_s *this,unsigned a_idx)
   do {
     rec_rb_tree_s_node *node = this->data + node_idx;
 
-    if (node->parent_idx == c_idx_not_exist) {
+    if (node->parent_idx == c_idx_not_exist)
+    {
       return;
     }
 
@@ -1105,14 +1185,17 @@ void rec_rb_tree_s___remove_black_black(rec_rb_tree_s *this,unsigned a_idx)
       unsigned sibling_idx = parent->left_idx == node_idx?parent->right_idx:parent->left_idx;
       rec_rb_tree_s_node *sibling = this->data + sibling_idx;
 
-      if (!sibling->color) {
+      if (!sibling->color)
+      {
         parent->color = 0;
         sibling->color = 1;
 
-        if (node_idx == parent->left_idx) {
+        if (node_idx == parent->left_idx)
+        {
           rec_rb_tree_s___rotate_left(this,parent_idx);
         }
-        else {
+        else
+        {
           rec_rb_tree_s___rotate_right(this,parent_idx);
         }
       }
@@ -1122,23 +1205,28 @@ void rec_rb_tree_s___remove_black_black(rec_rb_tree_s *this,unsigned a_idx)
       unsigned sibling_idx = parent->left_idx == node_idx?parent->right_idx:parent->left_idx;
       rec_rb_tree_s_node* sibling = this->data + sibling_idx;
 
-      if (parent->color && sibling->color && this->data[sibling->left_idx].color && this->data[sibling->right_idx].color) {
+      if (parent->color && sibling->color && this->data[sibling->left_idx].color && this->data[sibling->right_idx].color)
+      {
         sibling->color = 0;
         node_idx = parent_idx;
         continue;
       }
-      else if (!parent->color && sibling->color && this->data[sibling->left_idx].color && this->data[sibling->right_idx].color) {
+      else if (!parent->color && sibling->color && this->data[sibling->left_idx].color && this->data[sibling->right_idx].color)
+      {
         sibling->color = 0;
         parent->color = 1;
         return;
       }
-      else if (sibling->color) {
-        if (node_idx == parent->left_idx && this->data[sibling->right_idx].color && !this->data[sibling->left_idx].color) {
+      else if (sibling->color)
+      {
+        if (node_idx == parent->left_idx && this->data[sibling->right_idx].color && !this->data[sibling->left_idx].color)
+        {
           sibling->color = 0;
           this->data[sibling->left_idx].color = 1;
           rec_rb_tree_s___rotate_right(this,sibling_idx);
         }
-        else if (node_idx == parent->right_idx && this->data[sibling->left_idx].color && !this->data[sibling->right_idx].color) {
+        else if (node_idx == parent->right_idx && this->data[sibling->left_idx].color && !this->data[sibling->right_idx].color)
+        {
           sibling->color = 0;
           this->data[sibling->right_idx].color = 1;
           rec_rb_tree_s___rotate_left(this,sibling_idx);
@@ -1152,11 +1240,13 @@ void rec_rb_tree_s___remove_black_black(rec_rb_tree_s *this,unsigned a_idx)
         sibling->color = parent->color;
         parent->color = 1;
 
-        if (node_idx == parent->left_idx) {
+        if (node_idx == parent->left_idx)
+        {
           this->data[sibling->right_idx].color = 1;
           rec_rb_tree_s___rotate_left(this,parent_idx);
         }
-        else {
+        else
+        {
           this->data[sibling->left_idx].color = 1;
           rec_rb_tree_s___rotate_right(this,parent_idx);
         }
@@ -1174,17 +1264,22 @@ void rec_rb_tree_s___insert_operation(rec_rb_tree_s *this,unsigned a_idx)
   do {
     rec_rb_tree_s_node *node = this->data + node_idx;
 
-    if (node->parent_idx == c_idx_not_exist) {
+    if (node->parent_idx == c_idx_not_exist)
+    {
       node->color = 1;
       return;
     }
-    else {
-      if (this->data[node->parent_idx].color) {
+    else
+    {
+      if (this->data[node->parent_idx].color)
+      {
         return;
       }
-      else {
+      else
+      {
         unsigned uncle_idx = rec_rb_tree_s___get_uncle_idx(this,node_idx);
-        if (uncle_idx != c_idx_not_exist && !this->data[uncle_idx].color) {
+        if (uncle_idx != c_idx_not_exist && !this->data[uncle_idx].color)
+        {
           this->data[node->parent_idx].color = 1;
           this->data[uncle_idx].color = 1;
 
@@ -1193,14 +1288,17 @@ void rec_rb_tree_s___insert_operation(rec_rb_tree_s *this,unsigned a_idx)
 
           continue;
         }
-        else {
+        else
+        {
           unsigned grandparent_idx = rec_rb_tree_s___get_grandparent_idx(this,node_idx);
 
-          if (node_idx == this->data[node->parent_idx].right_idx && node->parent_idx == this->data[grandparent_idx].left_idx) {
+          if (node_idx == this->data[node->parent_idx].right_idx && node->parent_idx == this->data[grandparent_idx].left_idx)
+          {
             rec_rb_tree_s___rotate_left(this,node->parent_idx);
             node_idx = node->left_idx;
           }
-          else if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].right_idx) {
+          else if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].right_idx)
+          {
             rec_rb_tree_s___rotate_right(this,node->parent_idx);
             node_idx = node->right_idx;
           }
@@ -1212,10 +1310,12 @@ void rec_rb_tree_s___insert_operation(rec_rb_tree_s *this,unsigned a_idx)
             this->data[node->parent_idx].color = 1;
             this->data[grandparent_idx].color = 0;
 
-            if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].left_idx) {
+            if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].left_idx)
+            {
               rec_rb_tree_s___rotate_right(this,grandparent_idx);
             }
-            else {
+            else
+            {
               rec_rb_tree_s___rotate_left(this,grandparent_idx);
             }
           }
@@ -1233,14 +1333,16 @@ void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx)
 
   rec_rb_tree_s_node *del_node = this->data + a_idx;
 
-  if (del_node->left_idx != this->leaf_idx) {
-    if (del_node->right_idx != this->leaf_idx) {
-
+  if (del_node->left_idx != this->leaf_idx)
+  {
+    if (del_node->right_idx != this->leaf_idx)
+    {
       unsigned found_idx = del_node->right_idx;
       do {
         rec_rb_tree_s_node *node = this->data + found_idx;
 
-        if (node->left_idx == this->leaf_idx) {
+        if (node->left_idx == this->leaf_idx)
+        {
           break;
         }
 
@@ -1250,17 +1352,21 @@ void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx)
       rec_rb_tree_s_node *found_node = this->data + found_idx;
 
       /* - process del_node parent_idx - */
-      if (del_node->parent_idx != c_idx_not_exist) {
+      if (del_node->parent_idx != c_idx_not_exist)
+      {
         rec_rb_tree_s_node *del_node_parent = this->data + del_node->parent_idx;
 
-        if (del_node_parent->left_idx == a_idx) {
+        if (del_node_parent->left_idx == a_idx)
+        {
           del_node_parent->left_idx = found_idx;
         }
-        else {
+        else
+        {
           del_node_parent->right_idx = found_idx;
         }
       }
-      else {
+      else
+      {
         this->root_idx = found_idx;
       }
 
@@ -1268,12 +1374,13 @@ void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx)
       this->data[del_node->left_idx].parent_idx = found_idx;
 
       /* - process found_node right_idx - */
-      if (found_node->right_idx != this->leaf_idx) {
+      if (found_node->right_idx != this->leaf_idx)
+      {
         this->data[found_node->right_idx].parent_idx = a_idx;
       }
 
-      if (del_node->right_idx == found_idx) {
-
+      if (del_node->right_idx == found_idx)
+      {
         /* - found node is right child of deleted node - */
         del_node->right_idx = found_node->right_idx;
         found_node->right_idx = a_idx;
@@ -1288,15 +1395,17 @@ void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx)
         found_node->color = del_node->color;
         del_node->color = tmp_char;
       }
-      else {
-
+      else
+      {
         /* - process found_node parent - */
         rec_rb_tree_s_node *found_node_parent = this->data + found_node->parent_idx;
 
-        if (found_node_parent->left_idx == found_idx) {
+        if (found_node_parent->left_idx == found_idx)
+        {
           found_node_parent->left_idx = a_idx;
         }
-        else {
+        else
+        {
           found_node_parent->right_idx = a_idx;
         }
 
@@ -1322,11 +1431,13 @@ void rec_rb_tree_s_remove(rec_rb_tree_s *this,unsigned a_idx)
 
       rec_rb_tree_s___remove_one_child(this,a_idx,del_node->right_idx);
     }
-    else {
+    else
+    {
       rec_rb_tree_s___remove_one_child(this,a_idx,del_node->left_idx);
     }
   }
-  else {
+  else
+  {
     rec_rb_tree_s___remove_one_child(this,a_idx,del_node->right_idx);
   }
 
@@ -1336,13 +1447,16 @@ void rec_rb_tree_s_copy_resize(rec_rb_tree_s *this,unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= this->used);
 
-  if (a_size == 0) {
-    if (this->data != NULL) {
+  if (a_size == 0)
+  {
+    if (this->data != NULL)
+    {
       cfree(this->data);
     }
     this->data = NULL;
   }
-  else {
+  else
+  {
     this->data = (rec_rb_tree_s_node *)crealloc(this->data,a_size*sizeof(rec_rb_tree_s_node));
   }
 
@@ -1351,7 +1465,8 @@ void rec_rb_tree_s_copy_resize(rec_rb_tree_s *this,unsigned a_size)
 
 unsigned rec_rb_tree_s_get_idx(rec_rb_tree_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->root_idx == c_idx_not_exist) {
+  if (this->root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1360,11 +1475,14 @@ unsigned rec_rb_tree_s_get_idx(rec_rb_tree_s *this,record_s *a_value)
     rec_rb_tree_s_node *node = this->data + node_idx;
 
     int comp_result = rec_rb_tree_s___compare_value(this,a_value,&node->object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       node_idx = node->left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         return node_idx;
       }
 
@@ -1377,7 +1495,8 @@ unsigned rec_rb_tree_s_get_idx(rec_rb_tree_s *this,record_s *a_value)
 
 unsigned rec_rb_tree_s_get_idx_left(rec_rb_tree_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->root_idx == c_idx_not_exist) {
+  if (this->root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1387,15 +1506,19 @@ unsigned rec_rb_tree_s_get_idx_left(rec_rb_tree_s *this,record_s *a_value)
     rec_rb_tree_s_node *node = this->data + node_idx;
 
     int comp_result = rec_rb_tree_s___compare_value(this,a_value,&node->object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       node_idx = node->left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         good_idx = node_idx;
         node_idx = node->left_idx;
       }
-      else {
+      else
+      {
         node_idx = node->right_idx;
       }
     }
@@ -1406,7 +1529,8 @@ unsigned rec_rb_tree_s_get_idx_left(rec_rb_tree_s *this,record_s *a_value)
 
 unsigned rec_rb_tree_s_get_gre_idx(rec_rb_tree_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->root_idx == c_idx_not_exist) {
+  if (this->root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1416,12 +1540,15 @@ unsigned rec_rb_tree_s_get_gre_idx(rec_rb_tree_s *this,record_s *a_value)
     rec_rb_tree_s_node *node = this->data + node_idx;
 
     int comp_result = rec_rb_tree_s___compare_value(this,a_value,&node->object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       good_idx = node_idx;
       node_idx = node->left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         return node_idx;
       }
 
@@ -1434,7 +1561,8 @@ unsigned rec_rb_tree_s_get_gre_idx(rec_rb_tree_s *this,record_s *a_value)
 
 unsigned rec_rb_tree_s_get_lee_idx(rec_rb_tree_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->root_idx == c_idx_not_exist) {
+  if (this->root_idx == c_idx_not_exist)
+  {
     return c_idx_not_exist;
   }
 
@@ -1444,11 +1572,14 @@ unsigned rec_rb_tree_s_get_lee_idx(rec_rb_tree_s *this,record_s *a_value)
     rec_rb_tree_s_node *node = this->data + node_idx;
 
     int comp_result = rec_rb_tree_s___compare_value(this,a_value,&node->object);
-    if (comp_result < 0) {
+    if (comp_result < 0)
+    {
       node_idx = node->left_idx;
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         return node_idx;
       }
 
@@ -1464,7 +1595,8 @@ void rec_rb_tree_s_get_idxs(rec_rb_tree_s *this,record_s *a_value,ui_array_s *a_
 {/*{{{*/
   a_idxs_array->used = 0;
 
-  if (this->root_idx == c_idx_not_exist) {
+  if (this->root_idx == c_idx_not_exist)
+  {
     return;
   }
 
@@ -1477,21 +1609,27 @@ void rec_rb_tree_s_get_idxs(rec_rb_tree_s *this,record_s *a_value,ui_array_s *a_
     rec_rb_tree_s_node *node = this->data + node_idx;
 
     int comp_result = rec_rb_tree_s___compare_value(this,a_value,&node->object);
-    if (comp_result < 0) {
-      if (node->left_idx != this->leaf_idx) {
+    if (comp_result < 0)
+    {
+      if (node->left_idx != this->leaf_idx)
+      {
         *(stack_ptr++) = node->left_idx;
       }
     }
-    else {
-      if (comp_result == 0) {
+    else
+    {
+      if (comp_result == 0)
+      {
         ui_array_s_push(a_idxs_array,node_idx);
 
-        if (node->left_idx != this->leaf_idx) {
+        if (node->left_idx != this->leaf_idx)
+        {
           *(stack_ptr++) = node->left_idx;
         }
       }
 
-      if (node->right_idx != this->leaf_idx) {
+      if (node->right_idx != this->leaf_idx)
+      {
         *(stack_ptr++) = node->right_idx;
       }
     }
@@ -1502,13 +1640,17 @@ void rec_rb_tree_s_get_idxs(rec_rb_tree_s *this,record_s *a_value,ui_array_s *a_
 
 int rec_rb_tree_s_compare(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
 {/*{{{*/
-  if (this->root_idx == c_idx_not_exist) {
-    if (a_second->root_idx != c_idx_not_exist) {
+  if (this->root_idx == c_idx_not_exist)
+  {
+    if (a_second->root_idx != c_idx_not_exist)
+    {
       return 0;
     }
   }
-  else {
-    if (a_second->root_idx == c_idx_not_exist) {
+  else
+  {
+    if (a_second->root_idx == c_idx_not_exist)
+    {
       return 0;
     }
 
@@ -1521,7 +1663,8 @@ int rec_rb_tree_s_compare(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
     unsigned node_idx = rec_rb_tree_s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);
     unsigned s_node_idx = rec_rb_tree_s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);
     do {
-      if (!record_s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object)) {
+      if (!record_s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object))
+      {
         return 0;
       }
 
@@ -1529,7 +1672,8 @@ int rec_rb_tree_s_compare(rec_rb_tree_s *this,rec_rb_tree_s *a_second)
       s_node_idx = rec_rb_tree_s_get_stack_next_idx(a_second,s_node_idx,&s_stack_ptr,s_stack);
     } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);
 
-    if (node_idx != s_node_idx) {
+    if (node_idx != s_node_idx)
+    {
       return 0;
     }
   }
@@ -1542,7 +1686,8 @@ void rec_rb_tree_s_to_string(rec_rb_tree_s *this,bc_array_s *a_trg)
 {/*{{{*/
   bc_array_s_push(a_trg,'[');
 
-  if (this->root_idx != c_idx_not_exist) {
+  if (this->root_idx != c_idx_not_exist)
+  {
     unsigned stack[rec_rb_tree_s_get_descent_stack_size(this)];
     unsigned *stack_ptr = stack;
 
@@ -1552,7 +1697,9 @@ void rec_rb_tree_s_to_string(rec_rb_tree_s *this,bc_array_s *a_trg)
 
       idx = rec_rb_tree_s_get_stack_next_idx(this,idx,&stack_ptr,stack);
       if (idx == c_idx_not_exist)
+      {
         break;
+      }
 
       bc_array_s_push(a_trg,',');
     } while(1);
@@ -1564,7 +1711,10 @@ void rec_rb_tree_s_to_string(rec_rb_tree_s *this,bc_array_s *a_trg)
 
 void rec_rb_tree_s_rehash_tree(rec_rb_tree_s *this)
 {/*{{{*/
-  if (this->root_idx == c_idx_not_exist) return;
+  if (this->root_idx == c_idx_not_exist)
+  {
+    return;
+  }
 
   ui_array_s indexes;
   ui_array_s_init(&indexes);
@@ -1587,11 +1737,13 @@ void rec_rb_tree_s_rehash_tree(rec_rb_tree_s *this)
   memset(processed,0,indexes.used*sizeof(char));
 
   unsigned step = indexes.used >> 1;
-  if (step > 0) {
+  if (step > 0)
+  {
     do {
       unsigned idx = step;
       do {
-        if (!processed[idx]) {
+        if (!processed[idx])
+        {
           unsigned node_idx = indexes.data[idx];
 
           rec_rb_tree_s___binary_tree_insert(this,node_idx,&this->data[node_idx].object,0);

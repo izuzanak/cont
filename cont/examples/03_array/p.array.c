@@ -299,7 +299,8 @@ static inline void rec_array_s_init_size(rec_array_s *this,unsigned a_size)
 
 static inline void rec_array_s_clear(rec_array_s *this)
 {/*{{{*/
-  if (this->data != NULL) {
+  if (this->data != NULL)
+  {
     cfree(this->data);
   }
 
@@ -309,7 +310,10 @@ static inline void rec_array_s_clear(rec_array_s *this)
 static inline void rec_array_s_set(rec_array_s *this,unsigned a_used,record_s *a_data)
 {/*{{{*/
   rec_array_s_clear(this);
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != NULL);
   rec_array_s_copy_resize(this,a_used);
@@ -351,7 +355,8 @@ static inline record_s *rec_array_s_at(rec_array_s *this,unsigned a_idx)
 
 static inline void rec_array_s_push(rec_array_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     rec_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -360,7 +365,8 @@ static inline void rec_array_s_push(rec_array_s *this,record_s *a_value)
 
 static inline void rec_array_s_push_blank(rec_array_s *this)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     rec_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -369,7 +375,8 @@ static inline void rec_array_s_push_blank(rec_array_s *this)
 
 static inline void rec_array_s_push_clear(rec_array_s *this)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     rec_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -392,7 +399,10 @@ static inline void rec_array_s_copy(rec_array_s *this,rec_array_s *a_src)
 {/*{{{*/
   rec_array_s_clear(this);
 
-  if (a_src->used == 0) return;
+  if (a_src->used == 0)
+  {
+    return;
+  }
 
   rec_array_s_copy_resize(this,a_src->used);
   memcpy(this->data,a_src->data,a_src->used*sizeof(record_s));
@@ -402,8 +412,15 @@ static inline void rec_array_s_copy(rec_array_s *this,rec_array_s *a_src)
 
 static inline int rec_array_s_compare(rec_array_s *this,rec_array_s *a_second)
 {/*{{{*/
-  if (this->used != a_second->used) return 0;
-  if (this->used == 0) return 1;
+  if (this->used != a_second->used)
+  {
+    return 0;
+  }
+
+  if (this->used == 0)
+  {
+    return 1;
+  }
 
   return (memcmp(this->data,a_second->data,this->used*sizeof(record_s)) == 0);
 }/*}}}*/
@@ -430,7 +447,8 @@ void print_array(rec_array_s *rec_array,const char *name);
 void rec_array_s_reserve(rec_array_s *this,unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = this->used + a_cnt;
-  if (required_cnt > this->size) {
+  if (required_cnt > this->size)
+  {
     unsigned r_size = this->size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -443,7 +461,8 @@ void rec_array_s_reserve(rec_array_s *this,unsigned a_cnt)
 void rec_array_s_push_blanks(rec_array_s *this,unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = this->used + a_cnt;
-  if (required_cnt > this->size) {
+  if (required_cnt > this->size)
+  {
     unsigned r_size = this->size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -459,13 +478,16 @@ void rec_array_s_copy_resize(rec_array_s *this,unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= this->used);
 
-  if (a_size == 0) {
-    if (this->data != NULL) {
+  if (a_size == 0)
+  {
+    if (this->data != NULL)
+    {
       cfree(this->data);
     }
     this->data = NULL;
   }
-  else {
+  else
+  {
     this->data = (record_s *)crealloc(this->data,a_size*sizeof(record_s));
   }
 
@@ -474,7 +496,10 @@ void rec_array_s_copy_resize(rec_array_s *this,unsigned a_size)
 
 void rec_array_s_fill(rec_array_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->size == 0) return;
+  if (this->size == 0)
+  {
+    return;
+  }
 
   record_s *ptr = this->data;
   record_s *ptr_end = this->data + this->size;
@@ -488,13 +513,17 @@ void rec_array_s_fill(rec_array_s *this,record_s *a_value)
 
 unsigned rec_array_s_get_idx(rec_array_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->used == 0) return c_idx_not_exist;
+  if (this->used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   record_s *ptr = this->data;
   record_s *ptr_end = this->data + this->used;
 
   do {
-    if (record_s_compare(ptr,a_value)) {
+    if (record_s_compare(ptr,a_value))
+    {
       return ptr - this->data;
     }
   } while(++ptr < ptr_end);
@@ -507,7 +536,8 @@ void rec_array_s_to_string(rec_array_s *this,bc_array_s *a_trg)
 {/*{{{*/
   bc_array_s_push(a_trg,'[');
 
-  if (this->used != 0) {
+  if (this->used != 0)
+  {
     record_s *ptr = this->data;
     record_s *ptr_end = this->data + this->used;
 
@@ -515,7 +545,9 @@ void rec_array_s_to_string(rec_array_s *this,bc_array_s *a_trg)
       record_s_to_string(ptr,a_trg);
 
       if (++ptr >= ptr_end)
+      {
         break;
+      }
 
       bc_array_s_push(a_trg,',');
     } while(1);

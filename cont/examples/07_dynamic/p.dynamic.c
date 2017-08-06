@@ -434,7 +434,8 @@ static inline string_s *string_array_s_at(string_array_s *this,unsigned a_idx)
 
 static inline void string_array_s_push(string_array_s *this,string_s *a_value)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     string_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -443,7 +444,8 @@ static inline void string_array_s_push(string_array_s *this,string_s *a_value)
 
 static inline void string_array_s_push_blank(string_array_s *this)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     string_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -452,7 +454,8 @@ static inline void string_array_s_push_blank(string_array_s *this)
 
 static inline void string_array_s_push_clear(string_array_s *this)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     string_array_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
@@ -499,7 +502,8 @@ const char c_string_terminating_char = '\0';
 
 void string_array_s_clear(string_array_s *this)
 {/*{{{*/
-  if (this->data != NULL) {
+  if (this->data != NULL)
+  {
     string_s *ptr = this->data;
     string_s *ptr_end = ptr + this->size;
 
@@ -516,7 +520,10 @@ void string_array_s_clear(string_array_s *this)
 void string_array_s_set(string_array_s *this,unsigned a_used,string_s *a_data)
 {/*{{{*/
   string_array_s_clear(this);
-  if (a_used == 0) return;
+  if (a_used == 0)
+  {
+    return;
+  }
 
   debug_assert(a_data != NULL);
   string_array_s_copy_resize(this,a_used);
@@ -535,7 +542,8 @@ void string_array_s_set(string_array_s *this,unsigned a_used,string_s *a_data)
 void string_array_s_reserve(string_array_s *this,unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = this->used + a_cnt;
-  if (required_cnt > this->size) {
+  if (required_cnt > this->size)
+  {
     unsigned r_size = this->size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -548,7 +556,8 @@ void string_array_s_reserve(string_array_s *this,unsigned a_cnt)
 void string_array_s_push_blanks(string_array_s *this,unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = this->used + a_cnt;
-  if (required_cnt > this->size) {
+  if (required_cnt > this->size)
+  {
     unsigned r_size = this->size;
     do {
       r_size = (r_size << 1) + c_array_add;
@@ -564,7 +573,8 @@ void string_array_s_copy_resize(string_array_s *this,unsigned a_size)
 {/*{{{*/
   debug_assert(a_size >= this->used);
 
-  if (this->size > a_size) {
+  if (this->size > a_size)
+  {
     string_s *ptr = this->data + a_size;
     string_s *ptr_end = this->data + this->size;
 
@@ -573,17 +583,21 @@ void string_array_s_copy_resize(string_array_s *this,unsigned a_size)
     } while(++ptr < ptr_end);
   }
 
-  if (a_size == 0) {
-    if (this->data != NULL) {
+  if (a_size == 0)
+  {
+    if (this->data != NULL)
+    {
       cfree(this->data);
     }
     this->data = NULL;
   }
-  else {
+  else
+  {
     this->data = (string_s *)crealloc(this->data,a_size*sizeof(string_s));
   }
 
-  if (a_size > this->size) {
+  if (a_size > this->size)
+  {
     string_s *ptr = this->data + this->size;
     string_s *ptr_end = this->data + a_size;
 
@@ -597,7 +611,10 @@ void string_array_s_copy_resize(string_array_s *this,unsigned a_size)
 
 void string_array_s_fill(string_array_s *this,string_s *a_value)
 {/*{{{*/
-  if (this->size == 0) return;
+  if (this->size == 0)
+  {
+    return;
+  }
 
   string_s *ptr = this->data;
   string_s *ptr_end = this->data + this->size;
@@ -611,13 +628,17 @@ void string_array_s_fill(string_array_s *this,string_s *a_value)
 
 unsigned string_array_s_get_idx(string_array_s *this,string_s *a_value)
 {/*{{{*/
-  if (this->used == 0) return c_idx_not_exist;
+  if (this->used == 0)
+  {
+    return c_idx_not_exist;
+  }
 
   string_s *ptr = this->data;
   string_s *ptr_end = this->data + this->used;
 
   do {
-    if (string_s_compare(ptr,a_value)) {
+    if (string_s_compare(ptr,a_value))
+    {
       return ptr - this->data;
     }
   } while(++ptr < ptr_end);
@@ -629,7 +650,10 @@ void string_array_s_copy(string_array_s *this,string_array_s *a_src)
 {/*{{{*/
   string_array_s_clear(this);
 
-  if (a_src->used == 0) return;
+  if (a_src->used == 0)
+  {
+    return;
+  }
 
   string_array_s_copy_resize(this,a_src->used);
 
@@ -646,15 +670,23 @@ void string_array_s_copy(string_array_s *this,string_array_s *a_src)
 
 int string_array_s_compare(string_array_s *this,string_array_s *a_second)
 {/*{{{*/
-  if (this->used != a_second->used) return 0;
-  if (this->used == 0) return 1;
+  if (this->used != a_second->used)
+  {
+    return 0;
+  }
+
+  if (this->used == 0)
+  {
+    return 1;
+  }
 
   string_s *ptr = this->data;
   string_s *ptr_end = ptr + this->used;
   string_s *s_ptr = a_second->data;
 
   do {
-    if (!string_s_compare(ptr,s_ptr)) {
+    if (!string_s_compare(ptr,s_ptr))
+    {
       return 0;
     }
   } while(++s_ptr,++ptr < ptr_end);
@@ -667,7 +699,8 @@ void string_array_s_to_string(string_array_s *this,bc_array_s *a_trg)
 {/*{{{*/
   bc_array_s_push(a_trg,'[');
 
-  if (this->used != 0) {
+  if (this->used != 0)
+  {
     string_s *ptr = this->data;
     string_s *ptr_end = this->data + this->used;
 
@@ -675,7 +708,9 @@ void string_array_s_to_string(string_array_s *this,bc_array_s *a_trg)
       string_s_to_string(ptr,a_trg);
 
       if (++ptr >= ptr_end)
+      {
         break;
+      }
 
       bc_array_s_push(a_trg,',');
     } while(1);

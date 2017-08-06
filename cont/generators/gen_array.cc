@@ -41,7 +41,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (this->data != NULL) {\n"
+"  if (this->data != NULL)\n"
+"  {\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -79,7 +80,10 @@ printf(
 printf(
 "{/*{{{*/\n"
 "  %s_clear(this);\n"
-"  if (a_used == 0) return;\n"
+"  if (a_used == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 "  debug_assert(a_data != NULL);\n"
 "  %s_copy_resize(this,a_used);\n"
@@ -200,7 +204,8 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (this->used >= this->size) {\n"
+"  if (this->used >= this->size)\n"
+"  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -226,7 +231,8 @@ void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
 printf(
 "static inline void %s_push_blank(%s *this)\n"
 "{/*{{{*/\n"
-"  if (this->used >= this->size) {\n"
+"  if (this->used >= this->size)\n"
+"  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -242,7 +248,8 @@ printf(
 "void %s_reserve(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = this->used + a_cnt;\n"
-"  if (required_cnt > this->size) {\n"
+"  if (required_cnt > this->size)\n"
+"  {\n"
 "    unsigned r_size = this->size;\n"
 "    do {\n"
 "      r_size = (r_size << 1) + c_array_add;\n"
@@ -261,7 +268,8 @@ printf(
 "void %s_push_blanks(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = this->used + a_cnt;\n"
-"  if (required_cnt > this->size) {\n"
+"  if (required_cnt > this->size)\n"
+"  {\n"
 "    unsigned r_size = this->size;\n"
 "    do {\n"
 "      r_size = (r_size << 1) + c_array_add;\n"
@@ -281,7 +289,8 @@ void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
 printf(
 "static inline void %s_push_clear(%s *this)\n"
 "{/*{{{*/\n"
-"  if (this->used >= this->size) {\n"
+"  if (this->used >= this->size)\n"
+"  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
@@ -357,10 +366,12 @@ printf(
 "\n"
 "  %s *n_data;\n"
 "\n"
-"  if (a_size == 0) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
 "    n_data = NULL;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
@@ -375,7 +386,8 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
-"  if (this->used > 0) {\n"
+"  if (this->used > 0)\n"
+"  {\n"
 "    %s *ptr = this->data;\n"
 "    %s *ptr_end = ptr + this->used;\n"
 "    %s *n_ptr = n_data;\n"
@@ -387,7 +399,8 @@ printf(
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 printf(
 "\n"
-"  if (this->size > this->used) {\n"
+"  if (this->size > this->used)\n"
+"  {\n"
 "    %s *ptr = this->data + this->used;\n"
 "    %s *ptr_end = this->data + this->size;\n"
 "\n"
@@ -396,7 +409,8 @@ printf(
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
 "\n"
-"  if (this->size != 0) {\n"
+"  if (this->size != 0)\n"
+"  {\n"
 "    cfree(this->data);\n"
 "  }\n"
 "\n"
@@ -416,7 +430,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (this->size > a_size) {\n"
+"  if (this->size > a_size)\n"
+"  {\n"
 "    %s *ptr = this->data + a_size;\n"
 "    %s *ptr_end = this->data + this->size;\n"
 "\n"
@@ -428,20 +443,24 @@ printf(
    }
 printf(
 "\n"
-"  if (a_size == 0) {\n"
-"    if (this->data != NULL) {\n"
+"  if (a_size == 0)\n"
+"  {\n"
+"    if (this->data != NULL)\n"
+"    {\n"
 "      cfree(this->data);\n"
 "    }\n"
 "    this->data = NULL;\n"
 "  }\n"
-"  else {\n"
+"  else\n"
+"  {\n"
 "    this->data = (%s *)crealloc(this->data,a_size*sizeof(%s));\n"
 "  }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  if (a_size > this->size) {\n"
+"  if (a_size > this->size)\n"
+"  {\n"
 "    %s *ptr = this->data + this->size;\n"
 "    %s *ptr_end = this->data + a_size;\n"
 "\n"
@@ -481,7 +500,10 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (this->size == 0) return;\n"
+"  if (this->size == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 );
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
@@ -532,7 +554,10 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (this->used == 0) return c_idx_not_exist;\n"
+"  if (this->used == 0)\n"
+"  {\n"
+"    return c_idx_not_exist;\n"
+"  }\n"
 "\n"
 "  %s *ptr = this->data;\n"
 "  %s *ptr_end = this->data + this->used;\n"
@@ -541,12 +566,14 @@ printf(
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"    if (*ptr == a_value) {\n"
+"    if (*ptr == a_value)\n"
+"    {\n"
 );
    }
    else {
 printf(
-"    if (%s_compare(ptr,a_value)) {\n"
+"    if (%s_compare(ptr,a_value))\n"
+"    {\n"
 ,TYPE_NAME);
    }
 printf(
@@ -576,7 +603,10 @@ printf(
 "{/*{{{*/\n"
 "  %s_clear(this);\n"
 "\n"
-"  if (a_src->used == 0) return;\n"
+"  if (a_src->used == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -619,8 +649,15 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
-"  if (this->used != a_second->used) return 0;\n"
-"  if (this->used == 0) return 1;\n"
+"  if (this->used != a_second->used)\n"
+"  {\n"
+"    return 0;\n"
+"  }\n"
+"\n"
+"  if (this->used == 0)\n"
+"  {\n"
+"    return 1;\n"
+"  }\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
@@ -636,7 +673,8 @@ printf(
 "  %s *s_ptr = a_second->data;\n"
 "\n"
 "  do {\n"
-"    if (!%s_compare(ptr,s_ptr)) {\n"
+"    if (!%s_compare(ptr,s_ptr))\n"
+"    {\n"
 "      return 0;\n"
 "    }\n"
 "  } while(++s_ptr,++ptr < ptr_end);\n"
@@ -658,7 +696,8 @@ printf(
 "{/*{{{*/\n"
 "  bc_array_s_push(a_trg,'[');\n"
 "\n"
-"  if (this->used != 0) {\n"
+"  if (this->used != 0)\n"
+"  {\n"
 "    %s *ptr = this->data;\n"
 "    %s *ptr_end = this->data + this->used;\n"
 "\n"
@@ -666,7 +705,9 @@ printf(
 "      %s_to_string(ptr,a_trg);\n"
 "\n"
 "      if (++ptr >= ptr_end)\n"
+"      {\n"
 "        break;\n"
+"      }\n"
 "\n"
 "      bc_array_s_push(a_trg,',');\n"
 "    } while(1);\n"

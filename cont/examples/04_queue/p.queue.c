@@ -294,7 +294,8 @@ static inline void rec_queue_s_init_size(rec_queue_s *this,unsigned a_size)
 
 static inline void rec_queue_s_clear(rec_queue_s *this)
 {/*{{{*/
-  if (this->data != NULL) {
+  if (this->data != NULL)
+  {
     cfree(this->data);
   }
 
@@ -332,13 +333,15 @@ static inline void rec_queue_s_swap(rec_queue_s *this,rec_queue_s *a_second)
 
 static inline unsigned rec_queue_s_insert(rec_queue_s *this,record_s *a_value)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     rec_queue_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
   unsigned inserted_idx = this->begin + this->used++;
 
-  if (inserted_idx >= this->size) {
+  if (inserted_idx >= this->size)
+  {
     inserted_idx -= this->size;
   }
 
@@ -349,13 +352,15 @@ static inline unsigned rec_queue_s_insert(rec_queue_s *this,record_s *a_value)
 
 static inline unsigned rec_queue_s_insert_blank(rec_queue_s *this)
 {/*{{{*/
-  if (this->used >= this->size) {
+  if (this->used >= this->size)
+  {
     rec_queue_s_copy_resize(this,(this->size << 1) + c_array_add);
   }
 
   unsigned inserted_idx = this->begin + this->used++;
 
-  if (inserted_idx >= this->size) {
+  if (inserted_idx >= this->size)
+  {
     inserted_idx -= this->size;
   }
 
@@ -368,7 +373,8 @@ static inline record_s *rec_queue_s_next(rec_queue_s *this)
 
   unsigned ret_idx = this->begin;
 
-  if (++this->begin >= this->size) {
+  if (++this->begin >= this->size)
+  {
     this->begin = 0;
   }
 
@@ -382,10 +388,12 @@ static inline record_s *rec_queue_s_last(rec_queue_s *this)
   debug_assert(this->used > 0);
 
   unsigned last_idx = this->begin + (this->used - 1);
-  if (last_idx >= this->size) {
+  if (last_idx >= this->size)
+  {
     return this->data + last_idx - this->size;
   }
-  else {
+  else
+  {
     return this->data + last_idx;
   }
 }/*}}}*/
@@ -394,25 +402,31 @@ static inline void rec_queue_s_copy(rec_queue_s *this,rec_queue_s *a_src)
 {/*{{{*/
   rec_queue_s_clear(this);
 
-  if (a_src->used == 0) return;
+  if (a_src->used == 0)
+  {
+    return;
+  }
 
   rec_queue_s_copy_resize(this,a_src->used);
 
   unsigned fir_cnt;
   unsigned sec_cnt;
 
-  if (a_src->begin + a_src->used > a_src->size) {
+  if (a_src->begin + a_src->used > a_src->size)
+  {
     sec_cnt = a_src->begin + a_src->used - a_src->size;
     fir_cnt = a_src->used - sec_cnt;
   }
-  else {
+  else
+  {
     fir_cnt = a_src->used;
     sec_cnt = 0;
   }
 
   memcpy(this->data,a_src->data + a_src->begin,fir_cnt*sizeof(record_s));
 
-  if (sec_cnt != 0) {
+  if (sec_cnt != 0)
+  {
     memcpy(this->data + fir_cnt,a_src->data,sec_cnt*sizeof(record_s));
   }
 
@@ -444,34 +458,41 @@ void rec_queue_s_copy_resize(rec_queue_s *this,unsigned a_size)
 
   record_s *n_data;
 
-  if (a_size == 0) {
+  if (a_size == 0)
+  {
     n_data = NULL;
   }
-  else {
+  else
+  {
     n_data = (record_s *)cmalloc(a_size*sizeof(record_s));
   }
 
-  if (this->used != 0) {
+  if (this->used != 0)
+  {
     unsigned fir_cnt;
     unsigned sec_cnt;
 
-    if (this->begin + this->used > this->size) {
+    if (this->begin + this->used > this->size)
+    {
       sec_cnt = this->begin + this->used - this->size;
       fir_cnt = this->used - sec_cnt;
     }
-    else {
+    else
+    {
       fir_cnt = this->used;
       sec_cnt = 0;
     }
 
     memcpy(n_data,this->data + this->begin,fir_cnt*sizeof(record_s));
 
-    if (sec_cnt != 0) {
+    if (sec_cnt != 0)
+    {
       memcpy(n_data + fir_cnt,this->data,sec_cnt*sizeof(record_s));
     }
   }
 
-  if (this->size != 0) {
+  if (this->size != 0)
+  {
     cfree(this->data);
   }
 
@@ -482,8 +503,15 @@ void rec_queue_s_copy_resize(rec_queue_s *this,unsigned a_size)
 
 int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
 {/*{{{*/
-  if (this->used != a_second->used) return 0;
-  if (this->used == 0) return 1;
+  if (this->used != a_second->used)
+  {
+    return 0;
+  }
+
+  if (this->used == 0)
+  {
+    return 1;
+  }
 
   int _break;
   int s_break;
@@ -496,22 +524,28 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
   pos = this->begin;
   s_pos = a_second->begin;
 
-  if (_break) {
+  if (_break)
+  {
     pos_end = this->begin + this->used - this->size;
   }
-  else {
+  else
+  {
     pos_end = this->begin + this->used;
   }
 
   do {
-    if (_break) {
+    if (_break)
+    {
       unsigned offset = this->size - pos;
 
-      if (s_break) {
+      if (s_break)
+      {
         unsigned s_offset = a_second->size = s_pos;
 
-        if (offset < s_offset) {
-          if (memcmp(this->data + pos,a_second->data + s_pos,offset*sizeof(record_s)) != 0) {
+        if (offset < s_offset)
+        {
+          if (memcmp(this->data + pos,a_second->data + s_pos,offset*sizeof(record_s)) != 0)
+          {
             return 0;
           }
 
@@ -519,12 +553,15 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
           pos = 0;
           _break = 0;
         }
-        else {
-          if (memcmp(this->data + pos,a_second->data + s_pos,s_offset*sizeof(record_s)) != 0) {
+        else
+        {
+          if (memcmp(this->data + pos,a_second->data + s_pos,s_offset*sizeof(record_s)) != 0)
+          {
             return 0;
           }
 
-          if (pos += s_offset >= this->size) {
+          if (pos += s_offset >= this->size)
+          {
             pos = 0;
             _break = 0;
           }
@@ -532,8 +569,10 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
           s_break = 0;
         }
       }
-      else {
-        if (memcmp(this->data + pos,a_second->data + s_pos,offset*sizeof(record_s)) != 0) {
+      else
+      {
+        if (memcmp(this->data + pos,a_second->data + s_pos,offset*sizeof(record_s)) != 0)
+        {
           return 0;
         }
         s_pos += offset;
@@ -541,22 +580,28 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
         _break = 0;
       }
     }
-    else {
-      if (s_break) {
+    else
+    {
+      if (s_break)
+      {
         unsigned s_offset = a_second->size - s_pos;
 
-        if (memcmp(this->data + pos,a_second->data + s_pos,s_offset*sizeof(record_s)) != 0) {
+        if (memcmp(this->data + pos,a_second->data + s_pos,s_offset*sizeof(record_s)) != 0)
+        {
           return 0;
         }
         pos += s_offset;
         s_pos = 0;
         s_break = 0;
       }
-      else {
-        if (memcmp(this->data + pos,a_second->data + s_pos,(pos_end - pos)*sizeof(record_s)) != 0) {
+      else
+      {
+        if (memcmp(this->data + pos,a_second->data + s_pos,(pos_end - pos)*sizeof(record_s)) != 0)
+        {
           return 0;
         }
-        else {
+        else
+        {
           return 1;
         }
       }
@@ -575,11 +620,13 @@ void rec_queue_s_to_string(rec_queue_s *this,bc_array_s *a_trg)
     record_s *ptr = this->data + this->begin;
     record_s *ptr_end;
 
-    if (this->begin + this->used > this->size) {
+    if (this->begin + this->used > this->size)
+    {
       ptr_end = this->data + this->size;
       sec_cnt = this->begin + this->used - this->size;
     }
-    else {
+    else
+    {
       ptr_end = ptr + this->used;
       sec_cnt = 0;
     }
@@ -588,12 +635,15 @@ void rec_queue_s_to_string(rec_queue_s *this,bc_array_s *a_trg)
       record_s_to_string(ptr,a_trg);
 
       if (++ptr >= ptr_end)
+      {
         break;
+      }
 
       bc_array_s_push(a_trg,',');
     } while(1);
 
-    if (sec_cnt != 0) {
+    if (sec_cnt != 0)
+    {
       ptr = this->data;
       ptr_end = ptr + sec_cnt;
 
