@@ -4,6 +4,10 @@
 
 #define ENABLE 1
 
+#if __cplusplus < 201103
+#define nullptr NULL
+#endif
+
 // - system type selection -
 #define SYSTEM_TYPE_UNIX      1 // - for system calls use unix environment
 #define SYSTEM_TYPE_WINDOWS   2 // - for system calls use windows environment
