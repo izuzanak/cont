@@ -929,7 +929,7 @@ TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(unique_insert,
 printf(
 "  data[new_node_idx].object = a_value;\n"
 );
-)
+);
 }/*}}}*/
 
 void SAFE_RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
@@ -939,7 +939,7 @@ TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,
 printf(
 "  data[new_node_idx].object.swap(a_value);\n"
 );
-)
+);
    }
 }/*}}}*/
 

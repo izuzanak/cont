@@ -618,6 +618,7 @@ struct int_string_map_s
     * \param a_value - value which index is searched
     */
   unsigned get_lee_idx(int_string_s &a_value);
+
   /*!
     * \brief __GEN search for all indexes of node
     * \param a_value - value of searched index
@@ -1506,7 +1507,7 @@ unsigned int_string_map_s::__binary_tree_insert(unsigned a_new_idx,int_string_s 
     data[a_new_idx].parent_idx = c_idx_not_exist;
     root_idx = a_new_idx;
   }
-  else 
+  else
   {
     unsigned node_idx = root_idx;
     do {

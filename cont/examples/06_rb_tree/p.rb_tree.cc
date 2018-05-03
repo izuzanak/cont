@@ -534,6 +534,7 @@ struct rec_rb_tree_s
     * \param a_value - value which index is searched
     */
   unsigned get_lee_idx(record_s &a_value);
+
   /*!
     * \brief __GEN search for all indexes of node
     * \param a_value - value of searched index
@@ -1283,7 +1284,7 @@ unsigned rec_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,record_s &a_valu
     data[a_new_idx].parent_idx = c_idx_not_exist;
     root_idx = a_new_idx;
   }
-  else 
+  else
   {
     unsigned node_idx = root_idx;
     do {

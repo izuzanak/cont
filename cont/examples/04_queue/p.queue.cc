@@ -607,7 +607,7 @@ bool rec_queue_s::operator==(rec_queue_s &a_second)
 
       if (s_break)
       {
-        unsigned s_offset = a_second.size = s_pos;
+        unsigned s_offset = a_second.size - s_pos;
 
         if (offset < s_offset)
         {

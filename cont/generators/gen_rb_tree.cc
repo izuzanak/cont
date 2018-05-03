@@ -341,7 +341,7 @@ printf(
 "    data[a_new_idx].parent_idx = c_idx_not_exist;\n"
 "    root_idx = a_new_idx;\n"
 "  }\n"
-"  else \n"
+"  else\n"
 "  {\n"
 "    unsigned node_idx = root_idx;\n"
 "    do {\n"
@@ -909,7 +909,7 @@ TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_insert,
 printf(
 "  data[new_node_idx].object = a_value;\n"
 );
-)
+);
 }/*}}}*/
 
 void RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
@@ -919,7 +919,7 @@ TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,
 printf(
 "  data[new_node_idx].object.swap(a_value);\n"
 );
-)
+);
    }
 }/*}}}*/
 
@@ -1808,7 +1808,7 @@ void processor_s::generate_rb_tree_type()
       data_type_name_len += strlen(c_cont_postfixes[c_cont_rb_tree]) - 1;
    }
 
-   // - compose type name -
+   // - compose name of type -
    string_s real_name;
    real_name.init();
    real_name.create(data_type_name_len);
@@ -2180,6 +2180,7 @@ printf(
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
 "  unsigned get_lee_idx(%s &a_value);\n"
+"\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
    if (TYPE_NUMBERS(0) & c_type_basic) {

@@ -484,7 +484,7 @@ printf(
 "\n"
 "      if (s_break)\n"
 "      {\n"
-"        unsigned s_offset = a_second.size = s_pos;\n"
+"        unsigned s_offset = a_second.size - s_pos;\n"
 "\n"
 "        if (offset < s_offset)\n"
 "        {\n"
