@@ -889,7 +889,7 @@ printf(\
 "  %s___insert_operation(this,new_node_idx);\n"\
 "\n"\
 ,IM_STRUCT_NAME);\
-  VALUE_SET_CODE;\
+   VALUE_SET_CODE;\
 printf(\
 "\n"\
 "  return new_node_idx;\n"\
@@ -911,7 +911,7 @@ printf(
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
    }
-)
+);
 }/*}}}*/
 
 void SAFE_RB_TREE_SWAP_INSERT(SAFE_RB_TREE_GEN_PARAMS)
@@ -921,7 +921,7 @@ TEMPLATE_SAFE_RB_TREE_INSERT(swap_insert,
 printf(
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
-)
+);
    }
 }/*}}}*/
 
@@ -991,7 +991,7 @@ printf(
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
    }
-)
+);
 }/*}}}*/
 
 void SAFE_RB_TREE_UNIQUE_SWAP_INSERT(SAFE_RB_TREE_GEN_PARAMS)
@@ -1001,7 +1001,7 @@ TEMPLATE_SAFE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,
 printf(
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
-)
+);
    }
 }/*}}}*/
 
@@ -1509,7 +1509,7 @@ printf(
 "\n"
 "  if (a_src->root_idx == c_idx_not_exist)\n"
 "  {\n"
-"     return;\n"
+"    return;\n"
 "  }\n"
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
@@ -1724,7 +1724,7 @@ printf(
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
-"     return;\n"
+"    return;\n"
 "  }\n"
 "\n"
 "  ui_array_s indexes;\n"
@@ -1873,7 +1873,6 @@ printf(
 "\n"
 "  if (this->root_idx != c_idx_not_exist)\n"
 "  {\n"
-"\n"
 "    /* - check if root node is black - */\n"
 "    %s_node *r_node = this->data + this->root_idx;\n"
 "    if (!r_node->color)\n"

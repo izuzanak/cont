@@ -1046,25 +1046,23 @@ unsigned rec_rb_tree_s_get_next_idx(rec_rb_tree_s *this,unsigned a_idx)
   {
     return rec_rb_tree_s_get_min_value_idx(this,node->right_idx);
   }
-  else
-  {
-    unsigned node_idx = a_idx;
-    do {
-      rec_rb_tree_s_node *node = this->data + node_idx;
 
-      if (node->parent_idx == c_idx_not_exist)
-      {
-        return c_idx_not_exist;
-      }
+  unsigned node_idx = a_idx;
+  do {
+    rec_rb_tree_s_node *node = this->data + node_idx;
 
-      if (this->data[node->parent_idx].right_idx != node_idx)
-      {
-        return node->parent_idx;
-      }
+    if (node->parent_idx == c_idx_not_exist)
+    {
+      return c_idx_not_exist;
+    }
 
-      node_idx = node->parent_idx;
-    } while(1);
-  }
+    if (this->data[node->parent_idx].right_idx != node_idx)
+    {
+      return node->parent_idx;
+    }
+
+    node_idx = node->parent_idx;
+  } while(1);
 }/*}}}*/
 
 unsigned rec_rb_tree_s_get_prev_idx(rec_rb_tree_s *this,unsigned a_idx)
@@ -1077,25 +1075,23 @@ unsigned rec_rb_tree_s_get_prev_idx(rec_rb_tree_s *this,unsigned a_idx)
   {
     return rec_rb_tree_s_get_max_value_idx(this,node->left_idx);
   }
-  else
-  {
-    unsigned node_idx = a_idx;
-    do {
-      rec_rb_tree_s_node *node = this->data + node_idx;
 
-      if (node->parent_idx == c_idx_not_exist)
-      {
-        return c_idx_not_exist;
-      }
+  unsigned node_idx = a_idx;
+  do {
+    rec_rb_tree_s_node *node = this->data + node_idx;
 
-      if (this->data[node->parent_idx].left_idx != node_idx)
-      {
-        return node->parent_idx;
-      }
+    if (node->parent_idx == c_idx_not_exist)
+    {
+      return c_idx_not_exist;
+    }
 
-      node_idx = node->parent_idx;
-    } while(1);
-  }
+    if (this->data[node->parent_idx].left_idx != node_idx)
+    {
+      return node->parent_idx;
+    }
+
+    node_idx = node->parent_idx;
+  } while(1);
 }/*}}}*/
 
 unsigned rec_rb_tree_s___binary_tree_insert(rec_rb_tree_s *this,unsigned a_new_idx,record_s *a_value,int a_unique)
@@ -1263,60 +1259,56 @@ void rec_rb_tree_s___insert_operation(rec_rb_tree_s *this,unsigned a_idx)
       node->color = 1;
       return;
     }
+
+    if (this->data[node->parent_idx].color)
+    {
+      return;
+    }
+
+    unsigned uncle_idx = rec_rb_tree_s___get_uncle_idx(this,node_idx);
+    if (uncle_idx != c_idx_not_exist && !this->data[uncle_idx].color)
+    {
+      this->data[node->parent_idx].color = 1;
+      this->data[uncle_idx].color = 1;
+
+      node_idx = rec_rb_tree_s___get_grandparent_idx(this,node_idx);
+      this->data[node_idx].color = 0;
+
+      continue;
+    }
     else
     {
-      if (this->data[node->parent_idx].color)
+      unsigned grandparent_idx = rec_rb_tree_s___get_grandparent_idx(this,node_idx);
+
+      if (node_idx == this->data[node->parent_idx].right_idx && node->parent_idx == this->data[grandparent_idx].left_idx)
       {
-        return;
+        rec_rb_tree_s___rotate_left(this,node->parent_idx);
+        node_idx = node->left_idx;
       }
-      else
+      else if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].right_idx)
       {
-        unsigned uncle_idx = rec_rb_tree_s___get_uncle_idx(this,node_idx);
-        if (uncle_idx != c_idx_not_exist && !this->data[uncle_idx].color)
+        rec_rb_tree_s___rotate_right(this,node->parent_idx);
+        node_idx = node->right_idx;
+      }
+
+      {
+        unsigned grandparent_idx = rec_rb_tree_s___get_grandparent_idx(this,node_idx);
+        rec_rb_tree_s_node *node = this->data + node_idx;
+
+        this->data[node->parent_idx].color = 1;
+        this->data[grandparent_idx].color = 0;
+
+        if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].left_idx)
         {
-          this->data[node->parent_idx].color = 1;
-          this->data[uncle_idx].color = 1;
-
-          node_idx = rec_rb_tree_s___get_grandparent_idx(this,node_idx);
-          this->data[node_idx].color = 0;
-
-          continue;
+          rec_rb_tree_s___rotate_right(this,grandparent_idx);
         }
         else
         {
-          unsigned grandparent_idx = rec_rb_tree_s___get_grandparent_idx(this,node_idx);
-
-          if (node_idx == this->data[node->parent_idx].right_idx && node->parent_idx == this->data[grandparent_idx].left_idx)
-          {
-            rec_rb_tree_s___rotate_left(this,node->parent_idx);
-            node_idx = node->left_idx;
-          }
-          else if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].right_idx)
-          {
-            rec_rb_tree_s___rotate_right(this,node->parent_idx);
-            node_idx = node->right_idx;
-          }
-
-          {
-            unsigned grandparent_idx = rec_rb_tree_s___get_grandparent_idx(this,node_idx);
-            rec_rb_tree_s_node *node = this->data + node_idx;
-
-            this->data[node->parent_idx].color = 1;
-            this->data[grandparent_idx].color = 0;
-
-            if (node_idx == this->data[node->parent_idx].left_idx && node->parent_idx == this->data[grandparent_idx].left_idx)
-            {
-              rec_rb_tree_s___rotate_right(this,grandparent_idx);
-            }
-            else
-            {
-              rec_rb_tree_s___rotate_left(this,grandparent_idx);
-            }
-          }
-
-          return;
+          rec_rb_tree_s___rotate_left(this,grandparent_idx);
         }
       }
+
+      return;
     }
   } while(1);
 }/*}}}*/

@@ -894,7 +894,7 @@ printf(
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
    }
-)
+);
 }/*}}}*/
 
 void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
@@ -971,7 +971,7 @@ printf(
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
    }
-)
+);
 }/*}}}*/
 
 void RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
@@ -981,7 +981,7 @@ TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,
 printf(
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
-)
+);
    }
 }/*}}}*/
 

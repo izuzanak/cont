@@ -538,7 +538,7 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
 
       if (s_break)
       {
-        unsigned s_offset = a_second->size = s_pos;
+        unsigned s_offset = a_second->size - s_pos;
 
         if (offset < s_offset)
         {
@@ -594,14 +594,7 @@ int rec_queue_s_compare(rec_queue_s *this,rec_queue_s *a_second)
       }
       else
       {
-        if (memcmp(this->data + pos,a_second->data + s_pos,(pos_end - pos)*sizeof(record_s)) != 0)
-        {
-          return 0;
-        }
-        else
-        {
-          return 1;
-        }
+        return memcmp(this->data + pos,a_second->data + s_pos,(pos_end - pos)*sizeof(record_s)) == 0;
       }
     }
   } while(1);
