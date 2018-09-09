@@ -4224,7 +4224,7 @@ unsigned process_s::find_terminal(unsigned &a_input_idx)
    if (in_char == 0)
       goto state_1_label;
 
-   if (in_char >= 9 && in_char < 11)
+   if (in_char >= 8 && in_char < 14)
       goto state_21_label;
 
    if (in_char == 32)
@@ -4636,7 +4636,7 @@ state_21_label:
    CLOSE_CHAR(21);
    GET_NEXT_CHAR();
 
-   if (in_char >= 9 && in_char < 11)
+   if (in_char >= 8 && in_char < 14)
       goto state_21_label;
 
    if (in_char == 32)
