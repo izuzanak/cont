@@ -309,13 +309,15 @@ static inline void rec_array_s_clear(rec_array_s *this)
 
 static inline void rec_array_s_set(rec_array_s *this,unsigned a_used,record_s *a_data)
 {/*{{{*/
+  debug_assert(a_data != NULL);
+
   rec_array_s_clear(this);
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != NULL);
   rec_array_s_copy_resize(this,a_used);
 
   memcpy(this->data,a_data,a_used*sizeof(record_s));
@@ -405,6 +407,7 @@ static inline void rec_array_s_copy(rec_array_s *this,rec_array_s *a_src)
   }
 
   rec_array_s_copy_resize(this,a_src->used);
+
   memcpy(this->data,a_src->data,a_src->used*sizeof(record_s));
 
   this->used = a_src->used;

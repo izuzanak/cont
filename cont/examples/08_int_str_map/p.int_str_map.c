@@ -507,13 +507,15 @@ static inline void ui_array_s_clear(ui_array_s *this)
 
 static inline void ui_array_s_set(ui_array_s *this,unsigned a_used,unsigned *a_data)
 {/*{{{*/
+  debug_assert(a_data != NULL);
+
   ui_array_s_clear(this);
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != NULL);
   ui_array_s_copy_resize(this,a_used);
 
   memcpy(this->data,a_data,a_used*sizeof(unsigned));
@@ -603,6 +605,7 @@ static inline void ui_array_s_copy(ui_array_s *this,ui_array_s *a_src)
   }
 
   ui_array_s_copy_resize(this,a_src->used);
+
   memcpy(this->data,a_src->data,a_src->used*sizeof(unsigned));
 
   this->used = a_src->used;

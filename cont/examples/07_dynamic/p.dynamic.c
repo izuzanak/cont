@@ -519,13 +519,15 @@ void string_array_s_clear(string_array_s *this)
 
 void string_array_s_set(string_array_s *this,unsigned a_used,string_s *a_data)
 {/*{{{*/
+  debug_assert(a_data != NULL);
+
   string_array_s_clear(this);
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != NULL);
   string_array_s_copy_resize(this,a_used);
 
   string_s *ptr = this->data;

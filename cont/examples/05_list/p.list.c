@@ -738,6 +738,7 @@ static inline void rec_list_s_copy(rec_list_s *this,rec_list_s *a_src)
   }
 
   rec_list_s_copy_resize(this,a_src->used);
+
   memcpy(this->data,a_src->data,a_src->used*sizeof(rec_list_s_element));
 
   this->used = a_src->used;
