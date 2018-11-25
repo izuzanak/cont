@@ -6,7 +6,7 @@
 include "struct.h"
 @end
 
-#include <stdarg.h>
+//#define FIXED_BUFFER
 
 /*
  * constants and definitions

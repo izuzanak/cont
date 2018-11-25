@@ -6,6 +6,8 @@
 include "struct.h"
 @end
 
+//#define FIXED_BUFFER
+
 /*
  * definition of generated structures
  */

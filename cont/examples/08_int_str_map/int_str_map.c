@@ -32,7 +32,11 @@ const char c_string_terminating_char = '\0';
 int main(int argc, char **argv)
 {
   int_string_map_s map;
+#ifdef FIXED_BUFFER
+  int_string_map_s_init_buffer(&map,1001,alloca(1001*sizeof(int_string_map_s_node)));
+#else
   int_string_map_s_init(&map);
+#endif
 
   unsigned buff_size = 64;
   char buffer[buff_size];

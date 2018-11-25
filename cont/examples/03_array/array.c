@@ -42,7 +42,11 @@ int main(int argc, char **argv)
   rec_array_s array0;
 
   printf("--- INITIALIZE AND FILL ARRAY ---\n");
+#ifdef FIXED_BUFFER
+  rec_array_s_init_buffer(&array0,10,alloca(10*sizeof(record_s)));
+#else
   rec_array_s_init_size(&array0,5);
+#endif
   rec_array_s_fill(&array0,&rec);
 
   print_array(&array0,"array0");
@@ -75,7 +79,11 @@ int main(int argc, char **argv)
 
   printf("--- CREATE NEW EMPTY ARRAY ---\n");
   rec_array_s array1;
+#ifdef FIXED_BUFFER
+  rec_array_s_init_buffer(&array1,10,alloca(10*sizeof(record_s)));
+#else
   rec_array_s_init(&array1);
+#endif
 
   print_array(&array0,"array0");
   print_array(&array1,"array1");

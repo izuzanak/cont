@@ -235,6 +235,8 @@ int main(int argc, char **argv);
 
 
 
+//#define FIXED_BUFFER
+
 /*
  * definition of generated structures
  */
@@ -903,7 +905,11 @@ int main(int argc, char **argv)
   record_s_set(&rec,1,1);
 
   rec_list_s list0;
+#ifdef FIXED_BUFFER
+  rec_list_s_init_buffer(&list0,10,alloca(10*sizeof(rec_list_s_element)));
+#else
   rec_list_s_init(&list0);
+#endif
 
   print_list(&list0,"list0");
 
@@ -958,7 +964,11 @@ int main(int argc, char **argv)
 
   printf("--- CREATE NEW EMPTY LIST ---\n");
   rec_list_s list1;
+#ifdef FIXED_BUFFER
+  rec_list_s_init_buffer(&list1,10,alloca(10*sizeof(rec_list_s_element)));
+#else
   rec_list_s_init(&list1);
+#endif
 
   print_list(&list0,"list0");
   print_list(&list1,"list1");

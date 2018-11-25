@@ -47,7 +47,11 @@ int main(int argc, char **argv)
   string_s_set(&string,strlen("String"),"String");
 
   string_array_s array0;
+#ifdef FIXED_BUFFER
+  string_array_s_init_buffer(&array0,10,alloca(10*sizeof(string_s)));
+#else
   string_array_s_init(&array0);
+#endif
 
   printf("--- CREATE EMPTY ARRAY ---\n");
   print_array(&array0,"array0");
@@ -84,7 +88,11 @@ int main(int argc, char **argv)
 
   printf("--- CREATE NEW EMPTY ARRAY ---\n");
   string_array_s array1;
+#ifdef FIXED_BUFFER
+  string_array_s_init_buffer(&array1,10,alloca(10*sizeof(string_s)));
+#else
   string_array_s_init(&array1);
+#endif
 
   print_array(&array0,"array0");
   print_array(&array1,"array1");

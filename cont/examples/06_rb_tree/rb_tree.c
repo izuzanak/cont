@@ -57,7 +57,11 @@ int main(int argc, char **argv)
   record_s_set(&rec,1,1);
 
   rec_rb_tree_s rb_tree0;
+#ifdef FIXED_BUFFER
+  rec_rb_tree_s_init_buffer(&rb_tree0,10,alloca(10*sizeof(rec_rb_tree_s_node)));
+#else
   rec_rb_tree_s_init(&rb_tree0);
+#endif
 
   print_tree(&rb_tree0,"rb_tree0");
 
@@ -96,7 +100,11 @@ int main(int argc, char **argv)
 
   printf("--- CREATE NEW EMPTY RB_TREE ---\n");
   rec_rb_tree_s rb_tree1;
+#ifdef FIXED_BUFFER
+  rec_rb_tree_s_init_buffer(&rb_tree1,10,alloca(10*sizeof(rec_rb_tree_s_node)));
+#else
   rec_rb_tree_s_init(&rb_tree1);
+#endif
 
   print_tree(&rb_tree0,"rb_tree0");
   print_tree(&rb_tree1,"rb_tree1");

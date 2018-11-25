@@ -47,7 +47,11 @@ int main(int argc, char **argv)
 
   printf("--- CREATE AND FILL RECORDS QUEUE ---\n");
   rec_queue_s queue0;
+#ifdef FIXED_BUFFER
+  rec_queue_s_init_buffer(&queue0,10,alloca(10*sizeof(record_s)));
+#else
   rec_queue_s_init_size(&queue0,10);
+#endif
 
   unsigned idx = 0;
   do {
@@ -77,7 +81,11 @@ int main(int argc, char **argv)
 
   printf("--- CREATE NEW EMPTY QUEUE ---\n");
   rec_queue_s queue1;
+#ifdef FIXED_BUFFER
+  rec_queue_s_init_buffer(&queue1,10,alloca(10*sizeof(record_s)));
+#else
   rec_queue_s_init(&queue1);
+#endif
 
   print_queue(&queue0,"queue0");
   print_queue(&queue1,"queue1");
