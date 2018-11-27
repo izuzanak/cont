@@ -434,12 +434,12 @@ printf(
 "};\n"
 "\n"
 );
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_clear)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 printf(
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -476,12 +476,12 @@ printf(
 ");\n"
 "static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 printf(
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 printf(
 "static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -540,12 +540,12 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - struct init method -
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 STRUCT_INIT(STRUCT_GEN_VALUES);
    }
 
    // - struct clear method -
-   if (!(data_type.properties & c_type_option_nogen_clear)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 STRUCT_CLEAR(STRUCT_GEN_VALUES);
    }
 
@@ -556,12 +556,12 @@ STRUCT_SET(STRUCT_GEN_VALUES);
 STRUCT_FLUSH_ALL(STRUCT_GEN_VALUES);
 
    // - struct swap method -
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 STRUCT_SWAP(STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
    }
 

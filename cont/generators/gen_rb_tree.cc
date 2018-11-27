@@ -324,7 +324,7 @@ printf(
 "  }\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  if (this->used >= this->size)\n"
 "  {\n"
@@ -1626,8 +1626,7 @@ printf(
 "  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node));\n"
 ,IM_STRUCT_NAME);
    }
-   else
-   {
+   else {
 printf(
 "\n"
 "  %s_node *ptr = this->data;\n"
@@ -1819,8 +1818,17 @@ printf(
 
 void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_rehash_tree(%s *this)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s_rehash_tree(%s *this,char *a_processed)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -1844,7 +1852,18 @@ printf(
 "\n"
 "  this->root_idx = c_idx_not_exist;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  char *processed = (char *)cmalloc(indexes.used);\n"
+);
+   }
+   else {
+printf(
+"  char *processed = a_processed;\n"
+);
+   }
+printf(
 "  memset(processed,0,indexes.used*sizeof(char));\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
@@ -1870,12 +1889,17 @@ printf(
 "  %s___binary_tree_insert(this,node_idx,&this->data[node_idx].object,0);\n"
 "  %s___insert_operation(this,node_idx);\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  cfree(processed);\n"
+);
+   }
+printf(
 "  ui_array_s_clear(&indexes);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
@@ -2319,31 +2343,29 @@ printf(
 printf(
 "static inline int %s___compare_value(%s *this,%s *a_first,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
 printf(
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s_node *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
+      if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
-   }
-   else {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      else {
 printf(
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
      if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data);\n"
@@ -2368,7 +2390,7 @@ printf(
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 printf(
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -2397,7 +2419,7 @@ printf(
 printf(
 "void %s_remove(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -2434,7 +2456,7 @@ printf(
 "void %s_get_idxs(%s *this,%s *a_value,ui_array_s *a_idxs_array);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "static inline void %s_copy(%s *this,%s *a_src);\n"
@@ -2454,9 +2476,16 @@ printf(
 "void %s_to_string(%s *this,bc_array_s *a_trg);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_rehash_tree(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s_rehash_tree(%s *this,char *a_processed);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
 #ifdef RB_TREE_GENERATE_PRINT_DOT_CODE
 printf(
 "void %s_print_dot_code(%s *this,FILE *a_file);\n"
@@ -2562,19 +2591,19 @@ RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_VALUES);
 RB_TREE_INIT(RB_TREE_GEN_VALUES);
 
    // - rb_tree init_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
 RB_TREE_INIT_BUFFER(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree clear method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 RB_TREE_CLEAR(RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree set_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer && !(TYPE_NUMBERS(0) & c_type_dynamic)) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && !(TYPE_NUMBERS(0) & c_type_dynamic)) {
 RB_TREE_SET_BUFFER(RB_TREE_GEN_VALUES);
    }
 
@@ -2587,7 +2616,7 @@ RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 RB_TREE_SWAP(RB_TREE_GEN_VALUES);
    }
 
@@ -2622,7 +2651,7 @@ RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }
@@ -2721,13 +2750,13 @@ RB_TREE___INSERT_OPERATION(RB_TREE_GEN_VALUES);
 
    // - rb_tree clear method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 RB_TREE_CLEAR(RB_TREE_GEN_VALUES);
       }
    }
 
    // - rb_tree set_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer && TYPE_NUMBERS(0) & c_type_dynamic) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && TYPE_NUMBERS(0) & c_type_dynamic) {
 RB_TREE_SET_BUFFER(RB_TREE_GEN_VALUES);
    }
 
@@ -2754,7 +2783,7 @@ RB_TREE_FLUSH_ALL(RB_TREE_GEN_VALUES);
 RB_TREE_REMOVE(RB_TREE_GEN_VALUES);
 
    // - rb_tree copy_resize method -
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 RB_TREE_COPY_RESIZE(RB_TREE_GEN_VALUES);
    }
 
@@ -2775,7 +2804,7 @@ RB_TREE_GET_IDXS(RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
       }
    }

@@ -310,7 +310,7 @@ printf(
 printf(
 "{/*{{{*/\n"
 );
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  if (this->used >= this->size)\n"
 "  {\n"
@@ -346,7 +346,7 @@ printf(
 "static inline void %s_push_blank(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  if (this->used >= this->size)\n"
 "  {\n"
@@ -393,7 +393,7 @@ printf(
 "void %s_push_blanks(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  unsigned required_cnt = this->used + a_cnt;\n"
 "  if (required_cnt > this->size)\n"
@@ -426,7 +426,7 @@ printf(
 "static inline void %s_push_clear(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  if (this->used >= this->size)\n"
 "  {\n"
@@ -987,36 +987,34 @@ printf(
 "};\n"
 "\n"
 ,STRUCT_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "static inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
 printf(
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
+      if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
-   }
-   else {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      else {
 printf(
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
      if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data);\n"
@@ -1051,7 +1049,7 @@ printf(
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 printf(
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -1072,7 +1070,7 @@ printf(
 printf(
 "static inline void %s_push_blank(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_reserve(%s *this,unsigned a_cnt);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -1094,7 +1092,7 @@ printf(
 printf(
 "static inline %s *%s_last(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -1127,7 +1125,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 printf(
 "static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -1137,7 +1135,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 printf(
 "void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -1187,29 +1185,29 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - array init method -
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 ARRAY_INIT(ARRAY_GEN_VALUES);
    }
 
    // - array init_size method -
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 ARRAY_INIT_SIZE(ARRAY_GEN_VALUES);
    }
 
    // - array init_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
 ARRAY_INIT_BUFFER(ARRAY_GEN_VALUES);
    }
 
    // - array clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 ARRAY_CLEAR(ARRAY_GEN_VALUES);
       }
    }
 
    // - array set_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer && !(TYPE_NUMBER & c_type_dynamic)) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && !(TYPE_NUMBER & c_type_dynamic)) {
 ARRAY_SET_BUFFER(ARRAY_GEN_VALUES);
    }
 
@@ -1227,7 +1225,7 @@ ARRAY_FLUSH_ALL(ARRAY_GEN_VALUES);
    }
 
    // - array swap method -
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 ARRAY_SWAP(ARRAY_GEN_VALUES);
    }
 
@@ -1264,7 +1262,7 @@ ARRAY_FILL(ARRAY_GEN_VALUES,type_idx);
 
    // - array operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }
@@ -1308,13 +1306,13 @@ printf(
 
    // - array clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 ARRAY_CLEAR(ARRAY_GEN_VALUES);
       }
    }
 
    // - array set_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer && TYPE_NUMBER & c_type_dynamic) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && TYPE_NUMBER & c_type_dynamic) {
 ARRAY_SET_BUFFER(ARRAY_GEN_VALUES);
    }
 
@@ -1339,7 +1337,7 @@ ARRAY_FLUSH_ALL(ARRAY_GEN_VALUES);
    // - array push_blank method -
 
    // - array reserve method -
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 ARRAY_RESERVE(ARRAY_GEN_VALUES);
    }
 
@@ -1353,7 +1351,7 @@ ARRAY_PUSH_BLANKS(ARRAY_GEN_VALUES);
    // - array last method -
 
    // - array copy_resize method -
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 ARRAY_COPY_RESIZE(ARRAY_GEN_VALUES);
    }
 
@@ -1367,7 +1365,7 @@ ARRAY_GET_IDX(ARRAY_GEN_VALUES);
 
    // - array operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
       }
    }

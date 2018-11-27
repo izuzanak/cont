@@ -140,7 +140,7 @@ unsigned process_s::find_terminal(unsigned &a_input_idx)
    a_input_idx++;\
 }
 
-   unsigned short in_char;
+   unsigned char in_char;
 
 // - STATE 0 -
    GET_NEXT_CHAR();
@@ -253,7 +253,7 @@ state_2_label:
    if (in_char == 34)
       goto state_22_label;
 
-   if (in_char >= 35 && in_char < 256)
+   if (in_char >= 35)
       goto state_2_label;
 
    return c_idx_not_exist;
@@ -269,7 +269,7 @@ state_3_label:
    if (in_char == 10)
       goto state_23_label;
 
-   if (in_char >= 11 && in_char < 256)
+   if (in_char >= 11)
       goto state_3_label;
 
    return c_idx_not_exist;
@@ -550,7 +550,7 @@ state_20_label:
    if (in_char == 125)
       goto state_35_label;
 
-   if (in_char >= 126 && in_char < 256)
+   if (in_char >= 126)
       goto state_20_label;
 
    return c_idx_not_exist;

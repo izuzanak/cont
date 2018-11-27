@@ -72,7 +72,7 @@ printf(
 "      %s_clear(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
-   }
+      }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -282,7 +282,7 @@ printf(
 "  else\n"
 "  {\n"
 );
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -361,7 +361,7 @@ printf(
 "  else\n"
 "  {\n"
 );
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -442,7 +442,7 @@ printf(
 "  else\n"
 "  {\n"
 );
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -524,7 +524,7 @@ printf(
 "  else\n"
 "  {\n"
 );
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -595,7 +595,7 @@ printf(
 "  else\n"
 "  {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -652,7 +652,7 @@ printf(
 "  else\n"
 "  {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -711,7 +711,7 @@ printf(
 "  else\n"
 "  {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -771,7 +771,7 @@ printf(
 "  else\n"
 "  {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
 "    {\n"
@@ -1270,36 +1270,36 @@ printf(
 "};\n"
 "\n"
 ,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "static inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
 printf(
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s_element *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 printf(
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
    else {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 printf(
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
      if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s_element *a_data);\n"
@@ -1324,7 +1324,7 @@ printf(
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 printf(
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -1368,7 +1368,7 @@ printf(
 "static inline unsigned %s_next_idx(%s *this,unsigned a_idx);\n"
 "static inline unsigned %s_prev_idx(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
@@ -1383,7 +1383,7 @@ printf(
 "unsigned %s_get_idx(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "static inline void %s_copy(%s *this,%s *a_src);\n"
@@ -1439,29 +1439,29 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - list init method -
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 SAFE_LIST_INIT(SAFE_LIST_GEN_VALUES);
    }
 
    // - list init_size method -
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 SAFE_LIST_INIT_SIZE(SAFE_LIST_GEN_VALUES);
    }
 
    // - list init_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
 SAFE_LIST_INIT_BUFFER(SAFE_LIST_GEN_VALUES);
    }
 
    // - list clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 SAFE_LIST_CLEAR(SAFE_LIST_GEN_VALUES);
       }
    }
 
    // - list set_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer && !(TYPE_NUMBER & c_type_dynamic)) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && !(TYPE_NUMBER & c_type_dynamic)) {
 SAFE_LIST_SET_BUFFER(SAFE_LIST_GEN_VALUES);
    }
 
@@ -1474,7 +1474,7 @@ SAFE_LIST_FLUSH_ALL(SAFE_LIST_GEN_VALUES);
    }
 
    // - list swap method -
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 SAFE_LIST_SWAP(SAFE_LIST_GEN_VALUES);
    }
 
@@ -1520,7 +1520,7 @@ SAFE_LIST_PREV_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }
@@ -1561,13 +1561,13 @@ printf(
 
    // - list clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 SAFE_LIST_CLEAR(SAFE_LIST_GEN_VALUES);
       }
    }
 
    // - list set_buffer method -
-   if (data_type.properties & c_type_option_fixed_buffer && TYPE_NUMBER & c_type_dynamic) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && TYPE_NUMBER & c_type_dynamic) {
 SAFE_LIST_SET_BUFFER(SAFE_LIST_GEN_VALUES);
    }
 
@@ -1605,7 +1605,7 @@ SAFE_LIST_FLUSH_ALL(SAFE_LIST_GEN_VALUES);
    // - list prev_idx method -
 
    // - list copy_resize method -
-   if (!(data_type.properties & c_type_option_fixed_buffer)) {
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 SAFE_LIST_COPY_RESIZE(SAFE_LIST_GEN_VALUES);
    }
 
@@ -1614,7 +1614,7 @@ SAFE_LIST_GET_IDX(SAFE_LIST_GEN_VALUES);
 
    // - list operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 SAFE_LIST_OPERATOR_EQUAL(SAFE_LIST_GEN_VALUES);
       }
    }
