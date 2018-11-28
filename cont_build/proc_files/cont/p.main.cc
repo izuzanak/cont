@@ -996,13 +996,15 @@ inline void ui_array_s::clear()
 
 inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 {/*{{{*/
+  debug_assert(a_data != nullptr);
+
   clear();
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != nullptr);
   copy_resize(a_used);
 
   memcpy(data,a_data,a_used*sizeof(unsigned));
@@ -1092,6 +1094,7 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
   }
 
   copy_resize(a_src.used);
+
   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
 
   used = a_src.used;
@@ -1497,6 +1500,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   }
 
   copy_resize(a_src.used);
+
   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
   used = a_src.used;
@@ -2326,6 +2330,7 @@ inline string_s &string_array_s::last()
  */
 
 #define STRUCT_NAME abbs[0].data
+#define STRUCT_NUMBER data_type.properties
 #define IM_STRUCT_NAME abbreviations[abb_idx].name.data
 #define TYPE_CNT type_cnt
 #define TYPE_NAME abbreviations[type_abb_idx].name.data
@@ -2360,6 +2365,7 @@ enum {
    c_type_option_nogen_copy     = 0x100 << 3,
 
    c_type_option_strict_dynamic = 0x100 << 4,
+   c_type_option_fixed_buffer   = 0x100 << 5,
 };
 
 

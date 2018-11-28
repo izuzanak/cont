@@ -308,10 +308,21 @@ printf(
 "  }\n"
 "  else\n"
 "  {\n"
+,IM_STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
+);
+   }
+   else {
+printf(
+"    debug_assert(used < size);\n"
+);
+   }
+printf(
 "\n"
 "    new_idx = used++;\n"
 "  }\n"
@@ -322,7 +333,7 @@ printf(
 "  return new_idx;\n" 
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void SAFE_RB_TREE___BINARY_TREE_INSERT(SAFE_RB_TREE_GEN_PARAMS)
@@ -649,6 +660,18 @@ printf(
 );
 }/*}}}*/
 
+void SAFE_RB_TREE_INIT_BUFFER(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init_buffer(unsigned a_size,%s_node *a_data)\n"
+"{/*{{{*/\n"
+"  init();\n"
+"  set_buffer(a_size,a_data);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
 void SAFE_RB_TREE_CLEAR(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
@@ -663,10 +686,13 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_dynamic || !(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  if (data != nullptr)\n"
 "  {\n"
 );
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+      if (TYPE_NUMBERS(0) & c_type_dynamic) {
 printf(
 "    %s_node *ptr = data;\n"
 "    %s_node *ptr_end = ptr + size;\n"
@@ -674,17 +700,24 @@ printf(
 "    do {\n"
 "      ptr->object.clear();\n"
 "    } while(++ptr < ptr_end);\n"
-"\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
+      }
+      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+         if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+);
+         }
 printf(
 "    cfree(data);\n"
-"  }\n"
 );
-   if (VAR_NAMES_CNT > 0) {
+      }
 printf(
+"  }\n"
 "\n"
 );
+   }
+   if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
@@ -693,10 +726,73 @@ printf(
 ,VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
+printf(
+"\n"
+);
+   }
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
+"  init();\n"
+);
+   }
+   else {
+printf(
+"  used = 0;\n"
+"  count = 0;\n"
+"  free_idx = c_idx_not_exist;\n"
+"  root_idx = c_idx_not_exist;\n"
+"  leaf_idx = c_idx_not_exist;\n"
+);
+      if (VAR_NAMES_CNT > 0) {
+         unsigned t_idx = 0;
+         do {
+            if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+printf(
+"  %s.init();\n"
+,VAR_NAMES(t_idx));
+            }
+         } while(++t_idx < VAR_NAMES_CNT);
+      }
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void SAFE_RB_TREE_SET_BUFFER(SAFE_RB_TREE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"inline void %s::set_buffer(unsigned a_size,%s_node *a_data)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::set_buffer(unsigned a_size,%s_node *a_data)\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"\n"
+"  clear();\n"
+);
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+printf(
+"\n"
+"  %s_node *ptr = a_data;\n"
+"  %s_node *ptr_end = a_data + a_size;\n"
+"\n"
+"  do {\n"
+"    ptr->object.init();\n"
+"  } while(++ptr < ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
 printf(
 "\n"
-"  init();\n"
+"  size = a_size;\n"
+"  data = a_data;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -707,10 +803,16 @@ void SAFE_RB_TREE_FLUSH(SAFE_RB_TREE_GEN_PARAMS)
 printf(
 "inline void %s::flush()\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  copy_resize(used);\n"
+);
+   }
+printf(
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_PARAMS)
@@ -728,24 +830,17 @@ printf(
 printf(
 "{/*{{{*/\n"
 );
-   if (TYPE_NUMBERS(0) & c_type_flushable) {
-printf(
-"  %s_node *ptr = data;\n"
-"  %s_node *ptr_end = ptr + used;\n"
-"\n"
-"  do {\n"
-"    ptr->object.flush_all();\n"
-"  } while(++ptr < ptr_end);\n"
-"\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  copy_resize(used);\n"
 );
+   }
    if (VAR_NAMES_CNT > 0) {
+      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "\n"
 );
+      }
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
@@ -754,6 +849,26 @@ printf(
 ,VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
+   }
+   if (TYPE_NUMBERS(0) & c_type_flushable) {
+      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer) || VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
+      }
+printf(
+"  if (used == 0)\n"
+"  {\n"
+"    return;\n"
+"  }\n"
+"\n"
+"  %s_node *ptr = data;\n"
+"  %s_node *ptr_end = ptr + used;\n"
+"\n"
+"  do {\n"
+"    ptr->object.flush_all();\n"
+"  } while(++ptr < ptr_end);\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
 printf(
 "}/*}}}*/\n"
@@ -1371,22 +1486,34 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+printf(
+"  debug_assert(a_src.used <= size);\n"
+"\n"
+);
+   }
+printf(
 "  clear();\n"
 "\n"
 "  if (a_src.root_idx == c_idx_not_exist)\n"
 "  {\n"
 "    return *this;\n"
 "  }\n"
+);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "\n"
 "  copy_resize(a_src.used);\n"
 );
+   }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
+"\n"
 "  memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"
 ,IM_STRUCT_NAME);
    }
-   else 
-   {
+   else {
 printf(
 "\n"
 "  %s_node *ptr = data;\n"
@@ -1508,8 +1635,17 @@ printf(
 
 void SAFE_RB_TREE_REHASH_TREE(SAFE_RB_TREE_GEN_PARAMS)
 {/*{{{*/
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s::rehash_tree()\n"
+,IM_STRUCT_NAME);
+   }
+   else {
+printf(
+"void %s::rehash_tree(bool *a_processed)\n"
+,IM_STRUCT_NAME);
+   }
+printf(
 "{/*{{{*/\n"
 "  if (root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -1533,7 +1669,18 @@ printf(
 "\n"
 "  root_idx = c_idx_not_exist;\n"
 "\n"
+);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"
+);
+   }
+   else {
+printf(
+"  bool *processed = a_processed;\n"
+);
+   }
+printf(
 "  memset(processed,false,indexes.used*sizeof(bool));\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
@@ -1559,11 +1706,17 @@ printf(
 "  __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
 "  __insert_operation(node_idx);\n"
 "\n"
+);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  cfree(processed);\n"
+);
+   }
+printf(
 "  indexes.clear();\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void SAFE_RB_TREE_PRINT_DOT_CODE(SAFE_RB_TREE_GEN_PARAMS)
@@ -2013,7 +2166,7 @@ printf(
 "  inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN initialize rb_tree\n"
@@ -2022,8 +2175,19 @@ printf(
 "\n"
 );
    }
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+printf(
+"  /*!\n"
+"    * \\brief __GEN initialize/set underlaying data buffer\n"
+"    * \\param a_size - size of data buffer\n"
+"    * \\param a_data - pointer to data buffer\n"
+"    */\n"
+"  inline void init_buffer(unsigned a_size,%s_node *a_data);\n"
+"\n"
+,STRUCT_NAME);
+   }
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
+      if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -2032,9 +2196,7 @@ printf(
 "\n"
 );
       }
-   }
-   else {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      else {
 printf(
 "  /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
@@ -2042,6 +2204,30 @@ printf(
 "  void clear();\n"
 "\n"
 );
+      }
+   }
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+     if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+printf(
+"  /*!\n"
+"    * \\brief __GEN set underlaying data buffer\n"
+"    * \\param a_size - size of data buffer\n"
+"    * \\param a_data - pointer to data buffer\n"
+"    */\n"
+"  inline void set_buffer(unsigned a_size,%s_node *a_data);\n"
+"\n"
+,STRUCT_NAME);
+      }
+      else {
+printf(
+"  /*!\n"
+"    * \\brief __GEN set underlaying data buffer\n"
+"    * \\param a_size - size of data buffer\n"
+"    * \\param a_data - pointer to data buffer\n"
+"    */\n"
+"  void set_buffer(unsigned a_size,%s_node *a_data);\n"
+"\n"
+,STRUCT_NAME);
       }
    }
 printf(
@@ -2069,7 +2255,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN swap members of rb_tree with another rb_tree\n"
@@ -2149,6 +2335,9 @@ printf(
 "    */\n"
 "  void remove(unsigned a_idx);\n"
 "\n"
+);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  /*!\n"
 "    * \\brief __GEN resize rb_tree capacity\n"
 "    * \\param a_size - requested rb_tree capacity\n"
@@ -2156,6 +2345,7 @@ printf(
 "  void copy_resize(unsigned a_size);\n"
 "\n"
 );
+   }
    if (TYPE_NUMBERS(0) & c_type_basic) {
 printf(
 "  /*!\n"
@@ -2232,7 +2422,7 @@ printf(
 "\n"
 ,IM_TYPE_NAMES(0));
    }
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 printf(
 "  /*!\n"
@@ -2265,6 +2455,7 @@ printf(
 "  bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
@@ -2272,6 +2463,16 @@ printf(
 "    void rehash_tree();\n"
 "\n"
 );
+   }
+   else {
+printf(
+"  /*!\n"
+"    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
+"    */\n"
+"    void rehash_tree(bool *a_processed);\n"
+"\n"
+);
+   }
 #ifdef SAFE_RB_TREE_GENERATE_PRINT_DOT_CODE
 printf(
 "  /*\n"
@@ -2387,11 +2588,21 @@ SAFE_RB_TREE___REMOVE_ONE_CHILD(SAFE_RB_TREE_GEN_VALUES);
    // - rb_tree init method -
 SAFE_RB_TREE_INIT(SAFE_RB_TREE_GEN_VALUES);
 
+   // - rb_tree init_buffer method -
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+SAFE_RB_TREE_INIT_BUFFER(SAFE_RB_TREE_GEN_VALUES);
+   }
+
    // - rb_tree clear method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 SAFE_RB_TREE_CLEAR(SAFE_RB_TREE_GEN_VALUES);
       }
+   }
+
+   // - rb_tree set_buffer method -
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && !(TYPE_NUMBERS(0) & c_type_dynamic)) {
+SAFE_RB_TREE_SET_BUFFER(SAFE_RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree flush method -
@@ -2403,7 +2614,7 @@ SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree swap method -
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 SAFE_RB_TREE_SWAP(SAFE_RB_TREE_GEN_VALUES);
    }
 
@@ -2438,7 +2649,7 @@ SAFE_RB_TREE_UNIQUE_SWAP_INSERT(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_VALUES);
       }
    }
@@ -2531,11 +2742,18 @@ SAFE_RB_TREE___INSERT_OPERATION(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree init method -
 
+   // - rb_tree init_buffer method -
+
    // - rb_tree clear method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 SAFE_RB_TREE_CLEAR(SAFE_RB_TREE_GEN_VALUES);
       }
+   }
+
+   // - rb_tree set_buffer method -
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && TYPE_NUMBERS(0) & c_type_dynamic) {
+SAFE_RB_TREE_SET_BUFFER(SAFE_RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree flush method -
@@ -2561,7 +2779,9 @@ SAFE_RB_TREE_FLUSH_ALL(SAFE_RB_TREE_GEN_VALUES);
 SAFE_RB_TREE_REMOVE(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree copy_resize method -
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 SAFE_RB_TREE_COPY_RESIZE(SAFE_RB_TREE_GEN_VALUES);
+   }
 
    // - rb_tree get_idx method -
 SAFE_RB_TREE_GET_IDX(SAFE_RB_TREE_GEN_VALUES);
@@ -2580,7 +2800,7 @@ SAFE_RB_TREE_GET_IDXS(SAFE_RB_TREE_GEN_VALUES);
 
    // - rb_tree operator= method -
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 SAFE_RB_TREE_OPERATOR_EQUAL(SAFE_RB_TREE_GEN_VALUES);
       }
    }

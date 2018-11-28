@@ -996,13 +996,15 @@ inline void ui_array_s::clear()
 
 inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 {/*{{{*/
+  debug_assert(a_data != nullptr);
+
   clear();
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != nullptr);
   copy_resize(a_used);
 
   memcpy(data,a_data,a_used*sizeof(unsigned));
@@ -1092,6 +1094,7 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
   }
 
   copy_resize(a_src.used);
+
   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
 
   used = a_src.used;
@@ -1497,6 +1500,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   }
 
   copy_resize(a_src.used);
+
   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
   used = a_src.used;
@@ -2326,6 +2330,7 @@ inline string_s &string_array_s::last()
  */
 
 #define STRUCT_NAME abbs[0].data
+#define STRUCT_NUMBER data_type.properties
 #define IM_STRUCT_NAME abbreviations[abb_idx].name.data
 #define TYPE_CNT type_cnt
 #define TYPE_NAME abbreviations[type_abb_idx].name.data
@@ -2360,6 +2365,7 @@ enum {
    c_type_option_nogen_copy     = 0x100 << 3,
 
    c_type_option_strict_dynamic = 0x100 << 4,
+   c_type_option_fixed_buffer   = 0x100 << 5,
 };
 
 
@@ -3783,13 +3789,15 @@ inline void lalr_stack_s::clear()
 
 inline void lalr_stack_s::set(unsigned a_used,lalr_stack_element_s *a_data)
 {/*{{{*/
+  debug_assert(a_data != nullptr);
+
   clear();
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != nullptr);
   copy_resize(a_used);
 
   memcpy(data,a_data,a_used*sizeof(lalr_stack_element_s));
@@ -3879,6 +3887,7 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
   }
 
   copy_resize(a_src.used);
+
   memcpy(data,a_src.data,a_src.used*sizeof(lalr_stack_element_s));
 
   used = a_src.used;
@@ -4216,7 +4225,7 @@ unsigned process_s::find_terminal(unsigned &a_input_idx)
    a_input_idx++;\
 }
 
-   unsigned short in_char;
+   unsigned char in_char;
 
 // - STATE 0 -
    GET_NEXT_CHAR();
@@ -4329,7 +4338,7 @@ state_2_label:
    if (in_char == 34)
       goto state_22_label;
 
-   if (in_char >= 35 && in_char < 256)
+   if (in_char >= 35)
       goto state_2_label;
 
    return c_idx_not_exist;
@@ -4345,7 +4354,7 @@ state_3_label:
    if (in_char == 10)
       goto state_23_label;
 
-   if (in_char >= 11 && in_char < 256)
+   if (in_char >= 11)
       goto state_3_label;
 
    return c_idx_not_exist;
@@ -4626,7 +4635,7 @@ state_20_label:
    if (in_char == 125)
       goto state_35_label;
 
-   if (in_char >= 126 && in_char < 256)
+   if (in_char >= 126)
       goto state_20_label;
 
    return c_idx_not_exist;
@@ -6495,6 +6504,9 @@ void process_s::pa_reduce_option(process_s &proc)
 
    else if (strcmp("strict_dynamic",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_strict_dynamic;
+
+   else if (strcmp("fixed_buffer",code.data + lse.terminal_start) == 0)
+      proc.processor_ptr->type_settings |= c_type_option_fixed_buffer;
 
    else {
       fprintf(stderr,"ERROR: Unrecognized option %s.\n",code.data + lse.terminal_start);

@@ -378,7 +378,7 @@ printf(
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
 
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "\n"
 "  /*!\n"
@@ -388,7 +388,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_option_nogen_clear)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN release memory used by structure\n"
@@ -436,7 +436,7 @@ printf(
 "  inline void flush_all();\n"
 "\n"
 );
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN swap structure members with another structure\n"
@@ -445,7 +445,7 @@ printf(
 "\n"
 ,STRUCT_NAME);
    }
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN copy structure from another structure\n"
@@ -512,12 +512,12 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - struct init method -
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 STRUCT_INIT(STRUCT_GEN_VALUES);
    }
 
    // - struct clear method -
-   if (!(data_type.properties & c_type_option_nogen_clear)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 STRUCT_CLEAR(STRUCT_GEN_VALUES);
    }
 
@@ -528,12 +528,12 @@ STRUCT_SET(STRUCT_GEN_VALUES);
 STRUCT_FLUSH_ALL(STRUCT_GEN_VALUES);
 
    // - struct swap method -
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 STRUCT_SWAP(STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
    }
 

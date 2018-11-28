@@ -1,6 +1,6 @@
 
-#define QUEUE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type
-#define QUEUE_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type
+#define QUEUE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type,data_type_s &data_type
+#define QUEUE_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type,data_type
 
 void  QUEUE_INIT(QUEUE_GEN_PARAMS)
 {/*{{{*/
@@ -28,6 +28,18 @@ printf(
 ,IM_STRUCT_NAME);
 }/*}}}*/
 
+void QUEUE_INIT_BUFFER(QUEUE_GEN_PARAMS)
+{/*{{{*/
+printf(
+"inline void %s::init_buffer(unsigned a_size,%s *a_data)\n"
+"{/*{{{*/\n"
+"  init();\n"
+"  set_buffer(a_size,a_data);\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+}/*}}}*/
+
 void  QUEUE_CLEAR(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
@@ -42,10 +54,13 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (TYPE_NUMBER & c_type_dynamic || !(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  if (data != nullptr)\n"
 "  {\n"
 );
-   if (TYPE_NUMBER & c_type_dynamic) {
+      if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "    %s *ptr = data;\n"
 "    %s *ptr_end = ptr + size;\n"
@@ -53,14 +68,73 @@ printf(
 "    do {\n"
 "      ptr->clear();\n"
 "    } while(++ptr < ptr_end);\n"
+,TYPE_NAME,TYPE_NAME);
+      }
+      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+         if (TYPE_NUMBER & c_type_dynamic) {
+printf(
 "\n"
+);
+         }
+printf(
+"    cfree(data);\n"
+);
+      }
+printf(
+"  }\n"
+"\n"
+);
+   }
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
+"  init();\n"
+);
+   }
+   else {
+printf(
+"  this->used = 0;\n"
+"  this->begin = 0;\n"
+);
+   }
+printf(
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void QUEUE_SET_BUFFER(QUEUE_GEN_PARAMS)
+{/*{{{*/
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"inline void %s::set_buffer(unsigned a_size,%s *a_data)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+   else {
+printf(
+"void %s::set_buffer(unsigned a_size,%s *a_data)\n"
+,IM_STRUCT_NAME,TYPE_NAME);
+   }
+printf(
+"{/*{{{*/\n"
+"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"\n"
+"  clear();\n"
+);
+   if (TYPE_NUMBER & c_type_dynamic) {
+printf(
+"\n"
+"  %s *ptr = a_data;\n"
+"  %s *ptr_end = a_data + a_size;\n"
+"\n"
+"  do {\n"
+"    ptr->init();\n"
+"  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME);
    }
 printf(
-"    cfree(data);\n"
-"  }\n"
 "\n"
-"  init();\n"
+"  size = a_size;\n"
+"  data = a_data;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -71,10 +145,16 @@ void  QUEUE_FLUSH(QUEUE_GEN_PARAMS)
 printf(
 "inline void %s::flush()\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  copy_resize(used);\n"
+);
+   }
+printf(
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void  QUEUE_FLUSH_ALL(QUEUE_GEN_PARAMS)
@@ -91,11 +171,19 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  copy_resize(used);\n"
 );
+   }
    if (TYPE_NUMBER & c_type_flushable) {
+      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "\n"
+);
+      }
+printf(
 "  if (used == 0)\n"
 "  {\n"
 "    return;\n"
@@ -144,30 +232,40 @@ void  QUEUE_INSERT(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
 printf(
-"inline unsigned %s::insert(%s a_value)\n"
+"inline void %s::insert(%s a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
 printf(
-"inline unsigned %s::insert(%s &a_value)\n"
+"inline void %s::insert(%s &a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  if (used >= size)\n"
 "  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
+);
+  }
+  else {
+printf(
+"  debug_assert(used < size);\n"
+);
+  }
+printf(
 "  unsigned inserted_idx = begin + used++;\n"
+"\n"
 "  if (inserted_idx >= size)\n"
 "  {\n"
 "    inserted_idx -= size;\n"
 "  }\n"
 "\n"
 "  data[inserted_idx] = a_value;\n"
-"\n"
-"  return inserted_idx;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -176,23 +274,28 @@ printf(
 void  QUEUE_INSERT_BLANK(QUEUE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"inline unsigned %s::insert_blank()\n"
+"inline void %s::insert_blank()\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  if (used >= size)\n"
 "  {\n"
 "    copy_resize((size << 1) + c_array_add);\n"
 "  }\n"
 "\n"
-"  unsigned inserted_idx = begin + used++;\n"
-"  if (inserted_idx >= size)\n"
-"  {\n"
-"    inserted_idx -= size;\n"
-"  }\n"
-"\n"
-"  return inserted_idx;\n"
+);
+   }
+   else {
+printf(
+"  debug_assert(used < size);\n"
+);
+   }
+printf(
+"  ++used;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void  QUEUE_NEXT(QUEUE_GEN_PARAMS)
@@ -362,18 +465,30 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+printf(
+"  debug_assert(a_src.used <= size);\n"
+"\n"
+);
+   }
+printf(
 "  clear();\n"
 "\n"
 "  if (a_src.used == 0)\n"
 "  {\n"
 "    return *this;\n"
 "  }\n"
+);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "\n"
 "  copy_resize(a_src.used);\n"
-"\n"
 );
+   }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
+"\n"
 "  unsigned fir_cnt;\n"
 "  unsigned sec_cnt;\n"
 "\n"
@@ -399,6 +514,7 @@ printf(
    }
    else {
 printf(
+"\n"
 "  unsigned sec_cnt;\n"
 "  %s *ptr = data;\n"
 "  %s *s_ptr = a_src.data + a_src.begin;\n"
@@ -704,7 +820,7 @@ printf(
 "  %s *data; //!< pointer to queue elements\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN initialize queue\n"
@@ -713,6 +829,7 @@ printf(
 "\n"
 );
    }
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN initialize queue of requested size\n"
@@ -721,8 +838,20 @@ printf(
 "  inline void init_size(unsigned a_size);\n"
 "\n"
 );
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+   }
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+printf(
+"  /*!\n"
+"    * \\brief __GEN initialize/set underlaying data buffer\n"
+"    * \\param a_size - size of data buffer\n"
+"    * \\param a_data - pointer to data buffer\n"
+"    */\n"
+"  inline void init_buffer(unsigned a_size,%s *a_data);\n"
+"\n"
+,TYPE_NAME);
+   }
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
+      if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN release memory used by queue\n"
@@ -731,9 +860,7 @@ printf(
 "\n"
 );
       }
-   }
-   else {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      else {
 printf(
 "  /*!\n"
 "    * \\brief __GEN release memory used by queue\n"
@@ -741,6 +868,30 @@ printf(
 "  void clear();\n"
 "\n"
 );
+      }
+   }
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+     if (!(TYPE_NUMBER & c_type_dynamic)) {
+printf(
+"  /*!\n"
+"    * \\brief __GEN set underlaying data buffer\n"
+"    * \\param a_size - size of data buffer\n"
+"    * \\param a_data - pointer to data buffer\n"
+"    */\n"
+"  inline void set_buffer(unsigned a_size,%s *a_data);\n"
+"\n"
+,TYPE_NAME);
+      }
+      else {
+printf(
+"  /*!\n"
+"    * \\brief __GEN set underlaying data buffer\n"
+"    * \\param a_size - size of data buffer\n"
+"    * \\param a_data - pointer to data buffer\n"
+"    */\n"
+"  void set_buffer(unsigned a_size,%s *a_data);\n"
+"\n"
+,TYPE_NAME);
       }
    }
 printf(
@@ -768,7 +919,7 @@ printf(
 "\n"
 );
    }
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN swap members of queue with another queue\n"
@@ -785,7 +936,7 @@ printf(
 "    * \\param a_value - value inserted to end of queue\n"
 "    * \\return index of inserted element\n"
 "    */\n"
-"  inline unsigned insert(%s a_value);\n"
+"  inline void insert(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -796,7 +947,7 @@ printf(
 "    * \\param a_value - value inserted to end of queue\n"
 "    * \\return index of inserted element\n"
 "    */\n"
-"  inline unsigned insert(%s &a_value);\n"
+"  inline void insert(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -805,7 +956,7 @@ printf(
 "    * \\brief __GEN insert blank element to the end of queue\n"
 "    * \\return index of inserted element\n"
 "    */\n"
-"  inline unsigned insert_blank();\n"
+"  inline void insert_blank();\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN return value of next element in queue, and remove it\n"
@@ -819,14 +970,18 @@ printf(
 "    */\n"
 "  inline %s &last();\n"
 "\n"
+,TYPE_NAME,TYPE_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
 "  /*!\n"
 "    * \\brief __GEN change queue capacity\n"
 "    * \\param a_size - requested queue capacity\n"
 "    */\n"
 "  void copy_resize(unsigned a_size);\n"
 "\n"
-,TYPE_NAME,TYPE_NAME);
-   if (!(data_type.properties & c_type_option_nogen_copy)) {
+);
+   }
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 printf(
 "  /*!\n"
@@ -896,18 +1051,30 @@ printf(
 ,IM_STRUCT_NAME);
 
    // - queue init method -
-   if (!(data_type.properties & c_type_option_nogen_init)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 QUEUE_INIT(QUEUE_GEN_VALUES);
    }
 
    // - queue init_size method -
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 QUEUE_INIT_SIZE(QUEUE_GEN_VALUES);
+   }
+
+   // - queue init_buffer method -
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+QUEUE_INIT_BUFFER(QUEUE_GEN_VALUES);
+   }
 
    // - queue clear method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 QUEUE_CLEAR(QUEUE_GEN_VALUES);
       }
+   }
+
+   // - queue set_buffer method -
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && !(TYPE_NUMBER & c_type_dynamic)) {
+QUEUE_SET_BUFFER(QUEUE_GEN_VALUES);
    }
 
    // - queue flush method -
@@ -919,7 +1086,7 @@ QUEUE_FLUSH_ALL(QUEUE_GEN_VALUES);
    }
 
    // - queue swap method -
-   if (!(data_type.properties & c_type_option_nogen_swap)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
 QUEUE_SWAP(QUEUE_GEN_VALUES);
    }
 
@@ -939,7 +1106,7 @@ QUEUE_LAST(QUEUE_GEN_VALUES);
 
    // - queue operator= method -
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }
@@ -973,11 +1140,18 @@ printf(
 
    // - queue init_size method -
 
+   // - queue init_buffer method -
+
    // - queue clear method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_clear)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 QUEUE_CLEAR(QUEUE_GEN_VALUES);
       }
+   }
+
+   // - queue set_buffer method -
+   if (STRUCT_NUMBER & c_type_option_fixed_buffer && TYPE_NUMBER & c_type_dynamic) {
+QUEUE_SET_BUFFER(QUEUE_GEN_VALUES);
    }
 
    // - queue flush method -
@@ -998,11 +1172,13 @@ QUEUE_FLUSH_ALL(QUEUE_GEN_VALUES);
    // - queue last method -
 
    // - queue copy_resize method -
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 QUEUE_COPY_RESIZE(QUEUE_GEN_VALUES);
+   }
 
    // - queue operator= method -
    if (TYPE_NUMBER & c_type_dynamic) {
-      if (!(data_type.properties & c_type_option_nogen_copy)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
       }
    }

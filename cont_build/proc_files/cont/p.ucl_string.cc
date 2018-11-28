@@ -996,13 +996,15 @@ inline void ui_array_s::clear()
 
 inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 {/*{{{*/
+  debug_assert(a_data != nullptr);
+
   clear();
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != nullptr);
   copy_resize(a_used);
 
   memcpy(data,a_data,a_used*sizeof(unsigned));
@@ -1092,6 +1094,7 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
   }
 
   copy_resize(a_src.used);
+
   memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
 
   used = a_src.used;
@@ -1497,6 +1500,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   }
 
   copy_resize(a_src.used);
+
   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
   used = a_src.used;
@@ -2691,13 +2695,15 @@ void string_array_s::clear()
 
 void string_array_s::set(unsigned a_used,string_s *a_data)
 {/*{{{*/
+  debug_assert(a_data != nullptr);
+
   clear();
+
   if (a_used == 0)
   {
     return;
   }
 
-  debug_assert(a_data != nullptr);
   copy_resize(a_used);
 
   string_s *ptr = data;
