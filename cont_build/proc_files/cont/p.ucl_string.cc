@@ -856,11 +856,6 @@ struct mc_block_rb_tree_s
     */
   bool operator==(mc_block_rb_tree_s &a_second);
 
-  /*!
-    * \brief __GEN rehash tree (after invalidation by change of object value)
-    */
-    void rehash_tree();
-
   
       
       /*!

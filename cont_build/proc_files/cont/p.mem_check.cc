@@ -852,11 +852,6 @@ struct mc_block_rb_tree_s
     */
   bool operator==(mc_block_rb_tree_s &a_second);
 
-  /*!
-    * \brief __GEN rehash tree (after invalidation by change of object value)
-    */
-    void rehash_tree();
-
   
       
       /*!
@@ -2509,60 +2504,6 @@ bool mc_block_rb_tree_s::operator==(mc_block_rb_tree_s &a_second)
   }
 
   return true;
-}/*}}}*/
-
-void mc_block_rb_tree_s::rehash_tree()
-{/*{{{*/
-  if (root_idx == c_idx_not_exist)
-  {
-    return;
-  }
-
-  ui_array_s indexes;
-  indexes.init();
-
-  {
-    unsigned stack[get_descent_stack_size()];
-    unsigned *stack_ptr = stack;
-
-    unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);
-    do {
-      indexes.push(idx);
-
-      idx = get_stack_next_idx(idx,&stack_ptr,stack);
-    } while(idx != c_idx_not_exist);
-  }
-
-  root_idx = c_idx_not_exist;
-
-  bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));
-  memset(processed,false,indexes.used*sizeof(bool));
-
-  unsigned step = indexes.used >> 1;
-  if (step > 0)
-  {
-    do {
-      unsigned idx = step;
-      do {
-        if (!processed[idx])
-        {
-          unsigned node_idx = indexes[idx];
-
-          __binary_tree_insert(node_idx,data[node_idx].object,false);
-          __insert_operation(node_idx);
-
-          processed[idx] = true;
-        }
-      } while((idx += step) < indexes.used);
-    } while((step >>= 1) > 0);
-  }
-
-  unsigned node_idx = indexes[0];
-  __binary_tree_insert(node_idx,data[node_idx].object,false);
-  __insert_operation(node_idx);
-
-  cfree(processed);
-  indexes.clear();
 }/*}}}*/
 
 

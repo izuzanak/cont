@@ -2423,6 +2423,9 @@ void process_s::pa_reduce_option(process_s &proc)
    else if (strcmp("fixed_buffer",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_fixed_buffer;
 
+   else if (strcmp("rehash",code.data + lse.terminal_start) == 0)
+      proc.processor_ptr->type_settings |= c_type_option_rehash;
+
    else if (strcmp("print_dot_code",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_print_dot_code;
 

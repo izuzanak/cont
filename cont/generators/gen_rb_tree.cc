@@ -1763,10 +1763,10 @@ printf(
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
-void RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_PARAMS)
+void RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 printf(
-"bool %s::check_rb_tree_properties()\n"
+"bool %s::check_properties()\n"
 "{/*{{{*/\n"
 "  %s_node &leaf = data[leaf_idx];\n"
 "  if (!leaf.color)\n"
@@ -2424,7 +2424,8 @@ printf(
 "  bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+   if (STRUCT_NUMBER & c_type_option_rehash) {
+      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
@@ -2432,8 +2433,8 @@ printf(
 "    void rehash_tree();\n"
 "\n"
 );
-   }
-   else {
+      }
+      else {
 printf(
 "  /*!\n"
 "    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
@@ -2441,6 +2442,7 @@ printf(
 "    void rehash_tree(bool *a_processed);\n"
 "\n"
 );
+      }
    }
    if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 printf(
@@ -2458,7 +2460,7 @@ printf(
 "    * \\brief __GEN test properties of red black tree\n"
 "    * \\return true if all red black tree properties are valid\n"
 "    */\n"
-"    bool check_rb_tree_properties();\n"
+"    bool check_properties();\n"
 "\n"
 );
    }
@@ -2629,7 +2631,7 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
 
    // - rb_tree print_dot_code -
 
-   // - rb_tree check_rb_tree_properties -
+   // - rb_tree check_properties -
 
 }/*}}}*/
 
@@ -2778,16 +2780,18 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
 RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_VALUES);
 
    // - rb_tree rehash_tree -
+   if (STRUCT_NUMBER & c_type_option_rehash) {
 RB_TREE_REHASH_TREE(RB_TREE_GEN_VALUES);
+   }
 
    // - rb_tree print_dot_code -
    if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
    }
 
-   // - rb_tree check_rb_tree_properties -
+   // - rb_tree check_properties -
    if (STRUCT_NUMBER & c_type_option_check_properties) {
-RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_VALUES);
+RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_VALUES);
    }
 
 }/*}}}*/
