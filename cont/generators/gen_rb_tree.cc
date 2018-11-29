@@ -1,7 +1,4 @@
 
-//#define RB_TREE_GENERATE_PRINT_DOT_CODE
-//#define RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
-
 #define RB_TREE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,data_type_s &data_type,data_type_s **types
 #define RB_TREE_GEN_VALUES abbreviations,abb_idx,data_type,types
 
@@ -2275,13 +2272,15 @@ printf(
 "\n"
 );
 
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
 printf(
-#ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
 "#ifndef RB_TREE_SET_LEAF_CHILDS\n"
 "#define RB_TREE_SET_LEAF_CHILDS\n"
 "#endif\n"
 "\n"
-#endif
+);
+   }
+printf(
 "struct %s_node\n"
 "{\n"
 "  %s object;\n"
@@ -2486,16 +2485,16 @@ printf(
 "void %s_rehash_tree(%s *this,char *a_processed);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-#ifdef RB_TREE_GENERATE_PRINT_DOT_CODE
+   if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 printf(
 "void %s_print_dot_code(%s *this,FILE *a_file);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-#endif
-#ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
+   }
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
 printf(
 "int %s_check_rb_tree_properties(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-#endif
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -2819,14 +2818,14 @@ RB_TREE_TO_STRING(RB_TREE_GEN_VALUES);
 RB_TREE_REHASH_TREE(RB_TREE_GEN_VALUES);
 
    // - rb_tree print_dot_code -
-#ifdef RB_TREE_GENERATE_PRINT_DOT_CODE
+   if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
-#endif
+   }
 
    // - rb_tree check_rb_tree_properties -
-#ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
 RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_VALUES);
-#endif
+   }
 
 }/*}}}*/
 
