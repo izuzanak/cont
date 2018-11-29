@@ -1,7 +1,4 @@
 
-//#define RB_TREE_GENERATE_PRINT_DOT_CODE
-//#define RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
-
 #define RB_TREE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,data_type_s &data_type,data_type_s **types
 #define RB_TREE_GEN_VALUES abbreviations,abb_idx,data_type,types
 
@@ -2064,13 +2061,15 @@ printf(
 );
    }
 
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
 printf(
-#ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
 "#ifndef RB_TREE_SET_LEAF_CHILDS\n"
 "#define RB_TREE_SET_LEAF_CHILDS\n"
 "#endif\n"
 "\n"
-#endif
+);
+   }
+printf(
 "/*!\n"
 " * \\brief __GEN node of rb_tree of type %s\n"
 " */\n"
@@ -2443,7 +2442,7 @@ printf(
 "\n"
 );
    }
-#ifdef RB_TREE_GENERATE_PRINT_DOT_CODE
+   if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 printf(
 "  /*\n"
 "    * \\brief __GEN print dot code of rb_tree (for debugging)\n"
@@ -2452,8 +2451,8 @@ printf(
 "    void print_dot_code(FILE *a_file);\n"
 "\n"
 );
-#endif
-#ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
+   }
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
 printf(
 "  /*\n"
 "    * \\brief __GEN test properties of red black tree\n"
@@ -2462,7 +2461,7 @@ printf(
 "    bool check_rb_tree_properties();\n"
 "\n"
 );
-#endif
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -2782,14 +2781,14 @@ RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_VALUES);
 RB_TREE_REHASH_TREE(RB_TREE_GEN_VALUES);
 
    // - rb_tree print_dot_code -
-#ifdef RB_TREE_GENERATE_PRINT_DOT_CODE
+   if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
-#endif
+   }
 
    // - rb_tree check_rb_tree_properties -
-#ifdef RB_TREE_GENERATE_CHECK_RB_TREE_PROPERTIES
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
 RB_TREE_CHECK_RB_TREE_PROPERTIES(RB_TREE_GEN_VALUES);
-#endif
+   }
 
 }/*}}}*/
 
