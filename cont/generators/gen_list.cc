@@ -9,13 +9,20 @@ printf(
 "{/*{{{*/\n"
 "  size = 0;\n"
 "  used = 0;\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  data = nullptr;\n"
 "  free_idx = c_idx_not_exist;\n"
 "  first_idx = c_idx_not_exist;\n"
 "  last_idx = c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INIT_SIZE(LIST_GEN_PARAMS)
@@ -95,6 +102,13 @@ printf(
    else {
 printf(
 "  used = 0;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  free_idx = c_idx_not_exist;\n"
 "  first_idx = c_idx_not_exist;\n"
 "  last_idx = c_idx_not_exist;\n"
@@ -131,7 +145,7 @@ printf(
 "  %s_element *ptr_end = data + a_size;\n"
 "\n"
 "  do {\n"
-"    init();\n"
+"    ptr->object.init();\n"
 "  } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
@@ -220,6 +234,16 @@ printf(
 "  used = a_second.used;\n"
 "  a_second.used = tmp_unsigned;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  tmp_unsigned = count;\n"
+"  count = a_second.count;\n"
+"  a_second.count = tmp_unsigned;\n"
+"\n"
+);
+   }
+printf(
 "  %s_element *tmp_data = data;\n"
 "  data = a_second.data;\n"
 "  a_second.data = tmp_data;\n"
@@ -237,7 +261,7 @@ printf(
 "  a_second.last_idx = tmp_unsigned;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
@@ -245,11 +269,22 @@ void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
 printf(
 "inline %s &%s::operator[](unsigned a_idx)\n"
 "{/*{{{*/\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "  return data[a_idx].object;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREPEND(LIST_GEN_PARAMS)
@@ -296,6 +331,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -308,6 +350,13 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  first_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -315,7 +364,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_APPEND(LIST_GEN_PARAMS)
@@ -362,6 +411,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
@@ -374,6 +430,13 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  last_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -381,7 +444,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BEFORE(LIST_GEN_PARAMS)
@@ -398,7 +461,18 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -431,6 +505,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
@@ -443,6 +524,13 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.prev_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -450,7 +538,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_AFTER(LIST_GEN_PARAMS)
@@ -467,7 +555,18 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -500,6 +599,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
@@ -512,6 +618,13 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.next_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -519,7 +632,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREPEND_BLANK(LIST_GEN_PARAMS)
@@ -557,6 +670,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -569,12 +689,19 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  first_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_APPEND_BLANK(LIST_GEN_PARAMS)
@@ -612,6 +739,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
@@ -624,12 +758,19 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  last_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
@@ -637,7 +778,18 @@ void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::insert_blank_before(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -648,7 +800,7 @@ printf(
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME);
+);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (used >= size)\n"
@@ -670,6 +822,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
@@ -682,12 +841,19 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.prev_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
@@ -695,7 +861,18 @@ void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::insert_blank_after(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -706,7 +883,7 @@ printf(
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME);
+);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (used >= size)\n"
@@ -728,6 +905,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
@@ -740,12 +924,19 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.next_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_REMOVE(LIST_GEN_PARAMS)
@@ -753,7 +944,18 @@ void LIST_REMOVE(LIST_GEN_PARAMS)
 printf(
 "inline void %s::remove(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_element &rm_element = data[a_idx];\n"
 "\n"
@@ -775,11 +977,25 @@ printf(
 "    first_idx = rm_element.next_idx;\n"
 "  }\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  rm_element.valid = false;\n"
 "  rm_element.next_idx = free_idx;\n"
+"\n"
+"  count--;\n"
+);
+   }
+   else {
+printf(
+"  rm_element.next_idx = free_idx;\n"
+);
+   }
+printf(
 "  free_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_NEXT_IDX(LIST_GEN_PARAMS)
@@ -787,10 +1003,17 @@ void LIST_NEXT_IDX(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::next_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(data[a_idx].valid);\n"
+);
+   }
+printf(
 "  return data[a_idx].next_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREV_IDX(LIST_GEN_PARAMS)
@@ -798,10 +1021,17 @@ void LIST_PREV_IDX(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::prev_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(data[a_idx].valid);\n"
+);
+   }
+printf(
 "  return data[a_idx].prev_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_COPY_RESIZE(LIST_GEN_PARAMS)
@@ -949,14 +1179,28 @@ printf(
 "\n"
 "  do {\n"
 "    ptr->object = s_ptr->object;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"    ptr->valid = s_ptr->valid;\n"
+);
+   }
+printf(
 "    ptr->next_idx = s_ptr->next_idx;\n"
 "    ptr->prev_idx = s_ptr->prev_idx;\n"
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    }
 printf(
 "\n"
 "  used = a_src.used;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = a_src.count;\n"
+);
+   }
+printf(
 "  free_idx = a_src.free_idx;\n"
 "  first_idx = a_src.first_idx;\n"
 "  last_idx = a_src.last_idx;\n"
@@ -972,6 +1216,17 @@ void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  if (count != a_second.count)\n"
+"  {\n"
+"    return false;\n"
+"  }\n"
+"\n"
+);
+   }
+printf(
 "  if (first_idx == c_idx_not_exist)\n"
 "  {\n"
 "    return a_second.first_idx == c_idx_not_exist;\n"
@@ -1002,7 +1257,7 @@ printf(
 "  return idx == s_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_list_type()
@@ -1115,6 +1370,13 @@ printf(
 "struct %s_element\n"
 "{\n"
 "  %s object;\n"
+,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  bool valid;\n"
+);
+   }
+printf(
 "  unsigned next_idx;\n"
 "  unsigned prev_idx;\n"
 "};\n"
@@ -1126,12 +1388,19 @@ printf(
 "{\n"
 "  unsigned size; //!< actual size of allocated space (element count)\n"
 "  unsigned used; //!< used part of allocated space\n"
+,TYPE_NAME,STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  unsigned count; //!< count of stored elements\n"
+);
+   }
+printf(
 "  %s_element *data; //!< pointer to list elements\n"
 "  unsigned free_idx; //!< index of first free element\n"
 "  unsigned first_idx; //!< index of first element\n"
 "  unsigned last_idx; //!< index of last element\n"
 "\n"
-,TYPE_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "  /*!\n"

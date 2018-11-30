@@ -2358,9 +2358,10 @@ enum {
    c_type_option_strict_dynamic = 0x100 << 4,
    c_type_option_fixed_buffer   = 0x100 << 5,
 
-   c_type_option_rehash           = 0x100 << 6,
-   c_type_option_print_dot_code   = 0x100 << 7,
-   c_type_option_check_properties = 0x100 << 8,
+   c_type_option_safe             = 0x100 << 6,
+   c_type_option_rehash           = 0x100 << 7,
+   c_type_option_print_dot_code   = 0x100 << 8,
+   c_type_option_check_properties = 0x100 << 9,
 };
 
 
@@ -7222,13 +7223,20 @@ printf(
 "{/*{{{*/\n"
 "  size = 0;\n"
 "  used = 0;\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  data = nullptr;\n"
 "  free_idx = c_idx_not_exist;\n"
 "  first_idx = c_idx_not_exist;\n"
 "  last_idx = c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INIT_SIZE(LIST_GEN_PARAMS)
@@ -7308,6 +7316,13 @@ printf(
    else {
 printf(
 "  used = 0;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  free_idx = c_idx_not_exist;\n"
 "  first_idx = c_idx_not_exist;\n"
 "  last_idx = c_idx_not_exist;\n"
@@ -7344,7 +7359,7 @@ printf(
 "  %s_element *ptr_end = data + a_size;\n"
 "\n"
 "  do {\n"
-"    init();\n"
+"    ptr->object.init();\n"
 "  } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
@@ -7433,6 +7448,16 @@ printf(
 "  used = a_second.used;\n"
 "  a_second.used = tmp_unsigned;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  tmp_unsigned = count;\n"
+"  count = a_second.count;\n"
+"  a_second.count = tmp_unsigned;\n"
+"\n"
+);
+   }
+printf(
 "  %s_element *tmp_data = data;\n"
 "  data = a_second.data;\n"
 "  a_second.data = tmp_data;\n"
@@ -7450,7 +7475,7 @@ printf(
 "  a_second.last_idx = tmp_unsigned;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
@@ -7458,11 +7483,22 @@ void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
 printf(
 "inline %s &%s::operator[](unsigned a_idx)\n"
 "{/*{{{*/\n"
+,TYPE_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "  return data[a_idx].object;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREPEND(LIST_GEN_PARAMS)
@@ -7509,6 +7545,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -7521,6 +7564,13 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  first_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -7528,7 +7578,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_APPEND(LIST_GEN_PARAMS)
@@ -7575,6 +7625,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
@@ -7587,6 +7644,13 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  last_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -7594,7 +7658,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BEFORE(LIST_GEN_PARAMS)
@@ -7611,7 +7675,18 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -7644,6 +7719,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
@@ -7656,6 +7738,13 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.prev_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -7663,7 +7752,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_AFTER(LIST_GEN_PARAMS)
@@ -7680,7 +7769,18 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -7713,6 +7813,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
@@ -7725,6 +7832,13 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.next_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -7732,7 +7846,7 @@ printf(
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREPEND_BLANK(LIST_GEN_PARAMS)
@@ -7770,6 +7884,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -7782,12 +7903,19 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  first_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_APPEND_BLANK(LIST_GEN_PARAMS)
@@ -7825,6 +7953,13 @@ printf(
 "\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
@@ -7837,12 +7972,19 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  last_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
@@ -7850,7 +7992,18 @@ void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::insert_blank_before(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -7861,7 +8014,7 @@ printf(
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME);
+);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (used >= size)\n"
@@ -7883,6 +8036,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
@@ -7895,12 +8055,19 @@ printf(
 "    first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.prev_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
@@ -7908,7 +8075,18 @@ void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::insert_blank_after(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -7919,7 +8097,7 @@ printf(
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME);
+);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (used >= size)\n"
@@ -7941,6 +8119,13 @@ printf(
 "  %s_element &idx_element = data[a_idx];\n"
 "  %s_element &new_element = data[new_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element.valid = true;\n"
+);
+   }
+printf(
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
@@ -7953,12 +8138,19 @@ printf(
 "    last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count++;\n"
+);
+   }
+printf(
 "  idx_element.next_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_REMOVE(LIST_GEN_PARAMS)
@@ -7966,7 +8158,18 @@ void LIST_REMOVE(LIST_GEN_PARAMS)
 printf(
 "inline void %s::remove(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_element &rm_element = data[a_idx];\n"
 "\n"
@@ -7988,11 +8191,25 @@ printf(
 "    first_idx = rm_element.next_idx;\n"
 "  }\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  rm_element.valid = false;\n"
 "  rm_element.next_idx = free_idx;\n"
+"\n"
+"  count--;\n"
+);
+   }
+   else {
+printf(
+"  rm_element.next_idx = free_idx;\n"
+);
+   }
+printf(
 "  free_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_NEXT_IDX(LIST_GEN_PARAMS)
@@ -8000,10 +8217,17 @@ void LIST_NEXT_IDX(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::next_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(data[a_idx].valid);\n"
+);
+   }
+printf(
 "  return data[a_idx].next_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREV_IDX(LIST_GEN_PARAMS)
@@ -8011,10 +8235,17 @@ void LIST_PREV_IDX(LIST_GEN_PARAMS)
 printf(
 "inline unsigned %s::prev_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(data[a_idx].valid);\n"
+);
+   }
+printf(
 "  return data[a_idx].prev_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_COPY_RESIZE(LIST_GEN_PARAMS)
@@ -8162,14 +8393,28 @@ printf(
 "\n"
 "  do {\n"
 "    ptr->object = s_ptr->object;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"    ptr->valid = s_ptr->valid;\n"
+);
+   }
+printf(
 "    ptr->next_idx = s_ptr->next_idx;\n"
 "    ptr->prev_idx = s_ptr->prev_idx;\n"
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    }
 printf(
 "\n"
 "  used = a_src.used;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = a_src.count;\n"
+);
+   }
+printf(
 "  free_idx = a_src.free_idx;\n"
 "  first_idx = a_src.first_idx;\n"
 "  last_idx = a_src.last_idx;\n"
@@ -8185,6 +8430,17 @@ void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  if (count != a_second.count)\n"
+"  {\n"
+"    return false;\n"
+"  }\n"
+"\n"
+);
+   }
+printf(
 "  if (first_idx == c_idx_not_exist)\n"
 "  {\n"
 "    return a_second.first_idx == c_idx_not_exist;\n"
@@ -8215,7 +8471,7 @@ printf(
 "  return idx == s_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_list_type()
@@ -8328,6 +8584,13 @@ printf(
 "struct %s_element\n"
 "{\n"
 "  %s object;\n"
+,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  bool valid;\n"
+);
+   }
+printf(
 "  unsigned next_idx;\n"
 "  unsigned prev_idx;\n"
 "};\n"
@@ -8339,12 +8602,19 @@ printf(
 "{\n"
 "  unsigned size; //!< actual size of allocated space (element count)\n"
 "  unsigned used; //!< used part of allocated space\n"
+,TYPE_NAME,STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  unsigned count; //!< count of stored elements\n"
+);
+   }
+printf(
 "  %s_element *data; //!< pointer to list elements\n"
 "  unsigned free_idx; //!< index of first free element\n"
 "  unsigned first_idx; //!< index of first element\n"
 "  unsigned last_idx; //!< index of last element\n"
 "\n"
-,TYPE_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "  /*!\n"
@@ -9491,7 +9761,18 @@ void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -9507,7 +9788,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -9515,7 +9796,18 @@ void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
@@ -9532,7 +9824,7 @@ printf(
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -9540,7 +9832,18 @@ void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_min_value_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -9555,7 +9858,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -9563,7 +9866,18 @@ void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_max_value_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -9578,7 +9892,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -9586,7 +9900,18 @@ void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_next_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
@@ -9613,7 +9938,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
@@ -9621,7 +9946,18 @@ void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_prev_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
@@ -9648,7 +9984,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___ROTATE_LEFT(RB_TREE_GEN_PARAMS)
@@ -9720,31 +10056,44 @@ void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
 printf(
 "inline unsigned %s::__get_new_index()\n"
 "{/*{{{*/\n"
+"  unsigned new_idx;\n"
+"\n"
 "  if (free_idx != c_idx_not_exist)\n"
 "  {\n"
-"    unsigned new_idx = free_idx;\n"
+"    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].parent_idx;\n"
-"\n"
-"    return new_idx;\n"
 "  }\n"
-"\n"
+"  else\n"
+"  {\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
-"  if (used >= size)\n"
-"  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
-"  }\n"
+"    if (used >= size)\n"
+"    {\n"
+"      copy_resize((size << 1) + c_array_add);\n"
+"    }\n"
+"\n"
 );
    }
    else {
 printf(
-"  debug_assert(used < size);\n"
+"    debug_assert(used < size);\n"
 );
    }
 printf(
-"\n"
-"  return used++;\n"
+"    new_idx = used++;\n"
+"  }\n"
+"\n" 
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  data[new_idx].valid = true;\n" 
+"  count++;\n" 
+"\n" 
+);
+   }
+printf(
+"  return new_idx;\n" 
 "}/*}}}*/\n"
 "\n"
 );
@@ -9762,7 +10111,20 @@ printf(
 "      leaf_idx = __get_new_index();\n"
 "      %s_node &leaf = data[leaf_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"      leaf.valid = false;\n"
 "      leaf.color = true;\n"
+"      count--;\n"
+);
+   }
+   else {
+printf(
+"      leaf.color = true;\n"
+);
+   }
+printf(
 "\n"
 "#ifdef RB_TREE_SET_LEAF_CHILDS\n"
 "      leaf.left_idx = c_idx_not_exist;\n"
@@ -9816,7 +10178,7 @@ printf(
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
@@ -9951,6 +10313,15 @@ printf(
 "  node.parent_idx = free_idx;\n"
 "  free_idx = a_idx;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  node.valid = false;\n"
+"  count--;\n"
+"\n"
+);
+   }
+printf(
 "  if (node.color)\n"
 "  {\n"
 "    %s_node &child_node = data[a_ch_idx];\n"
@@ -9966,7 +10337,7 @@ printf(
 "  }\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___INSERT_OPERATION(RB_TREE_GEN_PARAMS)
@@ -10047,11 +10418,18 @@ printf(
 "{/*{{{*/\n"
 "  size = 0;\n"
 "  used = 0;\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  data = nullptr;\n"
 "  free_idx = c_idx_not_exist;\n"
 "  root_idx = c_idx_not_exist;\n"
 "  leaf_idx = c_idx_not_exist;\n"
-,IM_STRUCT_NAME);
+);
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
@@ -10146,6 +10524,13 @@ printf(
    else {
 printf(
 "  used = 0;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  free_idx = c_idx_not_exist;\n"
 "  root_idx = c_idx_not_exist;\n"
 "  leaf_idx = c_idx_not_exist;\n"
@@ -10296,6 +10681,16 @@ printf(
 "  used = a_second.used;\n"
 "  a_second.used = tmp_unsigned;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  tmp_unsigned = count;\n"
+"  count = a_second.count;\n"
+"  a_second.count = tmp_unsigned;\n"
+"\n"
+);
+   }
+printf(
 "  %s_node *tmp_data = data;\n"
 "  data = a_second.data;\n"
 "  a_second.data = tmp_data;\n"
@@ -10311,7 +10706,7 @@ printf(
 "  tmp_unsigned = leaf_idx;\n"
 "  leaf_idx = a_second.leaf_idx;\n"
 "  a_second.leaf_idx = tmp_unsigned;\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
@@ -10343,11 +10738,22 @@ void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
 printf(
 "inline %s &%s::operator[](unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "  return data[a_idx].object;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 #define TEMPLATE_RB_TREE_INSERT(FUN_NAME,VALUE_SET_CODE) \
@@ -10423,12 +10829,21 @@ printf(\
 "    new_node.parent_idx = free_idx;\n"\
 "    free_idx = new_node_idx;\n"\
 "\n"\
+,IM_STRUCT_NAME);\
+   if (STRUCT_NUMBER & c_type_option_safe) {\
+printf(\
+"    new_node.valid = false;\n"\
+"    count--;\n"\
+"\n"\
+);\
+   }\
+printf(\
 "    return old_node_idx;\n"\
 "  }\n"\
 "\n"\
 "  __insert_operation(new_node_idx);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+);\
    VALUE_SET_CODE;\
 printf(\
 "\n"\
@@ -10463,7 +10878,18 @@ void RB_TREE_REMOVE(RB_TREE_GEN_PARAMS)
 printf(
 "void %s::remove(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &del_node = data[a_idx];\n"
 "\n"
@@ -10561,7 +10987,7 @@ printf(
 "\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_COPY_RESIZE(RB_TREE_GEN_PARAMS)
@@ -10922,16 +11348,30 @@ printf(
 "\n"
 "  do {\n"
 "    ptr->object = s_ptr->object;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"    ptr->valid = s_ptr->valid;\n"
+);
+   }
+printf(
 "    ptr->parent_idx = s_ptr->parent_idx;\n"
 "    ptr->left_idx = s_ptr->left_idx;\n"
 "    ptr->right_idx = s_ptr->right_idx;\n"
 "    ptr->color = s_ptr->color;\n"
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    }
 printf(
 "\n"
 "  used = a_src.used;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = a_src.count;\n"
+);
+   }
+printf(
 "  free_idx = a_src.free_idx;\n"
 "  root_idx = a_src.root_idx;\n"
 "  leaf_idx = a_src.leaf_idx;\n"
@@ -10960,6 +11400,17 @@ void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  if (count != a_second.count)\n"
+"  {\n"
+"     return false;\n"
+"  }\n"
+"\n"
+);
+   }
+printf(
 "  if (root_idx == c_idx_not_exist)\n"
 "  {\n"
 "    if (a_second.root_idx != c_idx_not_exist)\n"
@@ -10998,7 +11449,7 @@ printf(
 "    }\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    if (VAR_NAMES_CNT > 0) {
 printf(
 "  return (%s == a_second.%s"
@@ -11501,6 +11952,13 @@ printf(
 "struct %s_node\n"
 "{\n"
 "  %s object;\n"
+,IM_TYPE_NAMES(0),STRUCT_NAME,IM_TYPE_NAMES(0));
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  bool valid;\n"
+);
+   }
+printf(
 "  unsigned parent_idx;\n"
 "  unsigned left_idx;\n"
 "  unsigned right_idx;\n"
@@ -11514,11 +11972,18 @@ printf(
 "{\n"
 "  unsigned size;\n"
 "  unsigned used;\n"
+,IM_TYPE_NAMES(0),STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  unsigned count;\n"
+);
+   }
+printf(
 "  %s_node *data;\n"
 "  unsigned free_idx;\n"
 "  unsigned root_idx;\n"
 "  unsigned leaf_idx;\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME);
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
@@ -12285,7 +12750,7 @@ printf(
 "  if (data != nullptr)\n"
 "  {\n"
 );
-   if (TYPE_NUMBER & c_type_dynamic) {
+      if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "    %s_element *ptr = data;\n"
 "    %s_element *ptr_end = ptr + size;\n"
@@ -12294,7 +12759,7 @@ printf(
 "      ptr->object.clear();\n"
 "    } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
+      }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -12351,8 +12816,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  %s_element *ptr = this->data + this->size;\n"
-"  %s_element *ptr_end = this->data + a_size;\n"
+"  %s_element *ptr = data + size;\n"
+"  %s_element *ptr_end = data + a_size;\n"
 "\n"
 "  do {\n"
 "    ptr->object.init();\n"
@@ -12361,8 +12826,8 @@ printf(
    }
 printf(
 "\n"
-"  this->size = a_size;\n"
-"  this->data = a_data;\n"
+"  size = a_size;\n"
+"  data = a_data;\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -14194,6 +14659,7 @@ printf(
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
+"\n"
 );
    }
    else {
@@ -14202,7 +14668,6 @@ printf(
 );
    }
 printf(
-"\n"
 "    new_idx = used++;\n"
 "  }\n"
 "\n" 

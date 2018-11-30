@@ -67,7 +67,18 @@ void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -83,7 +94,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -91,7 +102,18 @@ void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
@@ -108,7 +130,7 @@ printf(
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -116,7 +138,18 @@ void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_min_value_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -131,7 +164,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -139,7 +172,18 @@ void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_max_value_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -154,7 +198,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -162,7 +206,18 @@ void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_next_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
@@ -189,7 +244,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
@@ -197,7 +252,18 @@ void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
 printf(
 "unsigned %s::get_prev_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &node = data[a_idx];\n"
 "\n"
@@ -224,7 +290,7 @@ printf(
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___ROTATE_LEFT(RB_TREE_GEN_PARAMS)
@@ -296,31 +362,44 @@ void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
 printf(
 "inline unsigned %s::__get_new_index()\n"
 "{/*{{{*/\n"
+"  unsigned new_idx;\n"
+"\n"
 "  if (free_idx != c_idx_not_exist)\n"
 "  {\n"
-"    unsigned new_idx = free_idx;\n"
+"    new_idx = free_idx;\n"
 "    free_idx = data[new_idx].parent_idx;\n"
-"\n"
-"    return new_idx;\n"
 "  }\n"
-"\n"
+"  else\n"
+"  {\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
-"  if (used >= size)\n"
-"  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
-"  }\n"
+"    if (used >= size)\n"
+"    {\n"
+"      copy_resize((size << 1) + c_array_add);\n"
+"    }\n"
+"\n"
 );
    }
    else {
 printf(
-"  debug_assert(used < size);\n"
+"    debug_assert(used < size);\n"
 );
    }
 printf(
-"\n"
-"  return used++;\n"
+"    new_idx = used++;\n"
+"  }\n"
+"\n" 
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  data[new_idx].valid = true;\n" 
+"  count++;\n" 
+"\n" 
+);
+   }
+printf(
+"  return new_idx;\n" 
 "}/*}}}*/\n"
 "\n"
 );
@@ -338,7 +417,20 @@ printf(
 "      leaf_idx = __get_new_index();\n"
 "      %s_node &leaf = data[leaf_idx];\n"
 "\n"
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"      leaf.valid = false;\n"
 "      leaf.color = true;\n"
+"      count--;\n"
+);
+   }
+   else {
+printf(
+"      leaf.color = true;\n"
+);
+   }
+printf(
 "\n"
 "#ifdef RB_TREE_SET_LEAF_CHILDS\n"
 "      leaf.left_idx = c_idx_not_exist;\n"
@@ -392,7 +484,7 @@ printf(
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
@@ -527,6 +619,15 @@ printf(
 "  node.parent_idx = free_idx;\n"
 "  free_idx = a_idx;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  node.valid = false;\n"
+"  count--;\n"
+"\n"
+);
+   }
+printf(
 "  if (node.color)\n"
 "  {\n"
 "    %s_node &child_node = data[a_ch_idx];\n"
@@ -542,7 +643,7 @@ printf(
 "  }\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___INSERT_OPERATION(RB_TREE_GEN_PARAMS)
@@ -623,11 +724,18 @@ printf(
 "{/*{{{*/\n"
 "  size = 0;\n"
 "  used = 0;\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  data = nullptr;\n"
 "  free_idx = c_idx_not_exist;\n"
 "  root_idx = c_idx_not_exist;\n"
 "  leaf_idx = c_idx_not_exist;\n"
-,IM_STRUCT_NAME);
+);
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
@@ -722,6 +830,13 @@ printf(
    else {
 printf(
 "  used = 0;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = 0;\n"
+);
+   }
+printf(
 "  free_idx = c_idx_not_exist;\n"
 "  root_idx = c_idx_not_exist;\n"
 "  leaf_idx = c_idx_not_exist;\n"
@@ -872,6 +987,16 @@ printf(
 "  used = a_second.used;\n"
 "  a_second.used = tmp_unsigned;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  tmp_unsigned = count;\n"
+"  count = a_second.count;\n"
+"  a_second.count = tmp_unsigned;\n"
+"\n"
+);
+   }
+printf(
 "  %s_node *tmp_data = data;\n"
 "  data = a_second.data;\n"
 "  a_second.data = tmp_data;\n"
@@ -887,7 +1012,7 @@ printf(
 "  tmp_unsigned = leaf_idx;\n"
 "  leaf_idx = a_second.leaf_idx;\n"
 "  a_second.leaf_idx = tmp_unsigned;\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
@@ -919,11 +1044,22 @@ void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
 printf(
 "inline %s &%s::operator[](unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "  return data[a_idx].object;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 #define TEMPLATE_RB_TREE_INSERT(FUN_NAME,VALUE_SET_CODE) \
@@ -999,12 +1135,21 @@ printf(\
 "    new_node.parent_idx = free_idx;\n"\
 "    free_idx = new_node_idx;\n"\
 "\n"\
+,IM_STRUCT_NAME);\
+   if (STRUCT_NUMBER & c_type_option_safe) {\
+printf(\
+"    new_node.valid = false;\n"\
+"    count--;\n"\
+"\n"\
+);\
+   }\
+printf(\
 "    return old_node_idx;\n"\
 "  }\n"\
 "\n"\
 "  __insert_operation(new_node_idx);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+);\
    VALUE_SET_CODE;\
 printf(\
 "\n"\
@@ -1039,7 +1184,18 @@ void RB_TREE_REMOVE(RB_TREE_GEN_PARAMS)
 printf(
 "void %s::remove(unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < used && data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_node &del_node = data[a_idx];\n"
 "\n"
@@ -1137,7 +1293,7 @@ printf(
 "\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_COPY_RESIZE(RB_TREE_GEN_PARAMS)
@@ -1498,16 +1654,30 @@ printf(
 "\n"
 "  do {\n"
 "    ptr->object = s_ptr->object;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"    ptr->valid = s_ptr->valid;\n"
+);
+   }
+printf(
 "    ptr->parent_idx = s_ptr->parent_idx;\n"
 "    ptr->left_idx = s_ptr->left_idx;\n"
 "    ptr->right_idx = s_ptr->right_idx;\n"
 "    ptr->color = s_ptr->color;\n"
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    }
 printf(
 "\n"
 "  used = a_src.used;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  count = a_src.count;\n"
+);
+   }
+printf(
 "  free_idx = a_src.free_idx;\n"
 "  root_idx = a_src.root_idx;\n"
 "  leaf_idx = a_src.leaf_idx;\n"
@@ -1536,6 +1706,17 @@ void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
 printf(
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  if (count != a_second.count)\n"
+"  {\n"
+"     return false;\n"
+"  }\n"
+"\n"
+);
+   }
+printf(
 "  if (root_idx == c_idx_not_exist)\n"
 "  {\n"
 "    if (a_second.root_idx != c_idx_not_exist)\n"
@@ -1574,7 +1755,7 @@ printf(
 "    }\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    if (VAR_NAMES_CNT > 0) {
 printf(
 "  return (%s == a_second.%s"
@@ -2077,6 +2258,13 @@ printf(
 "struct %s_node\n"
 "{\n"
 "  %s object;\n"
+,IM_TYPE_NAMES(0),STRUCT_NAME,IM_TYPE_NAMES(0));
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  bool valid;\n"
+);
+   }
+printf(
 "  unsigned parent_idx;\n"
 "  unsigned left_idx;\n"
 "  unsigned right_idx;\n"
@@ -2090,11 +2278,18 @@ printf(
 "{\n"
 "  unsigned size;\n"
 "  unsigned used;\n"
+,IM_TYPE_NAMES(0),STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  unsigned count;\n"
+);
+   }
+printf(
 "  %s_node *data;\n"
 "  unsigned free_idx;\n"
 "  unsigned root_idx;\n"
 "  unsigned leaf_idx;\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME);
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {

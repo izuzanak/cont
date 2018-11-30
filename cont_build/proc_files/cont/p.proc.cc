@@ -2362,9 +2362,10 @@ enum {
    c_type_option_strict_dynamic = 0x100 << 4,
    c_type_option_fixed_buffer   = 0x100 << 5,
 
-   c_type_option_rehash           = 0x100 << 6,
-   c_type_option_print_dot_code   = 0x100 << 7,
-   c_type_option_check_properties = 0x100 << 8,
+   c_type_option_safe             = 0x100 << 6,
+   c_type_option_rehash           = 0x100 << 7,
+   c_type_option_print_dot_code   = 0x100 << 8,
+   c_type_option_check_properties = 0x100 << 9,
 };
 
 
@@ -6506,6 +6507,9 @@ void process_s::pa_reduce_option(process_s &proc)
 
    else if (strcmp("fixed_buffer",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_fixed_buffer;
+
+   else if (strcmp("safe",code.data + lse.terminal_start) == 0)
+      proc.processor_ptr->type_settings |= c_type_option_safe;
 
    else if (strcmp("rehash",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_rehash;

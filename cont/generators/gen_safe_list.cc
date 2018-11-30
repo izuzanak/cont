@@ -63,7 +63,7 @@ printf(
 "  if (data != nullptr)\n"
 "  {\n"
 );
-   if (TYPE_NUMBER & c_type_dynamic) {
+      if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "    %s_element *ptr = data;\n"
 "    %s_element *ptr_end = ptr + size;\n"
@@ -72,7 +72,7 @@ printf(
 "      ptr->object.clear();\n"
 "    } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
+      }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBER & c_type_dynamic) {
 printf(
@@ -129,8 +129,8 @@ printf(
    if (TYPE_NUMBER & c_type_dynamic) {
 printf(
 "\n"
-"  %s_element *ptr = this->data + this->size;\n"
-"  %s_element *ptr_end = this->data + a_size;\n"
+"  %s_element *ptr = data + size;\n"
+"  %s_element *ptr_end = data + a_size;\n"
 "\n"
 "  do {\n"
 "    ptr->object.init();\n"
@@ -139,8 +139,8 @@ printf(
    }
 printf(
 "\n"
-"  this->size = a_size;\n"
-"  this->data = a_data;\n"
+"  size = a_size;\n"
+"  data = a_data;\n"
 "}/*}}}*/\n"
 "\n"
 );

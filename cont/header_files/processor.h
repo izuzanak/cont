@@ -50,9 +50,10 @@ enum {
    c_type_option_strict_dynamic = 0x100 << 4,
    c_type_option_fixed_buffer   = 0x100 << 5,
 
-   c_type_option_rehash           = 0x100 << 6,
-   c_type_option_print_dot_code   = 0x100 << 7,
-   c_type_option_check_properties = 0x100 << 8,
+   c_type_option_safe             = 0x100 << 6,
+   c_type_option_rehash           = 0x100 << 7,
+   c_type_option_print_dot_code   = 0x100 << 8,
+   c_type_option_check_properties = 0x100 << 9,
 };
 
 

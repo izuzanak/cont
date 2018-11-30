@@ -312,6 +312,7 @@ printf(
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
 "    }\n"
+"\n"
 );
    }
    else {
@@ -320,7 +321,6 @@ printf(
 );
    }
 printf(
-"\n"
 "    new_idx = used++;\n"
 "  }\n"
 "\n" 
