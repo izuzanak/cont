@@ -2368,7 +2368,6 @@ enum {
    c_type_option_check_properties = 0x100 << 9,
 };
 
-
 // - names of basic data types -
 enum {
    c_bt_bool = 0,
@@ -2931,12 +2930,6 @@ struct processor_s
    void generate_rb_tree_type();
    void generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx);
    void generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_list_type();
-   void generate_safe_list_inlines(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_list_methods(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_rb_tree_type();
-   void generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx);
 
    void generate_type_inlines(unsigned a_length,char *a_data);
    void generate_type_methods(unsigned a_length,char *a_data);

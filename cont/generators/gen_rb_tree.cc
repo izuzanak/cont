@@ -430,12 +430,14 @@ printf(
 "      leaf.color = true;\n"
 );
    }
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
 printf(
 "\n"
-"#ifdef RB_TREE_SET_LEAF_CHILDS\n"
 "      leaf.left_idx = c_idx_not_exist;\n"
 "      leaf.right_idx = c_idx_not_exist;\n"
-"#endif\n"
+);
+   }
+printf(
 "    }\n"
 "\n"
 "    data[a_new_idx].parent_idx = c_idx_not_exist;\n"
@@ -2242,14 +2244,6 @@ printf(
 );
    }
 
-   if (STRUCT_NUMBER & c_type_option_check_properties) {
-printf(
-"#ifndef RB_TREE_SET_LEAF_CHILDS\n"
-"#define RB_TREE_SET_LEAF_CHILDS\n"
-"#endif\n"
-"\n"
-);
-   }
 printf(
 "/*!\n"
 " * \\brief __GEN node of rb_tree of type %s\n"

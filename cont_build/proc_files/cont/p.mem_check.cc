@@ -1954,11 +1954,6 @@ unsigned mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s 
       leaf.valid = false;
       leaf.color = true;
       count--;
-
-#ifdef SAFE_RB_TREE_SET_LEAF_CHILDS
-      leaf.left_idx = c_idx_not_exist;
-      leaf.right_idx = c_idx_not_exist;
-#endif
     }
 
     data[a_new_idx].parent_idx = c_idx_not_exist;

@@ -180,8 +180,6 @@ unsigned abbreviation_array_s::get_idx_by_name(unsigned a_length,const char *a_d
    include "gen_list.cc"
    include "gen_struct.cc"
    include "gen_rb_tree.cc"
-   include "gen_safe_list.cc"
-   include "gen_safe_rb_tree.cc"
 @end
 
 void processor_s::generate_type_inlines(unsigned a_length,char *a_data)
@@ -216,10 +214,10 @@ void processor_s::generate_type_inlines(unsigned a_length,char *a_data)
       generate_rb_tree_inlines(abb_idx,data_type_idx);
       break;
    case c_cont_safe_list:
-      generate_safe_list_inlines(abb_idx,data_type_idx);
+      generate_list_inlines(abb_idx,data_type_idx);
       break;
    case c_cont_safe_rb_tree:
-      generate_safe_rb_tree_inlines(abb_idx,data_type_idx);
+      generate_rb_tree_inlines(abb_idx,data_type_idx);
       break;
    default:
       cassert(0);
@@ -258,10 +256,10 @@ void processor_s::generate_type_methods(unsigned a_length,char *a_data)
       generate_rb_tree_methods(abb_idx,data_type_idx);
       break;
    case c_cont_safe_list:
-      generate_safe_list_methods(abb_idx,data_type_idx);
+      generate_list_methods(abb_idx,data_type_idx);
       break;
    case c_cont_safe_rb_tree:
-      generate_safe_rb_tree_methods(abb_idx,data_type_idx);
+      generate_rb_tree_methods(abb_idx,data_type_idx);
       break;
    default:
       cassert(0);
@@ -299,10 +297,12 @@ void processor_s::generate_container_def(string_s &a_cont_name)
       generate_rb_tree_type();
       break;
    case c_cont_safe_list:
-      generate_safe_list_type();
+      type_settings |= c_type_option_safe;
+      generate_list_type();
       break;
    case c_cont_safe_rb_tree:
-      generate_safe_rb_tree_type();
+      type_settings |= c_type_option_safe;
+      generate_rb_tree_type();
       break;
    default:
       cassert(0);
