@@ -50,11 +50,11 @@ enum {
    c_type_option_strict_dynamic = 0x100 << 4,
    c_type_option_fixed_buffer   = 0x100 << 5,
 
-   c_type_option_rehash           = 0x100 << 6,
-   c_type_option_print_dot_code   = 0x100 << 7,
-   c_type_option_check_properties = 0x100 << 8,
+   c_type_option_safe             = 0x100 << 6,
+   c_type_option_rehash           = 0x100 << 7,
+   c_type_option_print_dot_code   = 0x100 << 8,
+   c_type_option_check_properties = 0x100 << 9,
 };
-
 
 // - names of basic data types -
 enum {
@@ -201,12 +201,6 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    void generate_rb_tree_type();
    void generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx);
    void generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_list_type();
-   void generate_safe_list_inlines(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_list_methods(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_rb_tree_type();
-   void generate_safe_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx);
-   void generate_safe_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx);
 
    void generate_type_inlines(unsigned a_length,char *a_data);
    void generate_type_methods(unsigned a_length,char *a_data);

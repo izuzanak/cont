@@ -9,13 +9,20 @@ printf(
 "{/*{{{*/\n"
 "  this->size = 0;\n"
 "  this->used = 0;\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count = 0;\n"
+);
+   }
+printf(
 "  this->data = NULL;\n"
 "  this->free_idx = c_idx_not_exist;\n"
 "  this->first_idx = c_idx_not_exist;\n"
 "  this->last_idx = c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INIT_SIZE(LIST_GEN_PARAMS)
@@ -95,6 +102,13 @@ printf(
    else {
 printf(
 "  this->used = 0;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count = 0;\n"
+);
+   }
+printf(
 "  this->free_idx = c_idx_not_exist;\n"
 "  this->first_idx = c_idx_not_exist;\n"
 "  this->last_idx = c_idx_not_exist;\n"
@@ -220,6 +234,16 @@ printf(
 "  this->used = a_second->used;\n"
 "  a_second->used = tmp_unsigned;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  tmp_unsigned = this->count;\n"
+"  this->count = a_second->count;\n"
+"  a_second->count = tmp_unsigned;\n"
+"\n"
+);
+   }
+printf(
 "  %s_element *tmp_data = this->data;\n"
 "  this->data = a_second->data;\n"
 "  a_second->data = tmp_data;\n"
@@ -237,7 +261,7 @@ printf(
 "  a_second->last_idx = tmp_unsigned;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
@@ -245,11 +269,22 @@ void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
 printf(
 "static inline %s *%s_at(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
+,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < this->used);\n"
+);
+   }
+printf(
 "  return &this->data[a_idx].object;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREPEND(LIST_GEN_PARAMS)
@@ -296,6 +331,13 @@ printf(
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = this->first_idx;\n"
 "  new_element->prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -308,9 +350,16 @@ printf(
 "    this->last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  this->first_idx = new_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
 "  new_element->object = a_value;\n"
@@ -373,6 +422,13 @@ printf(
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = c_idx_not_exist;\n"
 "  new_element->prev_idx = this->last_idx;\n"
 "\n"
@@ -385,9 +441,16 @@ printf(
 "    this->first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  this->last_idx = new_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
 "  new_element->object = a_value;\n"
@@ -420,7 +483,18 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < this->used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -453,6 +527,13 @@ printf(
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = a_idx;\n"
 "  new_element->prev_idx = idx_element->prev_idx;\n"
 "\n"
@@ -465,9 +546,16 @@ printf(
 "    this->first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  idx_element->prev_idx = new_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
 "  new_element->object = a_value;\n"
@@ -500,7 +588,18 @@ printf(
    }
 printf(
 "{/*{{{*/\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < this->used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -533,6 +632,13 @@ printf(
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = idx_element->next_idx;\n"
 "  new_element->prev_idx = a_idx;\n"
 "\n"
@@ -545,9 +651,16 @@ printf(
 "    this->last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  idx_element->next_idx = new_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
 "  new_element->object = a_value;\n"
@@ -601,6 +714,13 @@ printf(
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = this->first_idx;\n"
 "  new_element->prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -613,12 +733,19 @@ printf(
 "    this->last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  this->first_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_APPEND_BLANK(LIST_GEN_PARAMS)
@@ -656,6 +783,13 @@ printf(
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = c_idx_not_exist;\n"
 "  new_element->prev_idx = this->last_idx;\n"
 "\n"
@@ -668,12 +802,19 @@ printf(
 "    this->first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  this->last_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
@@ -681,7 +822,18 @@ void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
 printf(
 "static inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < this->used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -692,7 +844,7 @@ printf(
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
@@ -714,6 +866,13 @@ printf(
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = a_idx;\n"
 "  new_element->prev_idx = idx_element->prev_idx;\n"
 "\n"
@@ -726,12 +885,19 @@ printf(
 "    this->first_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  idx_element->prev_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
@@ -739,7 +905,18 @@ void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
 printf(
 "static inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < this->used);\n"
+);
+   }
+printf(
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -750,7 +927,7 @@ printf(
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "    if (this->used >= this->size)\n"
@@ -772,6 +949,13 @@ printf(
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  new_element->valid = 1;\n"
+);
+   }
+printf(
 "  new_element->next_idx = idx_element->next_idx;\n"
 "  new_element->prev_idx = a_idx;\n"
 "\n"
@@ -784,12 +968,19 @@ printf(
 "    this->last_idx = new_idx;\n"
 "  }\n"
 "\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count++;\n"
+);
+   }
+printf(
 "  idx_element->next_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_REMOVE(LIST_GEN_PARAMS)
@@ -797,7 +988,18 @@ void LIST_REMOVE(LIST_GEN_PARAMS)
 printf(
 "static inline void %s_remove(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
+);
+   }
+   else {
+printf(
 "  debug_assert(a_idx < this->used);\n"
+);
+   }
+printf(
 "\n"
 "  %s_element *rm_element = this->data + a_idx;\n"
 "\n"
@@ -819,11 +1021,25 @@ printf(
 "    this->first_idx = rm_element->next_idx;\n"
 "  }\n"
 "\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  rm_element->valid = 0;\n"
 "  rm_element->next_idx = this->free_idx;\n"
+"\n"
+"  this->count--;\n"
+);
+   }
+   else {
+printf(
+"  rm_element->next_idx = this->free_idx;\n"
+);
+   }
+printf(
 "  this->free_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_NEXT_IDX(LIST_GEN_PARAMS)
@@ -831,10 +1047,17 @@ void LIST_NEXT_IDX(LIST_GEN_PARAMS)
 printf(
 "static inline unsigned %s_next_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(this->data[a_idx].valid);\n"
+);
+   }
+printf(
 "  return this->data[a_idx].next_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_PREV_IDX(LIST_GEN_PARAMS)
@@ -842,10 +1065,17 @@ void LIST_PREV_IDX(LIST_GEN_PARAMS)
 printf(
 "static inline unsigned %s_prev_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  debug_assert(this->data[a_idx].valid);\n"
+);
+   }
+printf(
 "  return this->data[a_idx].prev_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void LIST_COPY_RESIZE(LIST_GEN_PARAMS)
@@ -1015,6 +1245,11 @@ printf(
 "    %s_copy(&ptr->object,&s_ptr->object);\n"
 ,TYPE_NAME);
    }
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"    ptr->valid = s_ptr->valid;\n"
+);
+   }
 printf(
 "    ptr->next_idx = s_ptr->next_idx;\n"
 "    ptr->prev_idx = s_ptr->prev_idx;\n"
@@ -1024,6 +1259,13 @@ printf(
 printf(
 "\n"
 "  this->used = a_src->used;\n"
+);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  this->count = a_src->count;\n"
+);
+   }
+printf(
 "  this->free_idx = a_src->free_idx;\n"
 "  this->first_idx = a_src->first_idx;\n"
 "  this->last_idx = a_src->last_idx;\n"
@@ -1037,6 +1279,17 @@ void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
 printf(
 "int %s_compare(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  if (this->count != a_second->count)\n"
+"  {\n"
+"    return 0;\n"
+"  }\n"
+"\n"
+);
+   }
+printf(
 "  if (this->first_idx == c_idx_not_exist)\n"
 "  {\n"
 "    return a_second->first_idx == c_idx_not_exist;\n"
@@ -1054,7 +1307,7 @@ printf(
 "    %s_element *element = this->data + idx;\n"
 "    %s_element *s_element = a_second->data + s_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 printf(
 "    if (element->object != s_element->object)\n"
@@ -1219,6 +1472,13 @@ printf(
 "struct %s_element\n"
 "{\n"
 "  %s object;\n"
+,STRUCT_NAME,TYPE_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  char valid;\n"
+);
+   }
+printf(
 "  unsigned next_idx;\n"
 "  unsigned prev_idx;\n"
 "};\n"
@@ -1227,13 +1487,20 @@ printf(
 "{\n"
 "  unsigned size; //!< actual size of allocated space (element count)\n"
 "  unsigned used; //!< used part of allocated space\n"
+,STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+printf(
+"  unsigned count; //!< count of stored elements\n"
+);
+   }
+printf(
 "  %s_element *data; //!< pointer to list elements\n"
 "  unsigned free_idx; //!< index of first free element\n"
 "  unsigned first_idx; //!< index of first element\n"
 "  unsigned last_idx; //!< index of last element\n"
 "};\n"
 "\n"
-,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 printf(
 "static inline void %s_init(%s *this);\n"
