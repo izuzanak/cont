@@ -766,6 +766,9 @@ printf(
 "  this->leaf_idx = c_idx_not_exist;\n"
 );
    if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
@@ -853,10 +856,9 @@ printf(
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
-"  %s_init(this);\n"
-,IM_STRUCT_NAME);
+"  this->size = 0;\n"
+);
    }
-   else {
 printf(
 "  this->used = 0;\n"
 );
@@ -865,22 +867,16 @@ printf(
 "  this->count = 0;\n"
 );
    }
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
+"  this->data = NULL;\n"
+);
+   }
 printf(
 "  this->free_idx = c_idx_not_exist;\n"
 "  this->root_idx = c_idx_not_exist;\n"
 "  this->leaf_idx = c_idx_not_exist;\n"
 );
-      if (VAR_NAMES_CNT > 0) {
-         unsigned t_idx = 0;
-         do {
-            if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
-printf(
-"  %s_init(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
-            }
-         } while(++t_idx < VAR_NAMES_CNT);
-      }
-   }
 printf(
 "}/*}}}*/\n"
 "\n"
@@ -1997,17 +1993,8 @@ printf(
 
 void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_rehash_tree(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
-   else {
-printf(
-"void %s_rehash_tree(%s *this,char *a_processed)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   }
-printf(
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -2031,18 +2018,7 @@ printf(
 "\n"
 "  this->root_idx = c_idx_not_exist;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
 "  char *processed = (char *)cmalloc(indexes.used);\n"
-);
-   }
-   else {
-printf(
-"  char *processed = a_processed;\n"
-);
-   }
-printf(
 "  memset(processed,0,indexes.used*sizeof(char));\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
@@ -2068,17 +2044,13 @@ printf(
 "  %s___binary_tree_insert(this,node_idx,&this->data[node_idx].object,0);\n"
 "  %s___insert_operation(this,node_idx);\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
 "  cfree(processed);\n"
-);
-   }
-printf(
 "  ui_array_s_clear(&indexes);\n"
 "}/*}}}*/\n"
 "\n"
-);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
@@ -2664,16 +2636,9 @@ printf(
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_rehash) {
-      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s_rehash_tree(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-      }
-      else {
-printf(
-"void %s_rehash_tree(%s *this,char *a_processed);\n"
-,STRUCT_NAME,STRUCT_NAME);
-      }
    }
    if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 printf(

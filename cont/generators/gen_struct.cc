@@ -37,11 +37,9 @@ printf(
       }
    } while(++t_idx < TYPE_CNT);
 printf(
-"\n"
-"  %s_init(this);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+);
 }/*}}}*/
 
 void STRUCT_SET(STRUCT_GEN_PARAMS)
