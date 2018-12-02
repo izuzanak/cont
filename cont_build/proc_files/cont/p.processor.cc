@@ -1124,8 +1124,6 @@ inline void mc_block_s::init()
 
 inline void mc_block_s::clear()
 {/*{{{*/
-
-  init();
 }/*}}}*/
 
 inline void mc_block_s::set(pointer a_location,unsigned a_size)
@@ -1361,7 +1359,13 @@ inline void mc_block_rb_tree_s::clear()
     cfree(data);
   }
 
-  init();
+  size = 0;
+  used = 0;
+  count = 0;
+  data = nullptr;
+  free_idx = c_idx_not_exist;
+  root_idx = c_idx_not_exist;
+  leaf_idx = c_idx_not_exist;
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::flush()
@@ -1545,8 +1549,6 @@ inline void mc_struct_s::clear()
 {/*{{{*/
   mutex.clear();
   mc_block_set.clear();
-
-  init();
 }/*}}}*/
 
 inline void mc_struct_s::set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size)
@@ -2967,8 +2969,6 @@ inline void data_type_s::clear()
   real_name.clear();
   types.clear();
   variables.clear();
-
-  init();
 }/*}}}*/
 
 inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables)
@@ -3122,8 +3122,6 @@ inline void abbreviation_s::init()
 inline void abbreviation_s::clear()
 {/*{{{*/
   name.clear();
-
-  init();
 }/*}}}*/
 
 inline void abbreviation_s::set(string_s &a_name,unsigned a_data_type_idx)
@@ -3268,8 +3266,6 @@ inline void container_parameters_s::clear()
   variables.clear();
   functions.clear();
   names.clear();
-
-  init();
 }/*}}}*/
 
 inline void container_parameters_s::set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_functions,string_array_s &a_names)
@@ -3343,8 +3339,6 @@ inline void processor_s::clear()
   data_types.clear();
   abbreviations.clear();
   cont_params.clear();
-
-  init();
 }/*}}}*/
 
 inline void processor_s::set(FILE_ptr a_out_file,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
@@ -3708,8 +3702,6 @@ inline void lalr_stack_element_s::init()
 
 inline void lalr_stack_element_s::clear()
 {/*{{{*/
-
-  init();
 }/*}}}*/
 
 inline void lalr_stack_element_s::set(unsigned a_lalr_state,unsigned a_terminal_start,unsigned a_terminal_end)
@@ -3943,8 +3935,6 @@ inline void process_s::clear()
   source_string.clear();
   code.clear();
   lalr_stack.clear();
-
-  init();
 }/*}}}*/
 
 inline void process_s::set(processor_s_ptr a_processor_ptr,string_s &a_source_string,string_s &a_code,lalr_stack_s &a_lalr_stack)
@@ -9137,8 +9127,6 @@ printf(
       }
    } while(++t_idx < TYPE_CNT);
 printf(
-"\n"
-"  init();\n"
 "}/*}}}*/\n"
 "\n"
 );
@@ -10426,6 +10414,9 @@ printf(
 "  leaf_idx = c_idx_not_exist;\n"
 );
    if (VAR_NAMES_CNT > 0) {
+printf(
+"\n"
+);
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
@@ -10513,10 +10504,9 @@ printf(
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
-"  init();\n"
+"  size = 0;\n"
 );
    }
-   else {
 printf(
 "  used = 0;\n"
 );
@@ -10525,22 +10515,16 @@ printf(
 "  count = 0;\n"
 );
    }
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+printf(
+"  data = nullptr;\n"
+);
+   }
 printf(
 "  free_idx = c_idx_not_exist;\n"
 "  root_idx = c_idx_not_exist;\n"
 "  leaf_idx = c_idx_not_exist;\n"
 );
-      if (VAR_NAMES_CNT > 0) {
-         unsigned t_idx = 0;
-         do {
-            if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
-printf(
-"  %s.init();\n"
-,VAR_NAMES(t_idx));
-            }
-         } while(++t_idx < VAR_NAMES_CNT);
-      }
-   }
 printf(
 "}/*}}}*/\n"
 "\n"
@@ -11474,17 +11458,8 @@ printf(
 
 void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "void %s::rehash_tree()\n"
-,IM_STRUCT_NAME);
-   }
-   else {
-printf(
-"void %s::rehash_tree(bool *a_processed)\n"
-,IM_STRUCT_NAME);
-   }
-printf(
 "{/*{{{*/\n"
 "  if (root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -11508,18 +11483,7 @@ printf(
 "\n"
 "  root_idx = c_idx_not_exist;\n"
 "\n"
-);
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
 "  bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"
-);
-   }
-   else {
-printf(
-"  bool *processed = a_processed;\n"
-);
-   }
-printf(
 "  memset(processed,false,indexes.used*sizeof(bool));\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
@@ -11545,17 +11509,11 @@ printf(
 "  __binary_tree_insert(node_idx,data[node_idx].object,false);\n"
 "  __insert_operation(node_idx);\n"
 "\n"
-);
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
 "  cfree(processed);\n"
-);
-   }
-printf(
 "  indexes.clear();\n"
 "}/*}}}*/\n"
 "\n"
-);
+,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
@@ -12301,7 +12259,6 @@ printf(
 "\n"
 ,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_rehash) {
-      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 printf(
 "  /*!\n"
 "    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
@@ -12309,16 +12266,6 @@ printf(
 "    void rehash_tree();\n"
 "\n"
 );
-      }
-      else {
-printf(
-"  /*!\n"
-"    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
-"    */\n"
-"    void rehash_tree(bool *a_processed);\n"
-"\n"
-);
-      }
    }
    if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 printf(

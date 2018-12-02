@@ -1124,8 +1124,6 @@ inline void mc_block_s::init()
 
 inline void mc_block_s::clear()
 {/*{{{*/
-
-  init();
 }/*}}}*/
 
 inline void mc_block_s::set(pointer a_location,unsigned a_size)
@@ -1361,7 +1359,13 @@ inline void mc_block_rb_tree_s::clear()
     cfree(data);
   }
 
-  init();
+  size = 0;
+  used = 0;
+  count = 0;
+  data = nullptr;
+  free_idx = c_idx_not_exist;
+  root_idx = c_idx_not_exist;
+  leaf_idx = c_idx_not_exist;
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::flush()
@@ -1545,8 +1549,6 @@ inline void mc_struct_s::clear()
 {/*{{{*/
   mutex.clear();
   mc_block_set.clear();
-
-  init();
 }/*}}}*/
 
 inline void mc_struct_s::set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size)

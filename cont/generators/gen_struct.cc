@@ -37,8 +37,6 @@ printf(
       }
    } while(++t_idx < TYPE_CNT);
 printf(
-"\n"
-"  init();\n"
 "}/*}}}*/\n"
 "\n"
 );

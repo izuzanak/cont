@@ -1124,8 +1124,6 @@ inline void mc_block_s::init()
 
 inline void mc_block_s::clear()
 {/*{{{*/
-
-  init();
 }/*}}}*/
 
 inline void mc_block_s::set(pointer a_location,unsigned a_size)
@@ -1361,7 +1359,13 @@ inline void mc_block_rb_tree_s::clear()
     cfree(data);
   }
 
-  init();
+  size = 0;
+  used = 0;
+  count = 0;
+  data = nullptr;
+  free_idx = c_idx_not_exist;
+  root_idx = c_idx_not_exist;
+  leaf_idx = c_idx_not_exist;
 }/*}}}*/
 
 inline void mc_block_rb_tree_s::flush()
@@ -1545,8 +1549,6 @@ inline void mc_struct_s::clear()
 {/*{{{*/
   mutex.clear();
   mc_block_set.clear();
-
-  init();
 }/*}}}*/
 
 inline void mc_struct_s::set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size)
@@ -2971,8 +2973,6 @@ inline void data_type_s::clear()
   real_name.clear();
   types.clear();
   variables.clear();
-
-  init();
 }/*}}}*/
 
 inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables)
@@ -3126,8 +3126,6 @@ inline void abbreviation_s::init()
 inline void abbreviation_s::clear()
 {/*{{{*/
   name.clear();
-
-  init();
 }/*}}}*/
 
 inline void abbreviation_s::set(string_s &a_name,unsigned a_data_type_idx)
@@ -3272,8 +3270,6 @@ inline void container_parameters_s::clear()
   variables.clear();
   functions.clear();
   names.clear();
-
-  init();
 }/*}}}*/
 
 inline void container_parameters_s::set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_functions,string_array_s &a_names)
@@ -3347,8 +3343,6 @@ inline void processor_s::clear()
   data_types.clear();
   abbreviations.clear();
   cont_params.clear();
-
-  init();
 }/*}}}*/
 
 inline void processor_s::set(FILE_ptr a_out_file,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
@@ -3708,8 +3702,6 @@ inline void lalr_stack_element_s::init()
 
 inline void lalr_stack_element_s::clear()
 {/*{{{*/
-
-  init();
 }/*}}}*/
 
 inline void lalr_stack_element_s::set(unsigned a_lalr_state,unsigned a_terminal_start,unsigned a_terminal_end)
@@ -3943,8 +3935,6 @@ inline void process_s::clear()
   source_string.clear();
   code.clear();
   lalr_stack.clear();
-
-  init();
 }/*}}}*/
 
 inline void process_s::set(processor_s_ptr a_processor_ptr,string_s &a_source_string,string_s &a_code,lalr_stack_s &a_lalr_stack)
