@@ -98,6 +98,7 @@ const char *c_cont_names[c_cont_cnt] = {
    "rb_tree",
    "safe_list",
    "safe_rb_tree",
+   "ucl_params",
 };
 
 const char *c_cont_postfixes[c_cont_cnt] = {
@@ -108,6 +109,7 @@ const char *c_cont_postfixes[c_cont_cnt] = {
    "_rbt",
    "_sl",
    "_srbt",
+   "_uclp",
 };
 
 /*
@@ -180,6 +182,7 @@ unsigned abbreviation_array_s::get_idx_by_name(unsigned a_length,const char *a_d
    include "gen_list.cc"
    include "gen_struct.cc"
    include "gen_rb_tree.cc"
+   include "gen_ucl_params.cc"
 @end
 
 void processor_s::generate_type_inlines(unsigned a_length,char *a_data)
@@ -303,6 +306,9 @@ void processor_s::generate_container_def(string_s &a_cont_name)
    case c_cont_safe_rb_tree:
       type_settings |= c_type_option_safe;
       generate_rb_tree_type();
+      break;
+   case c_gen_ucl_param:
+      generate_ucl_params();
       break;
    default:
       cassert(0);
