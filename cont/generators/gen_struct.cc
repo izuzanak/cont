@@ -1,22 +1,22 @@
 
-#define STRUCT_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
-#define STRUCT_GEN_VALUES abbreviations,abb_idx,type_cnt,data_type,types
+#define STRUCT_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
+#define STRUCT_GEN_VALUES out_file,abbreviations,abb_idx,type_cnt,data_type,types
 
 void STRUCT_INIT(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::init()\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "  %s.init();\n"
 ,VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -24,19 +24,19 @@ printf(
 
 void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::clear()\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "  %s.clear();\n"
 ,VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -44,16 +44,16 @@ printf(
 
 void STRUCT_SET(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::set("
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "%s a_%s"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "%s &a_%s"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));
    }
@@ -61,28 +61,28 @@ printf(
       unsigned t_idx = 1;
       do {
          if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 ",%s a_%s"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
-printf(
+fprintf(out_file,
 ",%s &a_%s"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
-printf(
+fprintf(out_file,
 ")\n"
 "{/*{{{*/\n"
 );
    unsigned t_idx = 0;
    do {
-printf(
+fprintf(out_file,
 "  %s = a_%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -90,19 +90,19 @@ printf(
 
 void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::flush_all()\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
-printf(
+fprintf(out_file,
 "  %s.flush_all();\n"
 ,VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -110,29 +110,29 @@ printf(
 
 void STRUCT_SWAP(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::swap(%s &a_second)\n"
 "{/*{{{*/"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-printf(
+fprintf(out_file,
 "\n"
 );
       if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  %s tmp_%s = %s;\n"
 "  %s = a_second.%s;\n"
 "  a_second.%s = tmp_%s;\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       }
       else {
-printf(
+fprintf(out_file,
 "  %s.swap(a_second.%s);\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -140,17 +140,17 @@ printf(
 
 void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline %s &%s::operator=(%s &a_src)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-printf(
+fprintf(out_file,
 "  %s = a_src.%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "\n"
 "  return *this;\n"
 "}/*}}}*/\n"
@@ -160,7 +160,7 @@ printf(
 
 void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
 "  return (%s == a_second.%s"
@@ -168,12 +168,12 @@ printf(
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
-printf(
+fprintf(out_file,
 " && %s == a_second.%s"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
-printf(
+fprintf(out_file,
 ");\n"
 "}/*}}}*/\n"
 "\n"
@@ -345,7 +345,7 @@ void processor_s::generate_struct_type()
 
    // - definition of structure struct -
 
-printf(
+fprintf(out_file,
 "// structure %s definition\n"
 "\n"
 ,STRUCT_NAME);
@@ -353,16 +353,16 @@ printf(
    if (abbs.used > 1) {
       unsigned idx = 1;
       do {
-printf(
+fprintf(out_file,
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
       } while(++idx < abbs.used);
-printf(
+fprintf(out_file,
 "\n"
 );
    }
 
-printf(
+fprintf(out_file,
 "/*!\n"
 " * \\brief __GEN structure\n"
 " */\n"
@@ -371,13 +371,13 @@ printf(
 ,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-printf(
+fprintf(out_file,
 "  %s %s; //!< member - %u\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
 
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-printf(
+fprintf(out_file,
 "\n"
 "  /*!\n"
 "    * \\brief __GEN initialize structure\n"
@@ -387,7 +387,7 @@ printf(
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by structure\n"
 "    */\n"
@@ -395,19 +395,19 @@ printf(
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN set structure members\n"
 "    */\n"
 "  inline void set("
 );
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "%s a_%s"
 ,TYPE_NAMES(0),VAR_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "%s &a_%s"
 ,TYPE_NAMES(0),VAR_NAMES(0));
    }
@@ -415,18 +415,18 @@ printf(
       unsigned t_idx = 1;
       do {
          if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 ",%s a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
-printf(
+fprintf(out_file,
 ",%s &a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
-printf(
+fprintf(out_file,
 ");\n"
 "  /*!\n"
 "    * \\brief __GEN flush structure memory usage, recursive on members\n"
@@ -435,7 +435,7 @@ printf(
 "\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN swap structure members with another structure\n"
 "    */\n"
@@ -444,7 +444,7 @@ printf(
 ,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN copy structure from another structure\n"
 "    * \\param a_src - reference to another structure\n"
@@ -454,7 +454,7 @@ printf(
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN compare structure with another structure\n"
 "    * \\param a_second - reference to another structure\n"
@@ -466,12 +466,12 @@ printf(
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "  %s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
-printf(
+fprintf(out_file,
 "};\n"
 "\n"
 );
@@ -504,7 +504,7 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
    // - definition of inline methods -
 
-printf(
+fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -562,7 +562,7 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 
    // - definition of methods -
 
-printf(
+fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);

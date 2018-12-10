@@ -1,21 +1,21 @@
 
-#define LIST_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type,data_type_s &data_type
-#define LIST_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type,data_type
+#define LIST_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type,data_type_s &data_type
+#define LIST_GEN_VALUES out_file,abbreviations,abb_idx,type_abb_idx,type,data_type
 
 void LIST_INIT(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::init()\n"
 "{/*{{{*/\n"
 "  size = 0;\n"
 "  used = 0;\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count = 0;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  data = nullptr;\n"
 "  free_idx = c_idx_not_exist;\n"
 "  first_idx = c_idx_not_exist;\n"
@@ -27,7 +27,7 @@ printf(
 
 void LIST_INIT_SIZE(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::init_size(unsigned a_size)\n"
 "{/*{{{*/\n"
 "  init();\n"
@@ -39,7 +39,7 @@ printf(
 
 void LIST_INIT_BUFFER(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::init_buffer(unsigned a_size,%s_element *a_data)\n"
 "{/*{{{*/\n"
 "  init();\n"
@@ -52,25 +52,25 @@ printf(
 void LIST_CLEAR(LIST_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "inline void %s::clear()\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s::clear()\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (TYPE_NUMBER & c_type_dynamic || !(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (data != nullptr)\n"
 "  {\n"
 );
       if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "    %s_element *ptr = data;\n"
 "    %s_element *ptr_end = ptr + size;\n"
 "\n"
@@ -81,40 +81,40 @@ printf(
       }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 );
          }
-printf(
+fprintf(out_file,
 "    cfree(data);\n"
 );
       }
-printf(
+fprintf(out_file,
 "  }\n"
 "\n"
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  init();\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  used = 0;\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count = 0;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  free_idx = c_idx_not_exist;\n"
 "  first_idx = c_idx_not_exist;\n"
 "  last_idx = c_idx_not_exist;\n"
 );
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -123,23 +123,23 @@ printf(
 void LIST_SET_BUFFER(LIST_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "inline void %s::set_buffer(unsigned a_size,%s_element *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s::set_buffer(unsigned a_size,%s_element *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  clear();\n"
 );
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  %s_element *ptr = data + size;\n"
 "  %s_element *ptr_end = data + a_size;\n"
@@ -149,7 +149,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  size = a_size;\n"
 "  data = a_data;\n"
@@ -160,16 +160,16 @@ printf(
 
 void LIST_FLUSH(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::flush()\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  copy_resize(used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -178,30 +178,30 @@ printf(
 void LIST_FLUSH_ALL(LIST_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "inline void %s::flush_all()\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s::flush_all()\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  copy_resize(used);\n"
 );
    }
    if (TYPE_NUMBER & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 );
       }
-printf(
+fprintf(out_file,
 "  if (used == 0)\n"
 "  {\n"
 "    return;\n"
@@ -215,7 +215,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -223,7 +223,7 @@ printf(
 
 void LIST_SWAP(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::swap(%s &a_second)\n"
 "{/*{{{*/\n"
 "  unsigned tmp_unsigned = size;\n"
@@ -236,14 +236,14 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  tmp_unsigned = count;\n"
 "  count = a_second.count;\n"
 "  a_second.count = tmp_unsigned;\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  %s_element *tmp_data = data;\n"
 "  data = a_second.data;\n"
 "  a_second.data = tmp_data;\n"
@@ -266,21 +266,21 @@ printf(
 
 void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline %s &%s::operator[](unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,TYPE_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used && data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  return data[a_idx].object;\n"
 "}/*}}}*/\n"
 "\n"
@@ -290,16 +290,16 @@ printf(
 void LIST_PREPEND(LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "inline unsigned %s::prepend(%s a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "inline unsigned %s::prepend(%s &a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -312,7 +312,7 @@ printf(
 "  {\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -321,11 +321,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -333,11 +333,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -352,11 +352,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  first_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -370,16 +370,16 @@ printf(
 void LIST_APPEND(LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "inline unsigned %s::append(%s a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "inline unsigned %s::append(%s &a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -392,7 +392,7 @@ printf(
 "  {\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -401,11 +401,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -413,11 +413,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
@@ -432,11 +432,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  last_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -450,29 +450,29 @@ printf(
 void LIST_INSERT_BEFORE(LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "inline unsigned %s::insert_before(unsigned a_idx,%s a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "inline unsigned %s::insert_before(unsigned a_idx,%s &a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used && data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -485,7 +485,7 @@ printf(
 "  {\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -494,11 +494,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -507,11 +507,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
@@ -526,11 +526,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  idx_element.prev_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -544,29 +544,29 @@ printf(
 void LIST_INSERT_AFTER(LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "inline unsigned %s::insert_after(unsigned a_idx,%s a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "inline unsigned %s::insert_after(unsigned a_idx,%s &a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used && data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -579,7 +579,7 @@ printf(
 "  {\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -588,11 +588,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -601,11 +601,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
@@ -620,11 +620,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  idx_element.next_idx = new_idx;\n"
 "\n"
 "  new_element.object = a_value;\n"
@@ -637,7 +637,7 @@ printf(
 
 void LIST_PREPEND_BLANK(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline unsigned %s::prepend_blank()\n"
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
@@ -651,7 +651,7 @@ printf(
 "  {\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -660,11 +660,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -672,11 +672,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = first_idx;\n"
 "  new_element.prev_idx = c_idx_not_exist;\n"
 "\n"
@@ -691,11 +691,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  first_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
@@ -706,7 +706,7 @@ printf(
 
 void LIST_APPEND_BLANK(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline unsigned %s::append_blank()\n"
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
@@ -720,7 +720,7 @@ printf(
 "  {\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -729,11 +729,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -741,11 +741,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = c_idx_not_exist;\n"
 "  new_element.prev_idx = last_idx;\n"
 "\n"
@@ -760,11 +760,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  last_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
@@ -775,21 +775,21 @@ printf(
 
 void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline unsigned %s::insert_blank_before(unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used && data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -802,7 +802,7 @@ printf(
 "  {\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -811,11 +811,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -824,11 +824,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = a_idx;\n"
 "  new_element.prev_idx = idx_element.prev_idx;\n"
 "\n"
@@ -843,11 +843,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  idx_element.prev_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
@@ -858,21 +858,21 @@ printf(
 
 void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline unsigned %s::insert_blank_after(unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used && data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned new_idx;\n"
 "\n"
@@ -885,7 +885,7 @@ printf(
 "  {\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      copy_resize((size << 1) + c_array_add);\n"
@@ -894,11 +894,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(used < size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = used++;\n"
 "  }\n"
 "\n"
@@ -907,11 +907,11 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  new_element.valid = true;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  new_element.next_idx = idx_element.next_idx;\n"
 "  new_element.prev_idx = a_idx;\n"
 "\n"
@@ -926,11 +926,11 @@ printf(
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count++;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  idx_element.next_idx = new_idx;\n"
 "\n"
 "  return new_idx;\n"
@@ -941,21 +941,21 @@ printf(
 
 void LIST_REMOVE(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline void %s::remove(unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used && data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  %s_element &rm_element = data[a_idx];\n"
 "\n"
@@ -979,7 +979,7 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  rm_element.valid = false;\n"
 "  rm_element.next_idx = free_idx;\n"
 "\n"
@@ -987,11 +987,11 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  rm_element.next_idx = free_idx;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  free_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
@@ -1000,16 +1000,16 @@ printf(
 
 void LIST_NEXT_IDX(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline unsigned %s::next_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(data[a_idx].valid);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  return data[a_idx].next_idx;\n"
 "}/*}}}*/\n"
 "\n"
@@ -1018,16 +1018,16 @@ printf(
 
 void LIST_PREV_IDX(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "inline unsigned %s::prev_idx(unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(data[a_idx].valid);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  return data[a_idx].prev_idx;\n"
 "}/*}}}*/\n"
 "\n"
@@ -1036,13 +1036,13 @@ printf(
 
 void LIST_COPY_RESIZE(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s::copy_resize(unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= used);\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  if (size > a_size)\n"
 "  {\n"
@@ -1055,7 +1055,7 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  if (a_size == 0)\n"
 "  {\n"
@@ -1071,7 +1071,7 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  if (a_size > size)\n"
 "  {\n"
@@ -1084,7 +1084,7 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  size = a_size;\n"
 "}/*}}}*/\n"
@@ -1095,16 +1095,16 @@ printf(
 void LIST_GET_IDX(LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s::get_idx(%s a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s::get_idx(%s &a_value)\n"
 ,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (first_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -1132,25 +1132,25 @@ printf(
 void LIST_OPERATOR_EQUAL(LIST_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "%s &%s::operator=(%s &a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "inline %s &%s::operator=(%s &a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_src.used <= size);\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  clear();\n"
 "\n"
 "  if (a_src.used == 0)\n"
@@ -1159,19 +1159,19 @@ printf(
 "  }\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 "  copy_resize(a_src.used);\n"
 );
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "\n"
 "  memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "\n"
 "  %s_element *ptr = data;\n"
 "  %s_element *s_ptr = a_src.data;\n"
@@ -1181,26 +1181,26 @@ printf(
 "    ptr->object = s_ptr->object;\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "    ptr->valid = s_ptr->valid;\n"
 );
    }
-printf(
+fprintf(out_file,
 "    ptr->next_idx = s_ptr->next_idx;\n"
 "    ptr->prev_idx = s_ptr->prev_idx;\n"
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  used = a_src.used;\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  count = a_src.count;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  free_idx = a_src.free_idx;\n"
 "  first_idx = a_src.first_idx;\n"
 "  last_idx = a_src.last_idx;\n"
@@ -1213,12 +1213,12 @@ printf(
 
 void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "bool %s::operator==(%s &a_second)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  if (count != a_second.count)\n"
 "  {\n"
 "    return false;\n"
@@ -1226,7 +1226,7 @@ printf(
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  if (first_idx == c_idx_not_exist)\n"
 "  {\n"
 "    return a_second.first_idx == c_idx_not_exist;\n"
@@ -1345,7 +1345,7 @@ void processor_s::generate_list_type()
 
    // - definition of structure list -
 
-printf(
+fprintf(out_file,
 "// struct %s definition\n"
 "\n"
 ,STRUCT_NAME);
@@ -1353,16 +1353,16 @@ printf(
    if (abbs.used > 1) {
       unsigned idx = 1;
       do {
-printf(
+fprintf(out_file,
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
       } while(++idx < abbs.used);
-printf(
+fprintf(out_file,
 "\n"
 );
    }
 
-printf(
+fprintf(out_file,
 "/*!\n"
 " * \\brief __GEN element of list of type %s\n"
 " */\n"
@@ -1372,11 +1372,11 @@ printf(
 "  %s object;\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  bool valid;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  unsigned next_idx;\n"
 "  unsigned prev_idx;\n"
 "};\n"
@@ -1390,11 +1390,11 @@ printf(
 "  unsigned used; //!< used part of allocated space\n"
 ,TYPE_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  unsigned count; //!< count of stored elements\n"
 );
    }
-printf(
+fprintf(out_file,
 "  %s_element *data; //!< pointer to list elements\n"
 "  unsigned free_idx; //!< index of first free element\n"
 "  unsigned first_idx; //!< index of first element\n"
@@ -1402,7 +1402,7 @@ printf(
 "\n"
 ,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN initialize list\n"
 "    */\n"
@@ -1411,7 +1411,7 @@ printf(
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN initialize list of requested size\n"
 "    * \\param a_size - requested size of list\n"
@@ -1421,7 +1421,7 @@ printf(
 );
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN initialize/set underlaying data buffer\n"
 "    * \\param a_size - size of data buffer\n"
@@ -1433,7 +1433,7 @@ printf(
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by list\n"
 "    */\n"
@@ -1442,7 +1442,7 @@ printf(
 );
       }
       else {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by list\n"
 "    */\n"
@@ -1453,7 +1453,7 @@ printf(
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
      if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN set underlaying data buffer\n"
 "    * \\param a_size - size of data buffer\n"
@@ -1464,7 +1464,7 @@ printf(
 ,STRUCT_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN set underlaying data buffer\n"
 "    * \\param a_size - size of data buffer\n"
@@ -1475,7 +1475,7 @@ printf(
 ,STRUCT_NAME);
       }
    }
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush list memory usage\n"
 "    */\n"
@@ -1483,7 +1483,7 @@ printf(
 "\n"
 );
    if (!(TYPE_NUMBER & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush list memory usage, recursive on elements\n"
 "    */\n"
@@ -1492,7 +1492,7 @@ printf(
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush list memory usage, recursive on elements\n"
 "    */\n"
@@ -1501,7 +1501,7 @@ printf(
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN swap members of list with another list\n"
 "    * \\param a_second - reference to another list\n"
@@ -1510,7 +1510,7 @@ printf(
 "\n"
 ,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN select element of list\n"
 "    * \\param a_idx - index of element in list\n"
@@ -1520,7 +1520,7 @@ printf(
 "\n"
 ,TYPE_NAME);
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN prepend element to list\n"
 "    * \\param a_value - value prepended to list\n"
@@ -1552,7 +1552,7 @@ printf(
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN prepend element to list\n"
 "    * \\param a_value - reference to value prepended to list\n"
@@ -1583,14 +1583,14 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "  inline unsigned prepend_blank();\n"
 "  inline unsigned append_blank();\n"
 "  inline unsigned insert_blank_before(unsigned a_idx);\n"
 "  inline unsigned insert_blank_after(unsigned a_idx);\n"
 "\n"
 );
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN remove element at index from list\n"
 "    * \\param a_idx - index of element to remove\n"
@@ -1611,7 +1611,7 @@ printf(
 "\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN resize list capacity\n"
 "    * \\param a_size - requested list capacity\n"
@@ -1621,7 +1621,7 @@ printf(
 );
    }
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
@@ -1630,7 +1630,7 @@ printf(
 ,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
@@ -1640,7 +1640,7 @@ printf(
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN copy list from another list\n"
 "    * \\param a_src - reference to another list\n"
@@ -1651,7 +1651,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN copy list from another list\n"
 "    * \\param a_src - reference to another list\n"
@@ -1662,7 +1662,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
-printf(
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN compare list with another list\n"
 "    * \\param a_second - reference to another list\n"
@@ -1674,12 +1674,12 @@ printf(
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "  %s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
-printf(
+fprintf(out_file,
 "};\n"
 "\n"
 );
@@ -1702,7 +1702,7 @@ void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
    // --- definition of inline methods ---
 
-printf(
+fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -1815,7 +1815,7 @@ void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 
    // --- definition of methods ---
 
-printf(
+fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);

@@ -832,7 +832,7 @@ void processor_s::generate_ucl_params()
   // - retrieve destination for non static methods -
   if (!static_method)
   {
-printf(
+fprintf(out_file,
 "  location_s *dst_location = (location_s *)it.get_stack_value(stack_base + operands[c_dst_op_idx]);"
 );
   }
@@ -842,7 +842,7 @@ printf(
   {
     unsigned p_idx = 0;
     do {
-printf(
+fprintf(out_file,
 "%s  location_s *src_%d_location = (location_s *)it.get_stack_value(stack_base + operands[c_src_%d_op_idx]);"
 ,(static_method && p_idx == 0) ? "" : line_end,p_idx,p_idx);
     } while(++p_idx < param_count);
@@ -850,7 +850,7 @@ printf(
 
   if (test_count > 0)
   {
-    printf("%s",line_end);
+    fprintf(out_file,"%s",line_end);
 
     // - declare retrieve variables -
     if (retrieve_params)
@@ -860,40 +860,40 @@ printf(
         switch (type_test_classes[t_idx])
         {
         case c_test_class_retrieve_integer:
-          printf("%s  long long int %s;",line_end,names[t_idx].data);
+          fprintf(out_file,"%s  long long int %s;",line_end,names[t_idx].data);
           break;
         case c_test_class_retrieve_float:
-          printf("%s  double %s;",line_end,names[t_idx].data);
+          fprintf(out_file,"%s  double %s;",line_end,names[t_idx].data);
           break;
         case c_test_class_retrieve_integer_init:
-          printf("%s  long long int %s = 0;",line_end,names[t_idx].data);
+          fprintf(out_file,"%s  long long int %s = 0;",line_end,names[t_idx].data);
           break;
         case c_test_class_retrieve_float_init:
-          printf("%s  double %s = 0.0;",line_end,names[t_idx].data);
+          fprintf(out_file,"%s  double %s = 0.0;",line_end,names[t_idx].data);
           break;
         }
       } while(++t_idx < types.used);
 
-      printf("%s",line_end);
+      fprintf(out_file,"%s",line_end);
     }
 
    if (additions.used != 0)
    {
       unsigned f_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "%s  %s"
 ,line_end,additions[f_idx].data);
       } while(++f_idx < additions.used);
 
-      printf("%s",line_end);
+      fprintf(out_file,"%s",line_end);
    }
 
-printf(
+fprintf(out_file,
 "%s  %s"
 ,line_end,macro ? "/* - ERROR - */" : "// - ERROR -");
 
-    printf("%s  if (",line_end);
+    fprintf(out_file,"%s  if (",line_end);
 
     unsigned test_idx = 0;
     unsigned param_test_idx = 0;
@@ -905,21 +905,21 @@ printf(
       // - more than one test for parameter -
       if (param_test_count > 1)
       {
-        printf("%c",param_test_idx == 0 ? '(' : ' ');
+        fprintf(out_file,"%c",param_test_idx == 0 ? '(' : ' ');
       }
 
       switch (type_test_classes[type_idx])
       {
       case c_test_class_retrieve_integer:
       case c_test_class_retrieve_integer_init:
-        printf("!it.retrieve_integer(src_%u_location,%s)",param_idx,names[type_idx].data);
+        fprintf(out_file,"!it.retrieve_integer(src_%u_location,%s)",param_idx,names[type_idx].data);
         break;
       case c_test_class_retrieve_float:
       case c_test_class_retrieve_float_init:
-        printf("!it.retrieve_float(src_%u_location,%s)",param_idx,names[type_idx].data);
+        fprintf(out_file,"!it.retrieve_float(src_%u_location,%s)",param_idx,names[type_idx].data);
         break;
       case c_test_class_type:
-        printf("src_%u_location->v_type != %s",param_idx,types[type_idx].data);
+        fprintf(out_file,"src_%u_location->v_type != %s",param_idx,types[type_idx].data);
         break;
       default:
         fprintf(stderr,"ucl_params: unrecognized test class %s\n",types[type_idx].data);
@@ -932,13 +932,13 @@ printf(
         // - more than one test of parameter -
         if (param_test_count > 1)
         {
-          printf(")");
+          fprintf(out_file,")");
         }
 
         // - some remaining tests exist -
         if (++test_idx < test_count)
         {
-          printf(" ||");
+          fprintf(out_file," ||");
         }
         else
         {
@@ -952,18 +952,18 @@ printf(
       {
         // - next parameter test index -
         ++test_idx;
-        printf(" &&");
+        fprintf(out_file," &&");
       }
 
-      printf("%s      ",line_end);
+      fprintf(out_file,"%s      ",line_end);
     } while(true);
 
-printf(
+fprintf(out_file,
 ")"
 "%s  {"
 ,line_end);
 
-printf(
+fprintf(out_file,
 "%s    exception_s *new_exception = exception_s::throw_exception(it,c_error_METHOD_NOT_DEFINED_WITH_PARAMETERS,operands[c_source_pos_idx],(location_s *)it.blank_location);"
 ,line_end);
 
@@ -985,13 +985,13 @@ printf(
 
       if (macro)
       {
-printf(
+fprintf(out_file,
 "%s    BIC_EXCEPTION_PUSH_METHOD_RI_CLASS_IDX(it,%s,%s);"
 ,line_end,class_name->data,method_name->data);
       }
       else
       {
-printf(
+fprintf(out_file,
 "%s    BIC_EXCEPTION_PUSH_METHOD_RI_CLASS_IDX(it,%s,\"%s#%u\");"
 ,line_end,class_name->data,method_name->data,param_count);
       }
@@ -1000,35 +1000,35 @@ printf(
     {
       if (macro)
       {
-printf(
+fprintf(out_file,
 "%s    BIC_EXCEPTION_PUSH_METHOD_RI(%s);"
 ,line_end,method_name->data);
       }
       else
       {
-printf(
+fprintf(out_file,
 "%s    BIC_EXCEPTION_PUSH_METHOD_RI(\"%s#%u\");"
 ,line_end,method_name->data,param_count);
       }
     }
 
-printf(
+fprintf(out_file,
 "%s    new_exception->params.push(%u);"
 ,line_end,param_count);
 
     unsigned param_idx = 0;
     do {
-printf(
+fprintf(out_file,
 "%s    new_exception->params.push(src_%u_location->v_type);"
 ,line_end,param_idx);
     } while(++param_idx < param_count);
 
-printf(
+fprintf(out_file,
 "%s"
 "%s    return false;"
 ,line_end,line_end);
 
-printf(
+fprintf(out_file,
 "%s  }"
 ,line_end);
   }
