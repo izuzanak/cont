@@ -1,22 +1,22 @@
 
-#define STRUCT_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
-#define STRUCT_GEN_VALUES abbreviations,abb_idx,type_cnt,data_type,types
+#define STRUCT_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
+#define STRUCT_GEN_VALUES out_file,abbreviations,abb_idx,type_cnt,data_type,types
 
 void STRUCT_INIT(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "  %s_init(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -24,19 +24,19 @@ printf(
 
 void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "  %s_clear(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -44,16 +44,16 @@ printf(
 
 void STRUCT_SET(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_set(%s *this,"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "%s a_%s"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "%s *a_%s"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));
    }
@@ -61,35 +61,35 @@ printf(
       unsigned t_idx = 1;
       do {
          if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 ",%s a_%s"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
-printf(
+fprintf(out_file,
 ",%s *a_%s"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
-printf(
+fprintf(out_file,
 ")\n"
 "{/*{{{*/\n"
 );
    unsigned t_idx = 0;
    do {
        if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  this->%s = a_%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
-printf(
+fprintf(out_file,
 "  %s_copy(&this->%s,a_%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -97,19 +97,19 @@ printf(
 
 void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
-printf(
+fprintf(out_file,
 "  %s_flush_all(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -117,29 +117,29 @@ printf(
 
 void STRUCT_SWAP(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-printf(
+fprintf(out_file,
 "\n"
 );
       if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  %s tmp_%s = this->%s;\n"
 "  this->%s = a_second->%s;\n"
 "  a_second->%s = tmp_%s;\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       }
       else {
-printf(
+fprintf(out_file,
 "  %s_swap(&this->%s,&a_second->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -147,24 +147,24 @@ printf(
 
 void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
        if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  this->%s = a_src->%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
-printf(
+fprintf(out_file,
 "  %s_copy(&this->%s,&a_src->%s);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -172,17 +172,17 @@ printf(
 
 void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline int %s_compare(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  return (this->%s == a_second->%s"
 ,VAR_NAMES(0),VAR_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "  return (%s_compare(&this->%s,&a_second->%s)"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
    }
@@ -190,18 +190,18 @@ printf(
       unsigned t_idx = 1;
       do {
    if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 " && this->%s == a_second->%s"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
    }
    else {
-printf(
+fprintf(out_file,
 " && %s_compare(&this->%s,&a_second->%s)"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
    }
       } while(++t_idx < TYPE_CNT);
    }
-printf(
+fprintf(out_file,
 ");\n"
 "}/*}}}*/\n"
 "\n"
@@ -210,28 +210,28 @@ printf(
 
 void STRUCT_TO_STRING(STRUCT_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "static inline void %s_to_string(%s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-printf(
+fprintf(out_file,
 "  bc_array_s_push(a_trg,'{');\n"
 "  %s_to_string(&this->%s,a_trg);\n"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
-printf(
+fprintf(out_file,
 "  bc_array_s_push(a_trg,',');\n"
 "  %s_to_string(&this->%s,a_trg);\n"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
-printf(
+fprintf(out_file,
 "  bc_array_s_push(a_trg,'}');\n"
 );
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
@@ -403,55 +403,55 @@ void processor_s::generate_struct_type()
 
    // - definition of structure struct -
 
-printf(
+fprintf(out_file,
 "// structure %s definition\n"
 "\n"
 ,STRUCT_NAME);
 
     unsigned idx = 0;
     do {
-printf(
+fprintf(out_file,
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
     } while(++idx < abbs.used);
-printf(
+fprintf(out_file,
 "\n"
 );
 
-printf(
+fprintf(out_file,
 "struct %s\n"
 "{\n"
 ,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-printf(
+fprintf(out_file,
 "  %s %s; //!< member - %u\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
-printf(
+fprintf(out_file,
 "};\n"
 "\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline void %s_set(%s *this,"
 ,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "%s a_%s"
 ,TYPE_NAMES(0),VAR_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "%s *a_%s"
 ,TYPE_NAMES(0),VAR_NAMES(0));
    }
@@ -459,35 +459,35 @@ printf(
       unsigned t_idx = 1;
       do {
          if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-printf(
+fprintf(out_file,
 ",%s a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
-printf(
+fprintf(out_file,
 ",%s *a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
-printf(
+fprintf(out_file,
 ");\n"
 "static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "static inline void %s_to_string(%s *this,bc_array_s *a_trg);\n"
 "#endif\n"
@@ -495,12 +495,12 @@ printf(
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
-printf(
+fprintf(out_file,
 "\n"
 );
 }/*}}}*/
@@ -532,7 +532,7 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
    // - definition of inline methods -
 
-printf(
+fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -593,7 +593,7 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 
    // - definition of methods -
 
-printf(
+fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);

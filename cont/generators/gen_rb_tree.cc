@@ -1,10 +1,10 @@
 
-#define RB_TREE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,data_type_s &data_type,data_type_s **types
-#define RB_TREE_GEN_VALUES abbreviations,abb_idx,data_type,types
+#define RB_TREE_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,data_type_s &data_type,data_type_s **types
+#define RB_TREE_GEN_VALUES out_file,abbreviations,abb_idx,data_type,types
 
 void RB_TREE___GET_GRANDPARENT_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline unsigned %s___get_grandparent_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  %s_node *node = this->data + a_idx;\n"
@@ -22,7 +22,7 @@ printf(
 
 void RB_TREE___GET_UNCLE_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline unsigned %s___get_uncle_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  unsigned gp_idx = %s___get_grandparent_idx(this,a_idx);\n"
@@ -41,7 +41,7 @@ printf(
 
 void RB_TREE___GET_SIBLING_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline unsigned %s___get_sibling_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  %s_node *p = this->data + this->data[a_idx].parent_idx;\n"
@@ -53,7 +53,7 @@ printf(
 
 void RB_TREE_GET_DESCENT_STACK_SIZE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline unsigned %s_get_descent_stack_size(%s *this)\n"
 "{/*{{{*/\n"
 "  return (unsigned)(logf(this->used)/c_log_of_2) << 1;\n"
@@ -64,22 +64,22 @@ printf(
 
 void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "unsigned %s_get_stack_min_value_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else
    {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -100,21 +100,21 @@ printf(
 
 void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline unsigned %s_get_stack_next_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  %s_node *node = this->data + a_idx;\n"
 "\n"
@@ -136,21 +136,21 @@ printf(
 
 void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "unsigned %s_get_min_value_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -170,21 +170,21 @@ printf(
 
 void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "unsigned %s_get_max_value_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned node_idx = a_idx;\n"
 "  do {\n"
@@ -204,21 +204,21 @@ printf(
 
 void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "unsigned %s_get_next_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  %s_node *node = this->data + a_idx;\n"
 "\n"
@@ -250,21 +250,21 @@ printf(
 
 void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "unsigned %s_get_prev_idx(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  %s_node *node = this->data + a_idx;\n"
 "\n"
@@ -296,7 +296,7 @@ printf(
 
 void RB_TREE___ROTATE_LEFT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s___rotate_left(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  %s_node *root = this->data + a_idx;\n"
@@ -336,7 +336,7 @@ printf(
 
 void RB_TREE___ROTATE_RIGHT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s___rotate_right(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  %s_node *root = this->data + a_idx;\n"
@@ -376,7 +376,7 @@ printf(
 
 void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline unsigned %s___get_new_index(%s *this)\n"
 "{/*{{{*/\n"
 "  unsigned new_idx;\n"
@@ -390,7 +390,7 @@ printf(
 "  {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -399,23 +399,23 @@ printf(
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "    debug_assert(this->used < this->size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "    new_idx = this->used++;\n"
 "  }\n"
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  this->data[new_idx].valid = 1;\n"
 "  this->count++;\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  return new_idx;\n"
 "}/*}}}*/\n"
 "\n"
@@ -424,7 +424,7 @@ printf(
 
 void RB_TREE___BINARY_TREE_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "unsigned %s___binary_tree_insert(%s *this,unsigned a_new_idx,%s *a_value,int a_unique)\n"
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
@@ -436,25 +436,25 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "      leaf->valid = 0;\n"
 "      leaf->color = 1;\n"
 "      this->count--;\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "      leaf->color = 1;\n"
 );
    }
    if (STRUCT_NUMBER & c_type_option_check_properties) {
-printf(
+fprintf(out_file,
 "\n"
 "      leaf->left_idx = c_idx_not_exist;\n"
 "      leaf->right_idx = c_idx_not_exist;\n"
 );
    }
-printf(
+fprintf(out_file,
 "    }\n"
 "\n"
 "    this->data[a_new_idx].parent_idx = c_idx_not_exist;\n"
@@ -508,7 +508,7 @@ printf(
 
 void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx)\n"
 "{/*{{{*/\n"
 "  %s_node *node = this->data + a_idx;\n"
@@ -540,7 +540,7 @@ printf(
 
 void RB_TREE___REMOVE_BLACK_BLACK(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s___remove_black_black(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  unsigned node_idx = a_idx;\n"
@@ -638,7 +638,7 @@ printf(
 
 void RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s___remove_one_child(%s *this,unsigned a_idx,unsigned a_ch_idx)\n"
 "{/*{{{*/\n"
 "  %s_node *node = this->data + a_idx;\n"
@@ -649,13 +649,13 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  node->valid = 0;\n"
 "  this->count--;\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  if (node->color)\n"
 "  {\n"
 "    %s_node *child_node = this->data + a_ch_idx;\n"
@@ -676,7 +676,7 @@ printf(
 
 void RB_TREE___INSERT_OPERATION(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s___insert_operation(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  unsigned node_idx = a_idx;\n"
@@ -748,37 +748,37 @@ printf(
 
 void RB_TREE_INIT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 "  this->size = 0;\n"
 "  this->used = 0;\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  this->count = 0;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  this->data = NULL;\n"
 "  this->free_idx = c_idx_not_exist;\n"
 "  this->root_idx = c_idx_not_exist;\n"
 "  this->leaf_idx = c_idx_not_exist;\n"
 );
    if (VAR_NAMES_CNT > 0) {
-printf(
+fprintf(out_file,
 "\n"
 );
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "  %s_init(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -786,7 +786,7 @@ printf(
 
 void RB_TREE_INIT_BUFFER(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s_node *a_data)\n"
 "{/*{{{*/\n"
 "  %s_init(this);\n"
@@ -799,25 +799,25 @@ printf(
 void RB_TREE_CLEAR(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (TYPE_NUMBERS(0) & c_type_dynamic || !(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->data != NULL)\n"
 "  {\n"
 );
       if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "    %s_node *ptr = this->data;\n"
 "    %s_node *ptr_end = ptr + this->size;\n"
 "\n"
@@ -828,15 +828,15 @@ printf(
       }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 );
          }
-printf(
+fprintf(out_file,
 "    cfree(this->data);\n"
 );
       }
-printf(
+fprintf(out_file,
 "  }\n"
 "\n"
 );
@@ -845,39 +845,39 @@ printf(
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "  %s_clear(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
-printf(
+fprintf(out_file,
 "\n"
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  this->size = 0;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  this->used = 0;\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  this->count = 0;\n"
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  this->data = NULL;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  this->free_idx = c_idx_not_exist;\n"
 "  this->root_idx = c_idx_not_exist;\n"
 "  this->leaf_idx = c_idx_not_exist;\n"
 );
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -886,23 +886,23 @@ printf(
 void RB_TREE_SET_BUFFER(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  %s_node *ptr = a_data;\n"
 "  %s_node *ptr_end = a_data + a_size;\n"
@@ -912,7 +912,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->size = a_size;\n"
 "  this->data = a_data;\n"
@@ -923,16 +923,16 @@ printf(
 
 void RB_TREE_FLUSH(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -941,33 +941,33 @@ printf(
 void RB_TREE_FLUSH_ALL(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,IM_STRUCT_NAME);
    }
    if (VAR_NAMES_CNT > 0) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 );
       }
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
-printf(
+fprintf(out_file,
 "  %s_flush_all(&this->%s);\n"
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
@@ -975,11 +975,11 @@ printf(
    }
    if (TYPE_NUMBERS(0) & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer) || VAR_NAMES_CNT > 0) {
-printf(
+fprintf(out_file,
 "\n"
 );
       }
-printf(
+fprintf(out_file,
 "  if (this->used == 0)\n"
 "  {\n"
 "    return;\n"
@@ -993,7 +993,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -1001,7 +1001,7 @@ printf(
 
 void RB_TREE_SWAP(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 "  unsigned tmp_unsigned = this->size;\n"
@@ -1014,14 +1014,14 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  tmp_unsigned = this->count;\n"
 "  this->count = a_second->count;\n"
 "  a_second->count = tmp_unsigned;\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  %s_node *tmp_data = this->data;\n"
 "  this->data = a_second->data;\n"
 "  a_second->data = tmp_data;\n"
@@ -1041,24 +1041,24 @@ printf(
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "\n"
 );
          if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  %s tmp_%s = this->%s;\n"
 "  this->%s = a_second->%s;\n"
 "  a_second->%s = tmp_%s;\n"
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
-printf(
+fprintf(out_file,
 "  %s_swap(&this->%s,&a_second->%s);\n"
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -1066,21 +1066,21 @@ printf(
 
 void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline %s *%s_at(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  return &this->data[a_idx].object;\n"
 "}/*}}}*/\n"
 "\n"
@@ -1090,36 +1090,36 @@ printf(
 #define TEMPLATE_RB_TREE_INSERT(FUN_NAME,VALUE_SET_CODE) \
 {/*{{{*/\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
+fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
    else {\
-printf(\
+fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s *a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
-printf(\
+fprintf(out_file,\
 "{/*{{{*/\n"\
 "  unsigned new_node_idx = %s___get_new_index(this);\n"\
 "\n"\
 ,IM_STRUCT_NAME);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
+fprintf(out_file,\
 "  %s___binary_tree_insert(this,new_node_idx,&a_value,0);\n"\
 ,IM_STRUCT_NAME);\
    }\
    else {\
-printf(\
+fprintf(out_file,\
 "  %s___binary_tree_insert(this,new_node_idx,a_value,0);\n"\
 ,IM_STRUCT_NAME);\
    }\
-printf(\
+fprintf(out_file,\
 "  %s___insert_operation(this,new_node_idx);\n"\
 "\n"\
 ,IM_STRUCT_NAME);\
    VALUE_SET_CODE;\
-printf(\
+fprintf(out_file,\
 "\n"\
 "  return new_node_idx;\n"\
 "}/*}}}*/\n"\
@@ -1131,12 +1131,12 @@ void RB_TREE_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 TEMPLATE_RB_TREE_INSERT(insert,
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  this->data[new_node_idx].object = a_value;\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
    }
@@ -1147,7 +1147,7 @@ void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
 TEMPLATE_RB_TREE_INSERT(swap_insert,
-printf(
+fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
 );
@@ -1157,30 +1157,30 @@ printf(
 #define TEMPLATE_RB_TREE_UNIQUE_INSERT(FUN_NAME,VALUE_SET_CODE) \
 {/*{{{*/\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
+fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
    else {\
-printf(\
+fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s *a_value)\n"\
 ,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
    }\
-printf(\
+fprintf(out_file,\
 "{/*{{{*/\n"\
 "  unsigned new_node_idx = %s___get_new_index(this);\n"\
 ,IM_STRUCT_NAME);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
-printf(\
+fprintf(out_file,\
 "  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,&a_value,1);\n"\
 ,IM_STRUCT_NAME);\
    }\
    else {\
-printf(\
+fprintf(out_file,\
 "  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,a_value,1);\n"\
 ,IM_STRUCT_NAME);\
    }\
-printf(\
+fprintf(out_file,\
 "\n"\
 "  if (old_node_idx != c_idx_not_exist)\n"\
 "  {\n"\
@@ -1191,13 +1191,13 @@ printf(\
 "\n"\
 ,IM_STRUCT_NAME);\
    if (STRUCT_NUMBER & c_type_option_safe) {\
-printf(\
+fprintf(out_file,\
 "    new_node->valid = 0;\n"\
 "    this->count--;\n"\
 "\n"\
 );\
    }\
-printf(\
+fprintf(out_file,\
 "    return old_node_idx;\n"\
 "  }\n"\
 "\n"\
@@ -1205,7 +1205,7 @@ printf(\
 "\n"\
 ,IM_STRUCT_NAME);\
    VALUE_SET_CODE;\
-printf(\
+fprintf(out_file,\
 "\n"\
 "  return new_node_idx;\n"\
 "}/*}}}*/\n"\
@@ -1217,12 +1217,12 @@ void RB_TREE_UNIQUE_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_insert,
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  this->data[new_node_idx].object = a_value;\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
    }
@@ -1233,7 +1233,7 @@ void RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
 TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,
-printf(
+fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
 ,IM_TYPE_NAMES(0));
 );
@@ -1242,21 +1242,21 @@ printf(
 
 void RB_TREE_REMOVE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_remove(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(a_idx < this->used);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  %s_node *del_node = this->data + a_idx;\n"
 "\n"
@@ -1376,13 +1376,13 @@ printf(
 
 void RB_TREE_COPY_RESIZE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  if (this->size > a_size)\n"
 "  {\n"
@@ -1395,7 +1395,7 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "\n"
 "  if (a_size == 0)\n"
 "  {\n"
@@ -1411,7 +1411,7 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  if (a_size > this->size)\n"
 "  {\n"
@@ -1424,7 +1424,7 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->size = a_size;\n"
 "}/*}}}*/\n"
@@ -1435,16 +1435,16 @@ printf(
 void RB_TREE_GET_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -1457,16 +1457,16 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "    if (comp_result < 0)\n"
 "    {\n"
 "      node_idx = node->left_idx;\n"
@@ -1491,16 +1491,16 @@ printf(
 void RB_TREE_GET_IDX_LEFT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx_left(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx_left(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -1514,16 +1514,16 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "    if (comp_result < 0)\n"
 "    {\n"
 "      node_idx = node->left_idx;\n"
@@ -1551,16 +1551,16 @@ printf(
 void RB_TREE_GET_GRE_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s_get_gre_idx(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s_get_gre_idx(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -1574,16 +1574,16 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "    if (comp_result < 0)\n"
 "    {\n"
 "      good_idx = node_idx;\n"
@@ -1609,16 +1609,16 @@ printf(
 void RB_TREE_GET_LEE_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s_get_lee_idx(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s_get_lee_idx(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
@@ -1632,16 +1632,16 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "    if (comp_result < 0)\n"
 "    {\n"
 "      node_idx = node->left_idx;\n"
@@ -1667,16 +1667,16 @@ printf(
 void RB_TREE_GET_IDXS(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "void %s_get_idxs(%s *this,%s a_value,ui_array_s *a_idxs_array)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_get_idxs(%s *this,%s *a_value,ui_array_s *a_idxs_array)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  a_idxs_array->used = 0;\n"
 "\n"
@@ -1695,16 +1695,16 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "    if (comp_result < 0)\n"
 "    {\n"
 "      if (node->left_idx != this->leaf_idx)\n"
@@ -1740,25 +1740,25 @@ printf(
 void RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_src->used <= this->size);\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  %s_clear(this);\n"
 "\n"
 "  if (a_src->root_idx == c_idx_not_exist)\n"
@@ -1767,19 +1767,19 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
 ,IM_STRUCT_NAME);
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "\n"
 "  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node));\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "\n"
 "  %s_node *ptr = this->data;\n"
 "  %s_node *s_ptr = a_src->data;\n"
@@ -1788,21 +1788,21 @@ printf(
 "  do {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "    ptr->object = s_ptr->object;\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    %s_copy(&ptr->object,&s_ptr->object);\n"
 ,IM_TYPE_NAMES(0));
    }
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "    ptr->valid = s_ptr->valid;\n"
 );
    }
-printf(
+fprintf(out_file,
 "    ptr->parent_idx = s_ptr->parent_idx;\n"
 "    ptr->left_idx = s_ptr->left_idx;\n"
 "    ptr->right_idx = s_ptr->right_idx;\n"
@@ -1810,39 +1810,39 @@ printf(
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->used = a_src->used;\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  this->count = a_src->count;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  this->free_idx = a_src->free_idx;\n"
 "  this->root_idx = a_src->root_idx;\n"
 "  this->leaf_idx = a_src->leaf_idx;\n"
 );
    if (VAR_NAMES_CNT > 0) {
-printf(
+fprintf(out_file,
 "\n"
 );
       unsigned t_idx = 0;
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  this->%s = a_src->%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
-printf(
+fprintf(out_file,
 "  %s_copy(&this->%s,&a_src->%s);\n"
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -1850,12 +1850,12 @@ printf(
 
 void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "int %s_compare(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  if (this->count != a_second->count)\n"
 "  {\n"
 "     return 0;\n"
@@ -1863,7 +1863,7 @@ printf(
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
 "    if (a_second->root_idx != c_idx_not_exist)\n"
@@ -1889,18 +1889,18 @@ printf(
 "    do {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "      if (this->data[node_idx].object != a_second->data[s_node_idx].object)\n"
 "      {\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "      if (!%s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object))\n"
 "      {\n"
 ,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "        return 0;\n"
 "      }\n"
 "\n"
@@ -1917,12 +1917,12 @@ printf(
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (VAR_NAMES_CNT > 0) {
       if (TYPE_NUMBERS(1) & c_type_basic) {
-printf(
+fprintf(out_file,
 "  return (this->%s == a_second->%s"
 ,VAR_NAMES(0),VAR_NAMES(0));
       }
       else {
-printf(
+fprintf(out_file,
 "  return (%s_compare(&this->%s,&a_second->%s)"
 ,IM_TYPE_NAMES(1),VAR_NAMES(0),VAR_NAMES(0));
       }
@@ -1930,27 +1930,27 @@ printf(
          unsigned t_idx = 1;
          do {
             if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
-printf(
+fprintf(out_file,
 " && this->%s == a_second->%s"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
             }
             else {
-printf(
+fprintf(out_file,
 " && %s_compare(&this->%s,&a_second->%s)"
 ,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
             }
          } while(++t_idx < VAR_NAMES_CNT);
       }
-printf(
+fprintf(out_file,
 ");\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  return 1;\n"
 );
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -1958,7 +1958,7 @@ printf(
 
 void RB_TREE_TO_STRING(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "void %s_to_string(%s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
@@ -1993,7 +1993,7 @@ printf(
 
 void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_rehash_tree(%s *this)\n"
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
@@ -2055,7 +2055,7 @@ printf(
 
 void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_print_dot_code(%s *this,FILE *a_file)\n"
 "{/*{{{*/\n"
 "  fprintf(a_file,\n"
@@ -2130,7 +2130,7 @@ printf(
 
 void RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "int %s_check_properties(%s *this)\n"
 "{/*{{{*/\n"
 "  %s_node *leaf = this->data + this->leaf_idx;\n"
@@ -2410,7 +2410,7 @@ void processor_s::generate_rb_tree_type()
 
    // - definition of structure rb_tree -
 
-printf(
+fprintf(out_file,
 "// struct %s definition\n"
 "\n"
 "typedef struct %s_node %s_node;\n"
@@ -2418,25 +2418,25 @@ printf(
 
     unsigned idx = 0;
     do {
-printf(
+fprintf(out_file,
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
     } while(++idx < abbs.used);
-printf(
+fprintf(out_file,
 "\n"
 );
 
-printf(
+fprintf(out_file,
 "struct %s_node\n"
 "{\n"
 "  %s object;\n"
 ,STRUCT_NAME,IM_TYPE_NAMES(0));
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  char valid;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  unsigned parent_idx;\n"
 "  unsigned left_idx;\n"
 "  unsigned right_idx;\n"
@@ -2449,11 +2449,11 @@ printf(
 "  unsigned used;\n"
 ,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
-printf(
+fprintf(out_file,
 "  unsigned count;\n"
 );
    }
-printf(
+fprintf(out_file,
 "  %s_node *data;\n"
 "  unsigned free_idx;\n"
 "  unsigned root_idx;\n"
@@ -2462,129 +2462,129 @@ printf(
    if (VAR_NAMES_CNT > 0) {
       unsigned t_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "  %s %s; //!< member - %u\n"
 ,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),t_idx);
       } while(++t_idx < VAR_NAMES_CNT);
    }
-printf(
+fprintf(out_file,
 "};\n"
 "\n"
 "static inline unsigned %s___get_grandparent_idx(%s *this,unsigned a_idx);\n"
 "static inline unsigned %s___get_uncle_idx(%s *this,unsigned a_idx);\n"
 "static inline unsigned %s___get_sibling_idx(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "static inline unsigned %s_get_descent_stack_size(%s *this);\n"
 "unsigned %s_get_stack_min_value_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr);\n"
 "static inline unsigned %s_get_stack_next_idx(%s *this,unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "unsigned %s_get_min_value_idx(%s *this,unsigned a_idx);\n"
 "unsigned %s_get_max_value_idx(%s *this,unsigned a_idx);\n"
 "unsigned %s_get_next_idx(%s *this,unsigned a_idx);\n"
 "unsigned %s_get_prev_idx(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "static inline void %s___rotate_left(%s *this,unsigned a_idx);\n"
 "static inline void %s___rotate_right(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "static inline unsigned %s___get_new_index(%s *this);\n"
 "unsigned %s___binary_tree_insert(%s *this,unsigned a_new_idx,%s *a_value,int a_unique);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
-printf(
+fprintf(out_file,
 "static inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
 "void %s___remove_black_black(%s *this,unsigned a_idx);\n"
 "static inline void %s___remove_one_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
 "void %s___insert_operation(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "static inline int %s___compare_value(%s *this,%s *a_first,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s_node *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
      if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
-printf(
+fprintf(out_file,
 "static inline void %s_flush(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline %s *%s_at(%s *this,unsigned a_idx);\n"
 ,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline unsigned %s_insert(%s *this,%s a_value);\n"
 "static inline unsigned %s_unique_insert(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "static inline unsigned %s_insert(%s *this,%s *a_value);\n"
 "static inline unsigned %s_unique_insert(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    if (!(TYPE_NUMBERS(0) & c_type_basic)) {
-printf(
+fprintf(out_file,
 "static inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
 "static inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-printf(
+fprintf(out_file,
 "void %s_remove(%s *this,unsigned a_idx);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s a_value);\n"
 "unsigned %s_get_idx_left(%s *this,%s a_value);\n"
 "unsigned %s_get_gre_idx(%s *this,%s a_value);\n"
@@ -2595,7 +2595,7 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s *a_value);\n"
 "unsigned %s_get_idx_left(%s *this,%s *a_value);\n"
 "unsigned %s_get_gre_idx(%s *this,%s *a_value);\n"
@@ -2606,59 +2606,59 @@ printf(
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    if (TYPE_NUMBERS(0) & c_type_basic) {
-printf(
+fprintf(out_file,
 "void %s_get_idxs(%s *this,%s a_value,ui_array_s *a_idxs_array);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_get_idxs(%s *this,%s *a_value,ui_array_s *a_idxs_array);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
-printf(
+fprintf(out_file,
 "int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "void %s_to_string(%s *this,bc_array_s *a_trg);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_rehash) {
-printf(
+fprintf(out_file,
 "void %s_rehash_tree(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (STRUCT_NUMBER & c_type_option_print_dot_code) {
-printf(
+fprintf(out_file,
 "void %s_print_dot_code(%s *this,FILE *a_file);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (STRUCT_NUMBER & c_type_option_check_properties) {
-printf(
+fprintf(out_file,
 "int %s_check_properties(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
-printf(
+fprintf(out_file,
 "\n"
 );
 }/*}}}*/
@@ -2690,7 +2690,7 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
    // --- definition of inline methods ---
 
-printf(
+fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -2849,7 +2849,7 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 
    // --- definition of methods ---
 
-printf(
+fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);

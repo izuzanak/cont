@@ -1,10 +1,10 @@
 
-#define ARRAY_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type,data_type_s &data_type
-#define ARRAY_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type,data_type
+#define ARRAY_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type,data_type_s &data_type
+#define ARRAY_GEN_VALUES out_file,abbreviations,abb_idx,type_abb_idx,type,data_type
 
 void ARRAY_INIT(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 "  this->size = 0;\n"
@@ -17,7 +17,7 @@ printf(
 
 void ARRAY_INIT_SIZE(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init_size(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  %s_init(this);\n"
@@ -29,7 +29,7 @@ printf(
 
 void ARRAY_INIT_BUFFER(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s *a_data)\n"
 "{/*{{{*/\n"
 "  %s_init(this);\n"
@@ -42,25 +42,25 @@ printf(
 void ARRAY_CLEAR(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (TYPE_NUMBER & c_type_dynamic || !(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->data != NULL)\n"
 "  {\n"
 );
       if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "    %s *ptr = this->data;\n"
 "    %s *ptr_end = ptr + this->size;\n"
 "\n"
@@ -71,30 +71,30 @@ printf(
       }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 );
          }
-printf(
+fprintf(out_file,
 "    cfree(this->data);\n"
 );
       }
-printf(
+fprintf(out_file,
 "  }\n"
 "\n"
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_init(this);\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  this->used = 0;\n"
 );
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -103,23 +103,23 @@ printf(
 void ARRAY_SET_BUFFER(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  %s *ptr = a_data;\n"
 "  %s *ptr_end = a_data + a_size;\n"
@@ -129,7 +129,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->size = a_size;\n"
 "  this->data = a_data;\n"
@@ -141,24 +141,24 @@ printf(
 void ARRAY_SET(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set(%s *this,unsigned a_used,%s *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_set(%s *this,unsigned a_used,%s *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_used <= this->size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  debug_assert(a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
@@ -170,18 +170,18 @@ printf(
 "\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_copy_resize(this,a_used);\n"
 "\n"
 ,IM_STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "  memcpy(this->data,a_data,a_used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  %s *ptr = this->data;\n"
 "  %s *ptr_end = ptr + a_used;\n"
 "  %s *a_ptr = a_data;\n"
@@ -192,7 +192,7 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "  this->used = a_used;\n"
 "}/*}}}*/\n"
 "\n"
@@ -201,16 +201,16 @@ printf(
 
 void ARRAY_FLUSH(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -219,30 +219,30 @@ printf(
 void ARRAY_FLUSH_ALL(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,IM_STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 );
       }
-printf(
+fprintf(out_file,
 "  if (this->used == 0)\n"
 "  {\n"
 "    return;\n"
@@ -256,7 +256,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -264,7 +264,7 @@ printf(
 
 void ARRAY_SWAP(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 "  unsigned tmp_unsigned = this->size;\n"
@@ -285,7 +285,7 @@ printf(
 
 void ARRAY_OPERATOR_LE_BR_RE_BR(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline %s *%s_at(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_idx < this->used);\n"
@@ -298,20 +298,20 @@ printf(
 void ARRAY_PUSH(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline void %s_push(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline void %s_push(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -320,21 +320,21 @@ printf(
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(this->used < this->size);\n"
 );
    }
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "  this->data[this->used++] = a_value;\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  %s_copy(this->data + this->used++,a_value);\n"
 ,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -342,12 +342,12 @@ printf(
 
 void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_push_blank(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -356,11 +356,11 @@ printf(
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(this->used < this->size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  this->used++;\n"
 "}/*}}}*/\n"
 "\n"
@@ -369,7 +369,7 @@ printf(
 
 void ARRAY_RESERVE(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_reserve(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = this->used + a_cnt;\n"
@@ -389,12 +389,12 @@ printf(
 
 void ARRAY_PUSH_BLANKS(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_push_blanks(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  unsigned required_cnt = this->used + a_cnt;\n"
 "  if (required_cnt > this->size)\n"
 "  {\n"
@@ -409,11 +409,11 @@ printf(
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(this->used + a_cnt <= this->size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  this->used += a_cnt;\n"
 "}/*}}}*/\n"
 "\n"
@@ -422,12 +422,12 @@ printf(
 
 void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_push_clear(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -436,21 +436,21 @@ printf(
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(this->used < this->size);\n"
 );
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "  this->used++;\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  %s_clear(this->data + this->used++);\n"
 ,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -459,30 +459,30 @@ printf(
 void ARRAY_POP(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline %s %s_pop(%s *this)\n"
 ,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline %s *%s_pop(%s *this)\n"
 ,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(this->used > 0);\n"
 );
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "  return this->data[--this->used];\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  return this->data + --this->used;\n"
 );
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -490,7 +490,7 @@ printf(
 
 void ARRAY_LAST(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline %s *%s_last(%s *this)\n"
 "{/*{{{*/\n"
 "  debug_assert(this->used > 0);\n"
@@ -504,7 +504,7 @@ void ARRAY_COPY_RESIZE(ARRAY_GEN_PARAMS)
 {/*{{{*/
 if (TYPE_NUMBER & c_type_option_strict_dynamic)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
@@ -519,7 +519,7 @@ printf(
 "  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-printf(
+fprintf(out_file,
 "\n"
 "    %s *ptr = n_data;\n"
 "    %s *ptr_end = n_data + a_size;\n"
@@ -530,7 +530,7 @@ printf(
 "  }\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-printf(
+fprintf(out_file,
 "  if (this->used > 0)\n"
 "  {\n"
 "    %s *ptr = this->data;\n"
@@ -542,7 +542,7 @@ printf(
 "    } while(++n_ptr,++ptr < ptr_end);\n"
 "  }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-printf(
+fprintf(out_file,
 "\n"
 "  if (this->size > this->used)\n"
 "  {\n"
@@ -567,13 +567,13 @@ printf(
 }/*}}}*/
 else
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  if (this->size > a_size)\n"
 "  {\n"
@@ -586,7 +586,7 @@ printf(
 "  }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  if (a_size == 0)\n"
 "  {\n"
@@ -602,7 +602,7 @@ printf(
 "  }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  if (a_size > this->size)\n"
 "  {\n"
@@ -615,7 +615,7 @@ printf(
 "  }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->size = a_size;\n"
 "}/*}}}*/\n"
@@ -627,23 +627,23 @@ printf(
 void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)
 {/*{{{*/
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char){
-printf(
+fprintf(out_file,
 "static inline void %s_fill(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
       if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "void %s_fill(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_fill(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
       }
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->size == 0)\n"
 "  {\n"
@@ -652,32 +652,32 @@ printf(
 "\n"
 );
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
-printf(
+fprintf(out_file,
 "  memset(this->data,a_value,this->size);\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  %s *ptr = this->data;\n"
 "  %s *ptr_end = this->data + this->size;\n"
 "\n"
 "  do {\n"
 ,TYPE_NAME,TYPE_NAME);
       if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "    *ptr = a_value;\n"
 );
       }
       else {
-printf(
+fprintf(out_file,
 "    %s_copy(ptr,a_value);\n"
 ,TYPE_NAME);
       }
-printf(
+fprintf(out_file,
 "  } while(++ptr < ptr_end);\n"
 );
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->used = this->size;\n"
 "}/*}}}*/\n"
@@ -688,16 +688,16 @@ printf(
 void ARRAY_GET_IDX(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->used == 0)\n"
 "  {\n"
@@ -710,18 +710,18 @@ printf(
 "  do {\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "    if (*ptr == a_value)\n"
 "    {\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "    if (%s_compare(ptr,a_value))\n"
 "    {\n"
 ,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "      return ptr - this->data;\n"
 "    }\n"
 "  } while(++ptr < ptr_end);\n"
@@ -735,25 +735,25 @@ printf(
 void ARRAY_OPERATOR_EQUAL(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_src->used <= this->size);\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  %s_clear(this);\n"
 "\n"
 "  if (a_src->used == 0)\n"
@@ -762,19 +762,19 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
 ,IM_STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "\n"
 "  memcpy(this->data,a_src->data,a_src->used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "\n"
 "  %s *ptr = this->data;\n"
 "  %s *s_ptr = a_src->data;\n"
@@ -785,7 +785,7 @@ printf(
 "  } while(++ptr,++s_ptr < s_ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->used = a_src->used;\n"
 "}/*}}}*/\n"
@@ -796,16 +796,16 @@ printf(
 void ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline int %s_compare(%s *this,%s *a_second)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "int %s_compare(%s *this,%s *a_second)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->used != a_second->used)\n"
 "  {\n"
@@ -818,13 +818,13 @@ printf(
 "  }\n"
 );
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "\n"
 "  return (memcmp(this->data,a_second->data,this->used*sizeof(%s)) == 0);\n"
 ,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "\n"
 "  %s *ptr = this->data;\n"
 "  %s *ptr_end = ptr + this->used;\n"
@@ -840,7 +840,7 @@ printf(
 "  return 1;\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -848,7 +848,7 @@ printf(
 
 void ARRAY_TO_STRING(ARRAY_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "void %s_to_string(%s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
@@ -963,22 +963,22 @@ void processor_s::generate_array_type()
 
    // --- definition of structure array ---
 
-printf(
+fprintf(out_file,
 "// --- struct %s definition --- \n"
 "\n"
 ,STRUCT_NAME);
 
     unsigned idx = 0;
     do {
-printf(
+fprintf(out_file,
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
     } while(++idx < abbs.used);
-printf(
+fprintf(out_file,
 "\n"
 );
 
-printf(
+fprintf(out_file,
 "struct %s\n"
 "{\n"
 "  unsigned size; //!< actual size of allocated space in array\n"
@@ -988,163 +988,163 @@ printf(
 "\n"
 ,STRUCT_NAME,TYPE_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "static inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
      if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set(%s *this,unsigned a_used,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_set(%s *this,unsigned a_used,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline void %s_flush(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline %s *%s_at(%s *this,unsigned a_idx);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline void %s_push(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline void %s_push(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline void %s_push_blank(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "void %s_reserve(%s *this,unsigned a_cnt);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "void %s_push_blanks(%s *this,unsigned a_cnt);\n"
 "static inline void %s_push_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline %s %s_pop(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline %s *%s_pop(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline %s *%s_last(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (type_idx == c_bt_char) {
-printf(
+fprintf(out_file,
 "static inline void %s_fill(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
       if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "void %s_fill(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_fill(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
    }
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "unsigned %s_get_idx(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
-printf(
+fprintf(out_file,
 "static inline int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
       if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-printf(
+fprintf(out_file,
 "void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
-printf(
+fprintf(out_file,
 "int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "void %s_to_string(%s *this,bc_array_s *a_trg);\n"
 "#endif\n"
@@ -1152,12 +1152,12 @@ printf(
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
-printf(
+fprintf(out_file,
 "\n"
 );
 }/*}}}*/
@@ -1179,7 +1179,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
    // --- definition of inline methods ---
 
-printf(
+fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -1293,7 +1293,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
 
    // --- definition of methods ---
 
-printf(
+fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);

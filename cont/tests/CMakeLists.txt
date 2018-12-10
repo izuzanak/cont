@@ -11,24 +11,27 @@ set(SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/source_files)
 set(HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/header_files)
 set(PROC_FILES proc_files)
 
-# - process p_basic -
-add_custom_command(OUTPUT ${PROC_FILES}/p.basic.c
-    DEPENDS ${SOURCE_FILES}/basic.c
-    DEPENDS ${HEADER_FILES}/basic.h
-    COMMAND process_c ${SOURCE_FILES}/basic.c ${HEADER_FILES} > ${PROC_FILES}/p.basic.c)
+function(process_prep TARGET)
 
-add_custom_target(p_basic
-    DEPENDS ${PROC_FILES}/p.basic.c)
+  # - search for includes -
+  # awk -F '"' '/^@begin/{i=1} /^@end/{i=0} /^include /{print $2}' source_files/basic.c
+
+  add_custom_command(OUTPUT ${PROC_FILES}/p.${TARGET}.c
+      DEPENDS ${SOURCE_FILES}/${TARGET}.c
+      DEPENDS ${ARGN}
+      COMMAND process_c ${SOURCE_FILES}/${TARGET}.c ${HEADER_FILES} > ${PROC_FILES}/p.${TARGET}.c)
+  add_custom_target(p_${TARGET}
+      DEPENDS ${PROC_FILES}/p.${TARGET}.c)
+endfunction()
+
+# - process p_basic -
+process_prep(basic
+    ${HEADER_FILES}/basic.h)
 
 # - process p_array_test -
-add_custom_command(OUTPUT ${PROC_FILES}/p.array_test.c
-    DEPENDS ${SOURCE_FILES}/array_test.c
-    DEPENDS ${HEADER_FILES}/basic.h
-    DEPENDS ${HEADER_FILES}/array_test.h
-    COMMAND process_c ${SOURCE_FILES}/array_test.c ${HEADER_FILES} > ${PROC_FILES}/p.array_test.c)
-
-add_custom_target(p_array_test
-    DEPENDS ${PROC_FILES}/p.array_test.c)
+process_prep(array_test
+    ${HEADER_FILES}/basic.h
+    ${HEADER_FILES}/array_test.h)
 
 # - array test -
 add_executable(array_test ${PROC_FILES}/p.basic.c ${PROC_FILES}/p.array_test.c)
@@ -36,14 +39,9 @@ add_dependencies(array_test p_basic p_array_test)
 add_test(array_test_all array_test all)
 
 # - process p_queue_test -
-add_custom_command(OUTPUT ${PROC_FILES}/p.queue_test.c
-    DEPENDS ${SOURCE_FILES}/queue_test.c
-    DEPENDS ${HEADER_FILES}/basic.h
-    DEPENDS ${HEADER_FILES}/queue_test.h
-    COMMAND process_c ${SOURCE_FILES}/queue_test.c ${HEADER_FILES} > ${PROC_FILES}/p.queue_test.c)
-
-add_custom_target(p_queue_test
-    DEPENDS ${PROC_FILES}/p.queue_test.c)
+process_prep(queue_test
+    ${HEADER_FILES}/basic.h
+    ${HEADER_FILES}/queue_test.h)
 
 # - queue test -
 add_executable(queue_test ${PROC_FILES}/p.basic.c ${PROC_FILES}/p.queue_test.c)

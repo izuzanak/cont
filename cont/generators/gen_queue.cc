@@ -1,10 +1,10 @@
 
-#define QUEUE_GEN_PARAMS abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type,data_type_s &data_type
-#define QUEUE_GEN_VALUES abbreviations,abb_idx,type_abb_idx,type,data_type
+#define QUEUE_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_abb_idx,data_type_s &type,data_type_s &data_type
+#define QUEUE_GEN_VALUES out_file,abbreviations,abb_idx,type_abb_idx,type,data_type
 
 void QUEUE_INIT(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 "  this->size = 0;\n"
@@ -18,7 +18,7 @@ printf(
 
 void QUEUE_INIT_SIZE(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init_size(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  %s_init(this);\n"
@@ -30,7 +30,7 @@ printf(
 
 void QUEUE_INIT_BUFFER(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s *a_data)\n"
 "{/*{{{*/\n"
 "  %s_init(this);\n"
@@ -43,25 +43,25 @@ printf(
 void QUEUE_CLEAR(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_clear(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (TYPE_NUMBER & c_type_dynamic || !(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->data != NULL)\n"
 "  {\n"
 );
       if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "    %s *ptr = this->data;\n"
 "    %s *ptr_end = ptr + this->size;\n"
 "\n"
@@ -72,31 +72,31 @@ printf(
       }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 );
          }
-printf(
+fprintf(out_file,
 "    cfree(this->data);\n"
 );
       }
-printf(
+fprintf(out_file,
 "  }\n"
 "\n"
 );
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_init(this);\n"
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  this->used = 0;\n"
 "  this->begin = 0;\n"
 );
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -105,23 +105,23 @@ printf(
 void QUEUE_SET_BUFFER(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
 ,IM_STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "  %s *ptr = a_data;\n"
 "  %s *ptr_end = a_data + a_size;\n"
@@ -131,7 +131,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "\n"
 "  this->size = a_size;\n"
 "  this->data = a_data;\n"
@@ -142,16 +142,16 @@ printf(
 
 void QUEUE_FLUSH(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -160,30 +160,30 @@ printf(
 void QUEUE_FLUSH_ALL(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,IM_STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 );
       }
-printf(
+fprintf(out_file,
 "  if (this->used == 0)\n"
 "  {\n"
 "    return;\n"
@@ -197,7 +197,7 @@ printf(
 "  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -205,7 +205,7 @@ printf(
 
 void QUEUE_SWAP(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 "  unsigned tmp_unsigned = this->size;\n"
@@ -231,20 +231,20 @@ printf(
 void QUEUE_INSERT(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline void %s_insert(%s *this,%s a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline void %s_insert(%s *this,%s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -253,11 +253,11 @@ printf(
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(this->used < this->size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  unsigned inserted_idx = this->begin + this->used++;\n"
 "\n"
 "  if (inserted_idx >= this->size)\n"
@@ -267,16 +267,16 @@ printf(
 "\n"
 );
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "  this->data[inserted_idx] = a_value;\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  %s_copy(this->data + inserted_idx,a_value);\n"
 ,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -284,12 +284,12 @@ printf(
 
 void QUEUE_INSERT_BLANK(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline void %s_insert_blank(%s *this)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
@@ -298,11 +298,11 @@ printf(
 ,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  debug_assert(this->used < this->size);\n"
 );
    }
-printf(
+fprintf(out_file,
 "  ++this->used;\n"
 "}/*}}}*/\n"
 "\n"
@@ -312,16 +312,16 @@ printf(
 void QUEUE_NEXT(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline %s %s_next(%s *this)\n"
 ,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline %s *%s_next(%s *this)\n"
 ,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(this->used > 0);\n"
 "\n"
@@ -336,16 +336,16 @@ printf(
 "\n"
 );
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "  return this->data[ret_idx];\n"
 );
    }
    else {
-printf(
+fprintf(out_file,
 "  return this->data + ret_idx;\n"
 );
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -353,7 +353,7 @@ printf(
 
 void QUEUE_LAST(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "static inline %s *%s_last(%s *this)\n"
 "{/*{{{*/\n"
 "  debug_assert(this->used > 0);\n"
@@ -372,7 +372,7 @@ printf(
 
 void QUEUE_COPY_RESIZE(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
@@ -388,7 +388,7 @@ printf(
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "\n"
 "    if (a_size > this->used)\n"
 "    {\n"
@@ -401,7 +401,7 @@ printf(
 "    }\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "  }\n"
 "\n"
 "  if (this->used != 0)\n"
@@ -430,7 +430,7 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
-printf(
+fprintf(out_file,
 "  if (this->size > this->used)\n"
 "  {\n"
 "    %s *ptr;\n"
@@ -468,7 +468,7 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "  if (this->size != 0)\n"
 "  {\n"
 "    cfree(this->data);\n"
@@ -485,25 +485,25 @@ printf(
 void QUEUE_OPERATOR_EQUAL(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_copy(%s *this,%s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "  debug_assert(a_src->used <= this->size);\n"
 "\n"
 );
    }
-printf(
+fprintf(out_file,
 "  %s_clear(this);\n"
 "\n"
 "  if (a_src->used == 0)\n"
@@ -512,13 +512,13 @@ printf(
 "  }\n"
 ,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
 ,IM_STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned fir_cnt;\n"
 "  unsigned sec_cnt;\n"
@@ -544,7 +544,7 @@ printf(
 ,TYPE_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "\n"
 "  unsigned sec_cnt;\n"
 "  %s *ptr = this->data;\n"
@@ -578,7 +578,7 @@ printf(
 "\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "  this->used = a_src->used;\n"
 "}/*}}}*/\n"
 "\n"
@@ -587,7 +587,7 @@ printf(
 
 void QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "int %s_compare(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
 "  if (this->used != a_second->used)\n"
@@ -602,7 +602,7 @@ printf(
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "  int _break;\n"
 "  int s_break;\n"
 "  unsigned pos;\n"
@@ -693,7 +693,7 @@ printf(
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "  %s *ptr = this->data + this->begin;\n"
 "  %s *ptr_break = this->data + this->size;\n"
 "  %s *ptr_end;\n"
@@ -730,7 +730,7 @@ printf(
 "  return 1;\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
@@ -738,7 +738,7 @@ printf(
 
 void QUEUE_TO_STRING(QUEUE_GEN_PARAMS)
 {/*{{{*/
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "void %s_to_string(%s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
@@ -876,22 +876,22 @@ void processor_s::generate_queue_type()
 
    // - definition of structure queue -
 
-printf(
+fprintf(out_file,
 "// struct %s definition\n"
 "\n"
 ,STRUCT_NAME);
 
     unsigned idx = 0;
     do {
-printf(
+fprintf(out_file,
 "typedef struct %s %s;\n"
 ,abbs[0].data,abbs[idx].data);
     } while(++idx < abbs.used);
-printf(
+fprintf(out_file,
 "\n"
 );
 
-printf(
+fprintf(out_file,
 "struct %s\n"
 "{\n"
 "  unsigned size; //!< actual size of allocated space (element count)\n"
@@ -902,111 +902,111 @@ printf(
 "\n"
 ,STRUCT_NAME,TYPE_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-printf(
+fprintf(out_file,
 "static inline void %s_init(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "static inline void %s_init_size(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
-printf(
+fprintf(out_file,
 "static inline void %s_init_buffer(%s *this,unsigned a_size,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
       if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
-printf(
+fprintf(out_file,
 "static inline void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
    else {
       if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
-printf(
+fprintf(out_file,
 "void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
      if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
    }
-printf(
+fprintf(out_file,
 "static inline void %s_flush(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_flushable)) {
-printf(
+fprintf(out_file,
 "static inline void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-printf(
+fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline void %s_insert(%s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline void %s_insert(%s *this,%s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline void %s_insert_blank(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
-printf(
+fprintf(out_file,
 "static inline %s %s_next(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-printf(
+fprintf(out_file,
 "static inline %s *%s_next(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
-printf(
+fprintf(out_file,
 "static inline %s *%s_last(%s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-printf(
+fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
-printf(
+fprintf(out_file,
 "static inline void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {
-printf(
+fprintf(out_file,
 "void %s_copy(%s *this,%s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
-printf(
+fprintf(out_file,
 "int %s_compare(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-printf(
+fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "void %s_to_string(%s *this,bc_array_s *a_trg);\n"
 "#endif\n"
@@ -1014,12 +1014,12 @@ printf(
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
-printf(
+fprintf(out_file,
 "%s\n"
 ,fun_defs[f_idx].data);
       } while(++f_idx < fun_defs.used);
    }
-printf(
+fprintf(out_file,
 "\n"
 );
 }/*}}}*/
@@ -1041,7 +1041,7 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
    // - definition of inline methods -
 
-printf(
+fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -1130,7 +1130,7 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
 
    // - definition of methods -
 
-printf(
+fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "\n"
 ,IM_STRUCT_NAME);
