@@ -692,6 +692,7 @@ void processor_s::generate_ucl_params()
 {/*{{{*/
   string_array_s &names = cont_params.types;
   string_array_s &types = cont_params.variables;
+  string_array_s &additions = cont_params.functions;
   string_array_s &props = cont_params.names;
 
   if (names.used != types.used)
@@ -703,12 +704,6 @@ void processor_s::generate_ucl_params()
   if (types.used > c_ucl_max_param_types)
   {
     fprintf(stderr,"ucl_params: maximal count of parameter types (%u) exceeded\n",c_ucl_max_param_types);
-    cassert(0);
-  }
-
-  if (cont_params.functions.used != 0)
-  {
-    fprintf(stderr,"ucl_params: addition are not supported\n");
     cassert(0);
   }
 
@@ -881,6 +876,18 @@ printf(
 
       printf("%s",line_end);
     }
+
+   if (additions.used != 0)
+   {
+      unsigned f_idx = 0;
+      do {
+printf(
+"%s  %s"
+,line_end,additions[f_idx].data);
+      } while(++f_idx < additions.used);
+
+      printf("%s",line_end);
+   }
 
 printf(
 "%s  %s"
