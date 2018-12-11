@@ -357,7 +357,7 @@ inline unsigned mutex_s::init()
 
    return c_error_OK;
 #elif MUTEX_TYPE == MUTEX_TYPE_WINDOWS
-   if ((handle = CreateMutex(NULL,FALSE,NULL)) == NULL) {
+   if ((handle = CreateMutex(nullptr,FALSE,nullptr)) == nullptr) {
       return c_error_UNKNOWN;
    }
 
@@ -1627,7 +1627,7 @@ inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
 {/*{{{*/
    mutex.lock();
 
-   if (a_location != NULL)
+   if (a_location != nullptr)
    {
      mc_block_s mc_block = {a_location,0};
      unsigned idx = mc_block_set.get_idx(mc_block);
@@ -2173,9 +2173,9 @@ inline unsigned string_s::print()
 
 inline bool string_s::load_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"r");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   fseek(f,0,SEEK_END);
   unsigned file_size = ftell(f);
@@ -2198,9 +2198,9 @@ inline bool string_s::load_text_file(const char *a_file)
 
 inline bool string_s::save_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"w");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   if (size > 1)
   {

@@ -77,7 +77,7 @@ inline unsigned mutex_s::init()
 
    return c_error_OK;
 #elif MUTEX_TYPE == MUTEX_TYPE_WINDOWS
-   if ((handle = CreateMutex(NULL,FALSE,NULL)) == NULL) {
+   if ((handle = CreateMutex(nullptr,FALSE,nullptr)) == nullptr) {
       return c_error_UNKNOWN;
    }
 

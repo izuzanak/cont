@@ -116,7 +116,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "{/*{{{*/\n"
-"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"  debug_assert(a_size != 0 && a_data != nullptr);\n"
 "\n"
 "  clear();\n"
 );
@@ -789,6 +789,7 @@ void processor_s::generate_queue_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of structure queue -
 
 fprintf(out_file,
@@ -1026,6 +1027,7 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -1043,6 +1045,7 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of inline methods -
 
 fprintf(out_file,
@@ -1112,6 +1115,7 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
    }
 
    // - queue operator== method -
+   }
 }/*}}}*/
 
 void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -1129,6 +1133,7 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of methods -
 
 fprintf(out_file,
@@ -1185,5 +1190,6 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
 
    // - queue operator== method -
 QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_VALUES);
+   }
 }/*}}}*/
 

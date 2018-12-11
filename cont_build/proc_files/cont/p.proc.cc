@@ -357,7 +357,7 @@ inline unsigned mutex_s::init()
 
    return c_error_OK;
 #elif MUTEX_TYPE == MUTEX_TYPE_WINDOWS
-   if ((handle = CreateMutex(NULL,FALSE,NULL)) == NULL) {
+   if ((handle = CreateMutex(nullptr,FALSE,nullptr)) == nullptr) {
       return c_error_UNKNOWN;
    }
 
@@ -1627,7 +1627,7 @@ inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
 {/*{{{*/
    mutex.lock();
 
-   if (a_location != NULL)
+   if (a_location != nullptr)
    {
      mc_block_s mc_block = {a_location,0};
      unsigned idx = mc_block_set.get_idx(mc_block);
@@ -2177,9 +2177,9 @@ inline unsigned string_s::print()
 
 inline bool string_s::load_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"r");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   fseek(f,0,SEEK_END);
   unsigned file_size = ftell(f);
@@ -2202,9 +2202,9 @@ inline bool string_s::load_text_file(const char *a_file)
 
 inline bool string_s::save_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"w");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   if (size > 1)
   {
@@ -2343,6 +2343,12 @@ extern const char *c_begin_str;
 extern const char *c_end_str;
 
 extern const unsigned c_end_str_len;
+
+// - processor generate options -
+enum {
+  c_option_gen_code         = 1 << 0,
+  c_option_gen_dependencies = 1 << 1,
+};
 
 // - data type settings -
 enum {
@@ -2871,12 +2877,13 @@ struct container_parameters_s
 struct processor_s
 {
   FILE_ptr out_file; //!< member - 0
-  string_array_s include_dirs; //!< member - 1
-  string_array_s include_names; //!< member - 2
-  data_type_array_s data_types; //!< member - 3
-  abbreviation_array_s abbreviations; //!< member - 4
-  unsigned type_settings; //!< member - 5
-  container_parameters_s cont_params; //!< member - 6
+  unsigned gen_options; //!< member - 1
+  string_array_s include_dirs; //!< member - 2
+  string_array_s include_names; //!< member - 3
+  data_type_array_s data_types; //!< member - 4
+  abbreviation_array_s abbreviations; //!< member - 5
+  unsigned type_settings; //!< member - 6
+  container_parameters_s cont_params; //!< member - 7
 
   /*!
     * \brief __GEN initialize structure
@@ -2891,7 +2898,7 @@ struct processor_s
   /*!
     * \brief __GEN set structure members
     */
-  inline void set(FILE_ptr a_out_file,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
+  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
   /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -2943,7 +2950,7 @@ struct processor_s
 
    void initialize_data_types();
    bool run(const char *a_file_name, string_array_s &a_include_dirs, 
-            FILE *a_file);
+            FILE *a_file,unsigned a_gen_options);
 
    
 };
@@ -3347,9 +3354,10 @@ inline void processor_s::clear()
   cont_params.clear();
 }/*}}}*/
 
-inline void processor_s::set(FILE_ptr a_out_file,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
+inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
 {/*{{{*/
   out_file = a_out_file;
+  gen_options = a_gen_options;
   include_dirs = a_include_dirs;
   include_names = a_include_names;
   data_types = a_data_types;
@@ -3373,6 +3381,10 @@ inline void processor_s::swap(processor_s &a_second)
   out_file = a_second.out_file;
   a_second.out_file = tmp_out_file;
 
+  unsigned tmp_gen_options = gen_options;
+  gen_options = a_second.gen_options;
+  a_second.gen_options = tmp_gen_options;
+
   include_dirs.swap(a_second.include_dirs);
 
   include_names.swap(a_second.include_names);
@@ -3391,6 +3403,7 @@ inline void processor_s::swap(processor_s &a_second)
 inline processor_s &processor_s::operator=(processor_s &a_src)
 {/*{{{*/
   out_file = a_src.out_file;
+  gen_options = a_src.gen_options;
   include_dirs = a_src.include_dirs;
   include_names = a_src.include_names;
   data_types = a_src.data_types;
@@ -3403,7 +3416,7 @@ inline processor_s &processor_s::operator=(processor_s &a_src)
 
 inline bool processor_s::operator==(processor_s &a_second)
 {/*{{{*/
-  return (out_file == a_second.out_file && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
+  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
 }/*}}}*/
 
 
@@ -6228,6 +6241,10 @@ bool process_s::run_on(const char *a_file_name)
     return false;
   }
 
+  if (processor_ptr->gen_options & c_option_gen_dependencies) {
+    fprintf(processor_ptr->out_file,"%s\t",file_path.data);
+  }
+
   file_path.clear();
 
   unsigned source_idx = 0;
@@ -6235,13 +6252,17 @@ bool process_s::run_on(const char *a_file_name)
     char *b_ptr = strstr(source_string.data + source_idx,c_begin_str);
 
     if (b_ptr == nullptr) {
-      fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
+      if (processor_ptr->gen_options & c_option_gen_code) {
+         fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
+      }
       break;
     }
     else {
-      *b_ptr = '\0';
-      fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
-      *b_ptr = c_begin_str[0];
+      if (processor_ptr->gen_options & c_option_gen_code) {
+         *b_ptr = '\0';
+         fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
+         *b_ptr = c_begin_str[0];
+      }
 
       source_idx = b_ptr - source_string.data;
 

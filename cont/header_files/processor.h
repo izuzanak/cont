@@ -30,6 +30,12 @@ extern const char *c_end_str;
 
 extern const unsigned c_end_str_len;
 
+// - processor generate options -
+enum {
+  c_option_gen_code         = 1 << 0,
+  c_option_gen_dependencies = 1 << 1,
+};
+
 // - data type settings -
 enum {
    c_type_basic = 0x00000001,
@@ -178,6 +184,7 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    struct
    <
    FILE_ptr:out_file
+   unsigned:gen_options
    string_array_s:include_dirs
    string_array_s:include_names
    data_type_array_s:data_types
@@ -213,7 +220,7 @@ extern const char *c_cont_postfixes[c_cont_cnt];
 
    void initialize_data_types();
    bool run(const char *a_file_name, string_array_s &a_include_dirs, 
-            FILE *a_file);
+            FILE *a_file,unsigned a_gen_options);
 
    }
 

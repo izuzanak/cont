@@ -114,7 +114,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "{/*{{{*/\n"
-"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"  debug_assert(a_size != 0 && a_data != nullptr);\n"
 "\n"
 "  clear();\n"
 );
@@ -878,6 +878,7 @@ void processor_s::generate_array_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of structure array ---
 
 fprintf(out_file,
@@ -1226,6 +1227,7 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -1243,6 +1245,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -1337,6 +1340,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
+   }
 }/*}}}*/
 
 void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -1354,6 +1358,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -1436,6 +1441,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    // - array operator== method -
    if (TYPE_NUMBER & c_type_dynamic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
+   }
    }
 }/*}}}*/
 

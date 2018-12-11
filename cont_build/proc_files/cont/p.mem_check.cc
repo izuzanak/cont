@@ -353,7 +353,7 @@ inline unsigned mutex_s::init()
 
    return c_error_OK;
 #elif MUTEX_TYPE == MUTEX_TYPE_WINDOWS
-   if ((handle = CreateMutex(NULL,FALSE,NULL)) == NULL) {
+   if ((handle = CreateMutex(nullptr,FALSE,nullptr)) == nullptr) {
       return c_error_UNKNOWN;
    }
 
@@ -1623,7 +1623,7 @@ inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
 {/*{{{*/
    mutex.lock();
 
-   if (a_location != NULL)
+   if (a_location != nullptr)
    {
      mc_block_s mc_block = {a_location,0};
      unsigned idx = mc_block_set.get_idx(mc_block);

@@ -404,16 +404,18 @@ void processor_s::initialize_data_types()
    }
 }/*}}}*/
 
-bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FILE *a_file)
+bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FILE *a_file,unsigned a_gen_options)
 {/*{{{*/
    out_file = a_file;
+   gen_options = a_gen_options;
    type_settings = 0;
 
    include_dirs.swap(a_include_dirs);
    include_dirs.push_blank();
    include_dirs.last().set(0,"");
 
-   fprintf(out_file,
+   if (gen_options & c_option_gen_code) {
+     fprintf(out_file,
 "\n"
 "typedef bool bb;\n"
 "typedef char bc;\n"
@@ -475,7 +477,8 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 ".root_idx = c_idx_not_exist,\\\n"
 ".leaf_idx = c_idx_not_exist\n"
 "\n"
-   );
+     );
+   }
 
    process_s process;
    process.init();

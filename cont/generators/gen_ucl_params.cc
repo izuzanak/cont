@@ -829,6 +829,10 @@ void processor_s::generate_ucl_params()
     } while(++type_idx < types.used);
   }
 
+  if (gen_options & c_option_gen_code)
+  {
+  // - generate uclang parameters code -
+
   // - retrieve destination for non static methods -
   if (!static_method)
   {
@@ -1031,6 +1035,7 @@ fprintf(out_file,
 fprintf(out_file,
 "%s  }"
 ,line_end);
+  }
   }
 }/*}}}*/
 

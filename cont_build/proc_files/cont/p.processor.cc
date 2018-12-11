@@ -357,7 +357,7 @@ inline unsigned mutex_s::init()
 
    return c_error_OK;
 #elif MUTEX_TYPE == MUTEX_TYPE_WINDOWS
-   if ((handle = CreateMutex(NULL,FALSE,NULL)) == NULL) {
+   if ((handle = CreateMutex(nullptr,FALSE,nullptr)) == nullptr) {
       return c_error_UNKNOWN;
    }
 
@@ -1627,7 +1627,7 @@ inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
 {/*{{{*/
    mutex.lock();
 
-   if (a_location != NULL)
+   if (a_location != nullptr)
    {
      mc_block_s mc_block = {a_location,0};
      unsigned idx = mc_block_set.get_idx(mc_block);
@@ -2177,9 +2177,9 @@ inline unsigned string_s::print()
 
 inline bool string_s::load_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"r");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   fseek(f,0,SEEK_END);
   unsigned file_size = ftell(f);
@@ -2202,9 +2202,9 @@ inline bool string_s::load_text_file(const char *a_file)
 
 inline bool string_s::save_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"w");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   if (size > 1)
   {
@@ -2339,6 +2339,12 @@ extern const char *c_begin_str;
 extern const char *c_end_str;
 
 extern const unsigned c_end_str_len;
+
+// - processor generate options -
+enum {
+  c_option_gen_code         = 1 << 0,
+  c_option_gen_dependencies = 1 << 1,
+};
 
 // - data type settings -
 enum {
@@ -2867,12 +2873,13 @@ struct container_parameters_s
 struct processor_s
 {
   FILE_ptr out_file; //!< member - 0
-  string_array_s include_dirs; //!< member - 1
-  string_array_s include_names; //!< member - 2
-  data_type_array_s data_types; //!< member - 3
-  abbreviation_array_s abbreviations; //!< member - 4
-  unsigned type_settings; //!< member - 5
-  container_parameters_s cont_params; //!< member - 6
+  unsigned gen_options; //!< member - 1
+  string_array_s include_dirs; //!< member - 2
+  string_array_s include_names; //!< member - 3
+  data_type_array_s data_types; //!< member - 4
+  abbreviation_array_s abbreviations; //!< member - 5
+  unsigned type_settings; //!< member - 6
+  container_parameters_s cont_params; //!< member - 7
 
   /*!
     * \brief __GEN initialize structure
@@ -2887,7 +2894,7 @@ struct processor_s
   /*!
     * \brief __GEN set structure members
     */
-  inline void set(FILE_ptr a_out_file,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
+  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
   /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -2939,7 +2946,7 @@ struct processor_s
 
    void initialize_data_types();
    bool run(const char *a_file_name, string_array_s &a_include_dirs, 
-            FILE *a_file);
+            FILE *a_file,unsigned a_gen_options);
 
    
 };
@@ -3343,9 +3350,10 @@ inline void processor_s::clear()
   cont_params.clear();
 }/*}}}*/
 
-inline void processor_s::set(FILE_ptr a_out_file,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
+inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
 {/*{{{*/
   out_file = a_out_file;
+  gen_options = a_gen_options;
   include_dirs = a_include_dirs;
   include_names = a_include_names;
   data_types = a_data_types;
@@ -3369,6 +3377,10 @@ inline void processor_s::swap(processor_s &a_second)
   out_file = a_second.out_file;
   a_second.out_file = tmp_out_file;
 
+  unsigned tmp_gen_options = gen_options;
+  gen_options = a_second.gen_options;
+  a_second.gen_options = tmp_gen_options;
+
   include_dirs.swap(a_second.include_dirs);
 
   include_names.swap(a_second.include_names);
@@ -3387,6 +3399,7 @@ inline void processor_s::swap(processor_s &a_second)
 inline processor_s &processor_s::operator=(processor_s &a_src)
 {/*{{{*/
   out_file = a_src.out_file;
+  gen_options = a_src.gen_options;
   include_dirs = a_src.include_dirs;
   include_names = a_src.include_names;
   data_types = a_src.data_types;
@@ -3399,7 +3412,7 @@ inline processor_s &processor_s::operator=(processor_s &a_src)
 
 inline bool processor_s::operator==(processor_s &a_second)
 {/*{{{*/
-  return (out_file == a_second.out_file && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
+  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
 }/*}}}*/
 
 
@@ -4685,7 +4698,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "{/*{{{*/\n"
-"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"  debug_assert(a_size != 0 && a_data != nullptr);\n"
 "\n"
 "  clear();\n"
 );
@@ -5449,6 +5462,7 @@ void processor_s::generate_array_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of structure array ---
 
 fprintf(out_file,
@@ -5797,6 +5811,7 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -5814,6 +5829,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -5908,6 +5924,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
+   }
 }/*}}}*/
 
 void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -5925,6 +5942,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -6007,6 +6025,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    // - array operator== method -
    if (TYPE_NUMBER & c_type_dynamic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
+   }
    }
 }/*}}}*/
 
@@ -6128,7 +6147,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "{/*{{{*/\n"
-"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"  debug_assert(a_size != 0 && a_data != nullptr);\n"
 "\n"
 "  clear();\n"
 );
@@ -6801,6 +6820,7 @@ void processor_s::generate_queue_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of structure queue -
 
 fprintf(out_file,
@@ -7038,6 +7058,7 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -7055,6 +7076,7 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of inline methods -
 
 fprintf(out_file,
@@ -7124,6 +7146,7 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
    }
 
    // - queue operator== method -
+   }
 }/*}}}*/
 
 void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -7141,6 +7164,7 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of methods -
 
 fprintf(out_file,
@@ -7197,6 +7221,7 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
 
    // - queue operator== method -
 QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_VALUES);
+   }
 }/*}}}*/
 
 
@@ -7335,7 +7360,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "{/*{{{*/\n"
-"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"  debug_assert(a_size != 0 && a_data != nullptr);\n"
 "\n"
 "  clear();\n"
 );
@@ -8544,6 +8569,7 @@ void processor_s::generate_list_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of structure list -
 
 fprintf(out_file,
@@ -8884,6 +8910,7 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -8901,6 +8928,7 @@ void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -8996,7 +9024,7 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
    }
 
    // - list operator== method -
-
+   }
 }/*}}}*/
 
 void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -9014,6 +9042,7 @@ void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -9089,7 +9118,7 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
 
    // - list operator== method -
 LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_VALUES);
-
+   }
 }/*}}}*/
 
 
@@ -9437,6 +9466,7 @@ void processor_s::generate_struct_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of structure struct -
 
 fprintf(out_file,
@@ -9569,6 +9599,7 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -9596,6 +9627,7 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
+   if (gen_options & c_option_gen_code) {
    // - definition of inline methods -
 
 fprintf(out_file,
@@ -9631,7 +9663,7 @@ STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
 
    // - struct operator== method -
 STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
-
+   }
 }/*}}}*/
 
 void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -9654,6 +9686,7 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
+   if (gen_options & c_option_gen_code) {
    // - definition of methods -
 
 fprintf(out_file,
@@ -9674,7 +9707,7 @@ fprintf(out_file,
    // - struct operator= method -
 
    // - struct operator== method -
-
+   }
 }/*}}}*/
 
 
@@ -10549,7 +10582,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "{/*{{{*/\n"
-"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"  debug_assert(a_size != 0 && a_data != nullptr);\n"
 "\n"
 "  clear();\n"
 );
@@ -11874,6 +11907,7 @@ void processor_s::generate_rb_tree_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of structure rb_tree -
 
 fprintf(out_file,
@@ -12303,6 +12337,7 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+  }
 }/*}}}*/
 
 void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -12330,6 +12365,7 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -12459,7 +12495,7 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
    // - rb_tree print_dot_code -
 
    // - rb_tree check_properties -
-
+   }
 }/*}}}*/
 
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -12487,6 +12523,7 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -12620,7 +12657,7 @@ RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
    if (STRUCT_NUMBER & c_type_option_check_properties) {
 RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_VALUES);
    }
-
+   }
 }/*}}}*/
 
 
@@ -13454,6 +13491,10 @@ void processor_s::generate_ucl_params()
     } while(++type_idx < types.used);
   }
 
+  if (gen_options & c_option_gen_code)
+  {
+  // - generate uclang parameters code -
+
   // - retrieve destination for non static methods -
   if (!static_method)
   {
@@ -13656,6 +13697,7 @@ fprintf(out_file,
 fprintf(out_file,
 "%s  }"
 ,line_end);
+  }
   }
 }/*}}}*/
 
@@ -13880,16 +13922,18 @@ void processor_s::initialize_data_types()
    }
 }/*}}}*/
 
-bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FILE *a_file)
+bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FILE *a_file,unsigned a_gen_options)
 {/*{{{*/
    out_file = a_file;
+   gen_options = a_gen_options;
    type_settings = 0;
 
    include_dirs.swap(a_include_dirs);
    include_dirs.push_blank();
    include_dirs.last().set(0,"");
 
-   fprintf(out_file,
+   if (gen_options & c_option_gen_code) {
+     fprintf(out_file,
 "\n"
 "typedef bool bb;\n"
 "typedef char bc;\n"
@@ -13951,7 +13995,8 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 ".root_idx = c_idx_not_exist,\\\n"
 ".leaf_idx = c_idx_not_exist\n"
 "\n"
-   );
+     );
+   }
 
    process_s process;
    process.init();

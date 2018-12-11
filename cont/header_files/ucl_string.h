@@ -323,9 +323,9 @@ inline unsigned string_s::print()
 
 inline bool string_s::load_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"r");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   fseek(f,0,SEEK_END);
   unsigned file_size = ftell(f);
@@ -348,9 +348,9 @@ inline bool string_s::load_text_file(const char *a_file)
 
 inline bool string_s::save_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == NULL) return false;
+  if (a_file == nullptr) return false;
   FILE *f = fopen(a_file,"w");
-  if (f == NULL) return false;
+  if (f == nullptr) return false;
 
   if (size > 1)
   {
