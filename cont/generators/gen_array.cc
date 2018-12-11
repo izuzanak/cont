@@ -961,6 +961,7 @@ void processor_s::generate_array_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of structure array ---
 
 fprintf(out_file,
@@ -1160,6 +1161,7 @@ fprintf(out_file,
 fprintf(out_file,
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -1177,6 +1179,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -1273,7 +1276,7 @@ ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array to_string method -
-
+   }
 }/*}}}*/
 
 void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -1291,6 +1294,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -1377,6 +1381,6 @@ ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
 
    // - array to_string method -
 ARRAY_TO_STRING(ARRAY_GEN_VALUES);
-
+   }
 }/*}}}*/
 

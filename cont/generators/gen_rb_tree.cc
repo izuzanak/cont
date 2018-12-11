@@ -2408,6 +2408,7 @@ void processor_s::generate_rb_tree_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
+   if (gen_options & c_option_gen_code) {
    // - definition of structure rb_tree -
 
 fprintf(out_file,
@@ -2661,6 +2662,7 @@ fprintf(out_file,
 fprintf(out_file,
 "\n"
 );
+   }
 }/*}}}*/
 
 void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
@@ -2688,6 +2690,7 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -2819,7 +2822,7 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
    // - rb_tree print_dot_code -
 
    // - rb_tree check_properties -
-
+   }
 }/*}}}*/
 
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -2847,6 +2850,7 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
+   if (gen_options & c_option_gen_code) {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -2983,6 +2987,6 @@ RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
    if (STRUCT_NUMBER & c_type_option_check_properties) {
 RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_VALUES);
    }
-
+   }
 }/*}}}*/
 

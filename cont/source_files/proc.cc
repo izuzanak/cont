@@ -2158,6 +2158,10 @@ bool process_s::run_on(const char *a_file_name)
     return false;
   }
 
+  if (processor_ptr->gen_options & c_option_gen_dependencies) {
+    fprintf(processor_ptr->out_file,"%s\t",file_path.data);
+  }
+
   file_path.clear();
 
   unsigned source_idx = 0;
@@ -2165,13 +2169,17 @@ bool process_s::run_on(const char *a_file_name)
     char *b_ptr = strstr(source_string.data + source_idx,c_begin_str);
 
     if (b_ptr == NULL) {
-      fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
+      if (processor_ptr->gen_options & c_option_gen_code) {
+         fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
+      }
       break;
     }
     else {
-      *b_ptr = '\0';
-      fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
-      *b_ptr = c_begin_str[0];
+      if (processor_ptr->gen_options & c_option_gen_code) {
+         *b_ptr = '\0';
+         fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
+         *b_ptr = c_begin_str[0];
+      }
 
       source_idx = b_ptr - source_string.data;
 
