@@ -84,6 +84,11 @@ typedef long double ld;
 #define MUTEX_TYPE_WINDOWS    2 // - for mutex implementation use win32 library
 // --
 
+// - thread library selection -
+#define THREAD_LIB_PTHREAD 1 // - for thread manipulation use pthread library
+#define THREAD_LIB_DSP_TSK 2 // - for thread implementation use DSP Task library
+// --
+
 // - basic system configuration -
 #ifdef LINUX
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
@@ -161,9 +166,9 @@ const unsigned INT_BIT = (sizeof(int)*CHAR_BIT);
 const unsigned UINT_BIT = (sizeof(unsigned)*CHAR_BIT);
 
 // - pi number definitions -
-const float c_pi_number = 3.14159265358979323844;
-const float c_2pi_number = 6.28318530717958647688;
-const float c_pid2_number = 1.57079632679489661922;
+const float c_pi_number = 3.14159265358979323844f;
+const float c_2pi_number = 6.28318530717958647688f;
+const float c_pid2_number = 1.57079632679489661922f;
 
 // - logarithm of two (needed by red-black tree container) -
 const float c_log_of_2 = logf(2.0f);
@@ -2587,10 +2592,21 @@ unsigned string_s::get_print_size_between(unsigned f_idx,unsigned s_idx)
   if (f_idx >= s_idx) return 0;
 
   unsigned char_cnt = s_idx - f_idx;
+
+#ifdef _MSC_VER
+  unsigned *utf32_data = (unsigned *)cmalloc(char_cnt*sizeof(unsigned));
+#else
   unsigned utf32_data[char_cnt];
+#endif
 
   int utf32_cnt = utf8_to_utf32(data + f_idx,utf32_data,char_cnt);
-  if (utf32_cnt < 0) return 0;
+  if (utf32_cnt < 0)
+  {
+#ifdef _MSC_VER
+    cfree(utf32_data);
+#endif
+    return 0;
+  }
 
   unsigned *c_ptr = utf32_data;
   unsigned *c_ptr_end = c_ptr + utf32_cnt;
@@ -2608,6 +2624,10 @@ unsigned string_s::get_print_size_between(unsigned f_idx,unsigned s_idx)
     }
   }
   while(++c_ptr < c_ptr_end);
+
+#ifdef _MSC_VER
+  cfree(utf32_data);
+#endif
 
   return print_size;
 }/*}}}*/

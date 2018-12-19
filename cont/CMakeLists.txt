@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.0.2)
 
 project(cont)
 
@@ -11,12 +11,12 @@ enable_testing()
 
 # - process target source file -
 function(process_source TARGET)
-  execute_process(COMMAND process --deps "${SOURCE_DIR}/${TARGET}.cc" ${COMP_HEADER_DIRS}
+  execute_process(COMMAND ${PROCESS_BIN} --deps "${SOURCE_DIR}/${TARGET}.cc" ${COMP_HEADER_DIRS}
       OUTPUT_VARIABLE DEPS
       ERROR_QUIET)
   add_custom_command(OUTPUT "${PROC_DIR}/p.${TARGET}.cc"
       DEPENDS ${DEPS}
-      COMMAND process "--output" "${PROC_DIR}/p.${TARGET}.cc" "${SOURCE_DIR}/${TARGET}.cc" ${COMP_HEADER_DIRS})
+      COMMAND ${PROCESS_BIN} "--output" "${PROC_DIR}/p.${TARGET}.cc" "${SOURCE_DIR}/${TARGET}.cc" ${COMP_HEADER_DIRS})
 endfunction()
 
 # - process component -
@@ -31,7 +31,10 @@ function(process_component)
 
     foreach(SOURCE_FILE ${SOURCE_FILES})
       get_filename_component(TARGET ${SOURCE_FILE} NAME_WE)
-      process_source(${TARGET})
+
+      if(PROCESS_BIN)
+        process_source(${TARGET})
+      endif()
 
       list(APPEND PROC_SOURCE_FILES "${PROC_DIR}/p.${TARGET}.cc")
     endforeach()
@@ -42,6 +45,9 @@ function(process_component)
   target_compile_definitions(${COMP_NAME} PUBLIC ${COMP_COMP_DEFS})
   target_link_libraries(${COMP_NAME} ${COMP_LINK_LIBS})
 endfunction()
+
+# - find process binary -
+find_program(PROCESS_BIN process)
 
 # - process cont -
 set(COMP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -58,10 +64,8 @@ process_component()
 # -----
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  set(OS_DEFINITION "-DLINUX")
+  add_definitions(-O2 -DNDEBUG -Wall -Wfatal-errors -Wno-class-memaccess -DLINUX)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-  set(OS_DEFINITION "-DWINDOWS")
+  add_definitions("/DWINDOWS /D_CRT_SECURE_NO_WARNINGS")
 endif()
-
-add_definitions(-O2 -DNDEBUG -Wall -Wfatal-errors -Wno-class-memaccess ${OS_DEFINITION})
 

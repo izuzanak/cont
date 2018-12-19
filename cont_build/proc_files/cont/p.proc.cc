@@ -84,6 +84,11 @@ typedef long double ld;
 #define MUTEX_TYPE_WINDOWS    2 // - for mutex implementation use win32 library
 // --
 
+// - thread library selection -
+#define THREAD_LIB_PTHREAD 1 // - for thread manipulation use pthread library
+#define THREAD_LIB_DSP_TSK 2 // - for thread implementation use DSP Task library
+// --
+
 // - basic system configuration -
 #ifdef LINUX
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
@@ -161,9 +166,9 @@ const unsigned INT_BIT = (sizeof(int)*CHAR_BIT);
 const unsigned UINT_BIT = (sizeof(unsigned)*CHAR_BIT);
 
 // - pi number definitions -
-const float c_pi_number = 3.14159265358979323844;
-const float c_2pi_number = 6.28318530717958647688;
-const float c_pid2_number = 1.57079632679489661922;
+const float c_pi_number = 3.14159265358979323844f;
+const float c_2pi_number = 6.28318530717958647688f;
+const float c_pid2_number = 1.57079632679489661922f;
 
 // - logarithm of two (needed by red-black tree container) -
 const float c_log_of_2 = logf(2.0f);
@@ -6242,7 +6247,7 @@ bool process_s::run_on(const char *a_file_name)
   }
 
   if (processor_ptr->gen_options & c_option_gen_dependencies) {
-    fprintf(processor_ptr->out_file,"%s\t",file_path.data);
+    fprintf(processor_ptr->out_file,"%s;",file_path.data);
   }
 
   file_path.clear();

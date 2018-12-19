@@ -198,8 +198,19 @@ void processor_s::generate_struct_type()
    }
 
    unsigned type_cnt = type_names.used;
+
+#ifdef _MSC_VER
+   unsigned type_idxs[256];
+   data_type_s *types[256];
+
+   if (type_cnt > 256) {
+      fprintf(stderr,"struct: too many contained types, max 256 supported\n");
+      cassert(0);
+   }
+#else
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
+#endif
 
    {
       unsigned tn_idx = 0;
@@ -484,8 +495,19 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
+
+#ifdef _MSC_VER
+   unsigned type_idxs[256];
+   data_type_s *types[256];
+
+   if (type_cnt > 256) {
+      fprintf(stderr,"struct: inlines: too many contained types, max 256 supported\n");
+      cassert(0);
+   }
+#else
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
+#endif
 
    {
       unsigned tn_idx = 0;

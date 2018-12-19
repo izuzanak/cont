@@ -84,6 +84,11 @@ typedef long double ld;
 #define MUTEX_TYPE_WINDOWS    2 // - for mutex implementation use win32 library
 // --
 
+// - thread library selection -
+#define THREAD_LIB_PTHREAD 1 // - for thread manipulation use pthread library
+#define THREAD_LIB_DSP_TSK 2 // - for thread implementation use DSP Task library
+// --
+
 // - basic system configuration -
 #ifdef LINUX
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
@@ -161,9 +166,9 @@ const unsigned INT_BIT = (sizeof(int)*CHAR_BIT);
 const unsigned UINT_BIT = (sizeof(unsigned)*CHAR_BIT);
 
 // - pi number definitions -
-const float c_pi_number = 3.14159265358979323844;
-const float c_2pi_number = 6.28318530717958647688;
-const float c_pid2_number = 1.57079632679489661922;
+const float c_pi_number = 3.14159265358979323844f;
+const float c_2pi_number = 6.28318530717958647688f;
+const float c_pid2_number = 1.57079632679489661922f;
 
 // - logarithm of two (needed by red-black tree container) -
 const float c_log_of_2 = logf(2.0f);
@@ -9321,8 +9326,19 @@ void processor_s::generate_struct_type()
    }
 
    unsigned type_cnt = type_names.used;
+
+#ifdef _MSC_VER
+   unsigned type_idxs[256];
+   data_type_s *types[256];
+
+   if (type_cnt > 256) {
+      fprintf(stderr,"struct: too many contained types, max 256 supported\n");
+      cassert(0);
+   }
+#else
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
+#endif
 
    {
       unsigned tn_idx = 0;
@@ -9607,8 +9623,19 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
+
+#ifdef _MSC_VER
+   unsigned type_idxs[256];
+   data_type_s *types[256];
+
+   if (type_cnt > 256) {
+      fprintf(stderr,"struct: inlines: too many contained types, max 256 supported\n");
+      cassert(0);
+   }
+#else
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
+#endif
 
    {
       unsigned tn_idx = 0;
@@ -11787,8 +11814,19 @@ void processor_s::generate_rb_tree_type()
    }
 
    unsigned type_cnt = type_names.used;
+
+#ifdef _MSC_VER
+   unsigned type_idxs[256];
+   data_type_s *types[256];
+
+   if (type_cnt > 256) {
+      fprintf(stderr,"rb_tree: too many contained types, max 256 supported\n");
+      cassert(0);
+   }
+#else
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
+#endif
 
    {
       unsigned tn_idx = 0;
@@ -12345,8 +12383,19 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
+
+#ifdef _MSC_VER
+   unsigned type_idxs[256];
+   data_type_s *types[256];
+
+   if (type_cnt > 256) {
+      fprintf(stderr,"rb_tree: inlines: too many contained types, max 256 supported\n");
+      cassert(0);
+   }
+#else
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
+#endif
 
    {
       unsigned tn_idx = 0;
@@ -12503,8 +12552,19 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
    data_type_s &data_type = data_types[a_dt_idx];
 
    unsigned type_cnt = data_type.types.used;
+
+#ifdef _MSC_VER
+   unsigned type_idxs[256];
+   data_type_s *types[256];
+
+   if (type_cnt > 256) {
+      fprintf(stderr,"rb_tree: methods: too many contained types, max 256 supported\n");
+      cassert(0);
+   }
+#else
    unsigned type_idxs[type_cnt];
    data_type_s *types[type_cnt];
+#endif
 
    {
       unsigned tn_idx = 0;
