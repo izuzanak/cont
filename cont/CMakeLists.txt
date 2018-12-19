@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.0.2)
 
 project(cont)
 
@@ -58,10 +58,8 @@ process_component()
 # -----
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  set(OS_DEFINITION "-DLINUX")
+  add_definitions(-O2 -DNDEBUG -Wall -Wfatal-errors -Wno-class-memaccess -DLINUX)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-  set(OS_DEFINITION "-DWINDOWS")
+  add_definitions("/DWINDOWS /D_CRT_SECURE_NO_WARNINGS")
 endif()
-
-add_definitions(-O2 -DNDEBUG -Wall -Wfatal-errors -Wno-class-memaccess ${OS_DEFINITION})
 

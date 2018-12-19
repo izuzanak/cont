@@ -2159,7 +2159,7 @@ bool process_s::run_on(const char *a_file_name)
   }
 
   if (processor_ptr->gen_options & c_option_gen_dependencies) {
-    fprintf(processor_ptr->out_file,"%s\t",file_path.data);
+    fprintf(processor_ptr->out_file,"%s;",file_path.data);
   }
 
   file_path.clear();

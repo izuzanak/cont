@@ -4,6 +4,10 @@
 
 #define ENABLE 1
 
+#if __cplusplus < 201103
+#define nullptr NULL
+#endif
+
 // - system type selection -
 #define SYSTEM_TYPE_UNIX      1 // - for system calls use unix environment
 #define SYSTEM_TYPE_WINDOWS   2 // - for system calls use windows environment
@@ -19,6 +23,11 @@
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
 #define MUTEX_TYPE MUTEX_TYPE_PTHREAD
 #endif
+
+// - thread library selection -
+#define THREAD_LIB_PTHREAD 1 // - for thread manipulation use pthread library
+#define THREAD_LIB_DSP_TSK 2 // - for thread implementation use DSP Task library
+// --
 
 #ifdef WINDOWS
 #define _WIN32_WINNT 0x0500
@@ -91,9 +100,9 @@ const unsigned INT_BIT = (sizeof(int)*CHAR_BIT);
 const unsigned UINT_BIT = (sizeof(unsigned)*CHAR_BIT);
 
 // - pi number definitions -
-const float c_pi_number = 3.14159265358979323844;
-const float c_2pi_number = 6.28318530717958647688;
-const float c_pid2_number = 1.57079632679489661922;
+const float c_pi_number = 3.14159265358979323844f;
+const float c_2pi_number = 6.28318530717958647688f;
+const float c_pid2_number = 1.57079632679489661922f;
 
 // - logarithm of two (needed by red-black tree container) -
 const float c_log_of_2 = logf(2.0f);

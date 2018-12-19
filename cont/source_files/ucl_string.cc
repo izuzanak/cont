@@ -276,10 +276,21 @@ unsigned string_s::get_print_size_between(unsigned f_idx,unsigned s_idx)
   if (f_idx >= s_idx) return 0;
 
   unsigned char_cnt = s_idx - f_idx;
+
+#ifdef _MSC_VER
+  unsigned *utf32_data = (unsigned *)cmalloc(char_cnt*sizeof(unsigned));
+#else
   unsigned utf32_data[char_cnt];
+#endif
 
   int utf32_cnt = utf8_to_utf32(data + f_idx,utf32_data,char_cnt);
-  if (utf32_cnt < 0) return 0;
+  if (utf32_cnt < 0)
+  {
+#ifdef _MSC_VER
+    cfree(utf32_data);
+#endif
+    return 0;
+  }
 
   unsigned *c_ptr = utf32_data;
   unsigned *c_ptr_end = c_ptr + utf32_cnt;
@@ -297,6 +308,10 @@ unsigned string_s::get_print_size_between(unsigned f_idx,unsigned s_idx)
     }
   }
   while(++c_ptr < c_ptr_end);
+
+#ifdef _MSC_VER
+  cfree(utf32_data);
+#endif
 
   return print_size;
 }/*}}}*/
