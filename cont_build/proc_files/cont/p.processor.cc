@@ -173,6 +173,13 @@ const float c_pid2_number = 1.57079632679489661922f;
 // - logarithm of two (needed by red-black tree container) -
 const float c_log_of_2 = logf(2.0f);
 
+// - red-black tree descent stack size -
+#ifdef _MSC_VER
+#define RB_TREE_STACK_SIZE(VAR) 32
+#else
+#define RB_TREE_STACK_SIZE(VAR) (VAR).get_descent_stack_size()
+#endif
+
 // - count of system cpu cores -
 const unsigned c_cpu_core_cnt = 2;
 
@@ -11300,7 +11307,7 @@ fprintf(out_file,
 "    return;\n"
 "  }\n"
 "\n"
-"  unsigned stack[get_descent_stack_size()];\n"
+"  unsigned stack[RB_TREE_STACK_SIZE(*this)];\n"
 "  unsigned *stack_ptr = stack;\n"
 "\n"
 "  *(stack_ptr++) = root_idx;\n"
@@ -11468,8 +11475,8 @@ fprintf(out_file,
 "      return false;\n"
 "    }\n"
 "\n"
-"    unsigned stack[get_descent_stack_size()];\n"
-"    unsigned s_stack[a_second.get_descent_stack_size()];\n"
+"    unsigned stack[RB_TREE_STACK_SIZE(*this)];\n"
+"    unsigned s_stack[RB_TREE_STACK_SIZE(a_second)];\n"
 "\n"
 "    unsigned *stack_ptr = stack;\n"
 "    unsigned *s_stack_ptr = s_stack;\n"
@@ -11534,7 +11541,7 @@ fprintf(out_file,
 "  indexes.init();\n"
 "\n"
 "  {\n"
-"    unsigned stack[get_descent_stack_size()];\n"
+"    unsigned stack[RB_TREE_STACK_SIZE(*this)];\n"
 "    unsigned *stack_ptr = stack;\n"
 "\n"
 "    unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"
@@ -11765,7 +11772,7 @@ fprintf(out_file,
 "  /* - test if are node values sorted - */\n"
 "  if (root_idx != c_idx_not_exist)\n"
 "  {\n"
-"    unsigned stack[get_descent_stack_size()];\n"
+"    unsigned stack[RB_TREE_STACK_SIZE(*this)];\n"
 "    unsigned *stack_ptr = stack;\n"
 "\n"
 "    unsigned idx = get_stack_min_value_idx(root_idx,&stack_ptr);\n"

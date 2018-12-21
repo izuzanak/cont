@@ -173,6 +173,13 @@ const float c_pid2_number = 1.57079632679489661922f;
 // - logarithm of two (needed by red-black tree container) -
 const float c_log_of_2 = logf(2.0f);
 
+// - red-black tree descent stack size -
+#ifdef _MSC_VER
+#define RB_TREE_STACK_SIZE(VAR) 32
+#else
+#define RB_TREE_STACK_SIZE(VAR) (VAR).get_descent_stack_size()
+#endif
+
 // - count of system cpu cores -
 const unsigned c_cpu_core_cnt = 2;
 

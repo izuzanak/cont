@@ -42,7 +42,7 @@ void mc_struct_s::check()
 
    if (mc_block_set.count != 0)
    {
-     unsigned stack[mc_block_set.get_descent_stack_size()];
+     unsigned stack[RB_TREE_STACK_SIZE(mc_block_set)];
      unsigned *stack_ptr = stack;
 
      unsigned idx = mc_block_set.get_stack_min_value_idx(mc_block_set.root_idx,&stack_ptr);
