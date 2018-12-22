@@ -866,7 +866,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by queue\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -890,7 +890,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"  void set_buffer(unsigned a_size,%s *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -916,7 +916,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush queue memory usage, recursive on elements\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -978,7 +978,7 @@ fprintf(out_file,
 "    * \\brief __GEN change queue capacity\n"
 "    * \\param a_size - requested queue capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -1001,7 +1001,7 @@ fprintf(out_file,
 "    * \\param a_src - reference to another queue\n"
 "    * \\return reference to this queue\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -1012,7 +1012,7 @@ fprintf(out_file,
 "    * \\param a_second - reference to another queue\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (fun_defs.used != 0) {

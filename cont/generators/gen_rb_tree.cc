@@ -2282,26 +2282,26 @@ fprintf(out_file,
 "  inline unsigned __get_sibling_idx(unsigned a_idx);\n"
 "\n"
 "  inline unsigned get_descent_stack_size();\n"
-"  unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);\n"
+"  EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);\n"
 "  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
 "\n"
-"  unsigned get_min_value_idx(unsigned a_idx);\n"
-"  unsigned get_max_value_idx(unsigned a_idx);\n"
-"  unsigned get_next_idx(unsigned a_idx);\n"
-"  unsigned get_prev_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_min_value_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_max_value_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_next_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_prev_idx(unsigned a_idx);\n"
 "\n"
 "  inline void __rotate_left(unsigned a_idx);\n"
 "  inline void __rotate_right(unsigned a_idx);\n"
 "\n"
 "  inline unsigned __get_new_index();\n"
-"  unsigned __binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique);\n"
+"  EXPORT unsigned __binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique);\n"
 "\n"
 "  inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);\n"
 "  void __remove_black_black(unsigned a_idx);\n"
 "\n"
 "  inline void __remove_one_child(unsigned a_idx,unsigned a_ch_idx);\n"
 "\n"
-"  void __insert_operation(unsigned a_idx);\n"
+"  EXPORT void __insert_operation(unsigned a_idx);\n"
 "\n"
 "  inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
@@ -2341,7 +2341,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -2365,7 +2365,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"  void set_buffer(unsigned a_size,%s_node *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s_node *a_data);\n"
 "\n"
 ,STRUCT_NAME);
       }
@@ -2391,7 +2391,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush rb_tree memory usage, recursive on nodes\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -2473,7 +2473,7 @@ fprintf(out_file,
 "    * \\brief __GEN remove node at index from rb_tree\n"
 "    * \\param a_idx - index of node to remove\n"
 "    */\n"
-"  void remove(unsigned a_idx);\n"
+"  EXPORT void remove(unsigned a_idx);\n"
 "\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -2482,7 +2482,7 @@ fprintf(out_file,
 "    * \\brief __GEN resize rb_tree capacity\n"
 "    * \\param a_size - requested rb_tree capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -2492,25 +2492,25 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s a_value);\n"
+"  EXPORT unsigned get_idx(%s a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for leftmost index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx_left(%s a_value);\n"
+"  EXPORT unsigned get_idx_left(%s a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with greater or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_gre_idx(%s a_value);\n"
+"  EXPORT unsigned get_gre_idx(%s a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with less or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_lee_idx(%s a_value);\n"
+"  EXPORT unsigned get_lee_idx(%s a_value);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
@@ -2520,25 +2520,25 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s &a_value);\n"
+"  EXPORT unsigned get_idx(%s &a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for leftmost index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx_left(%s &a_value);\n"
+"  EXPORT unsigned get_idx_left(%s &a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with greater or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_gre_idx(%s &a_value);\n"
+"  EXPORT unsigned get_gre_idx(%s &a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with less or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_lee_idx(%s &a_value);\n"
+"  EXPORT unsigned get_lee_idx(%s &a_value);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
@@ -2548,7 +2548,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for all indexes of node\n"
 "    * \\param a_value - value of searched index\n"
 "    */\n"
-"  void get_idxs(%s a_value,ui_array_s &a_idxs_array);\n"
+"  EXPORT void get_idxs(%s a_value,ui_array_s &a_idxs_array);\n"
 "\n"
 ,IM_TYPE_NAMES(0));
    }
@@ -2558,7 +2558,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for all indexes of node\n"
 "    * \\param a_value - value of searched index\n"
 "    */\n"
-"  void get_idxs(%s &a_value,ui_array_s &a_idxs_array);\n"
+"  EXPORT void get_idxs(%s &a_value,ui_array_s &a_idxs_array);\n"
 "\n"
 ,IM_TYPE_NAMES(0));
    }
@@ -2581,7 +2581,7 @@ fprintf(out_file,
 "    * \\param a_src - reference to another rb_tree\n"
 "    * \\return reference to this rb_tree\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -2592,7 +2592,7 @@ fprintf(out_file,
 "    * \\param a_second - reference to another rb_tree\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_rehash) {
@@ -2600,7 +2600,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
 "    */\n"
-"    void rehash_tree();\n"
+"  EXPORT void rehash_tree();\n"
 "\n"
 );
    }
@@ -2610,7 +2610,7 @@ fprintf(out_file,
 "    * \\brief __GEN print dot code of rb_tree (for debugging)\n"
 "    * \\param a_file - file to which is code writed\n"
 "    */\n"
-"    void print_dot_code(FILE *a_file);\n"
+"  EXPORT void print_dot_code(FILE *a_file);\n"
 "\n"
 );
    }
@@ -2620,7 +2620,7 @@ fprintf(out_file,
 "    * \\brief __GEN test properties of red black tree\n"
 "    * \\return true if all red black tree properties are valid\n"
 "    */\n"
-"    bool check_properties();\n"
+"  EXPORT bool check_properties();\n"
 "\n"
 );
    }

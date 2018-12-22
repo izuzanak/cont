@@ -1447,7 +1447,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by list\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -1471,7 +1471,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"  void set_buffer(unsigned a_size,%s_element *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s_element *a_data);\n"
 "\n"
 ,STRUCT_NAME);
       }
@@ -1497,7 +1497,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush list memory usage, recursive on elements\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -1617,7 +1617,7 @@ fprintf(out_file,
 "    * \\brief __GEN resize list capacity\n"
 "    * \\param a_size - requested list capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -1627,7 +1627,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s a_value);\n"
+"  EXPORT unsigned get_idx(%s a_value);\n"
 ,TYPE_NAME);
    }
    else {
@@ -1636,7 +1636,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s &a_value);\n"
+"  EXPORT unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
@@ -1658,7 +1658,7 @@ fprintf(out_file,
 "    * \\param a_src - reference to another list\n"
 "    * \\return reference to this list\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -1669,7 +1669,7 @@ fprintf(out_file,
 "    * \\param a_second - reference to another list\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (fun_defs.used != 0) {

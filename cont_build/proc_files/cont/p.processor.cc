@@ -93,12 +93,14 @@ typedef long double ld;
 #ifdef LINUX
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
 #define MUTEX_TYPE MUTEX_TYPE_PTHREAD
+#define EXPORT
 #endif
 
 #ifdef WINDOWS
 #define _WIN32_WINNT 0x0500
 #define SYSTEM_TYPE SYSTEM_TYPE_WINDOWS
 #define MUTEX_TYPE MUTEX_TYPE_WINDOWS
+#define EXPORT __declspec(dllexport) 
 #endif
 
 // - system includes -
@@ -576,13 +578,13 @@ struct ui_array_s
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-  void reserve(unsigned a_cnt);
+  EXPORT void reserve(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-  void push_blanks(unsigned a_cnt);
+  EXPORT void push_blanks(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert and clear element to end of array
@@ -605,19 +607,19 @@ struct ui_array_s
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-  void copy_resize(unsigned a_size);
+  EXPORT void copy_resize(unsigned a_size);
 
   /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-  void fill(unsigned a_value);
+  EXPORT void fill(unsigned a_value);
 
   /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-  unsigned get_idx(unsigned a_value);
+  EXPORT unsigned get_idx(unsigned a_value);
 
   /*!
     * \brief __GEN copy array from another array
@@ -728,13 +730,13 @@ struct mc_block_rb_tree_s
   inline unsigned __get_sibling_idx(unsigned a_idx);
 
   inline unsigned get_descent_stack_size();
-  unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
+  EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
   inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
 
-  unsigned get_min_value_idx(unsigned a_idx);
-  unsigned get_max_value_idx(unsigned a_idx);
-  unsigned get_next_idx(unsigned a_idx);
-  unsigned get_prev_idx(unsigned a_idx);
+  EXPORT unsigned get_min_value_idx(unsigned a_idx);
+  EXPORT unsigned get_max_value_idx(unsigned a_idx);
+  EXPORT unsigned get_next_idx(unsigned a_idx);
+  EXPORT unsigned get_prev_idx(unsigned a_idx);
 
   inline void __rotate_left(unsigned a_idx);
   inline void __rotate_right(unsigned a_idx);
@@ -816,43 +818,43 @@ struct mc_block_rb_tree_s
     * \brief __GEN remove node at index from rb_tree
     * \param a_idx - index of node to remove
     */
-  void remove(unsigned a_idx);
+  EXPORT void remove(unsigned a_idx);
 
   /*!
     * \brief __GEN resize rb_tree capacity
     * \param a_size - requested rb_tree capacity
     */
-  void copy_resize(unsigned a_size);
+  EXPORT void copy_resize(unsigned a_size);
 
   /*!
     * \brief __GEN search for index of node
     * \param a_value - value which index is searched
     */
-  unsigned get_idx(mc_block_s &a_value);
+  EXPORT unsigned get_idx(mc_block_s &a_value);
 
   /*!
     * \brief __GEN search for leftmost index of node
     * \param a_value - value which index is searched
     */
-  unsigned get_idx_left(mc_block_s &a_value);
+  EXPORT unsigned get_idx_left(mc_block_s &a_value);
 
   /*!
     * \brief __GEN search for index of node with greater or equal value
     * \param a_value - value which index is searched
     */
-  unsigned get_gre_idx(mc_block_s &a_value);
+  EXPORT unsigned get_gre_idx(mc_block_s &a_value);
 
   /*!
     * \brief __GEN search for index of node with less or equal value
     * \param a_value - value which index is searched
     */
-  unsigned get_lee_idx(mc_block_s &a_value);
+  EXPORT unsigned get_lee_idx(mc_block_s &a_value);
 
   /*!
     * \brief __GEN search for all indexes of node
     * \param a_value - value of searched index
     */
-  void get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array);
+  EXPORT void get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array);
 
   /*!
     * \brief __GEN copy rb_tree from another rb_tree
@@ -866,7 +868,7 @@ struct mc_block_rb_tree_s
     * \param a_second - reference to another rb_tree
     * \return result of comparision
     */
-  bool operator==(mc_block_rb_tree_s &a_second);
+  EXPORT bool operator==(mc_block_rb_tree_s &a_second);
 
   
       
@@ -1970,14 +1972,14 @@ struct string_array_s
   /*!
     * \brief __GEN release memory used by array
     */
-  void clear();
+  EXPORT void clear();
 
   /*!
     * \brief __GEN set array content from element pointer
     * \param a_used - number of elements stored at pointed location
     * \param a_data - pointer to elements
     */
-  void set(unsigned a_used,string_s *a_data);
+  EXPORT void set(unsigned a_used,string_s *a_data);
 
   /*!
     * \brief __GEN flush array memory usage
@@ -2017,13 +2019,13 @@ struct string_array_s
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-  void reserve(unsigned a_cnt);
+  EXPORT void reserve(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-  void push_blanks(unsigned a_cnt);
+  EXPORT void push_blanks(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert and clear element to end of array
@@ -2046,31 +2048,31 @@ struct string_array_s
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-  void copy_resize(unsigned a_size);
+  EXPORT void copy_resize(unsigned a_size);
 
   /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-  void fill(string_s &a_value);
+  EXPORT void fill(string_s &a_value);
 
   /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-  unsigned get_idx(string_s &a_value);
+  EXPORT unsigned get_idx(string_s &a_value);
 
   /*!
     * \brief __GEN copy array from another array
     * \param a_src - reference to another array
     */
-  string_array_s &operator=(string_array_s &a_src);
+  EXPORT string_array_s &operator=(string_array_s &a_src);
 
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
     */
-  bool operator==(string_array_s &a_second);
+  EXPORT bool operator==(string_array_s &a_second);
 
 };
 
@@ -2517,14 +2519,14 @@ struct data_type_array_s
   /*!
     * \brief __GEN release memory used by array
     */
-  void clear();
+  EXPORT void clear();
 
   /*!
     * \brief __GEN set array content from element pointer
     * \param a_used - number of elements stored at pointed location
     * \param a_data - pointer to elements
     */
-  void set(unsigned a_used,data_type_s *a_data);
+  EXPORT void set(unsigned a_used,data_type_s *a_data);
 
   /*!
     * \brief __GEN flush array memory usage
@@ -2534,7 +2536,7 @@ struct data_type_array_s
   /*!
     * \brief __GEN flush array memory usage, recursive on elemenets
     */
-  void flush_all();
+  EXPORT void flush_all();
 
   /*!
     * \brief __GEN swap array members with another array
@@ -2564,13 +2566,13 @@ struct data_type_array_s
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-  void reserve(unsigned a_cnt);
+  EXPORT void reserve(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-  void push_blanks(unsigned a_cnt);
+  EXPORT void push_blanks(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert and clear element to end of array
@@ -2593,31 +2595,31 @@ struct data_type_array_s
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-  void copy_resize(unsigned a_size);
+  EXPORT void copy_resize(unsigned a_size);
 
   /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-  void fill(data_type_s &a_value);
+  EXPORT void fill(data_type_s &a_value);
 
   /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-  unsigned get_idx(data_type_s &a_value);
+  EXPORT unsigned get_idx(data_type_s &a_value);
 
   /*!
     * \brief __GEN copy array from another array
     * \param a_src - reference to another array
     */
-  data_type_array_s &operator=(data_type_array_s &a_src);
+  EXPORT data_type_array_s &operator=(data_type_array_s &a_src);
 
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
     */
-  bool operator==(data_type_array_s &a_second);
+  EXPORT bool operator==(data_type_array_s &a_second);
 
   
 
@@ -2707,14 +2709,14 @@ struct abbreviation_array_s
   /*!
     * \brief __GEN release memory used by array
     */
-  void clear();
+  EXPORT void clear();
 
   /*!
     * \brief __GEN set array content from element pointer
     * \param a_used - number of elements stored at pointed location
     * \param a_data - pointer to elements
     */
-  void set(unsigned a_used,abbreviation_s *a_data);
+  EXPORT void set(unsigned a_used,abbreviation_s *a_data);
 
   /*!
     * \brief __GEN flush array memory usage
@@ -2754,13 +2756,13 @@ struct abbreviation_array_s
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-  void reserve(unsigned a_cnt);
+  EXPORT void reserve(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-  void push_blanks(unsigned a_cnt);
+  EXPORT void push_blanks(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert and clear element to end of array
@@ -2783,31 +2785,31 @@ struct abbreviation_array_s
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-  void copy_resize(unsigned a_size);
+  EXPORT void copy_resize(unsigned a_size);
 
   /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-  void fill(abbreviation_s &a_value);
+  EXPORT void fill(abbreviation_s &a_value);
 
   /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-  unsigned get_idx(abbreviation_s &a_value);
+  EXPORT unsigned get_idx(abbreviation_s &a_value);
 
   /*!
     * \brief __GEN copy array from another array
     * \param a_src - reference to another array
     */
-  abbreviation_array_s &operator=(abbreviation_array_s &a_src);
+  EXPORT abbreviation_array_s &operator=(abbreviation_array_s &a_src);
 
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
     */
-  bool operator==(abbreviation_array_s &a_second);
+  EXPORT bool operator==(abbreviation_array_s &a_second);
 
   
 
@@ -3568,13 +3570,13 @@ struct lalr_stack_s
     * \brief __GEN reserve requested count of elements at end of array
     * \param a_cnt - count of elements to be reserved
     */
-  void reserve(unsigned a_cnt);
+  EXPORT void reserve(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert blank elements to end of array
     * \param a_cnt - count of elements inserted to array
     */
-  void push_blanks(unsigned a_cnt);
+  EXPORT void push_blanks(unsigned a_cnt);
 
   /*!
     * \brief __GEN insert and clear element to end of array
@@ -3597,19 +3599,19 @@ struct lalr_stack_s
     * \brief __GEN change array capacity
     * \param a_size - requested array capacity
     */
-  void copy_resize(unsigned a_size);
+  EXPORT void copy_resize(unsigned a_size);
 
   /*!
     * \brief __GEN set all elements of array to given value
     * \param a_value - new value of all elements
     */
-  void fill(lalr_stack_element_s &a_value);
+  EXPORT void fill(lalr_stack_element_s &a_value);
 
   /*!
     * \brief __GEN search for index of element
     * \param a_value - value which index is searched
     */
-  unsigned get_idx(lalr_stack_element_s &a_value);
+  EXPORT unsigned get_idx(lalr_stack_element_s &a_value);
 
   /*!
     * \brief __GEN copy array from another array
@@ -5550,7 +5552,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by array\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -5563,7 +5565,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"inline void set_buffer(unsigned a_size,%s *a_data);\n"
+"  inline void set_buffer(unsigned a_size,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -5574,7 +5576,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"void set_buffer(unsigned a_size,%s *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -5597,7 +5599,7 @@ fprintf(out_file,
 "    * \\param a_used - number of elements stored at pointed location\n"
 "    * \\param a_data - pointer to elements\n"
 "    */\n"
-"  void set(unsigned a_used,%s *a_data);\n"
+"  EXPORT void set(unsigned a_used,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -5622,7 +5624,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush array memory usage, recursive on elemenets\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -5678,7 +5680,7 @@ fprintf(out_file,
 "    * \\brief __GEN reserve requested count of elements at end of array\n"
 "    * \\param a_cnt - count of elements to be reserved\n"
 "    */\n"
-"  void reserve(unsigned a_cnt);\n"
+"  EXPORT void reserve(unsigned a_cnt);\n"
 "\n"
 );
    }
@@ -5687,7 +5689,7 @@ fprintf(out_file,
 "    * \\brief __GEN insert blank elements to end of array\n"
 "    * \\param a_cnt - count of elements inserted to array\n"
 "    */\n"
-"  void push_blanks(unsigned a_cnt);\n"
+"  EXPORT void push_blanks(unsigned a_cnt);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN insert and clear element to end of array\n"
@@ -5713,7 +5715,7 @@ fprintf(out_file,
 "    * \\brief __GEN change array capacity\n"
 "    * \\param a_size - requested array capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -5734,7 +5736,7 @@ fprintf(out_file,
 "    * \\brief __GEN set all elements of array to given value\n"
 "    * \\param a_value - new value of all elements\n"
 "    */\n"
-"  void fill(%s a_value);\n"
+"  EXPORT void fill(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -5744,7 +5746,7 @@ fprintf(out_file,
 "    * \\brief __GEN set all elements of array to given value\n"
 "    * \\param a_value - new value of all elements\n"
 "    */\n"
-"  void fill(%s &a_value);\n"
+"  EXPORT void fill(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -5755,7 +5757,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s a_value);\n"
+"  EXPORT unsigned get_idx(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -5765,7 +5767,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s &a_value);\n"
+"  EXPORT unsigned get_idx(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -5798,7 +5800,7 @@ fprintf(out_file,
 "    * \\brief __GEN copy array from another array\n"
 "    * \\param a_src - reference to another array\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -5807,7 +5809,7 @@ fprintf(out_file,
 "    * \\brief __GEN comparison of array with another array\n"
 "    * \\param a_second - reference to another array\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
@@ -6909,7 +6911,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by queue\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -6933,7 +6935,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"  void set_buffer(unsigned a_size,%s *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -6959,7 +6961,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush queue memory usage, recursive on elements\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -7021,7 +7023,7 @@ fprintf(out_file,
 "    * \\brief __GEN change queue capacity\n"
 "    * \\param a_size - requested queue capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -7044,7 +7046,7 @@ fprintf(out_file,
 "    * \\param a_src - reference to another queue\n"
 "    * \\return reference to this queue\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -7055,7 +7057,7 @@ fprintf(out_file,
 "    * \\param a_second - reference to another queue\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (fun_defs.used != 0) {
@@ -8685,7 +8687,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by list\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -8709,7 +8711,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"  void set_buffer(unsigned a_size,%s_element *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s_element *a_data);\n"
 "\n"
 ,STRUCT_NAME);
       }
@@ -8735,7 +8737,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush list memory usage, recursive on elements\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -8855,7 +8857,7 @@ fprintf(out_file,
 "    * \\brief __GEN resize list capacity\n"
 "    * \\param a_size - requested list capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -8865,7 +8867,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s a_value);\n"
+"  EXPORT unsigned get_idx(%s a_value);\n"
 ,TYPE_NAME);
    }
    else {
@@ -8874,7 +8876,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s &a_value);\n"
+"  EXPORT unsigned get_idx(%s &a_value);\n"
 ,TYPE_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
@@ -8896,7 +8898,7 @@ fprintf(out_file,
 "    * \\param a_src - reference to another list\n"
 "    * \\return reference to this list\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -8907,7 +8909,7 @@ fprintf(out_file,
 "    * \\param a_second - reference to another list\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (fun_defs.used != 0) {
@@ -12028,26 +12030,26 @@ fprintf(out_file,
 "  inline unsigned __get_sibling_idx(unsigned a_idx);\n"
 "\n"
 "  inline unsigned get_descent_stack_size();\n"
-"  unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);\n"
+"  EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);\n"
 "  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
 "\n"
-"  unsigned get_min_value_idx(unsigned a_idx);\n"
-"  unsigned get_max_value_idx(unsigned a_idx);\n"
-"  unsigned get_next_idx(unsigned a_idx);\n"
-"  unsigned get_prev_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_min_value_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_max_value_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_next_idx(unsigned a_idx);\n"
+"  EXPORT unsigned get_prev_idx(unsigned a_idx);\n"
 "\n"
 "  inline void __rotate_left(unsigned a_idx);\n"
 "  inline void __rotate_right(unsigned a_idx);\n"
 "\n"
 "  inline unsigned __get_new_index();\n"
-"  unsigned __binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique);\n"
+"  EXPORT unsigned __binary_tree_insert(unsigned a_new_idx,%s &a_value,bool a_unique);\n"
 "\n"
 "  inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);\n"
 "  void __remove_black_black(unsigned a_idx);\n"
 "\n"
 "  inline void __remove_one_child(unsigned a_idx,unsigned a_ch_idx);\n"
 "\n"
-"  void __insert_operation(unsigned a_idx);\n"
+"  EXPORT void __insert_operation(unsigned a_idx);\n"
 "\n"
 "  inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
@@ -12087,7 +12089,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by rb_tree\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -12111,7 +12113,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"  void set_buffer(unsigned a_size,%s_node *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s_node *a_data);\n"
 "\n"
 ,STRUCT_NAME);
       }
@@ -12137,7 +12139,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush rb_tree memory usage, recursive on nodes\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -12219,7 +12221,7 @@ fprintf(out_file,
 "    * \\brief __GEN remove node at index from rb_tree\n"
 "    * \\param a_idx - index of node to remove\n"
 "    */\n"
-"  void remove(unsigned a_idx);\n"
+"  EXPORT void remove(unsigned a_idx);\n"
 "\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -12228,7 +12230,7 @@ fprintf(out_file,
 "    * \\brief __GEN resize rb_tree capacity\n"
 "    * \\param a_size - requested rb_tree capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -12238,25 +12240,25 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s a_value);\n"
+"  EXPORT unsigned get_idx(%s a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for leftmost index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx_left(%s a_value);\n"
+"  EXPORT unsigned get_idx_left(%s a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with greater or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_gre_idx(%s a_value);\n"
+"  EXPORT unsigned get_gre_idx(%s a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with less or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_lee_idx(%s a_value);\n"
+"  EXPORT unsigned get_lee_idx(%s a_value);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
@@ -12266,25 +12268,25 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s &a_value);\n"
+"  EXPORT unsigned get_idx(%s &a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for leftmost index of node\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx_left(%s &a_value);\n"
+"  EXPORT unsigned get_idx_left(%s &a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with greater or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_gre_idx(%s &a_value);\n"
+"  EXPORT unsigned get_gre_idx(%s &a_value);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN search for index of node with less or equal value\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_lee_idx(%s &a_value);\n"
+"  EXPORT unsigned get_lee_idx(%s &a_value);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
    }
@@ -12294,7 +12296,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for all indexes of node\n"
 "    * \\param a_value - value of searched index\n"
 "    */\n"
-"  void get_idxs(%s a_value,ui_array_s &a_idxs_array);\n"
+"  EXPORT void get_idxs(%s a_value,ui_array_s &a_idxs_array);\n"
 "\n"
 ,IM_TYPE_NAMES(0));
    }
@@ -12304,7 +12306,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for all indexes of node\n"
 "    * \\param a_value - value of searched index\n"
 "    */\n"
-"  void get_idxs(%s &a_value,ui_array_s &a_idxs_array);\n"
+"  EXPORT void get_idxs(%s &a_value,ui_array_s &a_idxs_array);\n"
 "\n"
 ,IM_TYPE_NAMES(0));
    }
@@ -12327,7 +12329,7 @@ fprintf(out_file,
 "    * \\param a_src - reference to another rb_tree\n"
 "    * \\return reference to this rb_tree\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -12338,7 +12340,7 @@ fprintf(out_file,
 "    * \\param a_second - reference to another rb_tree\n"
 "    * \\return result of comparision\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_rehash) {
@@ -12346,7 +12348,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN rehash tree (after invalidation by change of object value)\n"
 "    */\n"
-"    void rehash_tree();\n"
+"  EXPORT void rehash_tree();\n"
 "\n"
 );
    }
@@ -12356,7 +12358,7 @@ fprintf(out_file,
 "    * \\brief __GEN print dot code of rb_tree (for debugging)\n"
 "    * \\param a_file - file to which is code writed\n"
 "    */\n"
-"    void print_dot_code(FILE *a_file);\n"
+"  EXPORT void print_dot_code(FILE *a_file);\n"
 "\n"
 );
    }
@@ -12366,7 +12368,7 @@ fprintf(out_file,
 "    * \\brief __GEN test properties of red black tree\n"
 "    * \\return true if all red black tree properties are valid\n"
 "    */\n"
-"    bool check_properties();\n"
+"  EXPORT bool check_properties();\n"
 "\n"
 );
    }

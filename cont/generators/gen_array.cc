@@ -954,7 +954,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN release memory used by array\n"
 "    */\n"
-"  void clear();\n"
+"  EXPORT void clear();\n"
 "\n"
 );
       }
@@ -967,7 +967,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"inline void set_buffer(unsigned a_size,%s *a_data);\n"
+"  inline void set_buffer(unsigned a_size,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -978,7 +978,7 @@ fprintf(out_file,
 "    * \\param a_size - size of data buffer\n"
 "    * \\param a_data - pointer to data buffer\n"
 "    */\n"
-"void set_buffer(unsigned a_size,%s *a_data);\n"
+"  EXPORT void set_buffer(unsigned a_size,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -1001,7 +1001,7 @@ fprintf(out_file,
 "    * \\param a_used - number of elements stored at pointed location\n"
 "    * \\param a_data - pointer to elements\n"
 "    */\n"
-"  void set(unsigned a_used,%s *a_data);\n"
+"  EXPORT void set(unsigned a_used,%s *a_data);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -1026,7 +1026,7 @@ fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN flush array memory usage, recursive on elemenets\n"
 "    */\n"
-"  void flush_all();\n"
+"  EXPORT void flush_all();\n"
 "\n"
 );
    }
@@ -1082,7 +1082,7 @@ fprintf(out_file,
 "    * \\brief __GEN reserve requested count of elements at end of array\n"
 "    * \\param a_cnt - count of elements to be reserved\n"
 "    */\n"
-"  void reserve(unsigned a_cnt);\n"
+"  EXPORT void reserve(unsigned a_cnt);\n"
 "\n"
 );
    }
@@ -1091,7 +1091,7 @@ fprintf(out_file,
 "    * \\brief __GEN insert blank elements to end of array\n"
 "    * \\param a_cnt - count of elements inserted to array\n"
 "    */\n"
-"  void push_blanks(unsigned a_cnt);\n"
+"  EXPORT void push_blanks(unsigned a_cnt);\n"
 "\n"
 "  /*!\n"
 "    * \\brief __GEN insert and clear element to end of array\n"
@@ -1117,7 +1117,7 @@ fprintf(out_file,
 "    * \\brief __GEN change array capacity\n"
 "    * \\param a_size - requested array capacity\n"
 "    */\n"
-"  void copy_resize(unsigned a_size);\n"
+"  EXPORT void copy_resize(unsigned a_size);\n"
 "\n"
 );
    }
@@ -1138,7 +1138,7 @@ fprintf(out_file,
 "    * \\brief __GEN set all elements of array to given value\n"
 "    * \\param a_value - new value of all elements\n"
 "    */\n"
-"  void fill(%s a_value);\n"
+"  EXPORT void fill(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -1148,7 +1148,7 @@ fprintf(out_file,
 "    * \\brief __GEN set all elements of array to given value\n"
 "    * \\param a_value - new value of all elements\n"
 "    */\n"
-"  void fill(%s &a_value);\n"
+"  EXPORT void fill(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
       }
@@ -1159,7 +1159,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s a_value);\n"
+"  EXPORT unsigned get_idx(%s a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -1169,7 +1169,7 @@ fprintf(out_file,
 "    * \\brief __GEN search for index of element\n"
 "    * \\param a_value - value which index is searched\n"
 "    */\n"
-"  unsigned get_idx(%s &a_value);\n"
+"  EXPORT unsigned get_idx(%s &a_value);\n"
 "\n"
 ,TYPE_NAME);
    }
@@ -1202,7 +1202,7 @@ fprintf(out_file,
 "    * \\brief __GEN copy array from another array\n"
 "    * \\param a_src - reference to another array\n"
 "    */\n"
-"  %s &operator=(%s &a_src);\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
@@ -1211,7 +1211,7 @@ fprintf(out_file,
 "    * \\brief __GEN comparison of array with another array\n"
 "    * \\param a_second - reference to another array\n"
 "    */\n"
-"  bool operator==(%s &a_second);\n"
+"  EXPORT bool operator==(%s &a_second);\n"
 "\n"
 ,STRUCT_NAME);
    }
