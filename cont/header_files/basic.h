@@ -22,6 +22,7 @@
 #ifdef LINUX
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
 #define MUTEX_TYPE MUTEX_TYPE_PTHREAD
+#define EXPORT
 #endif
 
 // - thread library selection -
@@ -33,6 +34,7 @@
 #define _WIN32_WINNT 0x0500
 #define SYSTEM_TYPE SYSTEM_TYPE_WINDOWS
 #define MUTEX_TYPE MUTEX_TYPE_WINDOWS
+#define EXPORT __declspec(dllexport) 
 #endif
 
 // - system includes -

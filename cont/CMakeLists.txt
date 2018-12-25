@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0.2)
 
 project(cont)
 
-set(PROC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../cont_build/proc_files")
+set(PROC_DIR "${CMAKE_CURRENT_BINARY_DIR}/proc_files")
 file(MAKE_DIRECTORY ${PROC_DIR})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
