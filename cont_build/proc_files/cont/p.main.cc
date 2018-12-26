@@ -1755,7 +1755,7 @@ inline void cfree(void *a_location)
  */
 
 // - string terminating character -
-extern const char c_string_terminating_char;
+EXPORT extern const char c_string_terminating_char;
 
 // - tabulator size -
 const unsigned c_tabulator_size = 8;
@@ -1850,7 +1850,7 @@ struct string_s
    * \param a_data - pointer to string data
    * \param a_mult - multiplier of string
    */
-  void mult_char_ptr(unsigned a_length,const char *a_data,unsigned a_mult);
+  EXPORT void mult_char_ptr(unsigned a_length,const char *a_data,unsigned a_mult);
 
   /*!
    * \brief convert utf8 string to utf32 unsigned int string
@@ -1895,14 +1895,7 @@ struct string_s
    * \param a_format - format as in printf functions family
    * \param ... - list of parameters desired in format
    */
-  void setf(const char *a_format,...);
-
-  /*!
-   * \brief concatenate string of desired format
-   * \param a_format - format as in printf functions family
-   * \param ... - list of parameters demanded in format
-   */
-  void concf(const char *a_format,...);
+  EXPORT void setf(const char *a_format,...);
 
   /*!
    * \brief find position of given string in string from given index
@@ -1910,7 +1903,7 @@ struct string_s
    * \param a_length - length of searched string
    * \param a_data - data of searched string
    */
-  unsigned get_idx(unsigned a_idx,unsigned a_length,const char *a_data);
+  EXPORT unsigned get_idx(unsigned a_idx,unsigned a_length,const char *a_data);
 
   /*!
    * \brief return print size between two character indexes in string
@@ -1925,7 +1918,7 @@ struct string_s
    * \param c_idx - character index
    * \return line number
    */
-  unsigned get_character_line(unsigned c_idx);
+  EXPORT unsigned get_character_line(unsigned c_idx);
 
   /*!
    * \brief return index of character at beginning of line on which is located given character
@@ -2101,7 +2094,11 @@ inline void string_s::clear()
 inline void string_s::create(unsigned a_length)
 {/*{{{*/
   clear();
-  if (a_length == 0) return;
+
+  if (a_length == 0)
+  {
+    return;
+  }
 
   data = (char *)cmalloc((a_length + 1)*sizeof(char));
 
@@ -2112,7 +2109,11 @@ inline void string_s::create(unsigned a_length)
 inline void string_s::set(unsigned a_length,const char *a_data)
 {/*{{{*/
   clear();
-  if (a_length == 0) return;
+
+  if (a_length == 0)
+  {
+    return;
+  }
 
   data = (char *)cmalloc((a_length + 1)*sizeof(char));
   memcpy(data,a_data,a_length*sizeof(char));
@@ -2161,7 +2162,11 @@ inline string_s &string_s::operator=(string_s &a_src)
 {/*{{{*/
   clear();
 
-  if (a_src.data == &c_string_terminating_char) return *this;
+  if (a_src.data == &c_string_terminating_char)
+  {
+    return *this;
+  }
+
   data = (char *)cmalloc(a_src.size*sizeof(char));
   memcpy(data,a_src.data,(a_src.size - 1)*sizeof(char));
   data[a_src.size - 1] = '\0';
@@ -2172,15 +2177,15 @@ inline string_s &string_s::operator=(string_s &a_src)
 
 inline bool string_s::operator==(string_s &a_second)
 {/*{{{*/
-  if (size != a_second.size) return false;
-  if (data == &c_string_terminating_char) return true;
+  if (size != a_second.size) { return false; }
+  if (data == &c_string_terminating_char) { return true; }
   return (memcmp(data,a_second.data,(size - 1)*sizeof(char)) == 0);
 }/*}}}*/
 
 inline bool string_s::compare_char_ptr(unsigned a_length,const char *a_data)
 {/*{{{*/
-  if (size != a_length + 1) return false;
-  if (a_length == 0) return true;
+  if (size != a_length + 1) { return false; }
+  if (a_length == 0) { return true; }
   return (memcmp(data,a_data,a_length*sizeof(char)) == 0);
 }/*}}}*/
 
@@ -2191,9 +2196,16 @@ inline unsigned string_s::print()
 
 inline bool string_s::load_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == nullptr) return false;
-  FILE *f = fopen(a_file,"r");
-  if (f == nullptr) return false;
+  if (a_file == nullptr)
+  {
+    return false;
+  }
+
+  FILE *f = fopen(a_file,"rb");
+  if (f == nullptr)
+  {
+    return false;
+  }
 
   fseek(f,0,SEEK_END);
   unsigned file_size = ftell(f);
@@ -2203,6 +2215,8 @@ inline bool string_s::load_text_file(const char *a_file)
   data = (char *)cmalloc((file_size + 1)*sizeof(char));
   if (fread(data,file_size,1,f) != 1)
   {
+    clear();
+
     fclose(f);
     return false;
   }
@@ -2216,9 +2230,16 @@ inline bool string_s::load_text_file(const char *a_file)
 
 inline bool string_s::save_text_file(const char *a_file)
 {/*{{{*/
-  if (a_file == nullptr) return false;
+  if (a_file == nullptr)
+  {
+    return false;
+  }
+
   FILE *f = fopen(a_file,"w");
-  if (f == nullptr) return false;
+  if (f == nullptr)
+  {
+    return false;
+  }
 
   if (size > 1)
   {
