@@ -12761,10 +12761,11 @@ enum
   c_test_class_retrieve_float,
   c_test_class_retrieve_integer_init,
   c_test_class_retrieve_float_init,
+  c_test_class_retrieve_data_buffer,
   c_test_class_type,
 };/*}}}*/
 
-// - ucla parameter options -
+// - ucl parameter options -
 enum
 {/*{{{*/
   c_option_method = 0,
@@ -12776,6 +12777,7 @@ enum
   c_option_retrieve_float,
   c_option_retrieve_integer_init,
   c_option_retrieve_float_init,
+  c_option_retrieve_data_buffer,
 };/*}}}*/
 
 unsigned recognize_ucl_params_option(char *source_string)
@@ -13175,11 +13177,14 @@ state_38_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 102)
+   if (in_char == 100)
       goto state_40_label;
 
-   if (in_char == 105)
+   if (in_char == 102)
       goto state_41_label;
+
+   if (in_char == 105)
+      goto state_42_label;
 
    return c_idx_not_exist;
 
@@ -13189,7 +13194,7 @@ state_39_label:
    GET_NEXT_UCL_PARAMS_CHAR();
 
    if (in_char == 116)
-      goto state_42_label;
+      goto state_43_label;
 
    return c_idx_not_exist;
 
@@ -13198,8 +13203,8 @@ state_40_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 108)
-      goto state_43_label;
+   if (in_char == 97)
+      goto state_44_label;
 
    return c_idx_not_exist;
 
@@ -13208,8 +13213,8 @@ state_41_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 110)
-      goto state_44_label;
+   if (in_char == 108)
+      goto state_45_label;
 
    return c_idx_not_exist;
 
@@ -13218,8 +13223,8 @@ state_42_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 104)
-      goto state_45_label;
+   if (in_char == 110)
+      goto state_46_label;
 
    return c_idx_not_exist;
 
@@ -13228,8 +13233,8 @@ state_43_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 111)
-      goto state_46_label;
+   if (in_char == 104)
+      goto state_47_label;
 
    return c_idx_not_exist;
 
@@ -13239,7 +13244,7 @@ state_44_label:
    GET_NEXT_UCL_PARAMS_CHAR();
 
    if (in_char == 116)
-      goto state_47_label;
+      goto state_48_label;
 
    return c_idx_not_exist;
 
@@ -13249,7 +13254,7 @@ state_45_label:
    GET_NEXT_UCL_PARAMS_CHAR();
 
    if (in_char == 111)
-      goto state_48_label;
+      goto state_49_label;
 
    return c_idx_not_exist;
 
@@ -13258,8 +13263,8 @@ state_46_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 97)
-      goto state_49_label;
+   if (in_char == 116)
+      goto state_50_label;
 
    return c_idx_not_exist;
 
@@ -13268,8 +13273,8 @@ state_47_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 101)
-      goto state_50_label;
+   if (in_char == 111)
+      goto state_51_label;
 
    return c_idx_not_exist;
 
@@ -13278,8 +13283,8 @@ state_48_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 100)
-      goto state_51_label;
+   if (in_char == 97)
+      goto state_52_label;
 
    return c_idx_not_exist;
 
@@ -13288,8 +13293,8 @@ state_49_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 116)
-      goto state_52_label;
+   if (in_char == 97)
+      goto state_53_label;
 
    return c_idx_not_exist;
 
@@ -13298,33 +13303,38 @@ state_50_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 103)
-      goto state_53_label;
+   if (in_char == 101)
+      goto state_54_label;
 
    return c_idx_not_exist;
 
 // - STATE 51 -
 state_51_label:
-   CLOSE_UCL_PARAMS_CHAR(2);
-   return 2;
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 100)
+      goto state_55_label;
+
+   return c_idx_not_exist;
 
 // - STATE 52 -
 state_52_label:
-   CLOSE_UCL_PARAMS_CHAR(6);
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
    if (in_char == 95)
-      goto state_54_label;
+      goto state_56_label;
 
-   return 6;
+   return c_idx_not_exist;
 
 // - STATE 53 -
 state_53_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 101)
-      goto state_55_label;
+   if (in_char == 116)
+      goto state_57_label;
 
    return c_idx_not_exist;
 
@@ -13333,48 +13343,43 @@ state_54_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 105)
-      goto state_56_label;
+   if (in_char == 103)
+      goto state_58_label;
 
    return c_idx_not_exist;
 
 // - STATE 55 -
 state_55_label:
-   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
-   GET_NEXT_UCL_PARAMS_CHAR();
-
-   if (in_char == 114)
-      goto state_57_label;
-
-   return c_idx_not_exist;
+   CLOSE_UCL_PARAMS_CHAR(2);
+   return 2;
 
 // - STATE 56 -
 state_56_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 110)
-      goto state_58_label;
+   if (in_char == 98)
+      goto state_59_label;
 
    return c_idx_not_exist;
 
 // - STATE 57 -
 state_57_label:
-   CLOSE_UCL_PARAMS_CHAR(5);
+   CLOSE_UCL_PARAMS_CHAR(6);
    GET_NEXT_UCL_PARAMS_CHAR();
 
    if (in_char == 95)
-      goto state_59_label;
+      goto state_60_label;
 
-   return 5;
+   return 6;
 
 // - STATE 58 -
 state_58_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 105)
-      goto state_60_label;
+   if (in_char == 101)
+      goto state_61_label;
 
    return c_idx_not_exist;
 
@@ -13383,8 +13388,8 @@ state_59_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 105)
-      goto state_61_label;
+   if (in_char == 117)
+      goto state_62_label;
 
    return c_idx_not_exist;
 
@@ -13393,8 +13398,8 @@ state_60_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 116)
-      goto state_62_label;
+   if (in_char == 105)
+      goto state_63_label;
 
    return c_idx_not_exist;
 
@@ -13403,38 +13408,143 @@ state_61_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 110)
-      goto state_63_label;
+   if (in_char == 114)
+      goto state_64_label;
 
    return c_idx_not_exist;
 
 // - STATE 62 -
 state_62_label:
-   CLOSE_UCL_PARAMS_CHAR(8);
-   return 8;
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 102)
+      goto state_65_label;
+
+   return c_idx_not_exist;
 
 // - STATE 63 -
 state_63_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
-   if (in_char == 105)
-      goto state_64_label;
+   if (in_char == 110)
+      goto state_66_label;
 
    return c_idx_not_exist;
 
 // - STATE 64 -
 state_64_label:
+   CLOSE_UCL_PARAMS_CHAR(5);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 95)
+      goto state_67_label;
+
+   return 5;
+
+// - STATE 65 -
+state_65_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 102)
+      goto state_68_label;
+
+   return c_idx_not_exist;
+
+// - STATE 66 -
+state_66_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 105)
+      goto state_69_label;
+
+   return c_idx_not_exist;
+
+// - STATE 67 -
+state_67_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 105)
+      goto state_70_label;
+
+   return c_idx_not_exist;
+
+// - STATE 68 -
+state_68_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 101)
+      goto state_71_label;
+
+   return c_idx_not_exist;
+
+// - STATE 69 -
+state_69_label:
    CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
    GET_NEXT_UCL_PARAMS_CHAR();
 
    if (in_char == 116)
-      goto state_65_label;
+      goto state_72_label;
 
    return c_idx_not_exist;
 
-// - STATE 65 -
-state_65_label:
+// - STATE 70 -
+state_70_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 110)
+      goto state_73_label;
+
+   return c_idx_not_exist;
+
+// - STATE 71 -
+state_71_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 114)
+      goto state_74_label;
+
+   return c_idx_not_exist;
+
+// - STATE 72 -
+state_72_label:
+   CLOSE_UCL_PARAMS_CHAR(8);
+   return 8;
+
+// - STATE 73 -
+state_73_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 105)
+      goto state_75_label;
+
+   return c_idx_not_exist;
+
+// - STATE 74 -
+state_74_label:
+   CLOSE_UCL_PARAMS_CHAR(9);
+   return 9;
+
+// - STATE 75 -
+state_75_label:
+   CLOSE_UCL_PARAMS_CHAR(c_idx_not_exist);
+   GET_NEXT_UCL_PARAMS_CHAR();
+
+   if (in_char == 116)
+      goto state_76_label;
+
+   return c_idx_not_exist;
+
+// - STATE 76 -
+state_76_label:
    CLOSE_UCL_PARAMS_CHAR(7);
    return 7;
 
@@ -13547,6 +13657,10 @@ void processor_s::generate_ucl_params()
           type_test_class = c_test_class_retrieve_float_init;
           retrieve_params = true;
           break;
+        case c_option_retrieve_data_buffer:
+          type_test_class = c_test_class_retrieve_data_buffer;
+          retrieve_params = true;
+          break;
         default:
           type_test_class = c_test_class_type;
       }
@@ -13627,6 +13741,12 @@ fprintf(out_file,
         case c_test_class_retrieve_float_init:
           fprintf(out_file,"%s  double %s = 0.0;",line_end,names[t_idx].data);
           break;
+        case c_test_class_retrieve_data_buffer:
+          fprintf(out_file,
+            "%s  const void *%s_ptr;"
+            "%s  unsigned %s_size;",
+          line_end,names[t_idx].data,line_end,names[t_idx].data);
+          break;
         }
       } while(++t_idx < types.used);
 
@@ -13673,6 +13793,10 @@ fprintf(out_file,
       case c_test_class_retrieve_float:
       case c_test_class_retrieve_float_init:
         fprintf(out_file,"!it.retrieve_float(src_%u_location,%s)",param_idx,names[type_idx].data);
+        break;
+      case c_test_class_retrieve_data_buffer:
+        fprintf(out_file,"!it.retrieve_data_buffer(src_%u_location,%s_ptr,%s_size)",
+            param_idx,names[type_idx].data,names[type_idx].data);
         break;
       case c_test_class_type:
         fprintf(out_file,"src_%u_location->v_type != %s",param_idx,types[type_idx].data);
