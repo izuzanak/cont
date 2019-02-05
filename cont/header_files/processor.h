@@ -23,6 +23,7 @@
 #define TYPE_NUMBERS(IDX) (types[IDX]->properties)
 #define VAR_NAMES_CNT (data_type.variables.used)
 #define VAR_NAMES(IDX) (data_type.variables[IDX].data)
+#define VAR_NAME_LENGTHS(IDX) (data_type.variables[IDX].size - 1)
 
 // - constants describing begin and end of definition block -
 extern const char *c_begin_str;

@@ -54,7 +54,7 @@ fprintf(out_file,
    }
    else {
 fprintf(out_file,
-"%s *a_%s"
+"const %s *a_%s"
 ,IM_TYPE_NAMES(0),VAR_NAMES(0));
    }
    if (TYPE_CNT > 1) {
@@ -67,7 +67,7 @@ fprintf(out_file,
          }
          else {
 fprintf(out_file,
-",%s *a_%s"
+",const %s *a_%s"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
@@ -148,7 +148,7 @@ fprintf(out_file,
 void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_copy(%s *this,%s *a_src)\n"
+"static inline void %s_copy(%s *this,const %s *a_src)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
@@ -173,7 +173,7 @@ fprintf(out_file,
 void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline int %s_compare(%s *this,%s *a_second)\n"
+"static inline int %s_compare(const %s *this,const %s *a_second)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
@@ -212,20 +212,24 @@ void STRUCT_TO_STRING(STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s_to_string(%s *this,bc_array_s *a_trg)\n"
+"static inline void %s___to_string(%s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
 fprintf(out_file,
 "  bc_array_s_push(a_trg,'{');\n"
+"  bc_array_s_append(a_trg,%u,\"%s\");\n"
+"  bc_array_s_push(a_trg,':');\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,IM_TYPE_NAMES(0),VAR_NAMES(0));
+,VAR_NAME_LENGTHS(0),VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
 "  bc_array_s_push(a_trg,',');\n"
+"  bc_array_s_append(a_trg,%u,\"%s\");\n"
+"  bc_array_s_push(a_trg,':');\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,VAR_NAME_LENGTHS(t_idx),VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -464,7 +468,7 @@ fprintf(out_file,
    }
    else {
 fprintf(out_file,
-"%s *a_%s"
+"const %s *a_%s"
 ,TYPE_NAMES(0),VAR_NAMES(0));
    }
    if (TYPE_CNT > 1) {
@@ -477,7 +481,7 @@ fprintf(out_file,
          }
          else {
 fprintf(out_file,
-",%s *a_%s"
+",const %s *a_%s"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
@@ -493,17 +497,18 @@ fprintf(out_file,
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
 fprintf(out_file,
-"static inline void %s_copy(%s *this,%s *a_src);\n"
+"static inline void %s_copy(%s *this,const %s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
-"static inline int %s_compare(%s *this,%s *a_second);\n"
+"static inline int %s_compare(const %s *this,const %s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s_to_string(%s *this,bc_array_s *a_trg);\n"
+"static inline void %s___to_string(%s *this,bc_array_s *a_trg);\n"
+"#define %s_to_string %s___to_string\n"
 "#endif\n"
-,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {

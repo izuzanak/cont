@@ -237,7 +237,7 @@ fprintf(out_file,
    }
    else {
 fprintf(out_file,
-"static inline void %s_insert(%s *this,%s *a_value)\n"
+"static inline void %s_insert(%s *this,const %s *a_value)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
@@ -247,7 +247,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
-"    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
+"    unsigned new_size = (this->size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -292,7 +295,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
-"    %s_copy_resize(this,(this->size << 1) + c_array_add);\n"
+"    unsigned new_size = (this->size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -354,7 +360,7 @@ fprintf(out_file,
 void QUEUE_LAST(QUEUE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline %s *%s_last(%s *this)\n"
+"static inline %s *%s_last(const %s *this)\n"
 "{/*{{{*/\n"
 "  debug_assert(this->used > 0);\n"
 "\n"
@@ -486,12 +492,12 @@ void QUEUE_OPERATOR_EQUAL(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
-"static inline void %s_copy(%s *this,%s *a_src)\n"
+"static inline void %s_copy(%s *this,const %s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
    else {
 fprintf(out_file,
-"void %s_copy(%s *this,%s *a_src)\n"
+"void %s_copy(%s *this,const %s *a_src)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
 fprintf(out_file,
@@ -588,7 +594,7 @@ fprintf(out_file,
 void QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"int %s_compare(%s *this,%s *a_second)\n"
+"int %s_compare(const %s *this,const %s *a_second)\n"
 "{/*{{{*/\n"
 "  if (this->used != a_second->used)\n"
 "  {\n"
@@ -740,7 +746,7 @@ void QUEUE_TO_STRING(QUEUE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"void %s_to_string(%s *this,bc_array_s *a_trg)\n"
+"void %s___to_string(const %s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
 "  bc_array_s_push(a_trg,'[');\n"
 "\n"
@@ -968,7 +974,7 @@ fprintf(out_file,
    }
    else {
 fprintf(out_file,
-"static inline void %s_insert(%s *this,%s *a_value);\n"
+"static inline void %s_insert(%s *this,const %s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
@@ -985,7 +991,7 @@ fprintf(out_file,
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
-"static inline %s *%s_last(%s *this);\n"
+"static inline %s *%s_last(const %s *this);\n"
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
@@ -995,23 +1001,24 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
-"static inline void %s_copy(%s *this,%s *a_src);\n"
+"static inline void %s_copy(%s *this,const %s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
       else {
 fprintf(out_file,
-"void %s_copy(%s *this,%s *a_src);\n"
+"void %s_copy(%s *this,const %s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
 fprintf(out_file,
-"int %s_compare(%s *this,%s *a_second);\n"
+"int %s_compare(const %s *this,const %s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"void %s_to_string(%s *this,bc_array_s *a_trg);\n"
+"void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
+"#define %s_to_string %s___to_string\n"
 "#endif\n"
-,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
