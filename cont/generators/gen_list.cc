@@ -1551,7 +1551,7 @@ fprintf(out_file,
    else {
       if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
 fprintf(out_file,
-"void %s_clear(%s *this);\n"
+"EXPORT void %s_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
    }
@@ -1563,7 +1563,7 @@ fprintf(out_file,
       }
       else {
 fprintf(out_file,
-"void %s_set_buffer(%s *this,unsigned a_size,%s_element *a_data);\n"
+"EXPORT void %s_set_buffer(%s *this,unsigned a_size,%s_element *a_data);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
@@ -1577,7 +1577,7 @@ fprintf(out_file,
    }
    else {
 fprintf(out_file,
-"void %s_flush_all(%s *this);\n"
+"EXPORT void %s_flush_all(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
@@ -1626,17 +1626,17 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
-"void %s_copy_resize(%s *this,unsigned a_size);\n"
+"EXPORT void %s_copy_resize(%s *this,unsigned a_size);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
-"unsigned %s_get_idx(const %s *this,%s a_value);\n"
+"EXPORT unsigned %s_get_idx(const %s *this,%s a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
-"unsigned %s_get_idx(const %s *this,const %s *a_value);\n"
+"EXPORT unsigned %s_get_idx(const %s *this,const %s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
@@ -1647,16 +1647,16 @@ fprintf(out_file,
       }
       else {
 fprintf(out_file,
-"void %s_copy(%s *this,const %s *a_src);\n"
+"EXPORT void %s_copy(%s *this,const %s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
 fprintf(out_file,
-"int %s_compare(const %s *this,const %s *a_second);\n"
+"EXPORT int %s_compare(const %s *this,const %s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
+"EXPORT void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
 "#define %s_to_string %s___to_string\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
