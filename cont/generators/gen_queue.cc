@@ -208,24 +208,12 @@ void QUEUE_SWAP(QUEUE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
-"  unsigned tmp_unsigned = this->size;\n"
-"  this->size = a_second->size;\n"
-"  a_second->size = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->used;\n"
-"  this->used = a_second->used;\n"
-"  a_second->used = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->begin;\n"
-"  this->begin = a_second->begin;\n"
-"  a_second->begin = tmp_unsigned;\n"
-"\n"
-"  %s *tmp_data = this->data;\n"
-"  this->data = a_second->data;\n"
-"  a_second->data = tmp_data;\n"
+"  %s tmp = *this;\n"
+"  *this = *a_second;\n"
+"  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_INSERT(QUEUE_GEN_PARAMS)
@@ -272,6 +260,11 @@ fprintf(out_file,
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  this->data[inserted_idx] = a_value;\n"
+);
+   }
+   else if (TYPE_NUMBER & c_type_static) {
+fprintf(out_file,
+"  this->data[inserted_idx] = *a_value;\n"
 );
    }
    else {
@@ -824,7 +817,7 @@ void processor_s::generate_queue_type()
 
    // - test type options -
    if (type.properties & c_type_option_strict_dynamic) {
-      fprintf(stderr,"queue: container have not implemented processing of types with option strict_dynamic\n");
+      fprintf(stderr,"queue: option strict_dynamic not supported\n");
       cassert(0);
    }
 

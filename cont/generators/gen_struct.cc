@@ -83,6 +83,11 @@ fprintf(out_file,
 "  this->%s = a_%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
+       else if (TYPE_NUMBERS(t_idx) & c_type_static) {
+fprintf(out_file,
+"  this->%s = *a_%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+       }
        else {
 fprintf(out_file,
 "  %s_copy(&this->%s,a_%s);\n"
@@ -120,29 +125,12 @@ void STRUCT_SWAP(STRUCT_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   unsigned t_idx = 0;
-   do {
-fprintf(out_file,
-"\n"
-);
-      if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-fprintf(out_file,
-"  %s tmp_%s = this->%s;\n"
-"  this->%s = a_second->%s;\n"
-"  a_second->%s = tmp_%s;\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-      }
-      else {
-fprintf(out_file,
-"  %s_swap(&this->%s,&a_second->%s);\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-      }
-   } while(++t_idx < TYPE_CNT);
-fprintf(out_file,
+"  %s tmp = *this;\n"
+"  *this = *a_second;\n"
+"  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
@@ -156,6 +144,11 @@ fprintf(out_file,
        if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 fprintf(out_file,
 "  this->%s = a_src->%s;\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+       }
+       else if (TYPE_NUMBERS(t_idx) & c_type_static) {
+fprintf(out_file,
+"  this->%s = *a_src->%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
@@ -289,7 +282,8 @@ void processor_s::generate_struct_type()
          // - test type options -
          data_type_s &type = data_types[type_idx];
          if (type.properties & c_type_option_strict_dynamic) {
-            cassert(type.properties & c_type_dynamic);
+            fprintf(stderr,"struct: option strict_dynamic not supported\n");
+            cassert(0);
          }
 
       } while(++tn_idx < type_cnt);

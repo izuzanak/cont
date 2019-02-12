@@ -1007,64 +1007,12 @@ void RB_TREE_SWAP(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
-"  unsigned tmp_unsigned = this->size;\n"
-"  this->size = a_second->size;\n"
-"  a_second->size = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->used;\n"
-"  this->used = a_second->used;\n"
-"  a_second->used = tmp_unsigned;\n"
-"\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (STRUCT_NUMBER & c_type_option_safe) {
-fprintf(out_file,
-"  tmp_unsigned = this->count;\n"
-"  this->count = a_second->count;\n"
-"  a_second->count = tmp_unsigned;\n"
-"\n"
-);
-   }
-fprintf(out_file,
-"  %s_node *tmp_data = this->data;\n"
-"  this->data = a_second->data;\n"
-"  a_second->data = tmp_data;\n"
-"\n"
-"  tmp_unsigned = this->free_idx;\n"
-"  this->free_idx = a_second->free_idx;\n"
-"  a_second->free_idx = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->root_idx;\n"
-"  this->root_idx = a_second->root_idx;\n"
-"  a_second->root_idx = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->leaf_idx;\n"
-"  this->leaf_idx = a_second->leaf_idx;\n"
-"  a_second->leaf_idx = tmp_unsigned;\n"
-,IM_STRUCT_NAME);
-   if (VAR_NAMES_CNT > 0) {
-      unsigned t_idx = 0;
-      do {
-fprintf(out_file,
-"\n"
-);
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
-fprintf(out_file,
-"  %s tmp_%s = this->%s;\n"
-"  this->%s = a_second->%s;\n"
-"  a_second->%s = tmp_%s;\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-         }
-         else {
-fprintf(out_file,
-"  %s_swap(&this->%s,&a_second->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-         }
-      } while(++t_idx < VAR_NAMES_CNT);
-   }
-fprintf(out_file,
+"  %s tmp = *this;\n"
+"  *this = *a_second;\n"
+"  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
@@ -1138,6 +1086,11 @@ fprintf(out_file,
 "  this->data[new_node_idx].object = a_value;\n"
 );
    }
+   else if (TYPE_NUMBERS(0) & c_type_static) {
+fprintf(out_file,
+"  this->data[new_node_idx].object = *a_value;\n"
+);
+   }
    else {
 fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
@@ -1148,7 +1101,7 @@ fprintf(out_file,
 
 void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
 TEMPLATE_RB_TREE_INSERT(swap_insert,false,
 fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
@@ -1224,6 +1177,11 @@ fprintf(out_file,
 "  this->data[new_node_idx].object = a_value;\n"
 );
    }
+   else if (TYPE_NUMBERS(0) & c_type_static) {
+fprintf(out_file,
+"  this->data[new_node_idx].object = *a_value;\n"
+);
+   }
    else {
 fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
@@ -1234,7 +1192,7 @@ fprintf(out_file,
 
 void RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 {/*{{{*/
-   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
 TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,false,
 fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
@@ -1789,7 +1747,7 @@ fprintf(out_file,
 "\n"
 "  do {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "    ptr->object = s_ptr->object;\n"
 );
@@ -1832,7 +1790,7 @@ fprintf(out_file,
 );
       unsigned t_idx = 0;
       do {
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
+         if (!(TYPE_NUMBERS(t_idx + 1) & c_type_dynamic)) {
 fprintf(out_file,
 "  this->%s = a_src->%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
@@ -2318,7 +2276,7 @@ void processor_s::generate_rb_tree_type()
 
          // - test type options -
          if (data_types[type_idx].properties & c_type_option_strict_dynamic) {
-            fprintf(stderr,"rb_tree: container have not implemented processing of types with option strict_dynamic\n");
+            fprintf(stderr,"rb_tree: option strict_dynamic not supported\n");
             cassert(0);
          }
 
@@ -2583,7 +2541,7 @@ fprintf(out_file,
 "static inline unsigned %s_unique_insert(%s *this,const %s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
    }
-   if (!(TYPE_NUMBERS(0) & c_type_basic)) {
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "static inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
 "static inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"

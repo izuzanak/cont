@@ -226,42 +226,12 @@ void LIST_SWAP(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
-"  unsigned tmp_unsigned = this->size;\n"
-"  this->size = a_second->size;\n"
-"  a_second->size = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->used;\n"
-"  this->used = a_second->used;\n"
-"  a_second->used = tmp_unsigned;\n"
-"\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (STRUCT_NUMBER & c_type_option_safe) {
-fprintf(out_file,
-"  tmp_unsigned = this->count;\n"
-"  this->count = a_second->count;\n"
-"  a_second->count = tmp_unsigned;\n"
-"\n"
-);
-   }
-fprintf(out_file,
-"  %s_element *tmp_data = this->data;\n"
-"  this->data = a_second->data;\n"
-"  a_second->data = tmp_data;\n"
-"\n"
-"  tmp_unsigned = this->free_idx;\n"
-"  this->free_idx = a_second->free_idx;\n"
-"  a_second->free_idx = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->first_idx;\n"
-"  this->first_idx = a_second->first_idx;\n"
-"  a_second->first_idx = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->last_idx;\n"
-"  this->last_idx = a_second->last_idx;\n"
-"  a_second->last_idx = tmp_unsigned;\n"
+"  %s tmp = *this;\n"
+"  *this = *a_second;\n"
+"  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
@@ -368,6 +338,11 @@ fprintf(out_file,
 "  new_element->object = a_value;\n"
 );
    }
+   else if (TYPE_NUMBER & c_type_static) {
+fprintf(out_file,
+"  new_element->object = *a_value;\n"
+);
+   }
    else {
 fprintf(out_file,
 "  %s_copy(&new_element->object,a_value);\n"
@@ -460,6 +435,11 @@ fprintf(out_file,
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  new_element->object = a_value;\n"
+);
+   }
+   else if (TYPE_NUMBER & c_type_static) {
+fprintf(out_file,
+"  new_element->object = *a_value;\n"
 );
    }
    else {
@@ -570,6 +550,11 @@ fprintf(out_file,
 "  new_element->object = a_value;\n"
 );
    }
+   else if (TYPE_NUMBER & c_type_static) {
+fprintf(out_file,
+"  new_element->object = *a_value;\n"
+);
+   }
    else {
 fprintf(out_file,
 "  %s_copy(&new_element->object,a_value);\n"
@@ -676,6 +661,11 @@ fprintf(out_file,
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  new_element->object = a_value;\n"
+);
+   }
+   else if (TYPE_NUMBER & c_type_static) {
+fprintf(out_file,
+"  new_element->object = *a_value;\n"
 );
    }
    else {
@@ -1259,7 +1249,7 @@ fprintf(out_file,
 "\n"
 "  do {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_basic) {
+   if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "    ptr->object = s_ptr->object;\n"
 );
@@ -1418,7 +1408,7 @@ void processor_s::generate_list_type()
 
    // - test type options -
    if (type.properties & c_type_option_strict_dynamic) {
-      fprintf(stderr,"list: container have not implemented processing of types with option strict_dynamic\n");
+      fprintf(stderr,"list: option strict_dynamic not supported\n");
       cassert(0);
    }
 

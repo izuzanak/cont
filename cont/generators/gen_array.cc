@@ -267,20 +267,12 @@ void ARRAY_SWAP(ARRAY_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
 "{/*{{{*/\n"
-"  unsigned tmp_unsigned = this->size;\n"
-"  this->size = a_second->size;\n"
-"  a_second->size = tmp_unsigned;\n"
-"\n"
-"  tmp_unsigned = this->used;\n"
-"  this->used = a_second->used;\n"
-"  a_second->used = tmp_unsigned;\n"
-"\n"
-"  %s *tmp_data = this->data;\n"
-"  this->data = a_second->data;\n"
-"  a_second->data = tmp_data;\n"
+"  %s tmp = *this;\n"
+"  *this = *a_second;\n"
+"  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_OPERATOR_LE_BR_RE_BR(ARRAY_GEN_PARAMS)
@@ -330,6 +322,11 @@ fprintf(out_file,
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  this->data[this->used++] = a_value;\n"
+);
+   }
+   else if (TYPE_NUMBER & c_type_static) {
+fprintf(out_file,
+"  this->data[this->used++] = *a_value;\n"
 );
    }
    else {
@@ -513,71 +510,6 @@ fprintf(out_file,
 
 void ARRAY_COPY_RESIZE(ARRAY_GEN_PARAMS)
 {/*{{{*/
-if (TYPE_NUMBER & c_type_option_strict_dynamic)
-{/*{{{*/
-fprintf(out_file,
-"void %s_copy_resize(%s *this,unsigned a_size)\n"
-"{/*{{{*/\n"
-"  debug_assert(a_size >= this->used);\n"
-"\n"
-"  %s *n_data;\n"
-"\n"
-"  if (a_size == 0)\n"
-"  {\n"
-"    n_data = NULL;\n"
-"  }\n"
-"  else\n"
-"  {\n"
-"    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-fprintf(out_file,
-"\n"
-"    %s *ptr = n_data;\n"
-"    %s *ptr_end = n_data + a_size;\n"
-"\n"
-"    do {\n"
-"      %s_init(ptr);\n"
-"    } while(++ptr < ptr_end);\n"
-"  }\n"
-"\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-fprintf(out_file,
-"  if (this->used > 0)\n"
-"  {\n"
-"    %s *ptr = this->data;\n"
-"    %s *ptr_end = ptr + this->used;\n"
-"    %s *n_ptr = n_data;\n"
-"\n"
-"    do {\n"
-"      %s_swap(n_ptr,ptr);\n"
-"    } while(++n_ptr,++ptr < ptr_end);\n"
-"  }\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-fprintf(out_file,
-"\n"
-"  if (this->size > this->used)\n"
-"  {\n"
-"    %s *ptr = this->data + this->used;\n"
-"    %s *ptr_end = this->data + this->size;\n"
-"\n"
-"    do {\n"
-"      %s_clear(ptr);\n"
-"    } while(++ptr < ptr_end);\n"
-"  }\n"
-"\n"
-"  if (this->size != 0)\n"
-"  {\n"
-"    cfree(this->data);\n"
-"  }\n"
-"\n"
-"  this->data = n_data;\n"
-"  this->size = a_size;\n"
-"}/*}}}*/\n"
-"\n"
-,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-}/*}}}*/
-else
-{/*{{{*/
 fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
@@ -633,7 +565,6 @@ fprintf(out_file,
 "\n"
 );
 }/*}}}*/
-}/*}}}*/
 
 void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)
 {/*{{{*/
@@ -677,6 +608,11 @@ fprintf(out_file,
       if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "    *ptr = a_value;\n"
+);
+      }
+      else if (TYPE_NUMBER & c_type_static) {
+fprintf(out_file,
+"    *ptr = *a_value;\n"
 );
       }
       else {
@@ -916,7 +852,8 @@ void processor_s::generate_array_type()
 
    // - test type options -
    if (type.properties & c_type_option_strict_dynamic) {
-      cassert(type.properties & c_type_dynamic);
+      fprintf(stderr,"array: option strict_dynamic not supported\n");
+      cassert(0);
    }
 
    string_s real_name;
