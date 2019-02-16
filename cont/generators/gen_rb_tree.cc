@@ -397,9 +397,36 @@ fprintf(out_file,
 "      debug_assert(new_size != 0);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
+"\n"
+"      if (this->leaf_idx == c_idx_not_exist)\n"
+"      {\n"
+"        this->leaf_idx = this->used++;\n"
+"        %s_node *leaf = this->data + this->leaf_idx;\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+fprintf(out_file,
+"        leaf->valid = 0;\n"
+"        leaf->color = 1;\n"
+);
+   }
+   else {
+fprintf(out_file,
+"        leaf->color = 1;\n"
+);
+   }
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
+fprintf(out_file,
+"\n"
+"        leaf->left_idx = c_idx_not_exist;\n"
+"        leaf->right_idx = c_idx_not_exist;\n"
+);
+   }
+fprintf(out_file,
+"      }\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+);
    }
    else {
 fprintf(out_file,
@@ -432,34 +459,6 @@ fprintf(out_file,
 "{/*{{{*/\n"
 "  if (this->root_idx == c_idx_not_exist)\n"
 "  {\n"
-"    if (this->leaf_idx == c_idx_not_exist)\n"
-"    {\n"
-"      this->leaf_idx = %s___get_new_index(this);\n"
-"      %s_node *leaf = this->data + this->leaf_idx;\n"
-"\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (STRUCT_NUMBER & c_type_option_safe) {
-fprintf(out_file,
-"      leaf->valid = 0;\n"
-"      leaf->color = 1;\n"
-"      this->count--;\n"
-);
-   }
-   else {
-fprintf(out_file,
-"      leaf->color = 1;\n"
-);
-   }
-   if (STRUCT_NUMBER & c_type_option_check_properties) {
-fprintf(out_file,
-"\n"
-"      leaf->left_idx = c_idx_not_exist;\n"
-"      leaf->right_idx = c_idx_not_exist;\n"
-);
-   }
-fprintf(out_file,
-"    }\n"
-"\n"
 "    this->data[a_new_idx].parent_idx = c_idx_not_exist;\n"
 "    this->root_idx = a_new_idx;\n"
 "  }\n"
@@ -506,7 +505,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
@@ -2384,6 +2383,10 @@ void processor_s::generate_rb_tree_type()
 
 fprintf(out_file,
 "// struct %s definition\n"
+"\n"
+"#if c_array_add < 2\n"
+"#error Container grow constant 'c_array_add' must be at least 2\n"
+"#endif\n"
 "\n"
 "typedef struct %s_node %s_node;\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
