@@ -124,7 +124,7 @@ void STRUCT_SWAP(STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second)\n"
-"{/*{{{*/"
+"{/*{{{*/\n"
 "  %s tmp = *this;\n"
 "  *this = *a_second;\n"
 "  *a_second = tmp;\n"
@@ -141,14 +141,9 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-       if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+       if (!(TYPE_NUMBERS(t_idx) & c_type_dynamic)) {
 fprintf(out_file,
 "  this->%s = a_src->%s;\n"
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-       }
-       else if (TYPE_NUMBERS(t_idx) & c_type_static) {
-fprintf(out_file,
-"  this->%s = *a_src->%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
