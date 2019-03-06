@@ -397,33 +397,8 @@ fprintf(out_file,
 "      debug_assert(new_size != 0);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
-"\n"
-"      if (this->leaf_idx == c_idx_not_exist)\n"
-"      {\n"
-"        this->leaf_idx = this->used++;\n"
-"        %s_node *leaf = this->data + this->leaf_idx;\n"
-"\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (STRUCT_NUMBER & c_type_option_safe) {
+,IM_STRUCT_NAME);
 fprintf(out_file,
-"        leaf->valid = 0;\n"
-"        leaf->color = 1;\n"
-);
-   }
-   else {
-fprintf(out_file,
-"        leaf->color = 1;\n"
-);
-   }
-   if (STRUCT_NUMBER & c_type_option_check_properties) {
-fprintf(out_file,
-"\n"
-"        leaf->left_idx = c_idx_not_exist;\n"
-"        leaf->right_idx = c_idx_not_exist;\n"
-);
-   }
-fprintf(out_file,
-"      }\n"
 "    }\n"
 "\n"
 );
@@ -431,8 +406,41 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "    debug_assert(this->used < this->size);\n"
+"\n"
 );
    }
+
+
+fprintf(out_file,
+"    if (this->leaf_idx == c_idx_not_exist)\n"
+"    {\n"
+"      this->leaf_idx = this->used++;\n"
+"      %s_node *leaf = this->data + this->leaf_idx;\n"
+"\n"
+,IM_STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_safe) {
+fprintf(out_file,
+"      leaf->valid = 0;\n"
+"      leaf->color = 1;\n"
+);
+   }
+   else {
+fprintf(out_file,
+"      leaf->color = 1;\n"
+);
+   }
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
+fprintf(out_file,
+"\n"
+"      leaf->left_idx = c_idx_not_exist;\n"
+"      leaf->right_idx = c_idx_not_exist;\n"
+);
+   }
+fprintf(out_file,
+"    }\n"
+"\n"
+);
+
 fprintf(out_file,
 "    new_idx = this->used++;\n"
 "  }\n"
@@ -899,7 +907,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "{/*{{{*/\n"
-"  debug_assert(a_size != 0 && a_data != NULL);\n"
+"  debug_assert(a_size > 1 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
 ,IM_STRUCT_NAME);
