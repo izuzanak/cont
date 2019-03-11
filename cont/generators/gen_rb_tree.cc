@@ -1958,6 +1958,37 @@ fprintf(out_file,
 ,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
 }/*}}}*/
 
+void RB_TREE_TO_STRING_SEPARATOR(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"{/*{{{*/\n"
+"  if (this->root_idx != c_idx_not_exist)\n"
+"  {\n"
+"    unsigned stack[RB_TREE_STACK_SIZE(%s,this)];\n"
+"    unsigned *stack_ptr = stack;\n"
+"\n"
+"    unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
+"    do {\n"
+"      %s_to_string(&(this->data + idx)->object,a_trg);\n"
+"\n"
+"      idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"
+"      if (idx == c_idx_not_exist)\n"
+"      {\n"
+"        break;\n"
+"      }\n"
+"\n"
+"      bc_array_s_append(a_trg,a_count,a_data);\n"
+"    } while(1);\n"
+"  }\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
+,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+}/*}}}*/
+
 void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
@@ -2617,8 +2648,9 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "EXPORT void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
 "#define %s_to_string %s___to_string\n"
+"EXPORT void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_rehash) {
 fprintf(out_file,
 "EXPORT void %s_rehash_tree(%s *this);\n"
@@ -2977,6 +3009,9 @@ RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_VALUES);
 
    // - rb_tree to_string method -
 RB_TREE_TO_STRING(RB_TREE_GEN_VALUES);
+
+   // - rb_tree to_string_separator method -
+RB_TREE_TO_STRING_SEPARATOR(RB_TREE_GEN_VALUES);
 
    // - rb_tree rehash_tree -
    if (STRUCT_NUMBER & c_type_option_rehash) {

@@ -790,6 +790,57 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
+void QUEUE_TO_STRING_SEPARATOR(QUEUE_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"{/*{{{*/\n"
+"  if (this->used != 0)\n"
+"  {\n"
+"    unsigned sec_cnt;\n"
+"    %s *ptr = this->data + this->begin;\n"
+"    %s *ptr_end;\n"
+"\n"
+"    if (this->begin + this->used > this->size)\n"
+"    {\n"
+"      ptr_end = this->data + this->size;\n"
+"      sec_cnt = this->begin + this->used - this->size;\n"
+"    }\n"
+"    else\n"
+"    {\n"
+"      ptr_end = ptr + this->used;\n"
+"      sec_cnt = 0;\n"
+"    }\n"
+"\n"
+"    do {\n"
+"      %s_to_string(ptr,a_trg);\n"
+"\n"
+"      if (++ptr >= ptr_end)\n"
+"      {\n"
+"        break;\n"
+"      }\n"
+"\n"
+"      bc_array_s_append(a_trg,a_count,a_data);\n"
+"    } while(1);\n"
+"\n"
+"    if (sec_cnt != 0)\n"
+"    {\n"
+"      ptr = this->data;\n"
+"      ptr_end = ptr + sec_cnt;\n"
+"\n"
+"      do {\n"
+"        bc_array_s_append(a_trg,a_count,a_data);\n"
+"        %s_to_string(ptr,a_trg);\n"
+"      } while(++ptr < ptr_end);\n"
+"    }\n"
+"  }\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
+
 void processor_s::generate_queue_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -1010,8 +1061,9 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "EXPORT void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
 "#define %s_to_string %s___to_string\n"
+"EXPORT void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1191,6 +1243,9 @@ QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_VALUES);
 
    // - queue to_string method -
 QUEUE_TO_STRING(QUEUE_GEN_VALUES);
+
+   // - queue to_string_separator method -
+QUEUE_TO_STRING_SEPARATOR(QUEUE_GEN_VALUES);
    }
 }/*}}}*/
 

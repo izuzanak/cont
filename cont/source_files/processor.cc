@@ -468,14 +468,14 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 "\n"
 "#define CONT_INIT(TYPE,NAME) \\\n"
 "  TYPE NAME;\\\n"
-"  TYPE ## _init(&NAME);\n"
+"  TYPE ## _init(&(NAME));\n"
 "\n"
 "#define CONT_CLEAR(TYPE,NAME) \\\n"
 "  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\n"
 "\n"
 "#define CONT_INIT_CLEAR(TYPE,NAME) \\\n"
 "  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\\\n"
-"  TYPE ## _init(&NAME);\n"
+"  TYPE ## _init(&(NAME));\n"
 "\n"
       );
    }

@@ -373,7 +373,7 @@ fprintf(out_file,
 void ARRAY_RESERVE(ARRAY_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"void %s_reserve(%s *this,unsigned a_cnt)\n"
+"static inline void %s_reserve(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = this->used + a_cnt;\n"
 "  if (required_cnt > this->size)\n"
@@ -394,7 +394,7 @@ fprintf(out_file,
 void ARRAY_PUSH_BLANKS(ARRAY_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"void %s_push_blanks(%s *this,unsigned a_cnt)\n"
+"static inline void %s_push_blanks(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -825,6 +825,34 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
+void ARRAY_TO_STRING_SEPARATOR(ARRAY_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"{/*{{{*/\n"
+"  if (this->used != 0)\n"
+"  {\n"
+"    %s *ptr = this->data;\n"
+"    %s *ptr_end = this->data + this->used;\n"
+"\n"
+"    do {\n"
+"      %s_to_string(ptr,a_trg);\n"
+"\n"
+"      if (++ptr >= ptr_end)\n"
+"      {\n"
+"        break;\n"
+"      }\n"
+"\n"
+"      bc_array_s_append(a_trg,a_count,a_data);\n"
+"    } while(1);\n"
+"  }\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
+
 void processor_s::generate_array_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -1021,11 +1049,11 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
-"EXPORT void %s_reserve(%s *this,unsigned a_cnt);\n"
+"static inline void %s_reserve(%s *this,unsigned a_cnt);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
-"EXPORT void %s_push_blanks(%s *this,unsigned a_cnt);\n"
+"static inline void %s_push_blanks(%s *this,unsigned a_cnt);\n"
 "static inline void %s_push_clear(%s *this);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
@@ -1097,8 +1125,9 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "EXPORT void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
 "#define %s_to_string %s___to_string\n"
+"EXPORT void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1191,8 +1220,12 @@ ARRAY_PUSH(ARRAY_GEN_VALUES);
 ARRAY_PUSH_BLANK(ARRAY_GEN_VALUES);
 
    // - array reserve method -
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+ARRAY_RESERVE(ARRAY_GEN_VALUES);
+   }
 
    // - array push_blanks method -
+ARRAY_PUSH_BLANKS(ARRAY_GEN_VALUES);
 
    // - array push_clear method -
 ARRAY_PUSH_CLEAR(ARRAY_GEN_VALUES);
@@ -1290,12 +1323,8 @@ ARRAY_FLUSH_ALL(ARRAY_GEN_VALUES);
    // - array push_blank method -
 
    // - array reserve method -
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
-ARRAY_RESERVE(ARRAY_GEN_VALUES);
-   }
 
    // - array push_blanks method -
-ARRAY_PUSH_BLANKS(ARRAY_GEN_VALUES);
 
    // - array push_clear method -
 
@@ -1330,6 +1359,9 @@ ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
 
    // - array to_string method -
 ARRAY_TO_STRING(ARRAY_GEN_VALUES);
+
+   // - array to_string_separator method -
+ARRAY_TO_STRING_SEPARATOR(ARRAY_GEN_VALUES);
    }
 }/*}}}*/
 

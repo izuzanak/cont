@@ -230,6 +230,36 @@ fprintf(out_file,
 );
 }/*}}}*/
 
+void STRUCT_TO_STRING_SEPARATOR(STRUCT_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_TO_STRING == ENABLED\n"
+"static inline void %s_to_string_separator(%s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+fprintf(out_file,
+"  bc_array_s_append(a_trg,%u,\"%s\");\n"
+"  bc_array_s_push(a_trg,':');\n"
+"  %s_to_string(&this->%s,a_trg);\n"
+,VAR_NAME_LENGTHS(0),VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+fprintf(out_file,
+"  bc_array_s_append(a_trg,a_count,a_data);\n"
+"  bc_array_s_append(a_trg,%u,\"%s\");\n"
+"  bc_array_s_push(a_trg,':');\n"
+"  %s_to_string(&this->%s,a_trg);\n"
+,VAR_NAME_LENGTHS(t_idx),VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < TYPE_CNT);
+   }
+fprintf(out_file,
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
+
 void processor_s::generate_struct_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -496,8 +526,9 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "static inline void %s___to_string(%s *this,bc_array_s *a_trg);\n"
 "#define %s_to_string %s___to_string\n"
+"static inline void %s_to_string_separator(%s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -587,6 +618,9 @@ STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
 
    // - struct to_string method -
 STRUCT_TO_STRING(STRUCT_GEN_VALUES);
+
+   // - struct to_string_separator method -
+STRUCT_TO_STRING_SEPARATOR(STRUCT_GEN_VALUES);
    }
 }/*}}}*/
 

@@ -1381,6 +1381,34 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
+void LIST_TO_STRING_SEPARATOR(LIST_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_TO_STRING == ENABLED\n"
+"void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"{/*{{{*/\n"
+"  if (this->first_idx != c_idx_not_exist)\n"
+"  {\n"
+"    unsigned idx = this->first_idx;\n"
+"\n"
+"    do {\n"
+"      %s_element *element = this->data + idx;\n"
+"      %s_to_string(&element->object,a_trg);\n"
+"\n"
+"      if ((idx = element->next_idx) == c_idx_not_exist)\n"
+"      {\n"
+"        break;\n"
+"      }\n"
+"\n"
+"      bc_array_s_append(a_trg,a_count,a_data);\n"
+"    } while(1);\n"
+"  }\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+}/*}}}*/
+
 void processor_s::generate_list_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -1648,8 +1676,9 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "EXPORT void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
 "#define %s_to_string %s___to_string\n"
+"EXPORT void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1874,6 +1903,9 @@ LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_VALUES);
 
    // - list to_string method -
 LIST_TO_STRING(LIST_GEN_VALUES);
+
+   // - list to_string_separator method -
+LIST_TO_STRING_SEPARATOR(LIST_GEN_VALUES);
    }
 }/*}}}*/
 
