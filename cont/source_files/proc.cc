@@ -2443,6 +2443,12 @@ void process_s::pa_reduce_option(process_s &proc)
    else if (strcmp("check_properties",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_check_properties;
 
+   else if (strcmp("to_json",code.data + lse.terminal_start) == 0)
+      proc.processor_ptr->type_settings |= c_type_option_to_json;
+
+   else if (strcmp("to_json_nice",code.data + lse.terminal_start) == 0)
+      proc.processor_ptr->type_settings |= c_type_option_to_json_nice;
+
    else {
       fprintf(stderr,"ERROR: Unrecognized option %s.\n",code.data + lse.terminal_start);
       cassert(0);

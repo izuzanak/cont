@@ -853,6 +853,77 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
+void ARRAY_TO_JSON(ARRAY_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"void %s_to_json(const %s *this,bc_array_s *a_trg)\n"
+"{/*{{{*/\n"
+"  if (this->used != 0)\n"
+"  {\n"
+"    bc_array_s_push(a_trg,'[');\n"
+"\n"
+"    %s *ptr = this->data;\n"
+"    %s *ptr_end = this->data + this->used;\n"
+"\n"
+"    do {\n"
+"      %s_to_json(ptr,a_trg);\n"
+"\n"
+"      if (++ptr >= ptr_end)\n"
+"      {\n"
+"        break;\n"
+"      }\n"
+"\n"
+"      bc_array_s_push(a_trg,',');\n"
+"    } while(1);\n"
+"\n"
+"    bc_array_s_push(a_trg,']');\n"
+"  }\n"
+"  else\n"
+"  {\n"
+"    bc_array_s_append(a_trg,2,\"[]\");\n"
+"  }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
+
+void ARRAY_TO_JSON_NICE(ARRAY_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg)\n"
+"{/*{{{*/\n"
+"  if (this->used != 0)\n"
+"  {\n"
+"    bc_array_s_push(a_trg,'[');\n"
+"    json_nice_s_push_indent(a_json_nice,a_trg);\n"
+"\n"
+"    %s *ptr = this->data;\n"
+"    %s *ptr_end = this->data + this->used;\n"
+"\n"
+"    do {\n"
+"      %s_to_json_nice(ptr,a_json_nice,a_trg);\n"
+"\n"
+"      if (++ptr >= ptr_end)\n"
+"      {\n"
+"        break;\n"
+"      }\n"
+"\n"
+"      bc_array_s_push(a_trg,',');\n"
+"      json_nice_s_indent(a_json_nice,a_trg);\n"
+"    } while(1);\n"
+"\n"
+"    json_nice_s_pop_indent(a_json_nice,a_trg);\n"
+"    bc_array_s_push(a_trg,']');\n"
+"  }\n"
+"  else\n"
+"  {\n"
+"    bc_array_s_append(a_trg,2,\"[]\");\n"
+"  }\n"
+"}/*}}}*/\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+}/*}}}*/
+
 void processor_s::generate_array_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -1128,6 +1199,16 @@ fprintf(out_file,
 "EXPORT void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_to_json) {
+fprintf(out_file,
+"EXPORT void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
+   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+fprintf(out_file,
+"EXPORT void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1258,6 +1339,12 @@ ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array to_string method -
+
+   // - array to_string_separator method -
+
+   // - array to_json method -
+
+   // - array to_json_nice method -
    }
 }/*}}}*/
 
@@ -1362,6 +1449,17 @@ ARRAY_TO_STRING(ARRAY_GEN_VALUES);
 
    // - array to_string_separator method -
 ARRAY_TO_STRING_SEPARATOR(ARRAY_GEN_VALUES);
+
+   // - array to_json method -
+   if (STRUCT_NUMBER & c_type_option_to_json) {
+ARRAY_TO_JSON(ARRAY_GEN_VALUES);
+   }
+
+   // - array to_json_nice method -
+   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+ARRAY_TO_JSON_NICE(ARRAY_GEN_VALUES);
+   }
+
    }
 }/*}}}*/
 

@@ -200,24 +200,20 @@ void STRUCT_TO_STRING(STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s___to_string(%s *this,bc_array_s *a_trg)\n"
+"static inline void %s___to_string(const %s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
 fprintf(out_file,
-"  bc_array_s_push(a_trg,'{');\n"
-"  bc_array_s_append(a_trg,%u,\"%s\");\n"
-"  bc_array_s_push(a_trg,':');\n"
+"  bc_array_s_append(a_trg,%u,\"{%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAME_LENGTHS(0),VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+,VAR_NAME_LENGTHS(0) + 2,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
-"  bc_array_s_push(a_trg,',');\n"
-"  bc_array_s_append(a_trg,%u,\"%s\");\n"
-"  bc_array_s_push(a_trg,':');\n"
+"  bc_array_s_append(a_trg,%u,\",%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAME_LENGTHS(t_idx),VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,VAR_NAME_LENGTHS(t_idx) + 2,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -234,28 +230,87 @@ void STRUCT_TO_STRING_SEPARATOR(STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s_to_string_separator(%s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
 fprintf(out_file,
-"  bc_array_s_append(a_trg,%u,\"%s\");\n"
-"  bc_array_s_push(a_trg,':');\n"
+"  bc_array_s_append(a_trg,%u,\"%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAME_LENGTHS(0),VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+,VAR_NAME_LENGTHS(0) + 1,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
 "  bc_array_s_append(a_trg,a_count,a_data);\n"
-"  bc_array_s_append(a_trg,%u,\"%s\");\n"
-"  bc_array_s_push(a_trg,':');\n"
+"  bc_array_s_append(a_trg,%u,\"%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAME_LENGTHS(t_idx),VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,VAR_NAME_LENGTHS(t_idx) + 1,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
+"\n"
+);
+}/*}}}*/
+
+void STRUCT_TO_JSON(STRUCT_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"static inline void %s_to_json(const %s *this,bc_array_s *a_trg)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+fprintf(out_file,
+"  bc_array_s_append(a_trg,%u,\"{\\\"%s\\\":\");\n"
+"  %s_to_json(&this->%s,a_trg);\n"
+,VAR_NAME_LENGTHS(0) + 4,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+fprintf(out_file,
+"  bc_array_s_append(a_trg,%u,\",\\\"%s\\\":\");\n"
+"  %s_to_json(&this->%s,a_trg);\n"
+,VAR_NAME_LENGTHS(t_idx) + 4,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < TYPE_CNT);
+   }
+fprintf(out_file,
+"  bc_array_s_push(a_trg,'}');\n"
+);
+fprintf(out_file,
+"}/*}}}*/\n"
+"\n"
+);
+}/*}}}*/
+
+void STRUCT_TO_JSON_NICE(STRUCT_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"static inline void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg)\n"
+"{/*{{{*/\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+fprintf(out_file,
+"  bc_array_s_push(a_trg,'{');\n"
+"  json_nice_s_push_indent(a_json_nice,a_trg);\n"
+"  bc_array_s_append(a_trg,%u,\"\\\"%s\\\": \");\n"
+"  %s_to_json_nice(&this->%s,a_json_nice,a_trg);\n"
+,VAR_NAME_LENGTHS(0) + 4,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+   if (TYPE_CNT > 1) {
+      unsigned t_idx = 1;
+      do {
+fprintf(out_file,
+"  bc_array_s_push(a_trg,',');\n"
+"  json_nice_s_indent(a_json_nice,a_trg);\n"
+"  bc_array_s_append(a_trg,%u,\"\\\"%s\\\": \");\n"
+"  %s_to_json_nice(&this->%s,a_json_nice,a_trg);\n"
+,VAR_NAME_LENGTHS(t_idx) + 4,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+      } while(++t_idx < TYPE_CNT);
+   }
+fprintf(out_file,
+"  json_nice_s_pop_indent(a_json_nice,a_trg);\n"
+"  bc_array_s_push(a_trg,'}');\n"
+);
+fprintf(out_file,
+"}/*}}}*/\n"
 "\n"
 );
 }/*}}}*/
@@ -524,11 +579,21 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s___to_string(%s *this,bc_array_s *a_trg);\n"
+"static inline void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
 "#define %s_to_string %s___to_string\n"
-"static inline void %s_to_string_separator(%s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
+"static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+   if (STRUCT_NUMBER & c_type_option_to_json) {
+fprintf(out_file,
+"static inline void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
+   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+fprintf(out_file,
+"static inline void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -621,6 +686,17 @@ STRUCT_TO_STRING(STRUCT_GEN_VALUES);
 
    // - struct to_string_separator method -
 STRUCT_TO_STRING_SEPARATOR(STRUCT_GEN_VALUES);
+
+   // - struct to_json method -
+   if (STRUCT_NUMBER & c_type_option_to_json) {
+STRUCT_TO_JSON(STRUCT_GEN_VALUES);
+   }
+
+   // - struct to_json_nice method -
+   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+STRUCT_TO_JSON_NICE(STRUCT_GEN_VALUES);
+   }
+
    }
 }/*}}}*/
 
@@ -667,6 +743,12 @@ fprintf(out_file,
    // - struct operator== method -
 
    // - struct to_string method -
+
+   // - struct to_string_separator method -
+
+   // - struct to_json method -
+
+   // - struct to_json_nice method -
    }
 }/*}}}*/
 
