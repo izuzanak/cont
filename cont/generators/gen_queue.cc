@@ -350,6 +350,19 @@ fprintf(out_file,
 );
 }/*}}}*/
 
+void QUEUE_FIRST(QUEUE_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"static inline %s *%s_first(const %s *this)\n"
+"{/*{{{*/\n"
+"  debug_assert(this->used > 0);\n"
+"\n"
+"  return this->data + this->begin;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
 void QUEUE_LAST(QUEUE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
@@ -1153,8 +1166,9 @@ fprintf(out_file,
 ,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
+"static inline %s *%s_first(const %s *this);\n"
 "static inline %s *%s_last(const %s *this);\n"
-,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "EXPORT void %s_copy_resize(%s *this,unsigned a_size);\n"
@@ -1278,6 +1292,9 @@ QUEUE_INSERT_BLANK(QUEUE_GEN_VALUES);
    // - queue next method -
 QUEUE_NEXT(QUEUE_GEN_VALUES);
 
+   // - queue first method -
+QUEUE_FIRST(QUEUE_GEN_VALUES);
+
    // - queue last method -
 QUEUE_LAST(QUEUE_GEN_VALUES);
 
@@ -1357,6 +1374,8 @@ QUEUE_FLUSH_ALL(QUEUE_GEN_VALUES);
    // - queue insert_blank method -
 
    // - queue next method -
+
+   // - queue first method -
 
    // - queue last method -
 
