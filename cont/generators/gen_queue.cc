@@ -1198,12 +1198,12 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_to_json) {
 fprintf(out_file,
-"static inline void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
+"EXPORT void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (STRUCT_NUMBER & c_type_option_to_json_nice) {
 fprintf(out_file,
-"static inline void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
+"EXPORT void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
    if (fun_defs.used != 0) {
