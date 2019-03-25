@@ -410,7 +410,6 @@ fprintf(out_file,
 );
    }
 
-
 fprintf(out_file,
 "    if (this->leaf_idx == c_idx_not_exist)\n"
 "    {\n"
@@ -1992,6 +1991,7 @@ fprintf(out_file,
 void RB_TREE_TO_JSON(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
+"#if OPTION_TO_JSON == ENABLED\n"
 "void %s_to_json(const %s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
 "  if (this->root_idx != c_idx_not_exist)\n"
@@ -2021,6 +2021,7 @@ fprintf(out_file,
 "    bc_array_s_append(a_trg,2,\"[]\");\n"
 "  }\n"
 "}/*}}}*/\n"
+"#endif\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
 ,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
@@ -2029,6 +2030,7 @@ fprintf(out_file,
 void RB_TREE_TO_JSON_NICE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
+"#if OPTION_TO_JSON == ENABLED\n"
 "void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
 "  if (this->root_idx != c_idx_not_exist)\n"
@@ -2061,6 +2063,7 @@ fprintf(out_file,
 "    bc_array_s_append(a_trg,2,\"[]\");\n"
 "  }\n"
 "}/*}}}*/\n"
+"#endif\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
 ,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
@@ -2728,15 +2731,23 @@ fprintf(out_file,
 "EXPORT void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (STRUCT_NUMBER & c_type_option_to_json) {
+   if (STRUCT_NUMBER & (c_type_option_to_json | c_type_option_to_json_nice)) {
+fprintf(out_file,
+"#if OPTION_TO_JSON == ENABLED\n"
+);
+      if (STRUCT_NUMBER & c_type_option_to_json) {
 fprintf(out_file,
 "EXPORT void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   }
-   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+      }
+      if (STRUCT_NUMBER & c_type_option_to_json_nice) {
 fprintf(out_file,
 "EXPORT void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
 ,STRUCT_NAME,STRUCT_NAME);
+      }
+fprintf(out_file,
+"#endif\n"
+);
    }
    if (STRUCT_NUMBER & c_type_option_rehash) {
 fprintf(out_file,
