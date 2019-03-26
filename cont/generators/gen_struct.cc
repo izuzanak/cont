@@ -233,6 +233,13 @@ fprintf(out_file,
 "static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (TYPE_CNT <= 1) {
+fprintf(out_file,
+"  (void)a_count;\n"
+"  (void)a_data;\n"
+"\n"
+);
+   }
 fprintf(out_file,
 "  bc_array_s_append_ptr(a_trg,\"%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
