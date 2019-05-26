@@ -1,5 +1,5 @@
 # cont - container generator
-C/C++ code preprocessor generating code of ADT containers. Generated code is based on marks found
+C/C++ code preprocessor generating code of containers. Generated code is based on marks found
 in processed code.
 
 Following container types are supported:
@@ -16,15 +16,15 @@ Following container types are supported:
 
 Data of contained elements are stored in continuous block of memory. Memory block
 is resized when its size is not sufficient for requested count of elements.
-Copying of memory block while resizing is performed by memcpy, no knowledge of
-objects structure other than its size is needed.
+Copying of memory block while resizing is performed by realloc, no knowledge of
+objects structure other than its size is required.
 
 ### Persistent unsigned indexes instead of iterators
 
 Elements inside containers are identified by indexes (unsigned int) which are
 persistent and cannot be invalidated by any operation other than removal of
 this particular element.  This allows usage of element indexes as members
-in other structures related to container.
+in other structures related to container, rather than pointers.
 
 ### Constructor/destructor not used at all
 
@@ -44,14 +44,21 @@ Containers code is generated to `.cc` file. Generated code can be read, modified
 or copied and used in another projects.
 
 ## Build container processor
-Enter build directory [`cont_build`](https://github.com/izuzanak/cont/tree/master/cont_build).
+Enter build directory [`build`](https://github.com/izuzanak/cont/tree/master/build).
 ```
-cd cont_build
+cd build
 ```
-Execute build script [`build.sh`](https://github.com/izuzanak/cont/blob/master/cont_build/build.sh)
+
+Process cmake source.
+```sh
+cmake ..
 ```
-sh build.sh
+
+Build container processor.
+```sh
+make -j$(nproc)
 ```
+
 ## Examples
 
 Examples of container generator usage are presented in directory: [`cont/examples`](https://github.com/izuzanak/cont/tree/master/cont/examples).
