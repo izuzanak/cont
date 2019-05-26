@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0.2)
 
 project(cont)
 
-set(PROC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../cont_build/proc_files")
+set(PROC_DIR "${CMAKE_CURRENT_BINARY_DIR}/proc_files")
 file(MAKE_DIRECTORY ${PROC_DIR})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -50,7 +50,7 @@ endfunction()
 find_program(PROCESS_BIN process)
 
 # - process cont -
-set(COMP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(COMP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cont")
 get_filename_component(COMP_NAME ${COMP_DIR} NAME)
 
 set(COMP_HEADER_DIRS "${COMP_DIR}/header_files" "${COMP_DIR}/generators")
