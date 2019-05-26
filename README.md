@@ -41,7 +41,7 @@ object state to initialized state. Object is not invalidated by `clear` method.
 Containers code is generated to `.c` file. Generated code can be read, modified,
 or copied and used in another projects.
 
-## Build container processor
+## Build container generator
 
 Enter build directory [`build`](https://github.com/izuzanak/cont/tree/cont_c/build).
 ```sh
@@ -53,7 +53,7 @@ Process cmake source.
 cmake ..
 ```
 
-Build container processor.
+Build container generator.
 ```sh
 make -j$(nproc)
 ```
