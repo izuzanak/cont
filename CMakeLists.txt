@@ -47,7 +47,7 @@ function(process_component)
 endfunction()
 
 # - find process binary -
-find_program(PROCESS_BIN process)
+find_program(PROCESS_BIN cont)
 
 # - process cont -
 set(COMP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cont")
@@ -60,6 +60,9 @@ set(COMP_COMP_DEFS)
 set(COMP_LINK_LIBS)
 
 process_component()
+
+set_target_properties(cont PROPERTIES OUTPUT_NAME cont_c)
+install(TARGETS cont RUNTIME DESTINATION bin)
 
 # -----
 
