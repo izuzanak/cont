@@ -25,7 +25,7 @@ int main(int argc,char **argv)
           if (strcmp(*ptr,"--output") == 0)
           {
             // - error -
-            if (++ptr >= ptr_end || (out_file = fopen(*ptr,"w")) == NULL)
+            if (++ptr >= ptr_end || (out_file = fopen(*ptr,"w")) == nullptr)
             {
               fprintf(stderr,"ERROR: Cannot open output file.\n");
               mc_clear();

@@ -327,7 +327,7 @@ bool processor_s::find_include_file(const char *a_file, string_s &a_file_path)
     }
     else
     {
-      // - create comlete file path -
+      // - create complete file path -
 #if SYSTEM_TYPE == SYSTEM_TYPE_UNIX
       file_path.setf(d_ptr->data[d_ptr->size - 2] == '/' ? "%s%s" : "%s/%s", d_ptr->data, a_file);
 #elif SYSTEM_TYPE == SYSTEM_TYPE_WINDOWS
@@ -340,7 +340,7 @@ bool processor_s::find_include_file(const char *a_file, string_s &a_file_path)
     // - brute file existence test -
     FILE *f = fopen(file_path.data,"rb");
 
-    if (f != NULL) {
+    if (f != nullptr) {
       fclose(f);
 
       // - set target file path -
