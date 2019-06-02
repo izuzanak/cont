@@ -2143,16 +2143,16 @@ bool process_s::run_on(const char *a_file_name)
   file_path.init();
 
   // - retrieve file full path (search in include directories) -
-  if (!processor_ptr->find_include_file(a_file_name, file_path))
+  if (!processor_ptr->find_include_file(a_file_name,file_path))
   {
-    fprintf(stderr,"ERROR: Cannot found source file: \"%s\".\n", a_file_name);
+    fprintf(stderr,"ERROR: Cannot found source file: \"%s\".\n",a_file_name);
 
     file_path.clear();
     return false;
   }
 
   if (!source_string.load_text_file(file_path.data)) {
-    fprintf(stderr,"ERROR: Cannot read source file: \"%s\".\n", file_path.data);
+    fprintf(stderr,"ERROR: Cannot read source file: \"%s\".\n",file_path.data);
 
     file_path.clear();
     return false;
@@ -2164,18 +2164,28 @@ bool process_s::run_on(const char *a_file_name)
 
   file_path.clear();
 
+  if (processor_ptr->gen_options & c_option_gen_code && 
+     (processor_ptr->include_level == 1 && !(processor_ptr->gen_options & c_option_gen_includes)))
+  {
+     fprintf(processor_ptr->out_file,"#include \"%s\"\n",a_file_name);
+  }
+
   unsigned source_idx = 0;
   do {
     char *b_ptr = strstr(source_string.data + source_idx,c_begin_str);
 
     if (b_ptr == nullptr) {
-      if (processor_ptr->gen_options & c_option_gen_code) {
+      if (processor_ptr->gen_options & c_option_gen_code &&
+         (processor_ptr->include_level == 0 || processor_ptr->gen_options & c_option_gen_includes))
+      {
          fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
       }
       break;
     }
     else {
-      if (processor_ptr->gen_options & c_option_gen_code) {
+      if (processor_ptr->gen_options & c_option_gen_code &&
+         (processor_ptr->include_level == 0 || processor_ptr->gen_options & c_option_gen_includes))
+      {
          *b_ptr = '\0';
          fprintf(processor_ptr->out_file,"%s",source_string.data + source_idx);
          *b_ptr = c_begin_str[0];
@@ -2239,6 +2249,9 @@ void process_s::pa_reduce_include(process_s &proc)
       processor.include_names.push_blank();
       processor.include_names.last().set(include_str.size - 1,include_str.data);
 
+      // - increase include level -
+      ++processor.include_level;
+
       // - process included file -
       process_s process;
       process.init();
@@ -2246,6 +2259,9 @@ void process_s::pa_reduce_include(process_s &proc)
       process.processor_ptr = proc.processor_ptr;
       process.run_on(code.data + lse.terminal_start + 1);
       process.clear();
+
+      // - decrease include level -
+      --processor.include_level;
    }
 
    code.data[tmp_char_idx] = tmp_char;

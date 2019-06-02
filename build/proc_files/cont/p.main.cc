@@ -2384,6 +2384,7 @@ extern const unsigned c_end_str_len;
 enum {
   c_option_gen_code         = 1 << 0,
   c_option_gen_dependencies = 1 << 1,
+  c_option_gen_includes     = 1 << 2,
 };
 
 // - data type settings -
@@ -2915,12 +2916,13 @@ struct processor_s
 {
   FILE_ptr out_file; //!< member - 0
   unsigned gen_options; //!< member - 1
-  string_array_s include_dirs; //!< member - 2
-  string_array_s include_names; //!< member - 3
-  data_type_array_s data_types; //!< member - 4
-  abbreviation_array_s abbreviations; //!< member - 5
-  unsigned type_settings; //!< member - 6
-  container_parameters_s cont_params; //!< member - 7
+  unsigned include_level; //!< member - 2
+  string_array_s include_dirs; //!< member - 3
+  string_array_s include_names; //!< member - 4
+  data_type_array_s data_types; //!< member - 5
+  abbreviation_array_s abbreviations; //!< member - 6
+  unsigned type_settings; //!< member - 7
+  container_parameters_s cont_params; //!< member - 8
 
   /*!
     * \brief __GEN initialize structure
@@ -2935,7 +2937,7 @@ struct processor_s
   /*!
     * \brief __GEN set structure members
     */
-  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
+  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
   /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -3390,10 +3392,11 @@ inline void processor_s::clear()
   cont_params.clear();
 }/*}}}*/
 
-inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
+inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
 {/*{{{*/
   out_file = a_out_file;
   gen_options = a_gen_options;
+  include_level = a_include_level;
   include_dirs = a_include_dirs;
   include_names = a_include_names;
   data_types = a_data_types;
@@ -3421,6 +3424,10 @@ inline void processor_s::swap(processor_s &a_second)
   gen_options = a_second.gen_options;
   a_second.gen_options = tmp_gen_options;
 
+  unsigned tmp_include_level = include_level;
+  include_level = a_second.include_level;
+  a_second.include_level = tmp_include_level;
+
   include_dirs.swap(a_second.include_dirs);
 
   include_names.swap(a_second.include_names);
@@ -3440,6 +3447,7 @@ inline processor_s &processor_s::operator=(processor_s &a_src)
 {/*{{{*/
   out_file = a_src.out_file;
   gen_options = a_src.gen_options;
+  include_level = a_src.include_level;
   include_dirs = a_src.include_dirs;
   include_names = a_src.include_names;
   data_types = a_src.data_types;
@@ -3452,7 +3460,7 @@ inline processor_s &processor_s::operator=(processor_s &a_src)
 
 inline bool processor_s::operator==(processor_s &a_second)
 {/*{{{*/
-  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
+  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_level == a_second.include_level && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
 }/*}}}*/
 
 
@@ -3510,6 +3518,13 @@ int main(int argc,char **argv)
           {
             gen_options &= ~c_option_gen_code;
             gen_options |= c_option_gen_dependencies;
+
+            ++argv;
+            --argc;
+          }
+          else if (strcmp(*ptr,"--geninc") == 0)
+          {
+            gen_options |= c_option_gen_includes;
 
             ++argv;
             --argc;

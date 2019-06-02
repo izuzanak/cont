@@ -2497,7 +2497,9 @@ void processor_s::generate_rb_tree_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of structure rb_tree -
 
 fprintf(out_file,
@@ -2814,7 +2816,9 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -2991,7 +2995,9 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of methods ---
 
 fprintf(out_file,
