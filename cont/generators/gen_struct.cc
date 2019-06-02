@@ -528,8 +528,8 @@ fprintf(out_file,
    unsigned t_idx = 0;
    do {
 fprintf(out_file,
-"  %s %s; //!< member - %u\n"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
+"  %s %s;\n"
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
 "};\n"
