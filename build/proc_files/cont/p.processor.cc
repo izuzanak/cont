@@ -703,12 +703,12 @@ struct mc_block_s
 
 struct mc_block_rb_tree_s_node
 {
-  mc_block_s object;
-  bool valid;
   unsigned parent_idx;
   unsigned left_idx;
   unsigned right_idx;
   bool color;
+  bool valid;
+  mc_block_s object;
 };
 
 /*!
@@ -9132,23 +9132,23 @@ fprintf(out_file,
 fprintf(out_file,
 "struct %s_element\n"
 "{\n"
-"  %s object;\n"
-,STRUCT_NAME,TYPE_NAME);
+"  unsigned next_idx;\n"
+"  unsigned prev_idx;\n"
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  char valid;\n"
 );
    }
 fprintf(out_file,
-"  unsigned next_idx;\n"
-"  unsigned prev_idx;\n"
+"  %s object;\n"
 "};\n"
 "\n"
 "struct %s\n"
 "{\n"
 "  unsigned size; //!< actual size of allocated space (element count)\n"
 "  unsigned used; //!< used part of allocated space\n"
-,STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  unsigned count; //!< count of stored elements\n"
@@ -12874,25 +12874,25 @@ fprintf(out_file,
 fprintf(out_file,
 "struct %s_node\n"
 "{\n"
-"  %s object;\n"
-,STRUCT_NAME,IM_TYPE_NAMES(0));
+"  unsigned parent_idx;\n"
+"  unsigned left_idx;\n"
+"  unsigned right_idx;\n"
+"  char color;\n"
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  char valid;\n"
 );
    }
 fprintf(out_file,
-"  unsigned parent_idx;\n"
-"  unsigned left_idx;\n"
-"  unsigned right_idx;\n"
-"  char color;\n"
+"  %s object;\n"
 "};\n"
 "\n"
 "struct %s\n"
 "{\n"
 "  unsigned size;\n"
 "  unsigned used;\n"
-,STRUCT_NAME);
+,IM_TYPE_NAMES(0),STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  unsigned count;\n"
