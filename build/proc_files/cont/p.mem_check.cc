@@ -699,12 +699,12 @@ struct mc_block_s
 
 struct mc_block_rb_tree_s_node
 {
-  mc_block_s object;
-  bool valid;
   unsigned parent_idx;
   unsigned left_idx;
   unsigned right_idx;
   bool color;
+  bool valid;
+  mc_block_s object;
 };
 
 /*!

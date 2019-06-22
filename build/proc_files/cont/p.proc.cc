@@ -703,12 +703,12 @@ struct mc_block_s
 
 struct mc_block_rb_tree_s_node
 {
-  mc_block_s object;
-  bool valid;
   unsigned parent_idx;
   unsigned left_idx;
   unsigned right_idx;
   bool color;
+  bool valid;
+  mc_block_s object;
 };
 
 /*!
@@ -6261,16 +6261,16 @@ bool process_s::run_on(const char *a_file_name)
   file_path.init();
 
   // - retrieve file full path (search in include directories) -
-  if (!processor_ptr->find_include_file(a_file_name, file_path))
+  if (!processor_ptr->find_include_file(a_file_name,file_path))
   {
-    fprintf(stderr,"ERROR: Cannot found source file: \"%s\".\n", a_file_name);
+    fprintf(stderr,"ERROR: Cannot found source file: \"%s\".\n",a_file_name);
 
     file_path.clear();
     return false;
   }
 
   if (!source_string.load_text_file(file_path.data)) {
-    fprintf(stderr,"ERROR: Cannot read source file: \"%s\".\n", file_path.data);
+    fprintf(stderr,"ERROR: Cannot read source file: \"%s\".\n",file_path.data);
 
     file_path.clear();
     return false;

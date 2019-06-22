@@ -1370,16 +1370,16 @@ fprintf(out_file,
 "\n"
 "struct %s_element\n"
 "{\n"
-"  %s object;\n"
-,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
+"  unsigned next_idx;\n"
+"  unsigned prev_idx;\n"
+,TYPE_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  bool valid;\n"
 );
    }
 fprintf(out_file,
-"  unsigned next_idx;\n"
-"  unsigned prev_idx;\n"
+"  %s object;\n"
 "};\n"
 "\n"
 "/*!\n"
@@ -1389,7 +1389,7 @@ fprintf(out_file,
 "{\n"
 "  unsigned size; //!< actual size of allocated space (element count)\n"
 "  unsigned used; //!< used part of allocated space\n"
-,TYPE_NAME,STRUCT_NAME);
+,TYPE_NAME,TYPE_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  unsigned count; //!< count of stored elements\n"

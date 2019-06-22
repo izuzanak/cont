@@ -2233,18 +2233,18 @@ fprintf(out_file,
 "\n"
 "struct %s_node\n"
 "{\n"
-"  %s object;\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME,IM_TYPE_NAMES(0));
+"  unsigned parent_idx;\n"
+"  unsigned left_idx;\n"
+"  unsigned right_idx;\n"
+"  bool color;\n"
+,IM_TYPE_NAMES(0),STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  bool valid;\n"
 );
    }
 fprintf(out_file,
-"  unsigned parent_idx;\n"
-"  unsigned left_idx;\n"
-"  unsigned right_idx;\n"
-"  bool color;\n"
+"  %s object;\n"
 "};\n"
 "\n"
 "/*!\n"
@@ -2254,7 +2254,7 @@ fprintf(out_file,
 "{\n"
 "  unsigned size;\n"
 "  unsigned used;\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME);
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  unsigned count;\n"
