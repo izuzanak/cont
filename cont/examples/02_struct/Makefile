@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -O2
+OPT = -O2 -Wno-class-memaccess
 CPP = g++
 
 all: struct
@@ -19,7 +19,7 @@ p.struct.o: p.struct.cc
 # -- PROCESS --
 
 p.struct.cc: struct.h struct.cc
-	process struct.cc ../* > p.struct.cc
+	cont struct.cc ../* > p.struct.cc
 
 clean:
 	rm -f p.* *.o

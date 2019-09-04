@@ -8,6 +8,12 @@
 #include "assert.h"
 #include "math.h"
 
+// - export of dynamically linked symbols -
+#define EXPORT
+
+// - red-black tree descent stack size -
+#define RB_TREE_STACK_SIZE(VAR) (VAR).get_descent_stack_size()
+
 // - functions used by generated code of containers -
 #define debug_assert assert
 #define cmalloc malloc

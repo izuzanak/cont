@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -O2
+OPT = -O2 -Wno-class-memaccess
 CPP = g++
 
 all: queue
@@ -19,7 +19,7 @@ p.queue.o: p.queue.cc
 # -- PROCESS --
 
 p.queue.cc: queue.h queue.cc
-	process queue.cc ../* > p.queue.cc
+	cont queue.cc ../* > p.queue.cc
 
 clean:
 	rm -f p.* *.o

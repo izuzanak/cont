@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -O2
+OPT = -O2 -Wno-class-memaccess
 CPP = g++
 
 all: array
@@ -19,7 +19,7 @@ p.array.o: p.array.cc
 # -- PROCESS --
 
 p.array.cc: array.h array.cc
-	process array.cc ../* > p.array.cc
+	cont array.cc ../* > p.array.cc
 
 clean:
 	rm -f p.* *.o

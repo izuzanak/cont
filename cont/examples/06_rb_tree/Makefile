@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -O2
+OPT = -O2 -Wno-class-memaccess
 CPP = g++
 
 all: rb_tree
@@ -19,7 +19,7 @@ p.rb_tree.o: p.rb_tree.cc
 # -- PROCESS --
 
 p.rb_tree.cc: rb_tree.h rb_tree.cc
-	process rb_tree.cc ../* > p.rb_tree.cc
+	cont rb_tree.cc ../* > p.rb_tree.cc
 
 clean:
 	rm -f p.* *.o

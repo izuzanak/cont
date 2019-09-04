@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -O2
+OPT = -O2 -Wno-class-memaccess
 CPP = g++
 
 all: list
@@ -19,7 +19,7 @@ p.list.o: p.list.cc
 # -- PROCESS --
 
 p.list.cc: list.h list.cc
-	process list.cc ../* > p.list.cc
+	cont list.cc ../* > p.list.cc
 
 clean:
 	rm -f p.* *.o

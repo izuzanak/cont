@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -g
+OPT = -O2 -Wno-class-memaccess
 CPP = g++
 
 all: dynamic
@@ -19,7 +19,7 @@ p.dynamic.o: p.dynamic.cc
 # -- PROCESS --
 
 p.dynamic.cc: dynamic.h dynamic.cc
-	process dynamic.cc ../* > p.dynamic.cc
+	cont dynamic.cc ../* > p.dynamic.cc
 
 clean:
 	rm -f p.* *.o
