@@ -19,7 +19,7 @@ p.list.o: p.list.c
 # -- PROCESS --
 
 p.list.c: list.h list.c
-	process_c list.c ../* > p.list.c
+	cont_c --geninc list.c ../* > p.list.c
 
 clean:
 	rm -f p.* *.o

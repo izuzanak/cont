@@ -19,7 +19,7 @@ p.rb_tree.o: p.rb_tree.c
 # -- PROCESS --
 
 p.rb_tree.c: rb_tree.h rb_tree.c
-	process_c rb_tree.c ../* > p.rb_tree.c
+	cont_c --geninc rb_tree.c ../* > p.rb_tree.c
 
 clean:
 	rm -f p.* *.o

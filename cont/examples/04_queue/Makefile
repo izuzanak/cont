@@ -19,7 +19,7 @@ p.queue.o: p.queue.c
 # -- PROCESS --
 
 p.queue.c: queue.h queue.c
-	process_c queue.c ../* > p.queue.c
+	cont_c --geninc queue.c ../* > p.queue.c
 
 clean:
 	rm -f p.* *.o

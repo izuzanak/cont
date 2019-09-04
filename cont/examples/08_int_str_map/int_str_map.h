@@ -37,8 +37,8 @@ static inline void string_s_create(string_s *this,unsigned a_length);
 static inline void string_s_set(string_s *this,unsigned a_length,const char *a_data);
 static inline void string_s_flush_all(string_s *this) {}
 static inline void string_s_swap(string_s *this,string_s *a_second);
-static inline void string_s_copy(string_s *this,string_s *a_src);
-static inline int string_s_compare(string_s *this,string_s *a_second);
+static inline void string_s_copy(string_s *this,const string_s *a_src);
+static inline int string_s_compare(const string_s *this,const string_s *a_second);
 
 /*
  * definition of generated structures
@@ -118,7 +118,7 @@ static inline void string_s_swap(string_s *this,string_s *a_second)
   a_second->data = tmp_data;
 }/*}}}*/
 
-static inline void string_s_copy(string_s *this,string_s *a_src)
+static inline void string_s_copy(string_s *this,const string_s *a_src)
 {/*{{{*/
   string_s_clear(this);
 
@@ -129,7 +129,7 @@ static inline void string_s_copy(string_s *this,string_s *a_src)
   this->size = a_src->size;
 }/*}}}*/
 
-static inline int string_s_compare(string_s *this,string_s *a_second)
+static inline int string_s_compare(const string_s *this,const string_s *a_second)
 {/*{{{*/
   if (this->size != a_second->size) return 0;
   if (this->data == &c_string_terminating_char) return 1;
@@ -155,7 +155,7 @@ static inline int string_s_compare(string_s *this,string_s *a_second)
    inlines int_string_map_s
 @end
 
-static inline int int_string_map_s___compare_value(int_string_map_s *this,int_string_s *a_first,int_string_s *a_second)
+static inline int int_string_map_s___compare_value(const int_string_map_s *this,const int_string_s *a_first,const int_string_s *a_second)
 {/*{{{*/
   register int fi = a_first->index;
   register int si = a_second->index;

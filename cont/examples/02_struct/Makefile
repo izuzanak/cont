@@ -19,7 +19,7 @@ p.struct.o: p.struct.c
 # -- PROCESS --
 
 p.struct.c: struct.h struct.c
-	process_c struct.c ../* > p.struct.c
+	cont_c --geninc struct.c ../* > p.struct.c
 
 clean:
 	rm -f p.* *.o

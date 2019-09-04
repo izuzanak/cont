@@ -19,7 +19,7 @@ p.base.o: p.base.c
 # -- PROCESS --
 
 p.base.c: base.h base.c
-	process_c base.c > p.base.c
+	cont_c --geninc base.c > p.base.c
 
 clean:
 	rm -f p.* *.o

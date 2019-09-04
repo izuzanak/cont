@@ -19,7 +19,7 @@ p.dynamic.o: p.dynamic.c
 # -- PROCESS --
 
 p.dynamic.c: dynamic.h dynamic.c
-	process_c dynamic.c ../* > p.dynamic.c
+	cont_c --geninc dynamic.c ../* > p.dynamic.c
 
 clean:
 	rm -f p.* *.o

@@ -36,7 +36,7 @@ include "struct.h"
    inlines rec_rb_tree_s
 @end
 
-inline int rec_rb_tree_s___compare_value(rec_rb_tree_s *this,record_s *a_first,record_s *a_second)
+static inline int rec_rb_tree_s___compare_value(const rec_rb_tree_s *this,const record_s *a_first,const record_s *a_second)
 {
   register unsigned fi = a_first->index;
   register unsigned si = a_second->index;

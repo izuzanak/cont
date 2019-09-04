@@ -19,7 +19,7 @@ p.int_str_map.o: p.int_str_map.c
 # -- PROCESS --
 
 p.int_str_map.c: int_str_map.h int_str_map.c
-	process_c int_str_map.c ../* > p.int_str_map.c
+	cont_c --geninc int_str_map.c ../* > p.int_str_map.c
 
 clean:
 	rm -f p.* *.o

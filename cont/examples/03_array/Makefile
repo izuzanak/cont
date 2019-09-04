@@ -19,7 +19,7 @@ p.array.o: p.array.c
 # -- PROCESS --
 
 p.array.c: array.h array.c
-	process_c array.c ../* > p.array.c
+	cont_c --geninc array.c ../* > p.array.c
 
 clean:
 	rm -f p.* *.o
