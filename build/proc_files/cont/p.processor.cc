@@ -6322,6 +6322,25 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
 }/*}}}*/
 
+void QUEUE_OPERATOR_LE_BR_RE_BR(QUEUE_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"static inline %s *%s_at(const %s *this,unsigned a_idx)\n"
+"{/*{{{*/\n"
+"  debug_assert(a_idx < this->used);\n"
+"\n"
+"  unsigned real_idx = this->begin + a_idx;\n"
+"  if (real_idx >= this->size)\n"
+"  {\n"
+"    return this->data + real_idx - this->size;\n"
+"  }\n"
+"\n"
+"  return this->data + real_idx;\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
 void QUEUE_INSERT(QUEUE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBER & c_type_basic) {
@@ -7255,6 +7274,9 @@ fprintf(out_file,
 "static inline void %s_swap(%s *this,%s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
+fprintf(out_file,
+"static inline %s *%s_at(const %s *this,unsigned a_idx);\n"
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline void %s_insert(%s *this,%s a_value);\n"
@@ -7406,6 +7428,9 @@ QUEUE_FLUSH_ALL(QUEUE_GEN_VALUES);
 QUEUE_SWAP(QUEUE_GEN_VALUES);
    }
 
+   // - queue operator[] method -
+QUEUE_OPERATOR_LE_BR_RE_BR(QUEUE_GEN_VALUES);
+
    // - queue insert method -
 QUEUE_INSERT(QUEUE_GEN_VALUES);
 
@@ -7493,6 +7518,8 @@ QUEUE_FLUSH_ALL(QUEUE_GEN_VALUES);
    }
 
    // - queue swap method -
+
+   // - queue operator[] method -
 
    // - queue insert method -
 

@@ -104,6 +104,17 @@ int main(int argc, char **argv)
   printf("rec_queue_s_compare(&queue0,&queue1): %s\n",rec_queue_s_compare(&queue0,&queue1) ? "TRUE" : "FALSE");
   printf("\n");
 
+  printf("--- INDEX QUEUE CONTENT ---\n");
+  if (queue0.used != 0)
+  {
+    unsigned idx = 0;
+    do {
+      record_s *rec = rec_queue_s_at(&queue0,idx);
+      printf("rec_queue_s_at(&queue0,%u): {%u,%u}\n",idx,rec->index,rec->value);
+    } while(++idx < queue0.used);
+  }
+  printf("\n");
+
   printf("--- CLEAR QUEUE CONTENT ---\n");
   rec_queue_s_clear(&queue0);
 
