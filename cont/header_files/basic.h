@@ -20,6 +20,11 @@
 #define MUTEX_TYPE_WINDOWS    2 // - for mutex implementation use win32 library
 // --
 
+// - thread library selection -
+#define THREAD_LIB_PTHREAD 1 // - for thread manipulation use pthread library
+#define THREAD_LIB_DSP_TSK 2 // - for thread implementation use DSP Task library
+// --
+
 // - basic system configuration -
 #ifdef LINUX
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
@@ -32,11 +37,6 @@
 #define MUTEX_TYPE MUTEX_TYPE_PTHREAD
 #define EXPORT
 #endif
-
-// - thread library selection -
-#define THREAD_LIB_PTHREAD 1 // - for thread manipulation use pthread library
-#define THREAD_LIB_DSP_TSK 2 // - for thread implementation use DSP Task library
-// --
 
 #ifdef WINDOWS
 #define _WIN32_WINNT 0x0500
