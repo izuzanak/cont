@@ -5,7 +5,9 @@
 #define ENABLE 1
 
 #if __cplusplus < 201103
+#ifndef nullptr
 #define nullptr NULL
+#endif
 #endif
 
 // - system type selection -
@@ -20,6 +22,12 @@
 
 // - basic system configuration -
 #ifdef LINUX
+#define SYSTEM_TYPE SYSTEM_TYPE_UNIX
+#define MUTEX_TYPE MUTEX_TYPE_PTHREAD
+#define EXPORT
+#endif
+
+#ifdef __APPLE__
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
 #define MUTEX_TYPE MUTEX_TYPE_PTHREAD
 #define EXPORT
