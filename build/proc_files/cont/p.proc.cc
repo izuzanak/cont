@@ -96,6 +96,12 @@ typedef long double ld;
 #define EXPORT
 #endif
 
+#ifdef __APPLE__
+#define SYSTEM_TYPE SYSTEM_TYPE_UNIX
+#define MUTEX_TYPE MUTEX_TYPE_PTHREAD
+#define EXPORT
+#endif
+
 #ifdef WINDOWS
 #define _WIN32_WINNT 0x0500
 #define SYSTEM_TYPE SYSTEM_TYPE_WINDOWS
@@ -352,7 +358,11 @@ inline unsigned mutex_s::init()
    pthread_mutexattr_t attr;
    pthread_mutexattr_init(&attr);
 
+#ifdef __APPLE__
+   pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
+#else
    pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE_NP);
+#endif
 
 #if SYSTEM_TYPE == SYSTEM_TYPE_UNIX
    int res = pthread_mutexattr_setpshared(&attr,PTHREAD_PROCESS_SHARED);
