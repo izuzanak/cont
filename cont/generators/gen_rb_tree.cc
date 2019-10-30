@@ -384,7 +384,7 @@ fprintf(out_file,
 "  if (this->free_idx != c_idx_not_exist)\n"
 "  {\n"
 "    new_idx = this->free_idx;\n"
-"    this->free_idx = this->data[new_idx].parent_idx;\n"
+"    this->free_idx = this->data[new_idx].parent_idx; // NOLINT\n"
 "  }\n"
 "  else\n"
 "  {\n"
@@ -419,13 +419,13 @@ fprintf(out_file,
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
-"      leaf->valid = 0;\n"
-"      leaf->color = 1;\n"
+"      leaf->valid = 0; // NOLINT\n"
+"      leaf->color = 1; // NOLINT\n"
 );
    }
    else {
 fprintf(out_file,
-"      leaf->color = 1;\n"
+"      leaf->color = 1; // NOLINT\n"
 );
    }
    if (STRUCT_NUMBER & c_type_option_check_properties) {
@@ -447,7 +447,7 @@ fprintf(out_file,
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
-"  this->data[new_idx].valid = 1;\n"
+"  this->data[new_idx].valid = 1; // NOLINT\n"
 "  this->count++;\n"
 "\n"
 );
