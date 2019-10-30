@@ -350,7 +350,7 @@ inline unsigned mutex_s::init()
    pthread_mutexattr_t attr;
    pthread_mutexattr_init(&attr);
 
-#if defined(__APPLE__) || defined(__CYGWIN__)
+#if defined(__APPLE__) || (defined(__CYGWIN__) && !defined(_WIN32))
    pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
 #else
    pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE_NP);
