@@ -26,19 +26,15 @@
 // --
 
 // - basic system configuration -
-#if defined(LINUX) || defined(__APPLE__) || (defined(__CYGWIN__) && !defined(_WIN32))
-
+#if defined(__linux__) || defined(__APPLE__) || (defined(__CYGWIN__) && !defined(_WIN32))
 #define SYSTEM_TYPE SYSTEM_TYPE_UNIX
 #define MUTEX_TYPE MUTEX_TYPE_PTHREAD
 #define EXPORT
-
-#elif defined(WINDOWS)
-
+#elif defined(_WIN32)
 #define _WIN32_WINNT 0x0500
 #define SYSTEM_TYPE SYSTEM_TYPE_WINDOWS
 #define MUTEX_TYPE MUTEX_TYPE_WINDOWS
 #define EXPORT __declspec(dllexport) 
-
 #endif
 
 // - system includes -
