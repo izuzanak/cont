@@ -1,6 +1,6 @@
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef CONT_MAIN_H
+#define CONT_MAIN_H
 
 @begin
    include "basic.h"

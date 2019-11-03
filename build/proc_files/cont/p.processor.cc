@@ -61,12 +61,12 @@ typedef long double ld;
 
 
 
-#ifndef __PROCESSOR_H
-#define __PROCESSOR_H
+#ifndef CONT_PROCESSOR_H
+#define CONT_PROCESSOR_H
 
 
-#ifndef __BASIC_H
-#define __BASIC_H
+#ifndef CONT_BASIC_H
+#define CONT_BASIC_H
 
 #define ENABLE 1
 
@@ -291,12 +291,12 @@ typedef FILE * FILE_ptr;
 #endif
 
 
-#ifndef __MEM_CHECK_H
-#define __MEM_CHECK_H
+#ifndef CONT_MEM_CHECK_H
+#define CONT_MEM_CHECK_H
 
 
-#ifndef __MUTEX_H
-#define __MUTEX_H
+#ifndef CONT_MUTEX_H
+#define CONT_MUTEX_H
 
 
 
@@ -1747,8 +1747,8 @@ inline void cfree(void *a_location)
 #endif
 
 
-#ifndef __UCL_STRING_H
-#define __UCL_STRING_H
+#ifndef CONT_UCL_STRING_H
+#define CONT_UCL_STRING_H
 
 
 
@@ -3457,8 +3457,8 @@ inline bool processor_s::operator==(processor_s &a_second)
 #endif
 
 
-#ifndef __PROCESS_H
-#define __PROCESS_H
+#ifndef CONT_PROCESS_H
+#define CONT_PROCESS_H
 
 
 

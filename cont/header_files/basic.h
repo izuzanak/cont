@@ -1,6 +1,6 @@
 
-#ifndef __BASIC_H
-#define __BASIC_H
+#ifndef CONT_BASIC_H
+#define CONT_BASIC_H
 
 #define ENABLE 1
 
