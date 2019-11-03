@@ -61,12 +61,12 @@ typedef long double ld;
 
 
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef CONT_C_MAIN_H
+#define CONT_C_MAIN_H
 
 
-#ifndef __BASIC_H
-#define __BASIC_H
+#ifndef CONT_C_BASIC_H
+#define CONT_C_BASIC_H
 
 #define ENABLE 1
 
@@ -293,12 +293,12 @@ typedef FILE * FILE_ptr;
 #endif
 
 
-#ifndef __MEM_CHECK_H
-#define __MEM_CHECK_H
+#ifndef CONT_C_MEM_CHECK_H
+#define CONT_C_MEM_CHECK_H
 
 
-#ifndef __MUTEX_H
-#define __MUTEX_H
+#ifndef CONT_C_MUTEX_H
+#define CONT_C_MUTEX_H
 
 
 
@@ -1749,8 +1749,8 @@ inline void cfree(void *a_location)
 #endif
 
 
-#ifndef __UCL_STRING_H
-#define __UCL_STRING_H
+#ifndef CONT_C_UCL_STRING_H
+#define CONT_C_UCL_STRING_H
 
 
 
@@ -2356,8 +2356,8 @@ inline string_s &string_array_s::last()
 #endif
 
 
-#ifndef __PROCESSOR_H
-#define __PROCESSOR_H
+#ifndef CONT_C_PROCESSOR_H
+#define CONT_C_PROCESSOR_H
 
 
 

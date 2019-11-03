@@ -1,6 +1,6 @@
 
-#ifndef __PROCESS_H
-#define __PROCESS_H
+#ifndef CONT_C_PROCESS_H
+#define CONT_C_PROCESS_H
 
 @begin
    include "basic.h"

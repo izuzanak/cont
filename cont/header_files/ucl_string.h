@@ -1,6 +1,6 @@
 
-#ifndef __UCL_STRING_H
-#define __UCL_STRING_H
+#ifndef CONT_C_UCL_STRING_H
+#define CONT_C_UCL_STRING_H
 
 @begin
 include "basic.h"

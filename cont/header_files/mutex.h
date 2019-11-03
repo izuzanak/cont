@@ -1,6 +1,6 @@
 
-#ifndef __MUTEX_H
-#define __MUTEX_H
+#ifndef CONT_C_MUTEX_H
+#define CONT_C_MUTEX_H
 
 @begin
    include "basic.h"

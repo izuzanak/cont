@@ -1,6 +1,6 @@
 
-#ifndef __MEM_CHECK_H
-#define __MEM_CHECK_H
+#ifndef CONT_C_MEM_CHECK_H
+#define CONT_C_MEM_CHECK_H
 
 @begin
    include "basic.h"

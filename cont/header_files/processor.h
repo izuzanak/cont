@@ -1,6 +1,6 @@
 
-#ifndef __PROCESSOR_H
-#define __PROCESSOR_H
+#ifndef CONT_C_PROCESSOR_H
+#define CONT_C_PROCESSOR_H
 
 @begin
    include "basic.h"
