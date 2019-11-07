@@ -2457,7 +2457,7 @@ void processor_s::generate_rb_tree_type()
          } while(++tn_idx < type_cnt);
       }
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
 
       {
          string_array_s &dt_type_names = data_type.types;

@@ -2068,6 +2068,7 @@ struct string_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(string_array_s &a_second);
 
@@ -2646,6 +2647,7 @@ struct data_type_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(data_type_array_s &a_second);
 
@@ -2836,6 +2838,7 @@ struct abbreviation_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(abbreviation_array_s &a_second);
 
@@ -3659,7 +3662,7 @@ struct lalr_stack_s
     * \param a_second - reference to another array
     * \return result of comparison
     */
-  inline bool operator==(lalr_stack_s &a_second);
+  EXPORT bool operator==(lalr_stack_s &a_second);
 
   
 
@@ -3942,21 +3945,6 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
   return *this;
 }/*}}}*/
 
-inline bool lalr_stack_s::operator==(lalr_stack_s &a_second)
-{/*{{{*/
-  if (used != a_second.used)
-  {
-    return false;
-  }
-
-  if (used == 0)
-  {
-    return true;
-  }
-
-  return (memcmp(data,a_second.data,used*sizeof(lalr_stack_element_s)) == 0);
-}/*}}}*/
-
 
 
 inline void lalr_stack_s::push(unsigned a_lalr_state)
@@ -4044,7 +4032,6 @@ inline bool process_s::operator==(process_s &a_second)
 
 
 #endif
-
 
 
 
@@ -5368,7 +5355,7 @@ fprintf(out_file,
 
 void ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_PARAMS)
 {/*{{{*/
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline int %s_compare(const %s *this,const %s *a_second)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -5390,7 +5377,7 @@ fprintf(out_file,
 "    return 1;\n"
 "  }\n"
 );
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "\n"
 "  return (memcmp(this->data,a_second->data,this->used*sizeof(%s)) == 0);\n"
@@ -5805,22 +5792,24 @@ fprintf(out_file,
 "EXPORT unsigned %s_get_idx(const %s *this,const %s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+     if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-      }
+     }
+     else {
+fprintf(out_file,
+"EXPORT void %s_copy(%s *this,const %s *a_src);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+     }
+   }
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline int %s_compare(const %s *this,const %s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-fprintf(out_file,
-"EXPORT void %s_copy(%s *this,const %s *a_src);\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-      }
 fprintf(out_file,
 "EXPORT int %s_compare(const %s *this,const %s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -5977,7 +5966,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array operator== method -
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
 
@@ -6085,7 +6074,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array operator== method -
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (!(TYPE_NUMBER & c_type_basic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
 
@@ -6742,7 +6731,7 @@ fprintf(out_file,
 "  }\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  int _break;\n"
 "  int s_break;\n"
@@ -7159,7 +7148,7 @@ void processor_s::generate_queue_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -9109,7 +9098,7 @@ void processor_s::generate_list_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -12836,7 +12825,7 @@ void processor_s::generate_rb_tree_type()
          } while(++tn_idx < type_cnt);
       }
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
 
       {
          string_array_s &dt_type_names = data_type.types;

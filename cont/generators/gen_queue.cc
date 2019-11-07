@@ -632,7 +632,7 @@ fprintf(out_file,
 "  }\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  int _break;\n"
 "  int s_break;\n"
@@ -1049,7 +1049,7 @@ void processor_s::generate_queue_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;

@@ -2064,6 +2064,7 @@ struct string_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(string_array_s &a_second);
 

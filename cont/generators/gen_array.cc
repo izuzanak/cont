@@ -742,7 +742,7 @@ fprintf(out_file,
 
 void ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_PARAMS)
 {/*{{{*/
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline int %s_compare(const %s *this,const %s *a_second)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -764,7 +764,7 @@ fprintf(out_file,
 "    return 1;\n"
 "  }\n"
 );
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "\n"
 "  return (memcmp(this->data,a_second->data,this->used*sizeof(%s)) == 0);\n"
@@ -1179,22 +1179,24 @@ fprintf(out_file,
 "EXPORT unsigned %s_get_idx(const %s *this,const %s *a_value);\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+     if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-      }
+     }
+     else {
+fprintf(out_file,
+"EXPORT void %s_copy(%s *this,const %s *a_src);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+     }
+   }
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline int %s_compare(const %s *this,const %s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
-      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-fprintf(out_file,
-"EXPORT void %s_copy(%s *this,const %s *a_src);\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-      }
 fprintf(out_file,
 "EXPORT int %s_compare(const %s *this,const %s *a_second);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
@@ -1351,7 +1353,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array operator== method -
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
 
@@ -1459,7 +1461,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array operator== method -
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (!(TYPE_NUMBER & c_type_basic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
 
