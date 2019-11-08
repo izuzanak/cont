@@ -4,7 +4,6 @@
    include "proc.h"
 @end
 
-
 /*
  * basic functions and constants
  */

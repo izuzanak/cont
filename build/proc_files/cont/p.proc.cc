@@ -2066,6 +2066,7 @@ struct string_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(string_array_s &a_second);
 
@@ -2645,6 +2646,7 @@ struct data_type_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(data_type_array_s &a_second);
 
@@ -2835,6 +2837,7 @@ struct abbreviation_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(abbreviation_array_s &a_second);
 
@@ -3648,7 +3651,7 @@ struct lalr_stack_s
     * \param a_second - reference to another array
     * \return result of comparison
     */
-  inline bool operator==(lalr_stack_s &a_second);
+  EXPORT bool operator==(lalr_stack_s &a_second);
 
   
 
@@ -3929,21 +3932,6 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
 
   used = a_src.used;
   return *this;
-}/*}}}*/
-
-inline bool lalr_stack_s::operator==(lalr_stack_s &a_second)
-{/*{{{*/
-  if (used != a_second.used)
-  {
-    return false;
-  }
-
-  if (used == 0)
-  {
-    return true;
-  }
-
-  return (memcmp(data,a_second.data,used*sizeof(lalr_stack_element_s)) == 0);
 }/*}}}*/
 
 
@@ -4228,6 +4216,32 @@ unsigned lalr_stack_s::get_idx(lalr_stack_element_s &a_value)
   } while(++ptr < ptr_end);
 
   return c_idx_not_exist;
+}/*}}}*/
+
+bool lalr_stack_s::operator==(lalr_stack_s &a_second)
+{/*{{{*/
+  if (used != a_second.used)
+  {
+    return false;
+  }
+
+  if (used == 0)
+  {
+    return true;
+  }
+
+  lalr_stack_element_s *ptr = data;
+  lalr_stack_element_s *ptr_end = ptr + used;
+  lalr_stack_element_s *s_ptr = a_second.data;
+
+  do {
+    if (!(*ptr == *s_ptr))
+    {
+      return false;
+    }
+  } while(++s_ptr,++ptr < ptr_end);
+
+  return true;
 }/*}}}*/
 
 

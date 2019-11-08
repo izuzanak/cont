@@ -2066,6 +2066,7 @@ struct string_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(string_array_s &a_second);
 
@@ -2641,6 +2642,7 @@ struct data_type_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(data_type_array_s &a_second);
 
@@ -2831,6 +2833,7 @@ struct abbreviation_array_s
   /*!
     * \brief __GEN comparison of array with another array
     * \param a_second - reference to another array
+    * \return result of comparison
     */
   EXPORT bool operator==(abbreviation_array_s &a_second);
 
@@ -3648,7 +3651,7 @@ struct lalr_stack_s
     * \param a_second - reference to another array
     * \return result of comparison
     */
-  inline bool operator==(lalr_stack_s &a_second);
+  EXPORT bool operator==(lalr_stack_s &a_second);
 
   
 
@@ -3931,21 +3934,6 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
   return *this;
 }/*}}}*/
 
-inline bool lalr_stack_s::operator==(lalr_stack_s &a_second)
-{/*{{{*/
-  if (used != a_second.used)
-  {
-    return false;
-  }
-
-  if (used == 0)
-  {
-    return true;
-  }
-
-  return (memcmp(data,a_second.data,used*sizeof(lalr_stack_element_s)) == 0);
-}/*}}}*/
-
 
 
 inline void lalr_stack_s::push(unsigned a_lalr_state)
@@ -4033,7 +4021,6 @@ inline bool process_s::operator==(process_s &a_second)
 
 
 #endif
-
 
 
 
@@ -5365,7 +5352,7 @@ fprintf(out_file,
 
 void ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_PARAMS)
 {/*{{{*/
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "inline bool %s::operator==(%s &a_second)\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -5387,7 +5374,7 @@ fprintf(out_file,
 "    return true;\n"
 "  }\n"
 );
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "\n"
 "  return (memcmp(data,a_second.data,used*sizeof(%s)) == 0);\n"
@@ -5794,8 +5781,8 @@ fprintf(out_file,
 "\n"
 ,TYPE_NAME);
    }
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
-      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+      if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN copy array from another array\n"
@@ -5806,6 +5793,19 @@ fprintf(out_file,
 "\n"
 ,STRUCT_NAME,STRUCT_NAME);
       }
+      else
+      {
+fprintf(out_file,
+"  /*!\n"
+"    * \\brief __GEN copy array from another array\n"
+"    * \\param a_src - reference to another array\n"
+"    */\n"
+"  EXPORT %s &operator=(%s &a_src);\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME);
+      }
+   }
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN comparison of array with another array\n"
@@ -5817,20 +5817,11 @@ fprintf(out_file,
 ,STRUCT_NAME);
    }
    else {
-      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-fprintf(out_file,
-"  /*!\n"
-"    * \\brief __GEN copy array from another array\n"
-"    * \\param a_src - reference to another array\n"
-"    */\n"
-"  EXPORT %s &operator=(%s &a_src);\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
-      }
 fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN comparison of array with another array\n"
 "    * \\param a_second - reference to another array\n"
+"    * \\return result of comparison\n"
 "    */\n"
 "  EXPORT bool operator==(%s &a_second);\n"
 "\n"
@@ -5958,7 +5949,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array operator== method -
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
    }
@@ -6060,7 +6051,7 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    }
 
    // - array operator== method -
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (!(TYPE_NUMBER & c_type_basic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
    }
@@ -6639,7 +6630,7 @@ fprintf(out_file,
 "  }\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
-   if (!(TYPE_NUMBER & c_type_dynamic)) {
+   if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  bool _break;\n"
 "  bool s_break;\n"
@@ -6827,7 +6818,7 @@ void processor_s::generate_queue_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -8576,7 +8567,7 @@ void processor_s::generate_list_type()
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
       data_type.types.push(abbreviations[type_abb_idx].name);
 
       data_type_idx = data_types.used - 1;
@@ -11936,7 +11927,7 @@ void processor_s::generate_rb_tree_type()
          } while(++tn_idx < type_cnt);
       }
 
-      data_type.properties = c_type_dynamic | c_type_flushable  | (type_settings & c_type_option_mask);
+      data_type.properties = c_type_dynamic | c_type_flushable | (type_settings & c_type_option_mask);
 
       {
          string_array_s &dt_type_names = data_type.types;
