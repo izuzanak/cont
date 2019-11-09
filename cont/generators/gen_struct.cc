@@ -666,7 +666,7 @@ fprintf(out_file,
    if (STRUCT_NUMBER & c_type_option_from_var) {
 fprintf(out_file,
 "#if OPTION_FROM_VAR == ENABLED\n"
-"static inline int %s_from_var(%s *this,var_s a_var);\n"
+"WUR static inline int %s_from_var(%s *this,var_s a_var);\n"
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
