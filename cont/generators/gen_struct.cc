@@ -177,16 +177,19 @@ fprintf(out_file,
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
-   if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 fprintf(out_file,
-" && this->%s == a_second->%s"
+" &&\n"
+);
+         if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+fprintf(out_file,
+"          this->%s == a_second->%s"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-   }
-   else {
+         }
+         else {
 fprintf(out_file,
-" && %s_compare(&this->%s,&a_second->%s)"
+"          %s_compare(&this->%s,&a_second->%s)"
 ,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-   }
+         }
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -320,6 +323,50 @@ fprintf(out_file,
 "  bc_array_s_push(a_trg,'}');\n"
 );
 fprintf(out_file,
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
+
+void STRUCT_FROM_VAR(STRUCT_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_FROM_VAR == ENABLED\n"
+"static inline int %s_from_var(%s *this,var_s a_var)\n"
+"{/*{{{*/\n"
+"  if (a_var == NULL || a_var->v_type != c_bi_type_dict)\n"
+"  {\n"
+"    throw_error(FROM_VAR_ERROR);\n"
+"  }\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+fprintf(out_file,
+"  var_s %s_var = loc_s_dict_str_get(a_var,\"%s\");\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+   } while(++t_idx < TYPE_CNT);
+fprintf(out_file,
+"\n"
+"  if (%s_from_var(&this->%s,%s_var)"
+,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
+   if (TYPE_CNT > 1) {
+     unsigned t_idx = 1;
+     do {
+fprintf(out_file,
+" ||\n"
+"      %s_from_var(&this->%s,%s_var)"
+,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+     } while(++t_idx < TYPE_CNT);
+   }
+fprintf(out_file,
+")\n"
+"  {\n"
+"    throw_error(FROM_VAR_ERROR);\n"
+"  }\n"
+"\n"
+"  return 0;\n"
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
@@ -616,6 +663,13 @@ fprintf(out_file,
 "#endif\n"
 );
    }
+   if (STRUCT_NUMBER & c_type_option_from_var) {
+fprintf(out_file,
+"#if OPTION_FROM_VAR == ENABLED\n"
+"static inline int %s_from_var(%s *this,var_s a_var);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -721,6 +775,11 @@ STRUCT_TO_JSON(STRUCT_GEN_VALUES);
 STRUCT_TO_JSON_NICE(STRUCT_GEN_VALUES);
    }
 
+   // - struct from_var method -
+   if (STRUCT_NUMBER & c_type_option_from_var) {
+STRUCT_FROM_VAR(STRUCT_GEN_VALUES);
+   }
+
    }
 }/*}}}*/
 
@@ -775,6 +834,8 @@ fprintf(out_file,
    // - struct to_json method -
 
    // - struct to_json_nice method -
+
+   // - struct from_var method -
    }
 }/*}}}*/
 

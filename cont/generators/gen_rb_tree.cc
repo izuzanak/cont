@@ -2069,6 +2069,69 @@ fprintf(out_file,
 ,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
 }/*}}}*/
 
+void RB_TREE_FROM_VAR(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_FROM_VAR == ENABLED\n"
+"int %s_from_var(%s *this,var_s a_var)\n"
+"{/*{{{*/\n"
+"  %s_clear(this);\n"
+"\n"
+"  if (a_var == NULL || a_var->v_type != c_bi_type_array)\n"
+"  {\n"
+"    throw_error(FROM_VAR_ERROR);\n"
+"  }\n"
+"\n"
+"  var_array_s *array = loc_s_array_value(a_var);\n"
+"  if (array->used != 0)\n"
+"  {\n"
+"    %s_copy_resize(this,array->used + 1);\n"
+"\n"
+"    var_s *v_ptr = array->data;\n"
+"    var_s *v_ptr_end = v_ptr + array->used;\n"
+"    do {\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+fprintf(out_file,
+"      %s value;\n"
+"\n"
+"      if (%s_from_var(&value,*v_ptr))\n"
+"      {\n"
+"        throw_error(FROM_VAR_ERROR);\n"
+"      }\n"
+"\n"
+"      %s_insert(this,&value);\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+   }
+   else {
+fprintf(out_file,
+"      %s value;\n"
+"      %s_init(&value);\n"
+"\n"
+"      if (%s_from_var(&value,*v_ptr))\n"
+"      {\n"
+"        %s_clear(&value);\n"
+"\n"
+"        throw_error(FROM_VAR_ERROR);\n"
+"      }\n"
+"\n"
+"      %s_swap_insert(this,&value);\n"
+"      %s_clear(&value);\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0)
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+fprintf(out_file,
+"    } while(++v_ptr < v_ptr_end);\n"
+"  }\n"
+"\n"
+"  return 0;\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
+
 void RB_TREE_REHASH_TREE(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
@@ -2752,6 +2815,13 @@ fprintf(out_file,
 "#endif\n"
 );
    }
+   if (STRUCT_NUMBER & c_type_option_from_var) {
+fprintf(out_file,
+"#if OPTION_FROM_VAR == ENABLED\n"
+"EXPORT int %s_from_var(%s *this,var_s a_var);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (STRUCT_NUMBER & c_type_option_rehash) {
 fprintf(out_file,
 "EXPORT void %s_rehash_tree(%s *this);\n"
@@ -2957,6 +3027,8 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
    // - rb_tree to_json method -
 
    // - rb_tree to_json_nice method -
+
+   // - rb_tree from_var method -
    }
 }/*}}}*/
 
@@ -3132,6 +3204,11 @@ RB_TREE_TO_JSON(RB_TREE_GEN_VALUES);
    // - rb_tree to_json_nice method -
    if (STRUCT_NUMBER & c_type_option_to_json_nice) {
 RB_TREE_TO_JSON_NICE(RB_TREE_GEN_VALUES);
+   }
+
+   // - rb_tree from_var method -
+   if (STRUCT_NUMBER & c_type_option_from_var) {
+RB_TREE_FROM_VAR(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree rehash_tree -

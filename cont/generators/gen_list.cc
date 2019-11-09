@@ -1484,6 +1484,43 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
+void LIST_FROM_VAR(LIST_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_FROM_VAR == ENABLED\n"
+"int %s_from_var(%s *this,var_s a_var)\n"
+"{/*{{{*/\n"
+"  %s_clear(this);\n"
+"\n"
+"  if (a_var == NULL || a_var->v_type != c_bi_type_array)\n"
+"  {\n"
+"    throw_error(FROM_VAR_ERROR);\n"
+"  }\n"
+"\n"
+"  var_array_s *array = loc_s_array_value(a_var);\n"
+"  if (array->used != 0)\n"
+"  {\n"
+"    %s_copy_resize(this,array->used);\n"
+"\n"
+"    var_s *v_ptr = array->data;\n"
+"    var_s *v_ptr_end = v_ptr + array->used;\n"
+"    do {\n"
+"      %s_append_blank(this);\n"
+"\n"
+"      if (%s_from_var(&this->data[this->last_idx].object,*v_ptr))\n"
+"      {\n"
+"        throw_error(FROM_VAR_ERROR);\n"
+"      }\n"
+"    } while(++v_ptr < v_ptr_end);\n"
+"  }\n"
+"\n"
+"  return 0;\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+}/*}}}*/
+
 void processor_s::generate_list_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -1775,6 +1812,13 @@ fprintf(out_file,
 "#endif\n"
 );
    }
+   if (STRUCT_NUMBER & c_type_option_from_var) {
+fprintf(out_file,
+"#if OPTION_FROM_VAR == ENABLED\n"
+"EXPORT int %s_from_var(%s *this,var_s a_var);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1910,6 +1954,8 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
    // - list to_json method -
 
    // - list to_json_nice method -
+
+   // - list from_var method -
    }
 }/*}}}*/
 
@@ -2021,6 +2067,11 @@ LIST_TO_JSON(LIST_GEN_VALUES);
    // - list to_json_nice method -
    if (STRUCT_NUMBER & c_type_option_to_json_nice) {
 LIST_TO_JSON_NICE(LIST_GEN_VALUES);
+   }
+
+   // - list from_var method -
+   if (STRUCT_NUMBER & c_type_option_from_var) {
+LIST_FROM_VAR(LIST_GEN_VALUES);
    }
 
    }

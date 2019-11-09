@@ -2465,6 +2465,9 @@ void process_s::pa_reduce_option(process_s &proc)
    else if (strcmp("to_json_nice",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_to_json_nice;
 
+   else if (strcmp("from_var",code.data + lse.terminal_start) == 0)
+      proc.processor_ptr->type_settings |= c_type_option_from_var;
+
    else {
       fprintf(stderr,"ERROR: Unrecognized option %s.\n",code.data + lse.terminal_start);
       cassert(0);
