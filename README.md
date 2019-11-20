@@ -10,6 +10,11 @@ Following container types are supported:
 * [`list`](https://github.com/izuzanak/cont/blob/cont_c/cont/generators/gen_list.cc) - List of contained elements.
 * [`rb_tree`](https://github.com/izuzanak/cont/blob/cont_c/cont/generators/gen_rb_tree.cc) - Red-black tree of contained elements.
 
+## Documentation
+
+Short introduction to container generator principles can be found in
+[`cont/doc/intro.md`](https://github.com/izuzanak/cont/tree/cont_c/cont/doc/intro.md).
+
 ## Motivation for container generator
 
 ### Every container is based on continuous memory block
@@ -33,7 +38,7 @@ Methods `init` and `clear` are used for object initialization and clearing.
 `init` - After creation of object (allocation on heap, or on stack) it must be
 initialized by method `init` or related metods (`init_size`).
 
-`clear` - Clears object content, release allocated dynamic memory and reset
+`clear` - Clears object content, release allocated resources and reset
 object state to initialized state. Object is not invalidated by `clear` method.
 
 ### Generated code is human readable and accessible
