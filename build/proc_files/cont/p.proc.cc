@@ -2420,6 +2420,7 @@ enum {
    c_type_option_to_json          = 0x100 << 10,
    c_type_option_to_json_nice     = 0x100 << 11,
    c_type_option_from_var         = 0x100 << 12,
+   c_type_option_from_json        = 0x100 << 13,
 };
 
 // - names of basic data types -
@@ -6613,6 +6614,9 @@ void process_s::pa_reduce_option(process_s &proc)
 
    else if (strcmp("from_var",code.data + lse.terminal_start) == 0)
       proc.processor_ptr->type_settings |= c_type_option_from_var;
+
+   else if (strcmp("from_json",code.data + lse.terminal_start) == 0)
+      proc.processor_ptr->type_settings |= c_type_option_from_json;
 
    else {
       fprintf(stderr,"ERROR: Unrecognized option %s.\n",code.data + lse.terminal_start);

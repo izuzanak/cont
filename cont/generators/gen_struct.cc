@@ -373,6 +373,38 @@ fprintf(out_file,
 );
 }/*}}}*/
 
+void STRUCT_FROM_JSON(STRUCT_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"static inline int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json)\n"
+"{/*{{{*/\n"
+"  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_lc_br) ||\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+fprintf(out_file,
+"      from_json_s_get_string(a_from_json,a_src) ||\n"
+"      strcmp(a_from_json->buffer.data,\"%s\") ||\n"
+"      from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_colon) ||\n"
+"      %s_from_json(&this->%s,a_src,a_from_json) ||\n"
+"      from_json_s_get_terminal(a_from_json,a_src,%s"
+,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx)
+,t_idx == TYPE_CNT - 1 ? "c_json_terminal_rc_br))\n" : "c_json_terminal_comma) ||\n"
+);
+   } while(++t_idx < TYPE_CNT);
+fprintf(out_file,
+"  {\n"
+"    throw_error(FROM_JSON_ERROR);\n"
+"  }\n"
+"\n"
+"  return 0;\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
+
 void processor_s::generate_struct_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -670,6 +702,13 @@ fprintf(out_file,
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"WUR static inline int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -780,6 +819,11 @@ STRUCT_TO_JSON_NICE(STRUCT_GEN_VALUES);
 STRUCT_FROM_VAR(STRUCT_GEN_VALUES);
    }
 
+   // - struct from_json method -
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+STRUCT_FROM_JSON(STRUCT_GEN_VALUES);
+   }
+
    }
 }/*}}}*/
 
@@ -836,6 +880,8 @@ fprintf(out_file,
    // - struct to_json_nice method -
 
    // - struct from_var method -
+
+   // - struct from_json method -
    }
 }/*}}}*/
 

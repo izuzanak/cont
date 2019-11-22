@@ -965,6 +965,51 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
+void ARRAY_FROM_JSON(ARRAY_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json)\n"
+"{/*{{{*/\n"
+"  %s_clear(this);\n"
+"\n"
+"  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_le_br))\n"
+"  {\n"
+"    throw_error(FROM_JSON_ERROR);\n"
+"  }\n"
+"\n"
+"  unsigned input_idx = a_from_json->input_idx;\n"
+"  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_re_br))\n"
+"  {\n"
+"    a_from_json->input_idx = input_idx;\n"
+"\n"
+"    do {\n"
+"      %s_push_blank(this);\n"
+"\n"
+"      if (%s_from_json(%s_last(this),a_src,a_from_json))\n"
+"      {\n"
+"        throw_error(FROM_JSON_ERROR);\n"
+"      }\n"
+"\n"
+"      if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_comma))\n"
+"      {\n"
+"        if (a_from_json->terminal == c_json_terminal_re_br)\n"
+"        {\n"
+"          break;\n"
+"        }\n"
+"\n"
+"        throw_error(FROM_JSON_ERROR);\n"
+"      }\n"
+"    } while(1);\n"
+"  }\n"
+"\n"
+"  return 0;\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
 void processor_s::generate_array_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -1270,6 +1315,13 @@ fprintf(out_file,
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"WUR EXPORT int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1410,6 +1462,8 @@ ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    // - array to_json_nice method -
 
    // - array from_var method -
+
+   // - array from_json method -
    }
 }/*}}}*/
 
@@ -1530,6 +1584,11 @@ ARRAY_TO_JSON_NICE(ARRAY_GEN_VALUES);
    // - array from_var method -
    if (STRUCT_NUMBER & c_type_option_from_var) {
 ARRAY_FROM_VAR(ARRAY_GEN_VALUES);
+   }
+
+   // - array from_json method -
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+ARRAY_FROM_JSON(ARRAY_GEN_VALUES);
    }
 
    }

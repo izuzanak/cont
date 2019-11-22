@@ -2091,7 +2091,6 @@ fprintf(out_file,
 "    var_s *v_ptr_end = v_ptr + array->used;\n"
 "    do {\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
-
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
@@ -2101,8 +2100,19 @@ fprintf(out_file,
 "        throw_error(FROM_VAR_ERROR);\n"
 "      }\n"
 "\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+      if (TYPE_NUMBERS(0) & c_type_basic)
+      {
+fprintf(out_file,
+"      %s_insert(this,value);\n"
+,IM_STRUCT_NAME);
+      }
+      else
+      {
+fprintf(out_file,
 "      %s_insert(this,&value);\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,IM_STRUCT_NAME);
+      }
    }
    else {
 fprintf(out_file,
@@ -2123,6 +2133,86 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "    } while(++v_ptr < v_ptr_end);\n"
+"  }\n"
+"\n"
+"  return 0;\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+);
+}/*}}}*/
+
+void RB_TREE_FROM_JSON(RB_TREE_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json)\n"
+"{/*{{{*/\n"
+"  %s_clear(this);\n"
+"\n"
+"  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_le_br))\n"
+"  {\n"
+"    throw_error(FROM_JSON_ERROR);\n"
+"  }\n"
+"\n"
+"  unsigned input_idx = a_from_json->input_idx;\n"
+"  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_re_br))\n"
+"  {\n"
+"    a_from_json->input_idx = input_idx;\n"
+"\n"
+"    do {\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+fprintf(out_file,
+"      %s value;\n"
+"\n"
+"      if (%s_from_json(&value,a_src,a_from_json))\n"
+"      {\n"
+"        throw_error(FROM_JSON_ERROR);\n"
+"      }\n"
+"\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+      if (TYPE_NUMBERS(0) & c_type_basic)
+      {
+fprintf(out_file,
+"      %s_insert(this,value);\n"
+,IM_STRUCT_NAME);
+      }
+      else
+      {
+fprintf(out_file,
+"      %s_insert(this,&value);\n"
+,IM_STRUCT_NAME);
+      }
+   }
+   else {
+fprintf(out_file,
+"      %s value;\n"
+"      %s_init(&value);\n"
+"\n"
+"      if (%s_from_json(&value,a_src,a_from_json))\n"
+"      {\n"
+"        %s_clear(&value);\n"
+"\n"
+"        throw_error(FROM_JSON_ERROR);\n"
+"      }\n"
+"\n"
+"      %s_swap_insert(this,&value);\n"
+"      %s_clear(&value);\n"
+,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0)
+,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+   }
+fprintf(out_file,
+"      if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_comma))\n"
+"      {\n"
+"        if (a_from_json->terminal == c_json_terminal_re_br)\n"
+"        {\n"
+"          break;\n"
+"        }\n"
+"\n"
+"        throw_error(FROM_JSON_ERROR);\n"
+"      }\n"
+"    } while(1);\n"
 "  }\n"
 "\n"
 "  return 0;\n"
@@ -2822,6 +2912,13 @@ fprintf(out_file,
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"WUR EXPORT int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (STRUCT_NUMBER & c_type_option_rehash) {
 fprintf(out_file,
 "EXPORT void %s_rehash_tree(%s *this);\n"
@@ -3029,6 +3126,8 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
    // - rb_tree to_json_nice method -
 
    // - rb_tree from_var method -
+
+   // - rb_tree from_json method -
    }
 }/*}}}*/
 
@@ -3209,6 +3308,11 @@ RB_TREE_TO_JSON_NICE(RB_TREE_GEN_VALUES);
    // - rb_tree from_var method -
    if (STRUCT_NUMBER & c_type_option_from_var) {
 RB_TREE_FROM_VAR(RB_TREE_GEN_VALUES);
+   }
+
+   // - rb_tree from_json method -
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+RB_TREE_FROM_JSON(RB_TREE_GEN_VALUES);
    }
 
    // - rb_tree rehash_tree -

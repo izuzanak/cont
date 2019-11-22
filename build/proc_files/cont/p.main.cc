@@ -2420,6 +2420,7 @@ enum {
    c_type_option_to_json          = 0x100 << 10,
    c_type_option_to_json_nice     = 0x100 << 11,
    c_type_option_from_var         = 0x100 << 12,
+   c_type_option_from_json        = 0x100 << 13,
 };
 
 // - names of basic data types -

@@ -1521,6 +1521,51 @@ fprintf(out_file,
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
+void LIST_FROM_JSON(LIST_GEN_PARAMS)
+{/*{{{*/
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json)\n"
+"{/*{{{*/\n"
+"  %s_clear(this);\n"
+"\n"
+"  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_le_br))\n"
+"  {\n"
+"    throw_error(FROM_JSON_ERROR);\n"
+"  }\n"
+"\n"
+"  unsigned input_idx = a_from_json->input_idx;\n"
+"  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_re_br))\n"
+"  {\n"
+"    a_from_json->input_idx = input_idx;\n"
+"\n"
+"    do {\n"
+"      %s_append_blank(this);\n"
+"\n"
+"      if (%s_from_json(%s_at(this,this->last_idx),a_src,a_from_json))\n"
+"      {\n"
+"        throw_error(FROM_JSON_ERROR);\n"
+"      }\n"
+"\n"
+"      if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_comma))\n"
+"      {\n"
+"        if (a_from_json->terminal == c_json_terminal_re_br)\n"
+"        {\n"
+"          break;\n"
+"        }\n"
+"\n"
+"        throw_error(FROM_JSON_ERROR);\n"
+"      }\n"
+"    } while(1);\n"
+"  }\n"
+"\n"
+"  return 0;\n"
+"}/*}}}*/\n"
+"#endif\n"
+"\n"
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME);
+}/*}}}*/
+
 void processor_s::generate_list_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
@@ -1819,6 +1864,13 @@ fprintf(out_file,
 "#endif\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+fprintf(out_file,
+"#if OPTION_FROM_JSON == ENABLED\n"
+"WUR EXPORT int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json);\n"
+"#endif\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -1956,6 +2008,8 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
    // - list to_json_nice method -
 
    // - list from_var method -
+
+   // - list from_json method -
    }
 }/*}}}*/
 
@@ -2072,6 +2126,11 @@ LIST_TO_JSON_NICE(LIST_GEN_VALUES);
    // - list from_var method -
    if (STRUCT_NUMBER & c_type_option_from_var) {
 LIST_FROM_VAR(LIST_GEN_VALUES);
+   }
+
+   // - list from_json method -
+   if (STRUCT_NUMBER & c_type_option_from_json) {
+LIST_FROM_JSON(LIST_GEN_VALUES);
    }
 
    }
