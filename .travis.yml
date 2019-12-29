@@ -1,0 +1,22 @@
+
+language: cpp
+compiler: gcc
+os: linux
+git:
+  clone: false
+
+install:
+  - git clone --branch=master https://github.com/izuzanak/cont.git cont
+  - git clone --branch=cont_c https://github.com/izuzanak/cont.git cont_c
+  - cd cont/build
+  - pwd
+  - cmake ..
+  - make
+  - make install
+
+script:
+  - cd cont_c/build
+  - pwd
+  - cmake ..
+  - make
+
