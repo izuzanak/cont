@@ -12,7 +12,7 @@ install:
   - pwd
   - cmake ..
   - make
-  - make install
+  - sudo make install
 
 script:
   - cd cont_c/build
