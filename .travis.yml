@@ -15,7 +15,7 @@ install:
   - sudo make install
 
 script:
-  - cd cont_c/build
+  - cd ~/build/cont_c/build
   - pwd
   - cmake ..
   - make
