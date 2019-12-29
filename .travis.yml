@@ -1,0 +1,15 @@
+
+language: cpp
+compiler: gcc
+os: linux
+#sudo: true
+
+branches:
+  only:
+  - master
+
+script:
+  - cd build
+  - cmake ../cont
+  - make
+

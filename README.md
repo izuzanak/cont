@@ -35,8 +35,8 @@ clear.
 `init` - After creation of object (allocation on heap, or on stack) it must be
 initialized by method `init` or related metods (`init_size`).
 
-`clear` - Clears object content, release allocated dynamic memory and reset
-object state to initialized state. Object is not invalidated by `clear` method.
+`clear` - Clears object content, release allocated resources and reset object
+state to initialized state. Object is not invalidated by `clear` method.
 
 ### Generated code is human readable and accessible
 
