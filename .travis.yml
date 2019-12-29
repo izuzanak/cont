@@ -10,6 +10,6 @@ branches:
 
 script:
   - cd build
-  - cmake ../cont
+  - cmake ..
   - make
 
