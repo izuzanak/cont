@@ -8,15 +8,14 @@ git:
 install:
   - git clone --branch=master https://github.com/izuzanak/cont.git cont
   - git clone --branch=cont_c https://github.com/izuzanak/cont.git cont_c
-  - cd cont/build
-  - pwd
+
+  - cd ~/build/cont/build
   - cmake ..
   - make
   - sudo make install
 
 script:
   - cd ~/build/cont_c/build
-  - pwd
   - cmake ..
   - make
 
