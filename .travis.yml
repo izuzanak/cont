@@ -2,19 +2,14 @@
 language: cpp
 compiler: gcc
 os: linux
-git:
-  clone: false
-
-install:
-  - git clone --branch=master https://github.com/izuzanak/cont.git cont
 
 script:
-  - cd ~/build/cont/build
+  - cd ~/build/izuzanak/cont/build
   - cmake ..
   - make
   - sudo make install
 
-  - make clean
+  - rm -rf *
   - cmake ..
   - make
 
