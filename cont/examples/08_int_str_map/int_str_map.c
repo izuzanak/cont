@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     do {
       int length = snprintf(buffer,buff_size,"string-%d",idx);
 
-      pair.index = rand() % 1000;
+      pair.index = rand() % 10;
       string_s_set(&pair.value,length,buffer);
 
       unsigned p_idx = int_string_map_s_get_idx(&map,&pair);
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
       {
         int_string_map_s_swap_insert(&map,&pair);
       }
-    } while(++idx < 1000000);
+    } while(++idx < 1000);
 
     int_string_s_clear(&pair);
     string_s_clear(&str);
