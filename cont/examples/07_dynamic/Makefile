@@ -2,19 +2,18 @@
 LIBS =
 DEFS = -D_REENTRANT
 OPT = -g
-CPP = gcc
 
 all: dynamic
 
 # -- LINKING --
 
 dynamic: p.dynamic.o
-	$(CPP) $(DEFS) $(OPT) $^ -o dynamic -Wall $(LIBS)
+	$(CC) $(DEFS) $(OPT) $^ -o dynamic -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.dynamic.o: p.dynamic.c
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.dynamic.o -Wall
+	$(CC) $(DEFS) $(OPT) -c $^ -o p.dynamic.o -Wall
 
 # -- PROCESS --
 

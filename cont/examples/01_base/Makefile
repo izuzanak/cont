@@ -2,19 +2,18 @@
 LIBS =
 DEFS = -D_REENTRANT
 OPT = -O2
-CPP = gcc
 
 all: base
 
 # -- LINKING --
 
 base: p.base.o
-	$(CPP) $(DEFS) $(OPT) $^ -o base -Wall $(LIBS)
+	$(CC) $(DEFS) $(OPT) $^ -o base -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.base.o: p.base.c
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.base.o -Wall
+	$(CC) $(DEFS) $(OPT) -c $^ -o p.base.o -Wall
 
 # -- PROCESS --
 

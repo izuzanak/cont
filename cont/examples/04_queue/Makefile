@@ -2,19 +2,18 @@
 LIBS =
 DEFS = -D_REENTRANT
 OPT = -O2
-CPP = gcc
 
 all: queue
 
 # -- LINKING --
 
 queue: p.queue.o
-	$(CPP) $(DEFS) $(OPT) $^ -o queue -Wall $(LIBS)
+	$(CC) $(DEFS) $(OPT) $^ -o queue -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.queue.o: p.queue.c
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.queue.o -Wall
+	$(CC) $(DEFS) $(OPT) -c $^ -o p.queue.o -Wall
 
 # -- PROCESS --
 
