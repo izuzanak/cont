@@ -5449,10 +5449,11 @@ void processor_s::generate_array_type()
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
 
-      unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
-      if (d_idx != c_idx_not_exist) {
-         fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
-      }
+      // - do not report duplicate structures -
+      //unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
+      //if (d_idx != c_idx_not_exist) {
+      //   fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
+      //}
 
       data_types.push_blank();
       data_type_s &data_type = data_types.last();
@@ -6812,10 +6813,11 @@ void processor_s::generate_queue_type()
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
 
-      unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
-      if (d_idx != c_idx_not_exist) {
-         fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
-      }
+      // - do not report duplicate structures -
+      //unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
+      //if (d_idx != c_idx_not_exist) {
+      //   fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
+      //}
 
       data_types.push_blank();
       data_type_s &data_type = data_types.last();
@@ -8561,10 +8563,11 @@ void processor_s::generate_list_type()
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
 
-      unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
-      if (d_idx != c_idx_not_exist) {
-         fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
-      }
+      // - do not report duplicate structures -
+      //unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
+      //if (d_idx != c_idx_not_exist) {
+      //   fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
+      //}
 
       data_types.push_blank();
       data_type_s &data_type = data_types.last();
@@ -9426,10 +9429,11 @@ void processor_s::generate_struct_type()
    // - create abbreviation for new data type -
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
 
-      unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
-      if (d_idx != c_idx_not_exist) {
-         fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
-      }
+      // - do not report duplicate structures -
+      //unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
+      //if (d_idx != c_idx_not_exist) {
+      //   fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
+      //}
 
       data_types.push_blank();
       data_type_s &data_type = data_types.last();
@@ -11913,10 +11917,11 @@ void processor_s::generate_rb_tree_type()
 
    if ((data_type_idx = abbreviations.get_idx_by_name(data_type_name.size - 1,data_type_name.data)) == c_idx_not_exist) {
 
-      unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
-      if (d_idx != c_idx_not_exist) {
-         fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
-      }
+      // - do not report duplicate structures -
+      //unsigned d_idx = data_types.get_idx_by_real_name(real_name.size - 1,real_name.data);
+      //if (d_idx != c_idx_not_exist) {
+      //   fprintf(stderr,"DUPLICATE STRUCTURES: %s <-> %s\n",data_type_name.data,data_types[d_idx].name.data);
+      //}
 
       data_types.push_blank();
       data_type_s &data_type = data_types.last();
