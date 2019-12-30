@@ -2,19 +2,18 @@
 LIBS =
 DEFS = -D_REENTRANT
 OPT = -O2 -Wno-class-memaccess
-CPP = g++
 
 all: list
 
 # -- LINKING --
 
 list: p.list.o
-	$(CPP) $(DEFS) $(OPT) $^ -o list -Wall $(LIBS)
+	$(CXX) $(DEFS) $(OPT) $^ -o list -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.list.o: p.list.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.list.o -Wall
+	$(CXX) $(DEFS) $(OPT) -c $^ -o p.list.o -Wall
 
 # -- PROCESS --
 

@@ -2,19 +2,18 @@
 LIBS =
 DEFS = -D_REENTRANT
 OPT = -O2 -Wno-class-memaccess
-CPP = g++
 
 all: rb_tree
 
 # -- LINKING --
 
 rb_tree: p.rb_tree.o
-	$(CPP) $(DEFS) $(OPT) $^ -o rb_tree -Wall $(LIBS)
+	$(CXX) $(DEFS) $(OPT) $^ -o rb_tree -Wall $(LIBS)
 
 # -- COMPILE --
 
 p.rb_tree.o: p.rb_tree.cc
-	$(CPP) $(DEFS) $(OPT) -c $^ -o p.rb_tree.o -Wall
+	$(CXX) $(DEFS) $(OPT) -c $^ -o p.rb_tree.o -Wall
 
 # -- PROCESS --
 
