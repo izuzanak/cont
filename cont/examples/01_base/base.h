@@ -8,6 +8,16 @@
 #include "assert.h"
 #include "math.h"
 
+#ifdef _MSC_VER
+#if _MSC_VER < 1600
+#define nullptr NULL
+#endif
+#else
+#if __cplusplus < 201103
+#define nullptr NULL
+#endif
+#endif
+
 // - export of dynamically linked symbols -
 #define EXPORT
 

@@ -70,8 +70,14 @@ typedef long double ld;
 
 #define ENABLE 1
 
+#ifdef _MSC_VER
+#if _MSC_VER < 1600
+#define nullptr NULL
+#endif
+#else
 #if __cplusplus < 201103
 #define nullptr NULL
+#endif
 #endif
 
 // - system type selection -
