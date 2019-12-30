@@ -4,21 +4,21 @@ compiler: gcc
 os: linux
 
 install:
-  - git clone --branch=master https://github.com/izuzanak/cont.git ~/build/izuzanak/cont
+  - git clone --branch=master https://github.com/izuzanak/cont.git ~/build/izuzanak/cont_cc
 
-  - cd ~/build/izuzanak/cont/build
+  - cd ~/build/izuzanak/cont_cc/build
   - cmake ..
   - make
 
 script:
-  - cd ~/build/izuzanak/cont_c/build
+  - cd ~/build/izuzanak/cont/build
   - cmake ..
   - make
 
-  - cd ~/build/izuzanak/cont/build
+  - cd ~/build/izuzanak/cont_cc/build
   - sudo make install
 
-  - cd ~/build/izuzanak/cont_c/build
+  - cd ~/build/izuzanak/cont/build
   - rm -rf *
   - cmake ..
   - make
