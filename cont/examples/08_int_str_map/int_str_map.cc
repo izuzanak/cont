@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
     int idx = 0;
     do {
-      pair.index = rand() % 1000;
+      pair.index = rand() % 10;
       pair.value.setf("string-%d",idx);
 
       unsigned p_idx = map.get_idx(pair);
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
       {
         map.swap_insert(pair);
       }
-    } while(++idx < 1000000);
+    } while(++idx < 1000);
 
     pair.clear();
     str.clear();
