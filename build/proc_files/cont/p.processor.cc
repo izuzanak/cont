@@ -12679,11 +12679,11 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
    // - rb_tree print_dot_code -
 
    // - rb_tree check_properties -
-   }
 
 fprintf(out_file,
 "// LCOV_EXCL_STOP\n"
 "\n");
+   }
 }/*}}}*/
 
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
