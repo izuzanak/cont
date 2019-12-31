@@ -1358,6 +1358,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1464,6 +1465,10 @@ ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    // - array from_var method -
 
    // - array from_json method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -1489,6 +1494,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1591,6 +1597,9 @@ ARRAY_FROM_VAR(ARRAY_GEN_VALUES);
 ARRAY_FROM_JSON(ARRAY_GEN_VALUES);
    }
 
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 

@@ -2991,6 +2991,7 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -3128,6 +3129,10 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
    // - rb_tree from_var method -
 
    // - rb_tree from_json method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -3174,6 +3179,7 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -3329,6 +3335,10 @@ RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
    if (STRUCT_NUMBER & c_type_option_check_properties) {
 RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_VALUES);
    }
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 

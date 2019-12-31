@@ -1907,6 +1907,7 @@ void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -2010,6 +2011,10 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
    // - list from_var method -
 
    // - list from_json method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -2035,6 +2040,7 @@ void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -2133,6 +2139,9 @@ LIST_FROM_VAR(LIST_GEN_VALUES);
 LIST_FROM_JSON(LIST_GEN_VALUES);
    }
 
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
