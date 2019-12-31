@@ -1708,6 +1708,7 @@ void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1799,6 +1800,10 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
    }
 
    // - list operator== method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -1822,6 +1827,7 @@ void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1893,6 +1899,10 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
 
    // - list operator== method -
 LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_VALUES);
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 

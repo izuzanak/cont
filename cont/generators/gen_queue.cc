@@ -1051,6 +1051,7 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1116,6 +1117,10 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
    }
 
    // - queue operator== method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -1139,6 +1144,7 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1191,6 +1197,10 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
 
    // - queue operator== method -
 QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_VALUES);
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 

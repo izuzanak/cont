@@ -987,6 +987,7 @@ struct mc_struct_s
 
 // -- ui_array_s --
 // --- struct ui_array_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void ui_array_s::init()
 {/*{{{*/
@@ -1133,12 +1134,15 @@ inline bool ui_array_s::operator==(ui_array_s &a_second)
   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 #if MEM_CHECK == ENABLE
 
 // -- mc_block_s --
 // --- struct mc_block_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void mc_block_s::init()
 {/*{{{*/
@@ -1182,10 +1186,13 @@ inline bool mc_block_s::operator==(mc_block_s &a_second)
   return (location == a_second.location && size == a_second.size);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 // -- mc_block_rb_tree_s --
 // --- struct mc_block_rb_tree_s inline method definition ---
+// LCOV_EXCL_START
 
 inline unsigned mc_block_rb_tree_s::__get_grandparent_idx(unsigned a_idx)
 {/*{{{*/
@@ -1533,6 +1540,8 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   return *this;
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 inline void *mc_block_rb_tree_s::cmalloc(unsigned a_size)
@@ -1560,6 +1569,7 @@ int mc_block_rb_tree_s::__compare_value(mc_block_s &a_first,mc_block_s &a_second
 
 // -- mc_struct_s --
 // --- struct mc_struct_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void mc_struct_s::init()
 {/*{{{*/
@@ -1621,6 +1631,8 @@ inline bool mc_struct_s::operator==(mc_struct_s &a_second)
 {/*{{{*/
   return (mutex == a_second.mutex && mc_block_set == a_second.mc_block_set && alloc_size == a_second.alloc_size && max_alloc_size == a_second.max_alloc_size && act_alloc_size == a_second.act_alloc_size);
 }/*}}}*/
+
+// LCOV_EXCL_STOP
 
 
 
@@ -2265,6 +2277,7 @@ inline bool string_s::save_text_file(const char *a_file)
 
 // -- string_array_s --
 // --- struct string_array_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void string_array_s::init()
 {/*{{{*/
@@ -2351,6 +2364,8 @@ inline string_s &string_array_s::last()
   debug_assert(used > 0);
   return data[used - 1];
 }/*}}}*/
+
+// LCOV_EXCL_STOP
 
 
 
@@ -2712,6 +2727,7 @@ unsigned string_s::get_character_line_end(unsigned c_idx)
 
 // -- string_array_s --
 // --- struct string_array_s method definition ---
+// LCOV_EXCL_START
 
 void string_array_s::clear()
 {/*{{{*/
@@ -2909,6 +2925,8 @@ bool string_array_s::operator==(string_array_s &a_second)
 
   return true;
 }/*}}}*/
+
+// LCOV_EXCL_STOP
 
 
 

@@ -532,6 +532,7 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -563,6 +564,10 @@ STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
 
    // - struct operator== method -
 STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -591,6 +596,7 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -607,6 +613,10 @@ fprintf(out_file,
    // - struct operator= method -
 
    // - struct operator== method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 

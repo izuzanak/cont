@@ -987,6 +987,7 @@ struct mc_struct_s
 
 // -- ui_array_s --
 // --- struct ui_array_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void ui_array_s::init()
 {/*{{{*/
@@ -1133,12 +1134,15 @@ inline bool ui_array_s::operator==(ui_array_s &a_second)
   return (memcmp(data,a_second.data,used*sizeof(unsigned)) == 0);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 #if MEM_CHECK == ENABLE
 
 // -- mc_block_s --
 // --- struct mc_block_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void mc_block_s::init()
 {/*{{{*/
@@ -1182,10 +1186,13 @@ inline bool mc_block_s::operator==(mc_block_s &a_second)
   return (location == a_second.location && size == a_second.size);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 // -- mc_block_rb_tree_s --
 // --- struct mc_block_rb_tree_s inline method definition ---
+// LCOV_EXCL_START
 
 inline unsigned mc_block_rb_tree_s::__get_grandparent_idx(unsigned a_idx)
 {/*{{{*/
@@ -1533,6 +1540,8 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   return *this;
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 inline void *mc_block_rb_tree_s::cmalloc(unsigned a_size)
@@ -1560,6 +1569,7 @@ int mc_block_rb_tree_s::__compare_value(mc_block_s &a_first,mc_block_s &a_second
 
 // -- mc_struct_s --
 // --- struct mc_struct_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void mc_struct_s::init()
 {/*{{{*/
@@ -1621,6 +1631,8 @@ inline bool mc_struct_s::operator==(mc_struct_s &a_second)
 {/*{{{*/
   return (mutex == a_second.mutex && mc_block_set == a_second.mc_block_set && alloc_size == a_second.alloc_size && max_alloc_size == a_second.max_alloc_size && act_alloc_size == a_second.act_alloc_size);
 }/*}}}*/
+
+// LCOV_EXCL_STOP
 
 
 
@@ -2269,6 +2281,7 @@ inline bool string_s::save_text_file(const char *a_file)
 
 // -- string_array_s --
 // --- struct string_array_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void string_array_s::init()
 {/*{{{*/
@@ -2355,6 +2368,8 @@ inline string_s &string_array_s::last()
   debug_assert(used > 0);
   return data[used - 1];
 }/*}}}*/
+
+// LCOV_EXCL_STOP
 
 
 
@@ -3009,6 +3024,7 @@ typedef processor_s * processor_s_ptr;
 
 // -- data_type_s --
 // --- struct data_type_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void data_type_s::init()
 {/*{{{*/
@@ -3078,10 +3094,13 @@ inline bool data_type_s::operator==(data_type_s &a_second)
   return (cont_idx == a_second.cont_idx && name == a_second.name && real_name == a_second.real_name && properties == a_second.properties && types == a_second.types && variables == a_second.variables);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 // -- data_type_array_s --
 // --- struct data_type_array_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void data_type_array_s::init()
 {/*{{{*/
@@ -3164,10 +3183,13 @@ inline data_type_s &data_type_array_s::last()
   return data[used - 1];
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 // -- abbreviation_s --
 // --- struct abbreviation_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void abbreviation_s::init()
 {/*{{{*/
@@ -3211,10 +3233,13 @@ inline bool abbreviation_s::operator==(abbreviation_s &a_second)
   return (name == a_second.name && data_type_idx == a_second.data_type_idx);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 // -- abbreviation_array_s --
 // --- struct abbreviation_array_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void abbreviation_array_s::init()
 {/*{{{*/
@@ -3302,10 +3327,13 @@ inline abbreviation_s &abbreviation_array_s::last()
   return data[used - 1];
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 // -- container_parameters_s --
 // --- struct container_parameters_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void container_parameters_s::init()
 {/*{{{*/
@@ -3365,6 +3393,8 @@ inline bool container_parameters_s::operator==(container_parameters_s &a_second)
   return (types == a_second.types && variables == a_second.variables && functions == a_second.functions && names == a_second.names);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 inline void container_parameters_s::clean_out()
@@ -3377,6 +3407,7 @@ inline void container_parameters_s::clean_out()
 
 // -- processor_s --
 // --- struct processor_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void processor_s::init()
 {/*{{{*/
@@ -3460,6 +3491,8 @@ inline bool processor_s::operator==(processor_s &a_second)
 {/*{{{*/
   return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
 }/*}}}*/
+
+// LCOV_EXCL_STOP
 
 
 
@@ -3756,6 +3789,7 @@ extern void(*parse_callbacks[])(process_s &proc);
 
 // -- lalr_stack_element_s --
 // --- struct lalr_stack_element_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void lalr_stack_element_s::init()
 {/*{{{*/
@@ -3805,10 +3839,13 @@ inline bool lalr_stack_element_s::operator==(lalr_stack_element_s &a_second)
   return (lalr_state == a_second.lalr_state && terminal_start == a_second.terminal_start && terminal_end == a_second.terminal_end);
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 // -- lalr_stack_s --
 // --- struct lalr_stack_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void lalr_stack_s::init()
 {/*{{{*/
@@ -3940,6 +3977,8 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
   return *this;
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 inline void lalr_stack_s::push(unsigned a_lalr_state)
@@ -3968,6 +4007,7 @@ inline void lalr_stack_s::push(unsigned a_lalr_state,unsigned a_terminal_start,u
 
 // -- process_s --
 // --- struct process_s inline method definition ---
+// LCOV_EXCL_START
 
 inline void process_s::init()
 {/*{{{*/
@@ -4023,6 +4063,8 @@ inline bool process_s::operator==(process_s &a_second)
 {/*{{{*/
   return (processor_ptr == a_second.processor_ptr && source_string == a_second.source_string && code == a_second.code && lalr_stack == a_second.lalr_stack);
 }/*}}}*/
+
+// LCOV_EXCL_STOP
 
 
 
@@ -4143,11 +4185,15 @@ const char *c_cont_postfixes[c_cont_cnt] = {
 
 // -- data_type_s --
 // --- struct data_type_s method definition ---
+// LCOV_EXCL_START
+
+// LCOV_EXCL_STOP
 
 
 
 // -- data_type_array_s --
 // --- struct data_type_array_s method definition ---
+// LCOV_EXCL_START
 
 void data_type_array_s::clear()
 {/*{{{*/
@@ -4363,6 +4409,8 @@ bool data_type_array_s::operator==(data_type_array_s &a_second)
   return true;
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
@@ -4382,11 +4430,15 @@ unsigned data_type_array_s::get_idx_by_real_name(unsigned n_length,char *n_data)
 
 // -- abbreviation_s --
 // --- struct abbreviation_s method definition ---
+// LCOV_EXCL_START
+
+// LCOV_EXCL_STOP
 
 
 
 // -- abbreviation_array_s --
 // --- struct abbreviation_array_s method definition ---
+// LCOV_EXCL_START
 
 void abbreviation_array_s::clear()
 {/*{{{*/
@@ -4585,6 +4637,8 @@ bool abbreviation_array_s::operator==(abbreviation_array_s &a_second)
   return true;
 }/*}}}*/
 
+// LCOV_EXCL_STOP
+
 
 
 unsigned abbreviation_array_s::get_idx_by_name(unsigned a_length,const char *a_data)
@@ -4604,11 +4658,17 @@ unsigned abbreviation_array_s::get_idx_by_name(unsigned a_length,const char *a_d
 
 // -- container_parameters_s --
 // --- struct container_parameters_s method definition ---
+// LCOV_EXCL_START
+
+// LCOV_EXCL_STOP
 
 
 
 // -- processor_s --
 // --- struct processor_s method definition ---
+// LCOV_EXCL_START
+
+// LCOV_EXCL_STOP
 
 
 
@@ -5869,6 +5929,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -5959,6 +6020,10 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    if (TYPE_NUMBER & c_type_basic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -5982,6 +6047,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -6061,6 +6127,10 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    if (!(TYPE_NUMBER & c_type_basic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -7117,6 +7187,7 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -7182,6 +7253,10 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
    }
 
    // - queue operator== method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -7205,6 +7280,7 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -7257,6 +7333,10 @@ QUEUE_OPERATOR_EQUAL(QUEUE_GEN_VALUES);
 
    // - queue operator== method -
 QUEUE_OPERATOR_DOUBLE_EQUAL(QUEUE_GEN_VALUES);
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -8970,6 +9050,7 @@ void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -9061,6 +9142,10 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
    }
 
    // - list operator== method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -9084,6 +9169,7 @@ void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -9155,6 +9241,10 @@ LIST_OPERATOR_EQUAL(LIST_GEN_VALUES);
 
    // - list operator== method -
 LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_VALUES);
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -9692,6 +9782,7 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -9723,6 +9814,10 @@ STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
 
    // - struct operator== method -
 STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -9751,6 +9846,7 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -9767,6 +9863,10 @@ fprintf(out_file,
    // - struct operator= method -
 
    // - struct operator== method -
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -12453,6 +12553,7 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -12579,6 +12680,10 @@ RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_VALUES);
 
    // - rb_tree check_properties -
    }
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
 }/*}}}*/
 
 void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
@@ -12622,6 +12727,7 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -12751,6 +12857,10 @@ RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_VALUES);
    if (STRUCT_NUMBER & c_type_option_check_properties) {
 RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_VALUES);
    }
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 

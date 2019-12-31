@@ -1255,6 +1255,7 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1345,6 +1346,10 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    if (TYPE_NUMBER & c_type_basic) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
@@ -1368,6 +1373,7 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
+"// LCOV_EXCL_START\n"
 "\n"
 ,IM_STRUCT_NAME);
 
@@ -1447,6 +1453,10 @@ ARRAY_OPERATOR_EQUAL(ARRAY_GEN_VALUES);
    if (!(TYPE_NUMBER & c_type_basic)) {
 ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_VALUES);
    }
+
+fprintf(out_file,
+"// LCOV_EXCL_STOP\n"
+"\n");
    }
 }/*}}}*/
 
