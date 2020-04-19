@@ -4852,7 +4852,7 @@ fprintf(out_file,
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
-"  memcpy(this->data,a_data,a_used*sizeof(%s));\n"
+"  memcpy(this->data,a_data,a_used*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,TYPE_NAME);
    }
    else {
@@ -5270,7 +5270,7 @@ fprintf(out_file,
 );
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
 fprintf(out_file,
-"  memset(this->data,a_value,this->size);\n"
+"  memset(this->data,a_value,this->size); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 );
    }
    else {
@@ -5392,7 +5392,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s));\n"
+"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,TYPE_NAME);
    }
    else {
@@ -6731,11 +6731,11 @@ fprintf(out_file,
 "      sec_cnt = 0;\n"
 "    }\n"
 "\n"
-"    memcpy(n_data,this->data + this->begin,fir_cnt*sizeof(%s));\n"
+"    memcpy(n_data,this->data + this->begin,fir_cnt*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "\n"
 "    if (sec_cnt != 0)\n"
 "    {\n"
-"      memcpy(n_data + fir_cnt,this->data,sec_cnt*sizeof(%s));\n"
+"      memcpy(n_data + fir_cnt,this->data,sec_cnt*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "    }\n"
 "  }\n"
 "\n"
@@ -6845,11 +6845,11 @@ fprintf(out_file,
 "    sec_cnt = 0;\n"
 "  }\n"
 "\n"
-"  memcpy(this->data,a_src->data + a_src->begin,fir_cnt*sizeof(%s));\n"
+"  memcpy(this->data,a_src->data + a_src->begin,fir_cnt*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "\n"
 "  if (sec_cnt != 0)\n"
 "  {\n"
-"    memcpy(this->data + fir_cnt,a_src->data,sec_cnt*sizeof(%s));\n"
+"    memcpy(this->data + fir_cnt,a_src->data,sec_cnt*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "  }\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
@@ -9097,7 +9097,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_element));\n"
+"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_element)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,IM_STRUCT_NAME);
    }
    else {
@@ -12644,7 +12644,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node));\n"
+"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,IM_STRUCT_NAME);
    }
    else {
@@ -13153,7 +13153,7 @@ fprintf(out_file,
 "  this->root_idx = c_idx_not_exist;\n"
 "\n"
 "  char *processed = (char *)cmalloc(indexes.used);\n"
-"  memset(processed,0,indexes.used*sizeof(char));\n"
+"  memset(processed,0,indexes.used*sizeof(char)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
 "  if (step > 0)\n"

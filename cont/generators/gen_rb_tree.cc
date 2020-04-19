@@ -1741,7 +1741,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node));\n"
+"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,IM_STRUCT_NAME);
    }
    else {
@@ -2250,7 +2250,7 @@ fprintf(out_file,
 "  this->root_idx = c_idx_not_exist;\n"
 "\n"
 "  char *processed = (char *)cmalloc(indexes.used);\n"
-"  memset(processed,0,indexes.used*sizeof(char));\n"
+"  memset(processed,0,indexes.used*sizeof(char)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
 "  if (step > 0)\n"

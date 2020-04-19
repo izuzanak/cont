@@ -1237,7 +1237,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_element));\n"
+"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_element)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,IM_STRUCT_NAME);
    }
    else {

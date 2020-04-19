@@ -177,7 +177,7 @@ fprintf(out_file,
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
-"  memcpy(this->data,a_data,a_used*sizeof(%s));\n"
+"  memcpy(this->data,a_data,a_used*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,TYPE_NAME);
    }
    else {
@@ -595,7 +595,7 @@ fprintf(out_file,
 );
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char) {
 fprintf(out_file,
-"  memset(this->data,a_value,this->size);\n"
+"  memset(this->data,a_value,this->size); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 );
    }
    else {
@@ -717,7 +717,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s));\n"
+"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 ,TYPE_NAME);
    }
    else {
