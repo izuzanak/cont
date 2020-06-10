@@ -735,7 +735,7 @@ struct mc_block_rb_tree_s
 
   inline unsigned get_descent_stack_size();
   EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
-  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
+  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base);
 
   EXPORT unsigned get_min_value_idx(unsigned a_idx);
   EXPORT unsigned get_max_value_idx(unsigned a_idx);
@@ -1226,7 +1226,7 @@ inline unsigned mc_block_rb_tree_s::get_descent_stack_size()
   return (unsigned)(logf(used)/c_log_of_2) << 1;
 }/*}}}*/
 
-inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)
+inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base)
 {/*{{{*/
   debug_assert(a_idx < used && data[a_idx].valid);
 
@@ -1890,7 +1890,7 @@ unsigned mc_block_rb_tree_s::get_stack_min_value_idx(unsigned a_idx,unsigned **a
 
     *((*a_s_ptr)++) = node_idx;
     node_idx = node.left_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_min_value_idx(unsigned a_idx)
@@ -1907,7 +1907,7 @@ unsigned mc_block_rb_tree_s::get_min_value_idx(unsigned a_idx)
     }
 
     node_idx = node.left_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_max_value_idx(unsigned a_idx)
@@ -1924,7 +1924,7 @@ unsigned mc_block_rb_tree_s::get_max_value_idx(unsigned a_idx)
     }
 
     node_idx = node.right_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_next_idx(unsigned a_idx)
@@ -1953,7 +1953,7 @@ unsigned mc_block_rb_tree_s::get_next_idx(unsigned a_idx)
     }
 
     node_idx = node.parent_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
@@ -1982,7 +1982,7 @@ unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
     }
 
     node_idx = node.parent_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique)
@@ -2032,7 +2032,7 @@ unsigned mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s 
         }
         node_idx = node.right_idx;
       }
-    } while(1);
+    } while(true);
 
     data[a_new_idx].parent_idx = node_idx;
   }
@@ -2133,7 +2133,7 @@ void mc_block_rb_tree_s::__remove_black_black(unsigned a_idx)
       return;
     }
 
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 void mc_block_rb_tree_s::__insert_operation(unsigned a_idx)
@@ -2198,7 +2198,7 @@ void mc_block_rb_tree_s::__insert_operation(unsigned a_idx)
 
       return;
     }
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 void mc_block_rb_tree_s::remove(unsigned a_idx)
@@ -2221,7 +2221,7 @@ void mc_block_rb_tree_s::remove(unsigned a_idx)
         }
 
         found_idx = node.left_idx;
-      } while(1);
+      } while(true);
 
       mc_block_rb_tree_s_node &found_node = data[found_idx];
 
@@ -2492,8 +2492,6 @@ void mc_block_rb_tree_s::get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array)
       }
     }
   } while(stack_ptr > stack);
-
-  return;
 }/*}}}*/
 
 bool mc_block_rb_tree_s::operator==(mc_block_rb_tree_s &a_second)

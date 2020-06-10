@@ -620,7 +620,7 @@ fprintf(out_file,
 "            return false;\n"
 "          }\n"
 "\n"
-"          if (pos += s_offset >= size)\n"
+"          if ((pos += s_offset) >= size)\n"
 "          {\n"
 "            pos = 0;\n"
 "            _break = false;\n"
@@ -659,7 +659,7 @@ fprintf(out_file,
 "        return memcmp(data + pos,a_second.data + s_pos,(pos_end - pos)*sizeof(%s)) == 0;\n"
 "      }\n"
 "    }\n"
-"  } while(1);\n"
+"  } while(true);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
    else {

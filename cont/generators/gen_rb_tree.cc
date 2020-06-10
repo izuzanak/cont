@@ -91,7 +91,7 @@ fprintf(out_file,
 "\n"
 "    *((*a_s_ptr)++) = node_idx;\n"
 "    node_idx = node.left_idx;\n"
-"  } while(1);\n"
+"  } while(true);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -100,7 +100,7 @@ fprintf(out_file,
 void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)\n"
+"inline unsigned %s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base)\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
@@ -161,7 +161,7 @@ fprintf(out_file,
 "    }\n"
 "\n"
 "    node_idx = node.left_idx;\n"
-"  } while(1);\n"
+"  } while(true);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -195,7 +195,7 @@ fprintf(out_file,
 "    }\n"
 "\n"
 "    node_idx = node.right_idx;\n"
-"  } while(1);\n"
+"  } while(true);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -241,7 +241,7 @@ fprintf(out_file,
 "    }\n"
 "\n"
 "    node_idx = node.parent_idx;\n"
-"  } while(1);\n"
+"  } while(true);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -287,7 +287,7 @@ fprintf(out_file,
 "    }\n"
 "\n"
 "    node_idx = node.parent_idx;\n"
-"  } while(1);\n"
+"  } while(true);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -473,7 +473,7 @@ fprintf(out_file,
 "        }\n"
 "        node_idx = node.right_idx;\n"
 "      }\n"
-"    } while(1);\n"
+"    } while(true);\n"
 "\n"
 "    data[a_new_idx].parent_idx = node_idx;\n"
 "  }\n"
@@ -604,7 +604,7 @@ fprintf(out_file,
 "      return;\n"
 "    }\n"
 "\n"
-"  } while(1);\n"
+"  } while(true);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -713,7 +713,7 @@ fprintf(out_file,
 "\n"
 "      return;\n"
 "    }\n"
-"  } while(1);\n"
+"  } while(true);\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
@@ -1211,7 +1211,7 @@ fprintf(out_file,
 "        }\n"
 "\n"
 "        found_idx = node.left_idx;\n"
-"      } while(1);\n"
+"      } while(true);\n"
 "\n"
 "      %s_node &found_node = data[found_idx];\n"
 "\n"
@@ -1595,8 +1595,6 @@ fprintf(out_file,
 "      }\n"
 "    }\n"
 "  } while(stack_ptr > stack);\n"
-"\n"
-"  return;\n"
 "}/*}}}*/\n"
 "\n"
 ,IM_STRUCT_NAME);
@@ -2043,7 +2041,7 @@ fprintf(out_file,
 "        fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"
 "        return false;\n"
 "      }\n"
-"    } while(1);\n"
+"    } while(true);\n"
 "  }\n"
 "\n"
 "  return true;\n"
@@ -2284,7 +2282,7 @@ fprintf(out_file,
 "\n"
 "  inline unsigned get_descent_stack_size();\n"
 "  EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);\n"
-"  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);\n"
+"  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base);\n"
 "\n"
 "  EXPORT unsigned get_min_value_idx(unsigned a_idx);\n"
 "  EXPORT unsigned get_max_value_idx(unsigned a_idx);\n"

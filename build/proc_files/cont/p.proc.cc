@@ -739,7 +739,7 @@ struct mc_block_rb_tree_s
 
   inline unsigned get_descent_stack_size();
   EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
-  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
+  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base);
 
   EXPORT unsigned get_min_value_idx(unsigned a_idx);
   EXPORT unsigned get_max_value_idx(unsigned a_idx);
@@ -1230,7 +1230,7 @@ inline unsigned mc_block_rb_tree_s::get_descent_stack_size()
   return (unsigned)(logf(used)/c_log_of_2) << 1;
 }/*}}}*/
 
-inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)
+inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base)
 {/*{{{*/
   debug_assert(a_idx < used && data[a_idx].valid);
 
