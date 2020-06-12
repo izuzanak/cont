@@ -681,7 +681,7 @@ fprintf(out_file,
 "            return 0;\n"
 "          }\n"
 "\n"
-"          if (pos += s_offset >= this->size)\n"
+"          if ((pos += s_offset) >= this->size)\n"
 "          {\n"
 "            pos = 0;\n"
 "            _break = 0;\n"

@@ -16,7 +16,7 @@ function(process_source TARGET)
       ERROR_QUIET)
   add_custom_command(OUTPUT "${PROC_DIR}/p.${TARGET}.cc"
       DEPENDS ${DEPS}
-      COMMAND ${PROCESS_BIN} "--output" "${PROC_DIR}/p.${TARGET}.cc" "${SOURCE_DIR}/${TARGET}.cc" ${COMP_HEADER_DIRS})
+      COMMAND ${PROCESS_BIN} --geninc "--output" "${PROC_DIR}/p.${TARGET}.cc" "${SOURCE_DIR}/${TARGET}.cc" ${COMP_HEADER_DIRS})
 endfunction()
 
 # - process component -

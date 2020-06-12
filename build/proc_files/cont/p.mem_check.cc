@@ -1,65 +1,4 @@
 
-typedef bool bb;
-typedef char bc;
-typedef unsigned char uc;
-typedef short int si;
-typedef unsigned short int usi;
-typedef int bi;
-typedef unsigned int ui;
-typedef long int li;
-typedef unsigned long uli;
-typedef long long int lli;
-typedef unsigned long long int ulli;
-typedef float bf;
-typedef double bd;
-typedef long double ld;
-
-#define INIT_ARRAY \
-.size = 0,\
-.used = 0,\
-.data = nullptr
-
-#define INIT_QUEUE \
-.size = 0,\
-.used = 0,\
-.begin = 0,\
-.data = nullptr\
-
-#define INIT_LIST \
-.size = 0,\
-.used = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.first_idx = c_idx_not_exist,\
-.last_idx = c_idx_not_exist
-
-#define INIT_RB_TREE \
-.size = 0,\
-.used = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.root_idx = c_idx_not_exist,\
-.leaf_idx = c_idx_not_exist
-
-#define INIT_SAFE_LIST \
-.size = 0,\
-.used = 0,\
-.count = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.first_idx = c_idx_not_exist,\
-.last_idx = c_idx_not_exist
-
-#define INIT_SAFE_RB_TREE \
-.size = 0,\
-.used = 0,\
-.count = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.root_idx = c_idx_not_exist,\
-.leaf_idx = c_idx_not_exist
-
-
 
 #ifndef CONT_C_MEM_CHECK_H
 #define CONT_C_MEM_CHECK_H
@@ -266,6 +205,21 @@ enum {
 /*
  * definition of basic types
  */
+
+typedef bool bb;
+typedef char bc;
+typedef unsigned char uc;
+typedef short int si;
+typedef unsigned short int usi;
+typedef int bi;
+typedef unsigned int ui;
+typedef long int li;
+typedef unsigned long uli;
+typedef long long int lli;
+typedef unsigned long long int ulli;
+typedef float bf;
+typedef double bd;
+typedef long double ld;
 
 // - unsigned integer with same size as pointer -
 typedef long unsigned t_ps_uint;
@@ -731,7 +685,7 @@ struct mc_block_rb_tree_s
 
   inline unsigned get_descent_stack_size();
   EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
-  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base);
+  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base);
 
   EXPORT unsigned get_min_value_idx(unsigned a_idx);
   EXPORT unsigned get_max_value_idx(unsigned a_idx);
@@ -1222,7 +1176,7 @@ inline unsigned mc_block_rb_tree_s::get_descent_stack_size()
   return (unsigned)(logf(used)/c_log_of_2) << 1;
 }/*}}}*/
 
-inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,unsigned *a_stack_base)
+inline unsigned mc_block_rb_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base)
 {/*{{{*/
   debug_assert(a_idx < used && data[a_idx].valid);
 
@@ -1886,7 +1840,7 @@ unsigned mc_block_rb_tree_s::get_stack_min_value_idx(unsigned a_idx,unsigned **a
 
     *((*a_s_ptr)++) = node_idx;
     node_idx = node.left_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_min_value_idx(unsigned a_idx)
@@ -1903,7 +1857,7 @@ unsigned mc_block_rb_tree_s::get_min_value_idx(unsigned a_idx)
     }
 
     node_idx = node.left_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_max_value_idx(unsigned a_idx)
@@ -1920,7 +1874,7 @@ unsigned mc_block_rb_tree_s::get_max_value_idx(unsigned a_idx)
     }
 
     node_idx = node.right_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_next_idx(unsigned a_idx)
@@ -1949,7 +1903,7 @@ unsigned mc_block_rb_tree_s::get_next_idx(unsigned a_idx)
     }
 
     node_idx = node.parent_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
@@ -1978,7 +1932,7 @@ unsigned mc_block_rb_tree_s::get_prev_idx(unsigned a_idx)
     }
 
     node_idx = node.parent_idx;
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 unsigned mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s &a_value,bool a_unique)
@@ -2028,7 +1982,7 @@ unsigned mc_block_rb_tree_s::__binary_tree_insert(unsigned a_new_idx,mc_block_s 
         }
         node_idx = node.right_idx;
       }
-    } while(1);
+    } while(true);
 
     data[a_new_idx].parent_idx = node_idx;
   }
@@ -2129,7 +2083,7 @@ void mc_block_rb_tree_s::__remove_black_black(unsigned a_idx)
       return;
     }
 
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 void mc_block_rb_tree_s::__insert_operation(unsigned a_idx)
@@ -2194,7 +2148,7 @@ void mc_block_rb_tree_s::__insert_operation(unsigned a_idx)
 
       return;
     }
-  } while(1);
+  } while(true);
 }/*}}}*/
 
 void mc_block_rb_tree_s::remove(unsigned a_idx)
@@ -2217,7 +2171,7 @@ void mc_block_rb_tree_s::remove(unsigned a_idx)
         }
 
         found_idx = node.left_idx;
-      } while(1);
+      } while(true);
 
       mc_block_rb_tree_s_node &found_node = data[found_idx];
 
@@ -2488,8 +2442,6 @@ void mc_block_rb_tree_s::get_idxs(mc_block_s &a_value,ui_array_s &a_idxs_array)
       }
     }
   } while(stack_ptr > stack);
-
-  return;
 }/*}}}*/
 
 bool mc_block_rb_tree_s::operator==(mc_block_rb_tree_s &a_second)
