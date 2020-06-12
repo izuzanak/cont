@@ -407,13 +407,17 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 {/*{{{*/
    out_file = a_file;
    gen_options = a_gen_options;
+   include_level = 0;
    type_settings = 0;
 
    include_dirs.swap(a_include_dirs);
    include_dirs.push_blank();
    include_dirs.last().set(0,"");
 
-   if (gen_options & c_option_gen_code) {
+   // - not used any more -
+#if 0
+   if (gen_options & c_option_gen_code && gen_options & c_option_gen_includes)
+   {
      fprintf(out_file,
 "\n"
 "typedef bool bb;\n"
@@ -478,6 +482,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 "\n"
      );
    }
+#endif
 
    process_s process;
    process.init();

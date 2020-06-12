@@ -1,65 +1,4 @@
 
-typedef bool bb;
-typedef char bc;
-typedef unsigned char uc;
-typedef short int si;
-typedef unsigned short int usi;
-typedef int bi;
-typedef unsigned int ui;
-typedef long int li;
-typedef unsigned long uli;
-typedef long long int lli;
-typedef unsigned long long int ulli;
-typedef float bf;
-typedef double bd;
-typedef long double ld;
-
-#define INIT_ARRAY \
-.size = 0,\
-.used = 0,\
-.data = nullptr
-
-#define INIT_QUEUE \
-.size = 0,\
-.used = 0,\
-.begin = 0,\
-.data = nullptr\
-
-#define INIT_LIST \
-.size = 0,\
-.used = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.first_idx = c_idx_not_exist,\
-.last_idx = c_idx_not_exist
-
-#define INIT_RB_TREE \
-.size = 0,\
-.used = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.root_idx = c_idx_not_exist,\
-.leaf_idx = c_idx_not_exist
-
-#define INIT_SAFE_LIST \
-.size = 0,\
-.used = 0,\
-.count = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.first_idx = c_idx_not_exist,\
-.last_idx = c_idx_not_exist
-
-#define INIT_SAFE_RB_TREE \
-.size = 0,\
-.used = 0,\
-.count = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.root_idx = c_idx_not_exist,\
-.leaf_idx = c_idx_not_exist
-
-
 
 #ifndef CONT_PROCESSOR_H
 #define CONT_PROCESSOR_H
@@ -270,6 +209,21 @@ enum {
 /*
  * definition of basic types
  */
+
+typedef bool bb;
+typedef char bc;
+typedef unsigned char uc;
+typedef short int si;
+typedef unsigned short int usi;
+typedef int bi;
+typedef unsigned int ui;
+typedef long int li;
+typedef unsigned long uli;
+typedef long long int lli;
+typedef unsigned long long int ulli;
+typedef float bf;
+typedef double bd;
+typedef long double ld;
 
 // - unsigned integer with same size as pointer -
 typedef long unsigned t_ps_uint;
@@ -2403,6 +2357,7 @@ extern const unsigned c_end_str_len;
 enum {
   c_option_gen_code         = 1 << 0,
   c_option_gen_dependencies = 1 << 1,
+  c_option_gen_includes     = 1 << 2,
 };
 
 // - data type settings -
@@ -2935,12 +2890,13 @@ struct processor_s
 {
   FILE_ptr out_file; //!< member - 0
   unsigned gen_options; //!< member - 1
-  string_array_s include_dirs; //!< member - 2
-  string_array_s include_names; //!< member - 3
-  data_type_array_s data_types; //!< member - 4
-  abbreviation_array_s abbreviations; //!< member - 5
-  unsigned type_settings; //!< member - 6
-  container_parameters_s cont_params; //!< member - 7
+  unsigned include_level; //!< member - 2
+  string_array_s include_dirs; //!< member - 3
+  string_array_s include_names; //!< member - 4
+  data_type_array_s data_types; //!< member - 5
+  abbreviation_array_s abbreviations; //!< member - 6
+  unsigned type_settings; //!< member - 7
+  container_parameters_s cont_params; //!< member - 8
 
   /*!
     * \brief __GEN initialize structure
@@ -2955,7 +2911,7 @@ struct processor_s
   /*!
     * \brief __GEN set structure members
     */
-  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
+  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
   /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -3427,10 +3383,11 @@ inline void processor_s::clear()
   cont_params.clear();
 }/*}}}*/
 
-inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
+inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
 {/*{{{*/
   out_file = a_out_file;
   gen_options = a_gen_options;
+  include_level = a_include_level;
   include_dirs = a_include_dirs;
   include_names = a_include_names;
   data_types = a_data_types;
@@ -3458,6 +3415,10 @@ inline void processor_s::swap(processor_s &a_second)
   gen_options = a_second.gen_options;
   a_second.gen_options = tmp_gen_options;
 
+  unsigned tmp_include_level = include_level;
+  include_level = a_second.include_level;
+  a_second.include_level = tmp_include_level;
+
   include_dirs.swap(a_second.include_dirs);
 
   include_names.swap(a_second.include_names);
@@ -3477,6 +3438,7 @@ inline processor_s &processor_s::operator=(processor_s &a_src)
 {/*{{{*/
   out_file = a_src.out_file;
   gen_options = a_src.gen_options;
+  include_level = a_src.include_level;
   include_dirs = a_src.include_dirs;
   include_names = a_src.include_names;
   data_types = a_src.data_types;
@@ -3489,7 +3451,7 @@ inline processor_s &processor_s::operator=(processor_s &a_src)
 
 inline bool processor_s::operator==(processor_s &a_second)
 {/*{{{*/
-  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
+  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_level == a_second.include_level && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
 }/*}}}*/
 
 // LCOV_EXCL_STOP
@@ -5553,7 +5515,9 @@ void processor_s::generate_array_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of structure array ---
 
 fprintf(out_file,
@@ -5924,7 +5888,9 @@ void processor_s::generate_array_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -6042,7 +6008,9 @@ void processor_s::generate_array_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -6926,7 +6894,9 @@ void processor_s::generate_queue_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of structure queue -
 
 fprintf(out_file,
@@ -7182,7 +7152,9 @@ void processor_s::generate_queue_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of inline methods -
 
 fprintf(out_file,
@@ -7275,7 +7247,9 @@ void processor_s::generate_queue_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of methods -
 
 fprintf(out_file,
@@ -8686,7 +8660,9 @@ void processor_s::generate_list_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of structure list -
 
 fprintf(out_file,
@@ -9045,7 +9021,9 @@ void processor_s::generate_list_inlines(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -9164,7 +9142,9 @@ void processor_s::generate_list_methods(unsigned abb_idx,unsigned a_dt_idx)
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
    data_type_s &type = data_types[type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -9605,7 +9585,9 @@ void processor_s::generate_struct_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of structure struct -
 
 fprintf(out_file,
@@ -9777,7 +9759,9 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of inline methods -
 
 fprintf(out_file,
@@ -9841,7 +9825,9 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of methods -
 
 fprintf(out_file,
@@ -12077,7 +12063,9 @@ void processor_s::generate_rb_tree_type()
 
    data_type_s &data_type = data_types[data_type_idx];
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // - definition of structure rb_tree -
 
 fprintf(out_file,
@@ -12546,7 +12534,9 @@ void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of inline methods ---
 
 fprintf(out_file,
@@ -12720,7 +12710,9 @@ void processor_s::generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx)
       } while(++tn_idx < type_cnt);
    }
 
-   if (gen_options & c_option_gen_code) {
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
    // --- definition of methods ---
 
 fprintf(out_file,
@@ -13807,7 +13799,8 @@ void processor_s::generate_ucl_params()
     } while(++type_idx < types.used);
   }
 
-  if (gen_options & c_option_gen_code)
+  if (gen_options & c_option_gen_code &&
+     (include_level == 0 || gen_options & c_option_gen_includes))
   {
   // - generate uclang parameters code -
 
@@ -14252,13 +14245,17 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 {/*{{{*/
    out_file = a_file;
    gen_options = a_gen_options;
+   include_level = 0;
    type_settings = 0;
 
    include_dirs.swap(a_include_dirs);
    include_dirs.push_blank();
    include_dirs.last().set(0,"");
 
-   if (gen_options & c_option_gen_code) {
+   // - not used any more -
+#if 0
+   if (gen_options & c_option_gen_code && gen_options & c_option_gen_includes)
+   {
      fprintf(out_file,
 "\n"
 "typedef bool bb;\n"
@@ -14323,6 +14320,7 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 "\n"
      );
    }
+#endif
 
    process_s process;
    process.init();

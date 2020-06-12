@@ -1,65 +1,4 @@
 
-typedef bool bb;
-typedef char bc;
-typedef unsigned char uc;
-typedef short int si;
-typedef unsigned short int usi;
-typedef int bi;
-typedef unsigned int ui;
-typedef long int li;
-typedef unsigned long uli;
-typedef long long int lli;
-typedef unsigned long long int ulli;
-typedef float bf;
-typedef double bd;
-typedef long double ld;
-
-#define INIT_ARRAY \
-.size = 0,\
-.used = 0,\
-.data = nullptr
-
-#define INIT_QUEUE \
-.size = 0,\
-.used = 0,\
-.begin = 0,\
-.data = nullptr\
-
-#define INIT_LIST \
-.size = 0,\
-.used = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.first_idx = c_idx_not_exist,\
-.last_idx = c_idx_not_exist
-
-#define INIT_RB_TREE \
-.size = 0,\
-.used = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.root_idx = c_idx_not_exist,\
-.leaf_idx = c_idx_not_exist
-
-#define INIT_SAFE_LIST \
-.size = 0,\
-.used = 0,\
-.count = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.first_idx = c_idx_not_exist,\
-.last_idx = c_idx_not_exist
-
-#define INIT_SAFE_RB_TREE \
-.size = 0,\
-.used = 0,\
-.count = 0,\
-.data = nullptr,\
-.free_idx = c_idx_not_exist,\
-.root_idx = c_idx_not_exist,\
-.leaf_idx = c_idx_not_exist
-
-
 
 #ifndef CONT_UCL_STRING_H
 #define CONT_UCL_STRING_H
@@ -270,6 +209,21 @@ enum {
 /*
  * definition of basic types
  */
+
+typedef bool bb;
+typedef char bc;
+typedef unsigned char uc;
+typedef short int si;
+typedef unsigned short int usi;
+typedef int bi;
+typedef unsigned int ui;
+typedef long int li;
+typedef unsigned long uli;
+typedef long long int lli;
+typedef unsigned long long int ulli;
+typedef float bf;
+typedef double bd;
+typedef long double ld;
 
 // - unsigned integer with same size as pointer -
 typedef long unsigned t_ps_uint;

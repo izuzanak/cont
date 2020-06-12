@@ -943,7 +943,8 @@ void processor_s::generate_ucl_params()
     } while(++type_idx < types.used);
   }
 
-  if (gen_options & c_option_gen_code)
+  if (gen_options & c_option_gen_code &&
+     (include_level == 0 || gen_options & c_option_gen_includes))
   {
   // - generate uclang parameters code -
 

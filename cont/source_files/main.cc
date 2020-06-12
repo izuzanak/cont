@@ -50,6 +50,13 @@ int main(int argc,char **argv)
             ++argv;
             --argc;
           }
+          else if (strcmp(*ptr,"--geninc") == 0)
+          {
+            gen_options |= c_option_gen_includes;
+
+            ++argv;
+            --argc;
+          }
           else
           {
             break;

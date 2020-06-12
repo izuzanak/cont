@@ -34,6 +34,7 @@ extern const unsigned c_end_str_len;
 enum {
   c_option_gen_code         = 1 << 0,
   c_option_gen_dependencies = 1 << 1,
+  c_option_gen_includes     = 1 << 2,
 };
 
 // - data type settings -
@@ -185,6 +186,7 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    <
    FILE_ptr:out_file
    unsigned:gen_options
+   unsigned:include_level
    string_array_s:include_dirs
    string_array_s:include_names
    data_type_array_s:data_types
