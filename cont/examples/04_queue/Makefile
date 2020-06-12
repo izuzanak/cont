@@ -18,7 +18,7 @@ p.queue.o: p.queue.cc
 # -- PROCESS --
 
 p.queue.cc: queue.h queue.cc
-	cont queue.cc ../* > p.queue.cc
+	cont --geninc queue.cc ../* > p.queue.cc
 
 clean:
 	rm -f p.* *.o

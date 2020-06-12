@@ -18,7 +18,7 @@ p.rb_tree.o: p.rb_tree.cc
 # -- PROCESS --
 
 p.rb_tree.cc: rb_tree.h rb_tree.cc
-	cont rb_tree.cc ../* > p.rb_tree.cc
+	cont --geninc rb_tree.cc ../* > p.rb_tree.cc
 
 clean:
 	rm -f p.* *.o

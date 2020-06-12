@@ -18,7 +18,7 @@ p.base.o: p.base.cc
 # -- PROCESS --
 
 p.base.cc: base.h base.cc
-	cont base.cc > p.base.cc
+	cont --geninc base.cc > p.base.cc
 
 clean:
 	rm -f p.* *.o

@@ -18,7 +18,7 @@ p.list.o: p.list.cc
 # -- PROCESS --
 
 p.list.cc: list.h list.cc
-	cont list.cc ../* > p.list.cc
+	cont --geninc list.cc ../* > p.list.cc
 
 clean:
 	rm -f p.* *.o

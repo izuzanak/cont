@@ -18,7 +18,7 @@ p.dynamic.o: p.dynamic.cc
 # -- PROCESS --
 
 p.dynamic.cc: dynamic.h dynamic.cc
-	cont dynamic.cc ../* > p.dynamic.cc
+	cont --geninc dynamic.cc ../* > p.dynamic.cc
 
 clean:
 	rm -f p.* *.o

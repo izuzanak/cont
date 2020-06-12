@@ -18,7 +18,7 @@ p.array.o: p.array.cc
 # -- PROCESS --
 
 p.array.cc: array.h array.cc
-	cont array.cc ../* > p.array.cc
+	cont --geninc array.cc ../* > p.array.cc
 
 clean:
 	rm -f p.* *.o
