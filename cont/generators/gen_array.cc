@@ -912,6 +912,11 @@ fprintf(out_file,
 "  %s *data; //!< pointer to array elements\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
+fprintf(out_file,
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "  /*!\n"

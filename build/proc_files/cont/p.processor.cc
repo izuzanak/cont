@@ -479,6 +479,9 @@ struct ui_array_s
   unsigned used; //!< count of used space in array
   unsigned *data; //!< pointer to array elements
 
+  ui_array_s() = default;
+  ui_array_s(ui_array_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize array
     */
@@ -614,6 +617,9 @@ struct mc_block_s
   pointer location; //!< member - 0
   unsigned size; //!< member - 1
 
+  mc_block_s() = default;
+  mc_block_s(mc_block_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize structure
     */
@@ -714,6 +720,9 @@ struct mc_block_rb_tree_s
   EXPORT void __insert_operation(unsigned a_idx);
 
   inline int __compare_value(mc_block_s &a_first,mc_block_s &a_second);
+
+  mc_block_rb_tree_s() = default;
+  mc_block_rb_tree_s(mc_block_rb_tree_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize rb_tree
@@ -868,6 +877,9 @@ struct mc_struct_s
   unsigned alloc_size; //!< member - 2
   unsigned max_alloc_size; //!< member - 3
   unsigned act_alloc_size; //!< member - 4
+
+  mc_struct_s() = default;
+  mc_struct_s(mc_struct_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize structure
@@ -1925,6 +1937,9 @@ struct string_array_s
   unsigned used; //!< count of used space in array
   string_s *data; //!< pointer to array elements
 
+  string_array_s() = default;
+  string_array_s(string_array_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize array
     */
@@ -2451,6 +2466,9 @@ struct data_type_s
   string_array_s types; //!< member - 4
   string_array_s variables; //!< member - 5
 
+  data_type_s() = default;
+  data_type_s(data_type_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize structure
     */
@@ -2504,6 +2522,9 @@ struct data_type_array_s
   unsigned size; //!< actual size of allocated space in array
   unsigned used; //!< count of used space in array
   data_type_s *data; //!< pointer to array elements
+
+  data_type_array_s() = default;
+  data_type_array_s(data_type_array_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize array
@@ -2642,6 +2663,9 @@ struct abbreviation_s
   string_s name; //!< member - 0
   unsigned data_type_idx; //!< member - 1
 
+  abbreviation_s() = default;
+  abbreviation_s(abbreviation_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize structure
     */
@@ -2695,6 +2719,9 @@ struct abbreviation_array_s
   unsigned size; //!< actual size of allocated space in array
   unsigned used; //!< count of used space in array
   abbreviation_s *data; //!< pointer to array elements
+
+  abbreviation_array_s() = default;
+  abbreviation_array_s(abbreviation_array_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize array
@@ -2835,6 +2862,9 @@ struct container_parameters_s
   string_array_s functions; //!< member - 2
   string_array_s names; //!< member - 3
 
+  container_parameters_s() = default;
+  container_parameters_s(container_parameters_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize structure
     */
@@ -2897,6 +2927,9 @@ struct processor_s
   abbreviation_array_s abbreviations; //!< member - 6
   unsigned type_settings; //!< member - 7
   container_parameters_s cont_params; //!< member - 8
+
+  processor_s() = default;
+  processor_s(processor_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize structure
@@ -3482,6 +3515,9 @@ struct lalr_stack_element_s
   unsigned terminal_start; //!< member - 1
   unsigned terminal_end; //!< member - 2
 
+  lalr_stack_element_s() = default;
+  lalr_stack_element_s(lalr_stack_element_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize structure
     */
@@ -3535,6 +3571,9 @@ struct lalr_stack_s
   unsigned size; //!< actual size of allocated space in array
   unsigned used; //!< count of used space in array
   lalr_stack_element_s *data; //!< pointer to array elements
+
+  lalr_stack_s() = default;
+  lalr_stack_s(lalr_stack_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize array
@@ -3676,6 +3715,9 @@ struct process_s
   string_s source_string; //!< member - 1
   string_s code; //!< member - 2
   lalr_stack_s lalr_stack; //!< member - 3
+
+  process_s() = default;
+  process_s(process_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize structure
@@ -5548,6 +5590,11 @@ fprintf(out_file,
 "  %s *data; //!< pointer to array elements\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
+fprintf(out_file,
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "  /*!\n"
@@ -6928,6 +6975,11 @@ fprintf(out_file,
 "  %s *data; //!< pointer to queue elements\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
+fprintf(out_file,
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "  /*!\n"
@@ -8721,6 +8773,11 @@ fprintf(out_file,
 "  unsigned last_idx; //!< index of last element\n"
 "\n"
 ,STRUCT_NAME);
+fprintf(out_file,
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "  /*!\n"
@@ -9620,10 +9677,14 @@ fprintf(out_file,
 "  %s %s; //!< member - %u\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
-
-   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "\n"
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN initialize structure\n"
 "    */\n"
@@ -12165,6 +12226,11 @@ fprintf(out_file,
 "  inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+fprintf(out_file,
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "  /*!\n"

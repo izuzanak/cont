@@ -390,10 +390,14 @@ fprintf(out_file,
 "  %s %s; //!< member - %u\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),t_idx);
    } while(++t_idx < TYPE_CNT);
-
-   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "\n"
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
+fprintf(out_file,
 "  /*!\n"
 "    * \\brief __GEN initialize structure\n"
 "    */\n"

@@ -2307,6 +2307,11 @@ fprintf(out_file,
 "  inline int __compare_value(%s &a_first,%s &a_second);\n"
 "\n"
 ,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+fprintf(out_file,
+"  %s() = default;\n"
+"  %s(%s &a_src) = delete;\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "  /*!\n"
