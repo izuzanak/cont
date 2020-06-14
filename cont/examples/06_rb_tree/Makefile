@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -O2 -Wno-class-memaccess
+OPT = -std=c++11 -O2 -Wno-class-memaccess
 
 all: rb_tree
 
