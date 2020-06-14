@@ -66,7 +66,7 @@ install(TARGETS cont RUNTIME DESTINATION bin)
 # -----
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  add_definitions(-O2 -DNDEBUG -Wall -Wfatal-errors -Wno-class-memaccess -DLINUX)
+  add_definitions(-O2 -std=c++11 -DNDEBUG -Wall -Wfatal-errors -Wno-class-memaccess -DLINUX)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   add_definitions("/DWINDOWS /D_CRT_SECURE_NO_WARNINGS")
 endif()
