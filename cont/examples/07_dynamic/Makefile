@@ -1,7 +1,7 @@
 
 LIBS =
 DEFS = -D_REENTRANT
-OPT = -g
+OPT = -O2
 
 all: dynamic
 
