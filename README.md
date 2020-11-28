@@ -1,6 +1,7 @@
 # cont - container generator
 
 [![Build Status](https://travis-ci.com/izuzanak/cont.svg?branch=master)](https://travis-ci.com/izuzanak/cont)
+![CI](https://github.com/izuzanak/cont/workflows/CI/badge.svg)
 
 C/C++ code preprocessor generating code of containers. Generated code is based on marks found
 in processed code.
