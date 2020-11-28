@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build cont
+        run: |
+          cd ${GITHUB_WORKSPACE}/build
+          cmake ..
+          make
+          sudo make install
+
+          rm -rf *
+          cmake ..
+          make
+          sudo make install
+
+      - name: Test cont
+        run: |
+          cd ${GITHUB_WORKSPACE}/cont
+          ./test.sh
