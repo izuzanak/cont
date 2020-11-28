@@ -471,6 +471,9 @@ struct ui_array_s
   unsigned used; //!< count of used space in array
   unsigned *data; //!< pointer to array elements
 
+  ui_array_s() = default;
+  ui_array_s(ui_array_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize array
     */
@@ -606,6 +609,9 @@ struct mc_block_s
   pointer location; //!< member - 0
   unsigned size; //!< member - 1
 
+  mc_block_s() = default;
+  mc_block_s(mc_block_s &a_src) = delete;
+
   /*!
     * \brief __GEN initialize structure
     */
@@ -706,6 +712,9 @@ struct mc_block_rb_tree_s
   EXPORT void __insert_operation(unsigned a_idx);
 
   inline int __compare_value(mc_block_s &a_first,mc_block_s &a_second);
+
+  mc_block_rb_tree_s() = default;
+  mc_block_rb_tree_s(mc_block_rb_tree_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize rb_tree
@@ -860,6 +869,9 @@ struct mc_struct_s
   unsigned alloc_size; //!< member - 2
   unsigned max_alloc_size; //!< member - 3
   unsigned act_alloc_size; //!< member - 4
+
+  mc_struct_s() = default;
+  mc_struct_s(mc_struct_s &a_src) = delete;
 
   /*!
     * \brief __GEN initialize structure

@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build cont_cc
+        run: |
+          git clone --branch=master https://github.com/izuzanak/cont.git ${GITHUB_WORKSPACE}/../cont_cc
+
+          cd ${GITHUB_WORKSPACE}/../cont_cc/build
+          cmake ..
+          make
+
+      - name: Build cont
+        run: |
+          cd ${GITHUB_WORKSPACE}/build
+          cmake ..
+          make
+
+          cd ${GITHUB_WORKSPACE}/../cont_cc/build
+          sudo make install
+
+          cd ${GITHUB_WORKSPACE}/build
+          rm -rf *
+          cmake ..
+          make
+          sudo make install
+
+      - name: Test cont
+        run: |
+          cd ${GITHUB_WORKSPACE}/cont
+          ./test.sh
