@@ -5496,16 +5496,19 @@ void processor_s::generate_array_type()
    }
 
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-   data_type_s &type = data_types[type_idx];
-
-   // - test type options -
-   if (type.properties & c_type_option_strict_dynamic) {
-      cassert(type.properties & c_type_dynamic);
-   }
-
    string_s real_name;
    real_name.init();
-   real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_array]),(char *)c_cont_postfixes[c_cont_array]);
+
+   {
+      data_type_s &type = data_types[type_idx];
+
+      // - test type options -
+      if (type.properties & c_type_option_strict_dynamic) {
+         cassert(type.properties & c_type_dynamic);
+      }
+
+      real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_array]),(char *)c_cont_postfixes[c_cont_array]);
+   }
 
    string_s &data_type_name = abbs[0];
 
@@ -5555,6 +5558,7 @@ void processor_s::generate_array_type()
       } while(++idx < abbs.used);
    }
 
+   data_type_s &type = data_types[type_idx];
    data_type_s &data_type = data_types[data_type_idx];
 
    if (gen_options & c_option_gen_code &&
@@ -6880,17 +6884,20 @@ void processor_s::generate_queue_type()
    }
 
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-   data_type_s &type = data_types[type_idx];
-
-   // - test type options -
-   if (type.properties & c_type_option_strict_dynamic) {
-      fprintf(stderr,"queue: container have not implemented processing of types with option strict_dynamic\n");
-      cassert(0);
-   }
-
    string_s real_name;
    real_name.init();
-   real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_queue]),(char *)c_cont_postfixes[c_cont_queue]);
+
+   {
+      data_type_s &type = data_types[type_idx];
+
+      // - test type options -
+      if (type.properties & c_type_option_strict_dynamic) {
+         fprintf(stderr,"queue: container have not implemented processing of types with option strict_dynamic\n");
+         cassert(0);
+      }
+
+      real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_queue]),(char *)c_cont_postfixes[c_cont_queue]);
+   }
 
    string_s &data_type_name = abbs[0];
 
@@ -6939,6 +6946,7 @@ void processor_s::generate_queue_type()
       } while(++idx < abbs.used);
    }
 
+   data_type_s &type = data_types[type_idx];
    data_type_s &data_type = data_types[data_type_idx];
 
    if (gen_options & c_option_gen_code &&
@@ -8651,17 +8659,20 @@ void processor_s::generate_list_type()
    }
 
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-   data_type_s &type = data_types[type_idx];
-
-   // - test type options -
-   if (type.properties & c_type_option_strict_dynamic) {
-      fprintf(stderr,"list: container have not implemented processing of types with option strict_dynamic\n");
-      cassert(0);
-   }
-
    string_s real_name;
    real_name.init();
-   real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_list]),(char *)c_cont_postfixes[c_cont_list]);
+
+   {
+      data_type_s &type = data_types[type_idx];
+
+      // - test type options -
+      if (type.properties & c_type_option_strict_dynamic) {
+         fprintf(stderr,"list: container have not implemented processing of types with option strict_dynamic\n");
+         cassert(0);
+      }
+
+      real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_list]),(char *)c_cont_postfixes[c_cont_list]);
+   }
 
    string_s &data_type_name = abbs[0];
 
@@ -8710,6 +8721,7 @@ void processor_s::generate_list_type()
       } while(++idx < abbs.used);
    }
 
+   data_type_s &type = data_types[type_idx];
    data_type_s &data_type = data_types[data_type_idx];
 
    if (gen_options & c_option_gen_code &&

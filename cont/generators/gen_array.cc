@@ -818,16 +818,19 @@ void processor_s::generate_array_type()
    }
 
    unsigned type_idx = abbreviations[type_abb_idx].data_type_idx;
-   data_type_s &type = data_types[type_idx];
-
-   // - test type options -
-   if (type.properties & c_type_option_strict_dynamic) {
-      cassert(type.properties & c_type_dynamic);
-   }
-
    string_s real_name;
    real_name.init();
-   real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_array]),(char *)c_cont_postfixes[c_cont_array]);
+
+   {
+      data_type_s &type = data_types[type_idx];
+
+      // - test type options -
+      if (type.properties & c_type_option_strict_dynamic) {
+         cassert(type.properties & c_type_dynamic);
+      }
+
+      real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_array]),(char *)c_cont_postfixes[c_cont_array]);
+   }
 
    string_s &data_type_name = abbs[0];
 
@@ -877,6 +880,7 @@ void processor_s::generate_array_type()
       } while(++idx < abbs.used);
    }
 
+   data_type_s &type = data_types[type_idx];
    data_type_s &data_type = data_types[data_type_idx];
 
    if (gen_options & c_option_gen_code &&
