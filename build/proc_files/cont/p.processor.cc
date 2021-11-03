@@ -5220,6 +5220,8 @@ fprintf(out_file,
 "\n"
 "  if (a_size > this->size)\n"
 "  {\n"
+"    debug_assert(a_size > 0);\n"
+"\n"
 "    %s *ptr = this->data + this->size;\n"
 "    %s *ptr_end = this->data + a_size;\n"
 "\n"
