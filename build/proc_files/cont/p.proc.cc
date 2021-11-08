@@ -6800,9 +6800,18 @@ void process_s::pa_reduce_abbreviation(process_s &proc)
    char *str_data = code.data + lse_orig.terminal_start;
 
    unsigned abb_idx = processor.abbreviations.get_idx_by_name(str_length,str_data);
-
    if (abb_idx == c_idx_not_exist) {
       fprintf(stderr,"ERROR: Cannot define abbreviation, type name does not exist.\n");
+      cassert(0);
+   }
+
+   unsigned abbr_length = lse_new.terminal_end - lse_new.terminal_start;
+   char *abbr_data = code.data + lse_new.terminal_start;
+
+   unsigned abb_new_idx = processor.abbreviations.get_idx_by_name(abbr_length,abbr_data);
+   if (abb_new_idx != c_idx_not_exist)
+   {
+      fprintf(stderr,"ERROR: Cannot define abbreviation, type name already exist.\n");
       cassert(0);
    }
 
@@ -6811,9 +6820,6 @@ void process_s::pa_reduce_abbreviation(process_s &proc)
 
    abbreviation_s &abb_orig = processor.abbreviations.data[abb_idx];
    abbreviation_s &abb_new = processor.abbreviations.last();
-
-   unsigned abbr_length = lse_new.terminal_end - lse_new.terminal_start;
-   char *abbr_data = code.data + lse_new.terminal_start;
 
    abb_new.name.set(abbr_length,abbr_data);
    abb_new.data_type_idx = abb_orig.data_type_idx;
