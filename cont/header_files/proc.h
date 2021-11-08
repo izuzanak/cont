@@ -59,6 +59,7 @@
    static void pa_reduce_inlines(process_s &proc);
    static void pa_reduce_methods(process_s &proc);
    static void pa_reduce_define(process_s &proc);
+   static void pa_reduce_abbreviation(process_s &proc);
    static void pa_reduce_mod_basic(process_s &proc);
    static void pa_reduce_mod_static(process_s &proc);
    static void pa_reduce_mod_dynamic(process_s &proc);

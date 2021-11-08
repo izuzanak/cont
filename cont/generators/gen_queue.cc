@@ -13,7 +13,7 @@ fprintf(out_file,
 "  this->data = NULL;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_INIT_SIZE(QUEUE_GEN_PARAMS)
@@ -25,7 +25,7 @@ fprintf(out_file,
 "  %s_copy_resize(this,a_size);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_INIT_BUFFER(QUEUE_GEN_PARAMS)
@@ -37,7 +37,7 @@ fprintf(out_file,
 "  %s_set_buffer(this,a_size,a_data);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_CLEAR(QUEUE_GEN_PARAMS)
@@ -45,12 +45,12 @@ void QUEUE_CLEAR(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -88,7 +88,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_init(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -107,19 +107,19 @@ void QUEUE_SET_BUFFER(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -145,11 +145,11 @@ void QUEUE_FLUSH(QUEUE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -162,12 +162,12 @@ void QUEUE_FLUSH_ALL(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_flushable)) {
 fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -175,7 +175,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -213,7 +213,7 @@ fprintf(out_file,
 "  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_OPERATOR_LE_BR_RE_BR(QUEUE_GEN_PARAMS)
@@ -232,7 +232,7 @@ fprintf(out_file,
 "  return this->data + real_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_INSERT(QUEUE_GEN_PARAMS)
@@ -240,12 +240,12 @@ void QUEUE_INSERT(QUEUE_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline void %s_insert(%s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "static inline void %s_insert(%s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -260,7 +260,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -302,7 +302,7 @@ void QUEUE_INSERT_BLANK(QUEUE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_insert_blank(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  if (this->used >= this->size)\n"
@@ -313,7 +313,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -332,12 +332,12 @@ void QUEUE_NEXT(QUEUE_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline %s %s_next(%s *this)\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "static inline %s *%s_next(%s *this)\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -379,7 +379,7 @@ fprintf(out_file,
 "  return this->data + this->begin;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_LAST(QUEUE_GEN_PARAMS)
@@ -398,7 +398,7 @@ fprintf(out_file,
 "  return this->data + last_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_COPY_RESIZE(QUEUE_GEN_PARAMS)
@@ -417,7 +417,7 @@ fprintf(out_file,
 "  else\n"
 "  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -518,12 +518,12 @@ void QUEUE_OPERATOR_EQUAL(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -541,12 +541,12 @@ fprintf(out_file,
 "  {\n"
 "    return;\n"
 "  }\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
@@ -631,7 +631,7 @@ fprintf(out_file,
 "    return 1;\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  int _break;\n"
@@ -819,7 +819,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_TO_STRING_SEPARATOR(QUEUE_GEN_PARAMS)
@@ -870,7 +870,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_TO_JSON(QUEUE_GEN_PARAMS)
@@ -929,7 +929,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_TO_JSON_NICE(QUEUE_GEN_PARAMS)
@@ -992,7 +992,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_FROM_VAR(QUEUE_GEN_PARAMS)
@@ -1029,7 +1029,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_FROM_JSON(QUEUE_GEN_PARAMS)
@@ -1074,7 +1074,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_queue_type()
@@ -1381,7 +1381,7 @@ fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - queue init method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
@@ -1494,7 +1494,7 @@ fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - queue init method -
 

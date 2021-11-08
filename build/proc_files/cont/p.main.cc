@@ -2350,17 +2350,15 @@ inline string_s &string_array_s::last()
  * definition of basic functions and constants
  */
 
-#define STRUCT_NAME abbs[0].data
+#define STRUCT_NAME data_type.name.data
 #define STRUCT_NUMBER data_type.properties
-#define IM_STRUCT_NAME abbreviations[abb_idx].name.data
 #define TYPE_CNT type_cnt
-#define TYPE_NAME abbreviations[type_abb_idx].name.data
+#define TYPE_NAME type.name.data
 #define TYPE_NUMBER type.properties
-#define TYPE_NAMES(IDX) (type_names[IDX].data)
-#define IM_TYPE_NAMES(IDX) (data_type.types[IDX].data)
-#define TYPE_NUMBERS(IDX) (types[IDX]->properties)
-#define VAR_NAMES_CNT (data_type.variables.used)
-#define VAR_NAMES(IDX) (data_type.variables[IDX].data)
+#define TYPE_NAMES(IDX) types[IDX]->name.data
+#define TYPE_NUMBERS(IDX) types[IDX]->properties
+#define VAR_NAMES_CNT data_type.variables.used
+#define VAR_NAMES(IDX) data_type.variables[IDX].data
 #define VAR_NAME_LENGTHS(IDX) (data_type.variables[IDX].size - 1)
 
 // - constants describing begin and end of definition block -
@@ -2994,6 +2992,7 @@ struct processor_s
    void generate_type_inlines(unsigned a_length,char *a_data);
    void generate_type_methods(unsigned a_length,char *a_data);
    void generate_container_def(string_s &a_cont_name);
+   void generate_abbreviation(string_s &a_type,string_s &a_abbr);
 
    bool find_include_file(const char *a_file, string_s &a_file_path);
 

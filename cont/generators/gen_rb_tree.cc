@@ -17,7 +17,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___GET_UNCLE_IDX(RB_TREE_GEN_PARAMS)
@@ -36,7 +36,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___GET_SIBLING_IDX(RB_TREE_GEN_PARAMS)
@@ -48,7 +48,7 @@ fprintf(out_file,
 "  return p->left_idx == a_idx?p->right_idx:p->left_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_DESCENT_STACK_SIZE(RB_TREE_GEN_PARAMS)
@@ -59,7 +59,7 @@ fprintf(out_file,
 "  return (unsigned)(logf(this->used)/c_log_of_2) << 1;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -67,7 +67,7 @@ void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_stack_min_value_idx(const %s *this,unsigned a_idx,unsigned **a_s_ptr)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -95,7 +95,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -103,7 +103,7 @@ void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "static inline unsigned %s_get_stack_next_idx(const %s *this,unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -131,7 +131,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -139,7 +139,7 @@ void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_min_value_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -165,7 +165,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -173,7 +173,7 @@ void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_max_value_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -199,7 +199,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -207,7 +207,7 @@ void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_next_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -245,7 +245,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
@@ -253,7 +253,7 @@ void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_prev_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -291,7 +291,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___ROTATE_LEFT(RB_TREE_GEN_PARAMS)
@@ -331,7 +331,7 @@ fprintf(out_file,
 "  pivot->left_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___ROTATE_RIGHT(RB_TREE_GEN_PARAMS)
@@ -371,7 +371,7 @@ fprintf(out_file,
 "  pivot->right_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
@@ -388,7 +388,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "    if (this->used >= this->size)\n"
@@ -397,7 +397,7 @@ fprintf(out_file,
 "      debug_assert(new_size != 0);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 fprintf(out_file,
 "    }\n"
 "\n"
@@ -416,7 +416,7 @@ fprintf(out_file,
 "      this->leaf_idx = this->used++;\n"
 "      %s_node *leaf = this->data + this->leaf_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "      leaf->valid = 0; // NOLINT\n"
@@ -512,7 +512,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
@@ -544,7 +544,7 @@ fprintf(out_file,
 "  }\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REMOVE_BLACK_BLACK(RB_TREE_GEN_PARAMS)
@@ -643,8 +643,8 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_PARAMS)
@@ -658,7 +658,7 @@ fprintf(out_file,
 "  node->parent_idx = this->free_idx;\n"
 "  this->free_idx = a_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  node->valid = 0;\n"
@@ -682,7 +682,7 @@ fprintf(out_file,
 "  }\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___INSERT_OPERATION(RB_TREE_GEN_PARAMS)
@@ -751,8 +751,8 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_INIT(RB_TREE_GEN_PARAMS)
@@ -762,7 +762,7 @@ fprintf(out_file,
 "{/*{{{*/\n"
 "  this->size = 0;\n"
 "  this->used = 0;\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  this->count = 0;\n"
@@ -783,7 +783,7 @@ fprintf(out_file,
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
@@ -802,7 +802,7 @@ fprintf(out_file,
 "  %s_set_buffer(this,a_size,a_data);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_CLEAR(RB_TREE_GEN_PARAMS)
@@ -810,12 +810,12 @@ void RB_TREE_CLEAR(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -833,7 +833,7 @@ fprintf(out_file,
 "    do {\n"
 "      %s_clear(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
       }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBERS(0) & c_type_dynamic) {
@@ -856,7 +856,7 @@ fprintf(out_file,
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_clear(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
 fprintf(out_file,
@@ -897,19 +897,19 @@ void RB_TREE_SET_BUFFER(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size > 1 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -919,7 +919,7 @@ fprintf(out_file,
 "  do {\n"
 "    %s_init(&ptr->object);\n"
 "  } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "\n"
@@ -935,11 +935,11 @@ void RB_TREE_FLUSH(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -952,12 +952,12 @@ void RB_TREE_FLUSH_ALL(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
 fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -965,7 +965,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (VAR_NAMES_CNT > 0) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -978,7 +978,7 @@ fprintf(out_file,
          if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
 fprintf(out_file,
 "  %s_flush_all(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
@@ -1000,7 +1000,7 @@ fprintf(out_file,
 "  do {\n"
 "    %s_flush_all(&ptr->object);\n"
 "  } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -1018,7 +1018,7 @@ fprintf(out_file,
 "  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
@@ -1026,7 +1026,7 @@ void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "static inline %s *%s_at(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -1049,32 +1049,32 @@ fprintf(out_file,
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,TYPE_NAMES(0));\
    }\
    else {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s%s *a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,VALUE_CONST ? "const " : "",IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,VALUE_CONST ? "const " : "",TYPE_NAMES(0));\
    }\
 fprintf(out_file,\
 "{/*{{{*/\n"\
 "  unsigned new_node_idx = %s___get_new_index(this);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "  %s___binary_tree_insert(this,new_node_idx,&a_value,0);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
    else {\
 fprintf(out_file,\
 "  %s___binary_tree_insert(this,new_node_idx,a_value,0);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
 fprintf(out_file,\
 "  %s___insert_operation(this,new_node_idx);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    VALUE_SET_CODE;\
 fprintf(out_file,\
 "\n"\
@@ -1100,7 +1100,7 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
 );
 }/*}}}*/
@@ -1111,7 +1111,7 @@ void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 TEMPLATE_RB_TREE_INSERT(swap_insert,false,
 fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
 );
    }
 }/*}}}*/
@@ -1121,26 +1121,26 @@ fprintf(out_file,
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,TYPE_NAMES(0));\
    }\
    else {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s%s *a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,VALUE_CONST ? "const " : "",IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,VALUE_CONST ? "const " : "",TYPE_NAMES(0));\
    }\
 fprintf(out_file,\
 "{/*{{{*/\n"\
 "  unsigned new_node_idx = %s___get_new_index(this);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,&a_value,1);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
    else {\
 fprintf(out_file,\
 "  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,a_value,1);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
 fprintf(out_file,\
 "\n"\
@@ -1151,7 +1151,7 @@ fprintf(out_file,\
 "    new_node->parent_idx = this->free_idx;\n"\
 "    this->free_idx = new_node_idx;\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    if (STRUCT_NUMBER & c_type_option_safe) {\
 fprintf(out_file,\
 "    new_node->valid = 0;\n"\
@@ -1165,7 +1165,7 @@ fprintf(out_file,\
 "\n"\
 "  %s___insert_operation(this,new_node_idx);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    VALUE_SET_CODE;\
 fprintf(out_file,\
 "\n"\
@@ -1191,7 +1191,7 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
 );
 }/*}}}*/
@@ -1202,7 +1202,7 @@ void RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,false,
 fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
 );
    }
 }/*}}}*/
@@ -1212,7 +1212,7 @@ void RB_TREE_REMOVE(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "void %s_remove(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -1337,8 +1337,8 @@ fprintf(out_file,
 "\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_COPY_RESIZE(RB_TREE_GEN_PARAMS)
@@ -1347,7 +1347,7 @@ fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -1360,7 +1360,7 @@ fprintf(out_file,
 "      %s_clear(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "\n"
@@ -1376,7 +1376,7 @@ fprintf(out_file,
 "  {\n"
 "    this->data = (%s_node *)crealloc(this->data,a_size*sizeof(%s_node));\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -1389,7 +1389,7 @@ fprintf(out_file,
 "      %s_init(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "\n"
@@ -1404,12 +1404,12 @@ void RB_TREE_GET_IDX(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -1422,16 +1422,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -1460,12 +1460,12 @@ void RB_TREE_GET_IDX_LEFT(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_idx_left(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_idx_left(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -1479,16 +1479,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -1520,12 +1520,12 @@ void RB_TREE_GET_GRE_IDX(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_gre_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_gre_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -1539,16 +1539,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -1578,12 +1578,12 @@ void RB_TREE_GET_LEE_IDX(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_lee_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_lee_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -1597,16 +1597,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -1636,12 +1636,12 @@ void RB_TREE_GET_IDXS(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "void %s_get_idxs(const %s *this,%s a_value,ui_array_s *a_idxs_array)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "void %s_get_idxs(const %s *this,const %s *a_value,ui_array_s *a_idxs_array)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -1660,16 +1660,16 @@ fprintf(out_file,
 "    unsigned node_idx = *(--stack_ptr);\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -1707,12 +1707,12 @@ void RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -1730,19 +1730,19 @@ fprintf(out_file,
 "  {\n"
 "    return;\n"
 "  }\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
 "  debug_assert(a_src->used != 0);\n"
 "  %s_copy_resize(this,a_src->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
 "  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -1752,7 +1752,7 @@ fprintf(out_file,
 "  %s_node *s_ptr_end = s_ptr + a_src->used;\n"
 "\n"
 "  do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "    ptr->object = s_ptr->object;\n"
@@ -1761,7 +1761,7 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "    %s_copy(&ptr->object,&s_ptr->object);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
@@ -1804,7 +1804,7 @@ fprintf(out_file,
          else {
 fprintf(out_file,
 "  %s_copy(&this->%s,&a_src->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
@@ -1819,7 +1819,7 @@ void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "int %s_compare(const %s *this,const %s *a_second)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  if (this->count != a_second->count)\n"
@@ -1853,7 +1853,7 @@ fprintf(out_file,
 "    unsigned node_idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
 "    unsigned s_node_idx = %s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);\n"
 "    do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "      if (this->data[node_idx].object != a_second->data[s_node_idx].object)\n"
@@ -1864,7 +1864,7 @@ fprintf(out_file,
 fprintf(out_file,
 "      if (!%s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object))\n"
 "      {\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "        return 0;\n"
@@ -1880,7 +1880,7 @@ fprintf(out_file,
 "    }\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (VAR_NAMES_CNT > 0) {
       if (TYPE_NUMBERS(1) & c_type_basic) {
 fprintf(out_file,
@@ -1890,7 +1890,7 @@ fprintf(out_file,
       else {
 fprintf(out_file,
 "  return (%s_compare(&this->%s,&a_second->%s)"
-,IM_TYPE_NAMES(1),VAR_NAMES(0),VAR_NAMES(0));
+,TYPE_NAMES(1),VAR_NAMES(0),VAR_NAMES(0));
       }
       if (VAR_NAMES_CNT > 1) {
          unsigned t_idx = 1;
@@ -1903,7 +1903,7 @@ fprintf(out_file,
             else {
 fprintf(out_file,
 " && %s_compare(&this->%s,&a_second->%s)"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
             }
          } while(++t_idx < VAR_NAMES_CNT);
       }
@@ -1953,8 +1953,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_TO_STRING_SEPARATOR(RB_TREE_GEN_PARAMS)
@@ -1984,8 +1984,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_TO_JSON(RB_TREE_GEN_PARAMS)
@@ -2023,8 +2023,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_TO_JSON_NICE(RB_TREE_GEN_PARAMS)
@@ -2065,8 +2065,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_FROM_VAR(RB_TREE_GEN_PARAMS)
@@ -2090,7 +2090,7 @@ fprintf(out_file,
 "    var_s *v_ptr = array->data;\n"
 "    var_s *v_ptr_end = v_ptr + array->used;\n"
 "    do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
@@ -2100,18 +2100,18 @@ fprintf(out_file,
 "        throw_error(FROM_VAR_ERROR);\n"
 "      }\n"
 "\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,
 "      %s_insert(this,value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
       else
       {
 fprintf(out_file,
 "      %s_insert(this,&value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
    }
    else {
@@ -2128,8 +2128,8 @@ fprintf(out_file,
 "\n"
 "      %s_swap_insert(this,&value);\n"
 "      %s_clear(&value);\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0)
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0)
+,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "    } while(++v_ptr < v_ptr_end);\n"
@@ -2161,7 +2161,7 @@ fprintf(out_file,
 "    a_from_json->input_idx = input_idx;\n"
 "\n"
 "    do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
@@ -2171,18 +2171,18 @@ fprintf(out_file,
 "        throw_error(FROM_JSON_ERROR);\n"
 "      }\n"
 "\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,
 "      %s_insert(this,value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
       else
       {
 fprintf(out_file,
 "      %s_insert(this,&value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
    }
    else {
@@ -2199,8 +2199,8 @@ fprintf(out_file,
 "\n"
 "      %s_swap_insert(this,&value);\n"
 "      %s_clear(&value);\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0)
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0)
+,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "      if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_comma))\n"
@@ -2279,9 +2279,9 @@ fprintf(out_file,
 "  ui_array_s_clear(&indexes);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
@@ -2356,7 +2356,7 @@ fprintf(out_file,
 "\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_PARAMS)
@@ -2492,8 +2492,8 @@ fprintf(out_file,
 "  return 1;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_rb_tree_type()
@@ -2697,7 +2697,7 @@ fprintf(out_file,
 "{\n"
 "  unsigned size;\n"
 "  unsigned used;\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME);
+,TYPE_NAMES(0),STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  unsigned count;\n"
@@ -2742,7 +2742,7 @@ fprintf(out_file,
 fprintf(out_file,
 "static inline unsigned %s___get_new_index(%s *this);\n"
 "EXPORT unsigned %s___binary_tree_insert(%s *this,unsigned a_new_idx,const %s *a_value,int a_unique);\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
 fprintf(out_file,
 "static inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
 "void %s___remove_black_black(%s *this,unsigned a_idx);\n"
@@ -2751,7 +2751,7 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "static inline int %s___compare_value(const %s *this,const %s *a_first,const %s *a_second);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),TYPE_NAMES(0));
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "static inline void %s_init(%s *this);\n"
@@ -2806,24 +2806,24 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "static inline %s *%s_at(const %s *this,unsigned a_idx);\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
+,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "static inline unsigned %s_insert(%s *this,%s a_value);\n"
 "static inline unsigned %s_unique_insert(%s *this,%s a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "static inline unsigned %s_insert(%s *this,const %s *a_value);\n"
 "static inline unsigned %s_unique_insert(%s *this,const %s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "static inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
 "static inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "EXPORT void %s_remove(%s *this,unsigned a_idx);\n"
@@ -2839,10 +2839,10 @@ fprintf(out_file,
 "EXPORT unsigned %s_get_idx_left(const %s *this,%s a_value);\n"
 "EXPORT unsigned %s_get_gre_idx(const %s *this,%s a_value);\n"
 "EXPORT unsigned %s_get_lee_idx(const %s *this,%s a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
@@ -2850,20 +2850,20 @@ fprintf(out_file,
 "EXPORT unsigned %s_get_idx_left(const %s *this,const %s *a_value);\n"
 "EXPORT unsigned %s_get_gre_idx(const %s *this,const %s *a_value);\n"
 "EXPORT unsigned %s_get_lee_idx(const %s *this,const %s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "EXPORT void %s_get_idxs(const %s *this,%s a_value,ui_array_s *a_idxs_array);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "EXPORT void %s_get_idxs(const %s *this,const %s *a_value,ui_array_s *a_idxs_array);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
@@ -2993,7 +2993,7 @@ fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - rb_tree __get_grandparent_idx method -
 RB_TREE___GET_GRANDPARENT_IDX(RB_TREE_GEN_VALUES);
@@ -3181,7 +3181,7 @@ fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - rb_tree __get_grandparent_idx method -
 

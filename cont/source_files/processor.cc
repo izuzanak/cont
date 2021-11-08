@@ -304,6 +304,19 @@ void processor_s::generate_container_def(string_s &a_cont_name)
    }
 }/*}}}*/
 
+void processor_s::generate_abbreviation(string_s &a_type,string_s &a_abbr)
+{/*{{{*/
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
+     // - generate abbreviation typedef -
+fprintf(out_file,
+"typedef %s %s;\n"
+"\n"
+,a_type.data,a_abbr.data);
+   }
+}/*}}}*/
+
 bool processor_s::find_include_file(const char *a_file, string_s &a_file_path)
 {/*{{{*/
   if (include_dirs.used == 0)

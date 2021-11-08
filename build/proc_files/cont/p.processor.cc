@@ -2346,17 +2346,15 @@ inline string_s &string_array_s::last()
  * definition of basic functions and constants
  */
 
-#define STRUCT_NAME abbs[0].data
+#define STRUCT_NAME data_type.name.data
 #define STRUCT_NUMBER data_type.properties
-#define IM_STRUCT_NAME abbreviations[abb_idx].name.data
 #define TYPE_CNT type_cnt
-#define TYPE_NAME abbreviations[type_abb_idx].name.data
+#define TYPE_NAME type.name.data
 #define TYPE_NUMBER type.properties
-#define TYPE_NAMES(IDX) (type_names[IDX].data)
-#define IM_TYPE_NAMES(IDX) (data_type.types[IDX].data)
-#define TYPE_NUMBERS(IDX) (types[IDX]->properties)
-#define VAR_NAMES_CNT (data_type.variables.used)
-#define VAR_NAMES(IDX) (data_type.variables[IDX].data)
+#define TYPE_NAMES(IDX) types[IDX]->name.data
+#define TYPE_NUMBERS(IDX) types[IDX]->properties
+#define VAR_NAMES_CNT data_type.variables.used
+#define VAR_NAMES(IDX) data_type.variables[IDX].data
 #define VAR_NAME_LENGTHS(IDX) (data_type.variables[IDX].size - 1)
 
 // - constants describing begin and end of definition block -
@@ -2990,6 +2988,7 @@ struct processor_s
    void generate_type_inlines(unsigned a_length,char *a_data);
    void generate_type_methods(unsigned a_length,char *a_data);
    void generate_container_def(string_s &a_cont_name);
+   void generate_abbreviation(string_s &a_type,string_s &a_abbr);
 
    bool find_include_file(const char *a_file, string_s &a_file_path);
 
@@ -3767,6 +3766,7 @@ struct process_s
    static void pa_reduce_inlines(process_s &proc);
    static void pa_reduce_methods(process_s &proc);
    static void pa_reduce_define(process_s &proc);
+   static void pa_reduce_abbreviation(process_s &proc);
    static void pa_reduce_mod_basic(process_s &proc);
    static void pa_reduce_mod_static(process_s &proc);
    static void pa_reduce_mod_dynamic(process_s &proc);
@@ -4683,7 +4683,7 @@ fprintf(out_file,
 "  this->data = NULL;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_INIT_SIZE(ARRAY_GEN_PARAMS)
@@ -4695,7 +4695,7 @@ fprintf(out_file,
 "  %s_copy_resize(this,a_size);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_INIT_BUFFER(ARRAY_GEN_PARAMS)
@@ -4707,7 +4707,7 @@ fprintf(out_file,
 "  %s_set_buffer(this,a_size,a_data);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_CLEAR(ARRAY_GEN_PARAMS)
@@ -4715,12 +4715,12 @@ void ARRAY_CLEAR(ARRAY_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -4758,7 +4758,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_init(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -4776,19 +4776,19 @@ void ARRAY_SET_BUFFER(ARRAY_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -4814,12 +4814,12 @@ void ARRAY_SET(ARRAY_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_set(%s *this,unsigned a_used,const %s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_set(%s *this,unsigned a_used,const %s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -4839,12 +4839,12 @@ fprintf(out_file,
 "\n"
 "  debug_assert(a_data != NULL);\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,a_used);\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
@@ -4875,11 +4875,11 @@ void ARRAY_FLUSH(ARRAY_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -4892,12 +4892,12 @@ void ARRAY_FLUSH_ALL(ARRAY_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_flushable)) {
 fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -4905,7 +4905,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -4943,7 +4943,7 @@ fprintf(out_file,
 "  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_OPERATOR_LE_BR_RE_BR(ARRAY_GEN_PARAMS)
@@ -4955,7 +4955,7 @@ fprintf(out_file,
 "  return this->data + a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_PUSH(ARRAY_GEN_PARAMS)
@@ -4963,12 +4963,12 @@ void ARRAY_PUSH(ARRAY_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline void %s_push(%s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "static inline void %s_push(%s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -4983,7 +4983,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -5016,7 +5016,7 @@ void ARRAY_PUSH_BLANK(ARRAY_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_push_blank(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  if (this->used >= this->size)\n"
@@ -5027,7 +5027,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -5059,7 +5059,7 @@ fprintf(out_file,
 "  }\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_PUSH_BLANKS(ARRAY_GEN_PARAMS)
@@ -5067,7 +5067,7 @@ void ARRAY_PUSH_BLANKS(ARRAY_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_push_blanks(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  unsigned required_cnt = this->used + a_cnt;\n"
@@ -5082,7 +5082,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,r_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -5101,7 +5101,7 @@ void ARRAY_PUSH_CLEAR(ARRAY_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_push_clear(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  if (this->used >= this->size)\n"
@@ -5112,7 +5112,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -5140,12 +5140,12 @@ void ARRAY_POP(ARRAY_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline %s %s_pop(%s *this)\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "static inline %s *%s_pop(%s *this)\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -5176,7 +5176,7 @@ fprintf(out_file,
 "  return this->data + this->used - 1;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void ARRAY_COPY_RESIZE(ARRAY_GEN_PARAMS)
@@ -5185,7 +5185,7 @@ fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -5244,18 +5244,18 @@ void ARRAY_FILL(ARRAY_GEN_PARAMS,unsigned type_idx)
    if (type_idx == c_bt_char || type_idx == c_bt_unsigned_char){
 fprintf(out_file,
 "static inline void %s_fill(%s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
       if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "void %s_fill(%s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
       else {
 fprintf(out_file,
 "void %s_fill(%s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
    }
 fprintf(out_file,
@@ -5310,12 +5310,12 @@ void ARRAY_GET_IDX(ARRAY_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -5357,12 +5357,12 @@ void ARRAY_OPERATOR_EQUAL(ARRAY_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -5380,12 +5380,12 @@ fprintf(out_file,
 "  {\n"
 "    return;\n"
 "  }\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
@@ -5418,12 +5418,12 @@ void ARRAY_OPERATOR_DOUBLE_EQUAL(ARRAY_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline int %s_compare(const %s *this,const %s *a_second)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "int %s_compare(const %s *this,const %s *a_second)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -5495,7 +5495,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void ARRAY_TO_STRING_SEPARATOR(ARRAY_GEN_PARAMS)
@@ -5523,7 +5523,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void ARRAY_TO_JSON(ARRAY_GEN_PARAMS)
@@ -5559,7 +5559,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void ARRAY_TO_JSON_NICE(ARRAY_GEN_PARAMS)
@@ -5598,7 +5598,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void ARRAY_FROM_VAR(ARRAY_GEN_PARAMS)
@@ -5635,7 +5635,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void ARRAY_FROM_JSON(ARRAY_GEN_PARAMS)
@@ -5680,7 +5680,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_array_type()
@@ -6037,7 +6037,7 @@ fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - array init method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
@@ -6173,7 +6173,7 @@ fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - array init method -
 
@@ -6295,7 +6295,7 @@ fprintf(out_file,
 "  this->data = NULL;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_INIT_SIZE(QUEUE_GEN_PARAMS)
@@ -6307,7 +6307,7 @@ fprintf(out_file,
 "  %s_copy_resize(this,a_size);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_INIT_BUFFER(QUEUE_GEN_PARAMS)
@@ -6319,7 +6319,7 @@ fprintf(out_file,
 "  %s_set_buffer(this,a_size,a_data);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_CLEAR(QUEUE_GEN_PARAMS)
@@ -6327,12 +6327,12 @@ void QUEUE_CLEAR(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -6370,7 +6370,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_init(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -6389,19 +6389,19 @@ void QUEUE_SET_BUFFER(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -6427,11 +6427,11 @@ void QUEUE_FLUSH(QUEUE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -6444,12 +6444,12 @@ void QUEUE_FLUSH_ALL(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_flushable)) {
 fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -6457,7 +6457,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -6495,7 +6495,7 @@ fprintf(out_file,
 "  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_OPERATOR_LE_BR_RE_BR(QUEUE_GEN_PARAMS)
@@ -6514,7 +6514,7 @@ fprintf(out_file,
 "  return this->data + real_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_INSERT(QUEUE_GEN_PARAMS)
@@ -6522,12 +6522,12 @@ void QUEUE_INSERT(QUEUE_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline void %s_insert(%s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "static inline void %s_insert(%s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -6542,7 +6542,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -6584,7 +6584,7 @@ void QUEUE_INSERT_BLANK(QUEUE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_insert_blank(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  if (this->used >= this->size)\n"
@@ -6595,7 +6595,7 @@ fprintf(out_file,
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -6614,12 +6614,12 @@ void QUEUE_NEXT(QUEUE_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline %s %s_next(%s *this)\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "static inline %s *%s_next(%s *this)\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -6661,7 +6661,7 @@ fprintf(out_file,
 "  return this->data + this->begin;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_LAST(QUEUE_GEN_PARAMS)
@@ -6680,7 +6680,7 @@ fprintf(out_file,
 "  return this->data + last_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void QUEUE_COPY_RESIZE(QUEUE_GEN_PARAMS)
@@ -6699,7 +6699,7 @@ fprintf(out_file,
 "  else\n"
 "  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -6800,12 +6800,12 @@ void QUEUE_OPERATOR_EQUAL(QUEUE_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -6823,12 +6823,12 @@ fprintf(out_file,
 "  {\n"
 "    return;\n"
 "  }\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
@@ -6913,7 +6913,7 @@ fprintf(out_file,
 "    return 1;\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  int _break;\n"
@@ -7101,7 +7101,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_TO_STRING_SEPARATOR(QUEUE_GEN_PARAMS)
@@ -7152,7 +7152,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_TO_JSON(QUEUE_GEN_PARAMS)
@@ -7211,7 +7211,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_TO_JSON_NICE(QUEUE_GEN_PARAMS)
@@ -7274,7 +7274,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_FROM_VAR(QUEUE_GEN_PARAMS)
@@ -7311,7 +7311,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME);
 }/*}}}*/
 
 void QUEUE_FROM_JSON(QUEUE_GEN_PARAMS)
@@ -7356,7 +7356,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_queue_type()
@@ -7663,7 +7663,7 @@ fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - queue init method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
@@ -7776,7 +7776,7 @@ fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - queue init method -
 
@@ -7875,7 +7875,7 @@ fprintf(out_file,
 "{/*{{{*/\n"
 "  this->size = 0;\n"
 "  this->used = 0;\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  this->count = 0;\n"
@@ -7900,7 +7900,7 @@ fprintf(out_file,
 "  %s_copy_resize(this,a_size);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void LIST_INIT_BUFFER(LIST_GEN_PARAMS)
@@ -7912,7 +7912,7 @@ fprintf(out_file,
 "  %s_set_buffer(this,a_size,a_data);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void LIST_CLEAR(LIST_GEN_PARAMS)
@@ -7920,12 +7920,12 @@ void LIST_CLEAR(LIST_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -7943,7 +7943,7 @@ fprintf(out_file,
 "    do {\n"
 "      %s_clear(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
       }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBER & c_type_dynamic) {
@@ -7963,7 +7963,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_init(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -7991,19 +7991,19 @@ void LIST_SET_BUFFER(LIST_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s_element *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s_element *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size != 0 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -8013,7 +8013,7 @@ fprintf(out_file,
 "  do {\n"
 "    %s_init(&ptr->object);\n"
 "  } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "\n"
@@ -8029,11 +8029,11 @@ void LIST_FLUSH(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -8046,12 +8046,12 @@ void LIST_FLUSH_ALL(LIST_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_flushable)) {
 fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -8059,7 +8059,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (TYPE_NUMBER & c_type_flushable) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -8079,7 +8079,7 @@ fprintf(out_file,
 "  do {\n"
 "    %s_flush_all(&ptr->object);\n"
 "  } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -8097,7 +8097,7 @@ fprintf(out_file,
 "  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
@@ -8105,7 +8105,7 @@ void LIST_OPERATOR_LE_BR_RE_BR(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline %s *%s_at(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,TYPE_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -8128,12 +8128,12 @@ void LIST_PREPEND(LIST_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline unsigned %s_prepend(%s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "static inline unsigned %s_prepend(%s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -8157,7 +8157,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8170,7 +8170,7 @@ fprintf(out_file,
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8227,12 +8227,12 @@ void LIST_APPEND(LIST_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline unsigned %s_append(%s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "static inline unsigned %s_append(%s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -8256,7 +8256,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8269,7 +8269,7 @@ fprintf(out_file,
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8326,12 +8326,12 @@ void LIST_INSERT_BEFORE(LIST_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline unsigned %s_insert_before(%s *this,unsigned a_idx,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "static inline unsigned %s_insert_before(%s *this,unsigned a_idx,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -8368,7 +8368,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8382,7 +8382,7 @@ fprintf(out_file,
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8439,12 +8439,12 @@ void LIST_INSERT_AFTER(LIST_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "static inline unsigned %s_insert_after(%s *this,unsigned a_idx,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "static inline unsigned %s_insert_after(%s *this,unsigned a_idx,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -8481,7 +8481,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8495,7 +8495,7 @@ fprintf(out_file,
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8561,7 +8561,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "    if (this->used >= this->size)\n"
@@ -8572,7 +8572,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8585,7 +8585,7 @@ fprintf(out_file,
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8633,7 +8633,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "    if (this->used >= this->size)\n"
@@ -8644,7 +8644,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8657,7 +8657,7 @@ fprintf(out_file,
 "\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8696,7 +8696,7 @@ void LIST_INSERT_BLANK_BEFORE(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline unsigned %s_insert_blank_before(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -8729,7 +8729,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8743,7 +8743,7 @@ fprintf(out_file,
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8782,7 +8782,7 @@ void LIST_INSERT_BLANK_AFTER(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline unsigned %s_insert_blank_after(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -8815,7 +8815,7 @@ fprintf(out_file,
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -8829,7 +8829,7 @@ fprintf(out_file,
 "  %s_element *idx_element = this->data + a_idx;\n"
 "  %s_element *new_element = this->data + new_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  new_element->valid = 1;\n"
@@ -8868,7 +8868,7 @@ void LIST_REMOVE(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_remove(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -8901,7 +8901,7 @@ fprintf(out_file,
 "    this->first_idx = rm_element->next_idx;\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  rm_element->valid = 0;\n"
@@ -8927,7 +8927,7 @@ void LIST_NEXT_IDX(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline unsigned %s_next_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(this->data[a_idx].valid);\n"
@@ -8945,7 +8945,7 @@ void LIST_PREV_IDX(LIST_GEN_PARAMS)
 fprintf(out_file,
 "static inline unsigned %s_prev_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(this->data[a_idx].valid);\n"
@@ -8964,7 +8964,7 @@ fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -8977,7 +8977,7 @@ fprintf(out_file,
 "      %s_clear(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "\n"
@@ -8993,7 +8993,7 @@ fprintf(out_file,
 "  {\n"
 "    this->data = (%s_element *)crealloc(this->data,a_size*sizeof(%s_element));\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -9006,7 +9006,7 @@ fprintf(out_file,
 "      %s_init(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "\n"
@@ -9021,12 +9021,12 @@ void LIST_GET_IDX(LIST_GEN_PARAMS)
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -9039,7 +9039,7 @@ fprintf(out_file,
 "  do {\n"
 "    %s_element *element = this->data + idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "    if (element->object == a_value)\n"
@@ -9070,12 +9070,12 @@ void LIST_OPERATOR_EQUAL(LIST_GEN_PARAMS)
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -9093,18 +9093,18 @@ fprintf(out_file,
 "  {\n"
 "    return;\n"
 "  }\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
 "  %s_copy_resize(this,a_src->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
 "  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_element)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -9114,7 +9114,7 @@ fprintf(out_file,
 "  %s_element *s_ptr_end = s_ptr + a_src->used;\n"
 "\n"
 "  do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "    ptr->object = s_ptr->object;\n"
@@ -9159,7 +9159,7 @@ void LIST_OPERATOR_DOUBLE_EQUAL(LIST_GEN_PARAMS)
 fprintf(out_file,
 "int %s_compare(const %s *this,const %s *a_second)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  if (this->count != a_second->count)\n"
@@ -9187,7 +9187,7 @@ fprintf(out_file,
 "    %s_element *element = this->data + idx;\n"
 "    %s_element *s_element = a_second->data + s_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "    if (element->object != s_element->object)\n"
@@ -9244,7 +9244,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
 void LIST_TO_STRING_SEPARATOR(LIST_GEN_PARAMS)
@@ -9272,7 +9272,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
 void LIST_TO_JSON(LIST_GEN_PARAMS)
@@ -9308,7 +9308,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
 void LIST_TO_JSON_NICE(LIST_GEN_PARAMS)
@@ -9347,7 +9347,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
 void LIST_FROM_VAR(LIST_GEN_PARAMS)
@@ -9384,7 +9384,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME);
 }/*}}}*/
 
 void LIST_FROM_JSON(LIST_GEN_PARAMS)
@@ -9429,7 +9429,7 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,TYPE_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_list_type()
@@ -9779,7 +9779,7 @@ fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - list init method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
@@ -9912,7 +9912,7 @@ fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - list init method -
 
@@ -10024,13 +10024,13 @@ void STRUCT_INIT(STRUCT_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -10044,13 +10044,13 @@ void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_clear(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -10063,16 +10063,16 @@ void STRUCT_SET(STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "static inline void %s_set(%s *this,"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "%s a_%s"
-,IM_TYPE_NAMES(0),VAR_NAMES(0));
+,TYPE_NAMES(0),VAR_NAMES(0));
    }
    else {
 fprintf(out_file,
 "const %s *a_%s"
-,IM_TYPE_NAMES(0),VAR_NAMES(0));
+,TYPE_NAMES(0),VAR_NAMES(0));
    }
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
@@ -10080,12 +10080,12 @@ fprintf(out_file,
          if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 fprintf(out_file,
 ",%s a_%s"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
 fprintf(out_file,
 ",const %s *a_%s"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
@@ -10108,7 +10108,7 @@ fprintf(out_file,
        else {
 fprintf(out_file,
 "  %s_copy(&this->%s,a_%s);\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -10122,13 +10122,13 @@ void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
 fprintf(out_file,
 "  %s_flush_all(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -10147,7 +10147,7 @@ fprintf(out_file,
 "  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
@@ -10155,7 +10155,7 @@ void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
        if (!(TYPE_NUMBERS(t_idx) & c_type_dynamic)) {
@@ -10166,7 +10166,7 @@ fprintf(out_file,
        else {
 fprintf(out_file,
 "  %s_copy(&this->%s,&a_src->%s);\n"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -10180,7 +10180,7 @@ void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
 fprintf(out_file,
 "static inline int %s_compare(const %s *this,const %s *a_second)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "  return (this->%s == a_second->%s"
@@ -10189,7 +10189,7 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "  return (%s_compare(&this->%s,&a_second->%s)"
-,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
+,TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
    }
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
@@ -10205,7 +10205,7 @@ fprintf(out_file,
          else {
 fprintf(out_file,
 "          %s_compare(&this->%s,&a_second->%s)"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
@@ -10222,18 +10222,18 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "static inline void %s___to_string(const %s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "  bc_array_s_append_ptr(a_trg,\"{%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
 "  bc_array_s_append_ptr(a_trg,\",%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -10252,7 +10252,7 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_CNT <= 1) {
 fprintf(out_file,
 "  (void)a_count;\n"
@@ -10263,7 +10263,7 @@ fprintf(out_file,
 fprintf(out_file,
 "  bc_array_s_append_ptr(a_trg,\"%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
@@ -10271,7 +10271,7 @@ fprintf(out_file,
 "  bc_array_s_append(a_trg,a_count,a_data);\n"
 "  bc_array_s_append_ptr(a_trg,\"%s:\");\n"
 "  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -10287,18 +10287,18 @@ fprintf(out_file,
 "#if OPTION_TO_JSON == ENABLED\n"
 "static inline void %s_to_json(const %s *this,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "  bc_array_s_append_ptr(a_trg,\"{\\\"%s\\\":\");\n"
 "  %s_to_json(&this->%s,a_trg);\n"
-,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
 "  bc_array_s_append_ptr(a_trg,\",\\\"%s\\\":\");\n"
 "  %s_to_json(&this->%s,a_trg);\n"
-,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -10317,13 +10317,13 @@ fprintf(out_file,
 "#if OPTION_TO_JSON == ENABLED\n"
 "static inline void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "  bc_array_s_push(a_trg,'{');\n"
 "  json_nice_s_push_indent(a_json_nice,a_trg);\n"
 "  bc_array_s_append_ptr(a_trg,\"\\\"%s\\\": \");\n"
 "  %s_to_json_nice(&this->%s,a_json_nice,a_trg);\n"
-,VAR_NAMES(0),IM_TYPE_NAMES(0),VAR_NAMES(0));
+,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
@@ -10332,7 +10332,7 @@ fprintf(out_file,
 "  json_nice_s_indent(a_json_nice,a_trg);\n"
 "  bc_array_s_append_ptr(a_trg,\"\\\"%s\\\": \");\n"
 "  %s_to_json_nice(&this->%s,a_json_nice,a_trg);\n"
-,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -10357,7 +10357,7 @@ fprintf(out_file,
 "    throw_error(FROM_VAR_ERROR);\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
 fprintf(out_file,
@@ -10367,14 +10367,14 @@ fprintf(out_file,
 fprintf(out_file,
 "\n"
 "  if (%s_from_var(&this->%s,%s_var)"
-,IM_TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
+,TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
      unsigned t_idx = 1;
      do {
 fprintf(out_file,
 " ||\n"
 "      %s_from_var(&this->%s,%s_var)"
-,IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
      } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
@@ -10397,7 +10397,7 @@ fprintf(out_file,
 "static inline int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json)\n"
 "{/*{{{*/\n"
 "  if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_lc_br) ||\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
 fprintf(out_file,
@@ -10406,7 +10406,7 @@ fprintf(out_file,
 "      from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_colon) ||\n"
 "      %s_from_json(&this->%s,a_src,a_from_json) ||\n"
 "      from_json_s_get_terminal(a_from_json,a_src,%s"
-,VAR_NAMES(t_idx),IM_TYPE_NAMES(t_idx),VAR_NAMES(t_idx)
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx)
 ,t_idx == TYPE_CNT - 1 ? "c_json_terminal_rc_br))\n" : "c_json_terminal_comma) ||\n"
 );
    } while(++t_idx < TYPE_CNT);
@@ -10785,7 +10785,7 @@ fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - struct init method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
@@ -10877,7 +10877,7 @@ fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - struct init method -
 
@@ -10930,7 +10930,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___GET_UNCLE_IDX(RB_TREE_GEN_PARAMS)
@@ -10949,7 +10949,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___GET_SIBLING_IDX(RB_TREE_GEN_PARAMS)
@@ -10961,7 +10961,7 @@ fprintf(out_file,
 "  return p->left_idx == a_idx?p->right_idx:p->left_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_DESCENT_STACK_SIZE(RB_TREE_GEN_PARAMS)
@@ -10972,7 +10972,7 @@ fprintf(out_file,
 "  return (unsigned)(logf(this->used)/c_log_of_2) << 1;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -10980,7 +10980,7 @@ void RB_TREE_GET_STACK_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_stack_min_value_idx(const %s *this,unsigned a_idx,unsigned **a_s_ptr)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -11008,7 +11008,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -11016,7 +11016,7 @@ void RB_TREE_GET_STACK_NEXT_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "static inline unsigned %s_get_stack_next_idx(const %s *this,unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -11044,7 +11044,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -11052,7 +11052,7 @@ void RB_TREE_GET_MIN_VALUE_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_min_value_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -11078,7 +11078,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
@@ -11086,7 +11086,7 @@ void RB_TREE_GET_MAX_VALUE_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_max_value_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -11112,7 +11112,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
@@ -11120,7 +11120,7 @@ void RB_TREE_GET_NEXT_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_next_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -11158,7 +11158,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
@@ -11166,7 +11166,7 @@ void RB_TREE_GET_PREV_IDX(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "unsigned %s_get_prev_idx(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -11204,7 +11204,7 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___ROTATE_LEFT(RB_TREE_GEN_PARAMS)
@@ -11244,7 +11244,7 @@ fprintf(out_file,
 "  pivot->left_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___ROTATE_RIGHT(RB_TREE_GEN_PARAMS)
@@ -11284,7 +11284,7 @@ fprintf(out_file,
 "  pivot->right_idx = a_idx;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___GET_NEW_INDEX(RB_TREE_GEN_PARAMS)
@@ -11301,7 +11301,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "    if (this->used >= this->size)\n"
@@ -11310,7 +11310,7 @@ fprintf(out_file,
 "      debug_assert(new_size != 0);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 fprintf(out_file,
 "    }\n"
 "\n"
@@ -11329,7 +11329,7 @@ fprintf(out_file,
 "      this->leaf_idx = this->used++;\n"
 "      %s_node *leaf = this->data + this->leaf_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "      leaf->valid = 0; // NOLINT\n"
@@ -11425,7 +11425,7 @@ fprintf(out_file,
 "  return c_idx_not_exist;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REPLACE_DELETE_NODE_BY_CHILD(RB_TREE_GEN_PARAMS)
@@ -11457,7 +11457,7 @@ fprintf(out_file,
 "  }\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REMOVE_BLACK_BLACK(RB_TREE_GEN_PARAMS)
@@ -11556,8 +11556,8 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___REMOVE_ONE_CHILD(RB_TREE_GEN_PARAMS)
@@ -11571,7 +11571,7 @@ fprintf(out_file,
 "  node->parent_idx = this->free_idx;\n"
 "  this->free_idx = a_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  node->valid = 0;\n"
@@ -11595,7 +11595,7 @@ fprintf(out_file,
 "  }\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE___INSERT_OPERATION(RB_TREE_GEN_PARAMS)
@@ -11664,8 +11664,8 @@ fprintf(out_file,
 "  } while(1);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_INIT(RB_TREE_GEN_PARAMS)
@@ -11675,7 +11675,7 @@ fprintf(out_file,
 "{/*{{{*/\n"
 "  this->size = 0;\n"
 "  this->used = 0;\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  this->count = 0;\n"
@@ -11696,7 +11696,7 @@ fprintf(out_file,
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
@@ -11715,7 +11715,7 @@ fprintf(out_file,
 "  %s_set_buffer(this,a_size,a_data);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_CLEAR(RB_TREE_GEN_PARAMS)
@@ -11723,12 +11723,12 @@ void RB_TREE_CLEAR(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_clear(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -11746,7 +11746,7 @@ fprintf(out_file,
 "    do {\n"
 "      %s_clear(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
       }
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
          if (TYPE_NUMBERS(0) & c_type_dynamic) {
@@ -11769,7 +11769,7 @@ fprintf(out_file,
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_clear(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
 fprintf(out_file,
@@ -11810,19 +11810,19 @@ void RB_TREE_SET_BUFFER(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_set_buffer(%s *this,unsigned a_size,%s_node *a_data)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
 "  debug_assert(a_size > 1 && a_data != NULL);\n"
 "\n"
 "  %s_clear(this);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -11832,7 +11832,7 @@ fprintf(out_file,
 "  do {\n"
 "    %s_init(&ptr->object);\n"
 "  } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "\n"
@@ -11848,11 +11848,11 @@ void RB_TREE_FLUSH(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "static inline void %s_flush(%s *this)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -11865,12 +11865,12 @@ void RB_TREE_FLUSH_ALL(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
 fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_flush_all(%s *this)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -11878,7 +11878,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (VAR_NAMES_CNT > 0) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -11891,7 +11891,7 @@ fprintf(out_file,
          if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
 fprintf(out_file,
 "  %s_flush_all(&this->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
@@ -11913,7 +11913,7 @@ fprintf(out_file,
 "  do {\n"
 "    %s_flush_all(&ptr->object);\n"
 "  } while(++ptr < ptr_end);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -11931,7 +11931,7 @@ fprintf(out_file,
 "  *a_second = tmp;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
@@ -11939,7 +11939,7 @@ void RB_TREE_OPERATOR_LE_BR_RE_BR(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "static inline %s *%s_at(const %s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME,IM_STRUCT_NAME);
+,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -11962,32 +11962,32 @@ fprintf(out_file,
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,TYPE_NAMES(0));\
    }\
    else {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s%s *a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,VALUE_CONST ? "const " : "",IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,VALUE_CONST ? "const " : "",TYPE_NAMES(0));\
    }\
 fprintf(out_file,\
 "{/*{{{*/\n"\
 "  unsigned new_node_idx = %s___get_new_index(this);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "  %s___binary_tree_insert(this,new_node_idx,&a_value,0);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
    else {\
 fprintf(out_file,\
 "  %s___binary_tree_insert(this,new_node_idx,a_value,0);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
 fprintf(out_file,\
 "  %s___insert_operation(this,new_node_idx);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    VALUE_SET_CODE;\
 fprintf(out_file,\
 "\n"\
@@ -12013,7 +12013,7 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
 );
 }/*}}}*/
@@ -12024,7 +12024,7 @@ void RB_TREE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 TEMPLATE_RB_TREE_INSERT(swap_insert,false,
 fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
 );
    }
 }/*}}}*/
@@ -12034,26 +12034,26 @@ fprintf(out_file,
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,TYPE_NAMES(0));\
    }\
    else {\
 fprintf(out_file,\
 "static inline unsigned %s_%s(%s *this,%s%s *a_value)\n"\
-,IM_STRUCT_NAME,#FUN_NAME,IM_STRUCT_NAME,VALUE_CONST ? "const " : "",IM_TYPE_NAMES(0));\
+,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,VALUE_CONST ? "const " : "",TYPE_NAMES(0));\
    }\
 fprintf(out_file,\
 "{/*{{{*/\n"\
 "  unsigned new_node_idx = %s___get_new_index(this);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
 "  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,&a_value,1);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
    else {\
 fprintf(out_file,\
 "  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,a_value,1);\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    }\
 fprintf(out_file,\
 "\n"\
@@ -12064,7 +12064,7 @@ fprintf(out_file,\
 "    new_node->parent_idx = this->free_idx;\n"\
 "    this->free_idx = new_node_idx;\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    if (STRUCT_NUMBER & c_type_option_safe) {\
 fprintf(out_file,\
 "    new_node->valid = 0;\n"\
@@ -12078,7 +12078,7 @@ fprintf(out_file,\
 "\n"\
 "  %s___insert_operation(this,new_node_idx);\n"\
 "\n"\
-,IM_STRUCT_NAME);\
+,STRUCT_NAME);\
    VALUE_SET_CODE;\
 fprintf(out_file,\
 "\n"\
@@ -12104,7 +12104,7 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "  %s_copy(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
 );
 }/*}}}*/
@@ -12115,7 +12115,7 @@ void RB_TREE_UNIQUE_SWAP_INSERT(RB_TREE_GEN_PARAMS)
 TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,false,
 fprintf(out_file,
 "  %s_swap(&this->data[new_node_idx].object,a_value);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
 );
    }
 }/*}}}*/
@@ -12125,7 +12125,7 @@ void RB_TREE_REMOVE(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "void %s_remove(%s *this,unsigned a_idx)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
@@ -12250,8 +12250,8 @@ fprintf(out_file,
 "\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_COPY_RESIZE(RB_TREE_GEN_PARAMS)
@@ -12260,7 +12260,7 @@ fprintf(out_file,
 "void %s_copy_resize(%s *this,unsigned a_size)\n"
 "{/*{{{*/\n"
 "  debug_assert(a_size >= this->used);\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -12273,7 +12273,7 @@ fprintf(out_file,
 "      %s_clear(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "\n"
@@ -12289,7 +12289,7 @@ fprintf(out_file,
 "  {\n"
 "    this->data = (%s_node *)crealloc(this->data,a_size*sizeof(%s_node));\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "\n"
@@ -12302,7 +12302,7 @@ fprintf(out_file,
 "      %s_init(&ptr->object);\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "\n"
@@ -12317,12 +12317,12 @@ void RB_TREE_GET_IDX(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -12335,16 +12335,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -12373,12 +12373,12 @@ void RB_TREE_GET_IDX_LEFT(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_idx_left(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_idx_left(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -12392,16 +12392,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -12433,12 +12433,12 @@ void RB_TREE_GET_GRE_IDX(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_gre_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_gre_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -12452,16 +12452,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -12491,12 +12491,12 @@ void RB_TREE_GET_LEE_IDX(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "unsigned %s_get_lee_idx(const %s *this,%s a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "unsigned %s_get_lee_idx(const %s *this,const %s *a_value)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -12510,16 +12510,16 @@ fprintf(out_file,
 "  do {\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -12549,12 +12549,12 @@ void RB_TREE_GET_IDXS(RB_TREE_GEN_PARAMS)
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "void %s_get_idxs(const %s *this,%s a_value,ui_array_s *a_idxs_array)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "void %s_get_idxs(const %s *this,const %s *a_value,ui_array_s *a_idxs_array)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -12573,16 +12573,16 @@ fprintf(out_file,
 "    unsigned node_idx = *(--stack_ptr);\n"
 "    %s_node *node = this->data + node_idx;\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
 fprintf(out_file,
 "    if (comp_result < 0)\n"
@@ -12620,12 +12620,12 @@ void RB_TREE_OPERATOR_EQUAL(RB_TREE_GEN_PARAMS)
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "static inline void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
 "void %s_copy(%s *this,const %s *a_src)\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    }
 fprintf(out_file,
 "{/*{{{*/\n"
@@ -12643,19 +12643,19 @@ fprintf(out_file,
 "  {\n"
 "    return;\n"
 "  }\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
 "  debug_assert(a_src->used != 0);\n"
 "  %s_copy_resize(this,a_src->used);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
 "  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
    }
    else {
 fprintf(out_file,
@@ -12665,7 +12665,7 @@ fprintf(out_file,
 "  %s_node *s_ptr_end = s_ptr + a_src->used;\n"
 "\n"
 "  do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "    ptr->object = s_ptr->object;\n"
@@ -12674,7 +12674,7 @@ fprintf(out_file,
    else {
 fprintf(out_file,
 "    %s_copy(&ptr->object,&s_ptr->object);\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
@@ -12717,7 +12717,7 @@ fprintf(out_file,
          else {
 fprintf(out_file,
 "  %s_copy(&this->%s,&a_src->%s);\n"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
@@ -12732,7 +12732,7 @@ void RB_TREE_OPERATOR_DOUBLE_EQUAL(RB_TREE_GEN_PARAMS)
 fprintf(out_file,
 "int %s_compare(const %s *this,const %s *a_second)\n"
 "{/*{{{*/\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  if (this->count != a_second->count)\n"
@@ -12766,7 +12766,7 @@ fprintf(out_file,
 "    unsigned node_idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
 "    unsigned s_node_idx = %s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);\n"
 "    do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "      if (this->data[node_idx].object != a_second->data[s_node_idx].object)\n"
@@ -12777,7 +12777,7 @@ fprintf(out_file,
 fprintf(out_file,
 "      if (!%s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object))\n"
 "      {\n"
-,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "        return 0;\n"
@@ -12793,7 +12793,7 @@ fprintf(out_file,
 "    }\n"
 "  }\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
    if (VAR_NAMES_CNT > 0) {
       if (TYPE_NUMBERS(1) & c_type_basic) {
 fprintf(out_file,
@@ -12803,7 +12803,7 @@ fprintf(out_file,
       else {
 fprintf(out_file,
 "  return (%s_compare(&this->%s,&a_second->%s)"
-,IM_TYPE_NAMES(1),VAR_NAMES(0),VAR_NAMES(0));
+,TYPE_NAMES(1),VAR_NAMES(0),VAR_NAMES(0));
       }
       if (VAR_NAMES_CNT > 1) {
          unsigned t_idx = 1;
@@ -12816,7 +12816,7 @@ fprintf(out_file,
             else {
 fprintf(out_file,
 " && %s_compare(&this->%s,&a_second->%s)"
-,IM_TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
             }
          } while(++t_idx < VAR_NAMES_CNT);
       }
@@ -12866,8 +12866,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_TO_STRING_SEPARATOR(RB_TREE_GEN_PARAMS)
@@ -12897,8 +12897,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_TO_JSON(RB_TREE_GEN_PARAMS)
@@ -12936,8 +12936,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_TO_JSON_NICE(RB_TREE_GEN_PARAMS)
@@ -12978,8 +12978,8 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "#endif\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_TYPE_NAMES(0),IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,TYPE_NAMES(0),STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_FROM_VAR(RB_TREE_GEN_PARAMS)
@@ -13003,7 +13003,7 @@ fprintf(out_file,
 "    var_s *v_ptr = array->data;\n"
 "    var_s *v_ptr_end = v_ptr + array->used;\n"
 "    do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
@@ -13013,18 +13013,18 @@ fprintf(out_file,
 "        throw_error(FROM_VAR_ERROR);\n"
 "      }\n"
 "\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,
 "      %s_insert(this,value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
       else
       {
 fprintf(out_file,
 "      %s_insert(this,&value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
    }
    else {
@@ -13041,8 +13041,8 @@ fprintf(out_file,
 "\n"
 "      %s_swap_insert(this,&value);\n"
 "      %s_clear(&value);\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0)
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0)
+,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "    } while(++v_ptr < v_ptr_end);\n"
@@ -13074,7 +13074,7 @@ fprintf(out_file,
 "    a_from_json->input_idx = input_idx;\n"
 "\n"
 "    do {\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
@@ -13084,18 +13084,18 @@ fprintf(out_file,
 "        throw_error(FROM_JSON_ERROR);\n"
 "      }\n"
 "\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,
 "      %s_insert(this,value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
       else
       {
 fprintf(out_file,
 "      %s_insert(this,&value);\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
       }
    }
    else {
@@ -13112,8 +13112,8 @@ fprintf(out_file,
 "\n"
 "      %s_swap_insert(this,&value);\n"
 "      %s_clear(&value);\n"
-,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0),IM_TYPE_NAMES(0)
-,IM_STRUCT_NAME,IM_TYPE_NAMES(0));
+,TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0),TYPE_NAMES(0)
+,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "      if (from_json_s_get_terminal(a_from_json,a_src,c_json_terminal_comma))\n"
@@ -13192,9 +13192,9 @@ fprintf(out_file,
 "  ui_array_s_clear(&indexes);\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_PRINT_DOT_CODE(RB_TREE_GEN_PARAMS)
@@ -13269,7 +13269,7 @@ fprintf(out_file,
 "\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RB_TREE_CHECK_PROPERTIES(RB_TREE_GEN_PARAMS)
@@ -13405,8 +13405,8 @@ fprintf(out_file,
 "  return 1;\n"
 "}/*}}}*/\n"
 "\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME
-,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_rb_tree_type()
@@ -13610,7 +13610,7 @@ fprintf(out_file,
 "{\n"
 "  unsigned size;\n"
 "  unsigned used;\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME);
+,TYPE_NAMES(0),STRUCT_NAME);
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
 "  unsigned count;\n"
@@ -13655,7 +13655,7 @@ fprintf(out_file,
 fprintf(out_file,
 "static inline unsigned %s___get_new_index(%s *this);\n"
 "EXPORT unsigned %s___binary_tree_insert(%s *this,unsigned a_new_idx,const %s *a_value,int a_unique);\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
 fprintf(out_file,
 "static inline void %s___replace_delete_node_by_child(%s *this,unsigned a_idx,unsigned a_ch_idx);\n"
 "void %s___remove_black_black(%s *this,unsigned a_idx);\n"
@@ -13664,7 +13664,7 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
 fprintf(out_file,
 "static inline int %s___compare_value(const %s *this,const %s *a_first,const %s *a_second);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),TYPE_NAMES(0));
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
 fprintf(out_file,
 "static inline void %s_init(%s *this);\n"
@@ -13719,24 +13719,24 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "static inline %s *%s_at(const %s *this,unsigned a_idx);\n"
-,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
+,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "static inline unsigned %s_insert(%s *this,%s a_value);\n"
 "static inline unsigned %s_unique_insert(%s *this,%s a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "static inline unsigned %s_insert(%s *this,const %s *a_value);\n"
 "static inline unsigned %s_unique_insert(%s *this,const %s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
 "static inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
 "static inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "EXPORT void %s_remove(%s *this,unsigned a_idx);\n"
@@ -13752,10 +13752,10 @@ fprintf(out_file,
 "EXPORT unsigned %s_get_idx_left(const %s *this,%s a_value);\n"
 "EXPORT unsigned %s_get_gre_idx(const %s *this,%s a_value);\n"
 "EXPORT unsigned %s_get_lee_idx(const %s *this,%s a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
@@ -13763,20 +13763,20 @@ fprintf(out_file,
 "EXPORT unsigned %s_get_idx_left(const %s *this,const %s *a_value);\n"
 "EXPORT unsigned %s_get_gre_idx(const %s *this,const %s *a_value);\n"
 "EXPORT unsigned %s_get_lee_idx(const %s *this,const %s *a_value);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0)
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
 "EXPORT void %s_get_idxs(const %s *this,%s a_value,ui_array_s *a_idxs_array);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
 "EXPORT void %s_get_idxs(const %s *this,const %s *a_value,ui_array_s *a_idxs_array);\n"
-,STRUCT_NAME,STRUCT_NAME,IM_TYPE_NAMES(0));
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
       if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
@@ -13906,7 +13906,7 @@ fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - rb_tree __get_grandparent_idx method -
 RB_TREE___GET_GRANDPARENT_IDX(RB_TREE_GEN_VALUES);
@@ -14094,7 +14094,7 @@ fprintf(out_file,
 "// --- struct %s method definition ---\n"
 "// LCOV_EXCL_START\n"
 "\n"
-,IM_STRUCT_NAME);
+,STRUCT_NAME);
 
    // - rb_tree __get_grandparent_idx method -
 
@@ -14381,6 +14381,19 @@ void processor_s::generate_container_def(string_s &a_cont_name)
       break;
    default:
       cassert(0);
+   }
+}/*}}}*/
+
+void processor_s::generate_abbreviation(string_s &a_type,string_s &a_abbr)
+{/*{{{*/
+   if (gen_options & c_option_gen_code &&
+      (include_level == 0 || gen_options & c_option_gen_includes))
+   {
+     // - generate abbreviation typedef -
+fprintf(out_file,
+"typedef %s %s;\n"
+"\n"
+,a_type.data,a_abbr.data);
    }
 }/*}}}*/
 

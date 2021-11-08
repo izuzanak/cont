@@ -16,6 +16,7 @@ void(*parse_callbacks[])(process_s &proc) =
    process_s::pa_reduce_inlines,
    process_s::pa_reduce_methods,
    process_s::pa_reduce_define,
+   process_s::pa_reduce_abbreviation,
    process_s::pa_reduce_null,
    process_s::pa_reduce_null,
    process_s::pa_reduce_mod_basic,
@@ -38,9 +39,9 @@ void(*parse_callbacks[])(process_s &proc) =
 };
 
 // - parse constants -
-const unsigned c_rule_cnt = 26;
-const unsigned rule_head_idxs[c_rule_cnt] = {24, 25, 25, 26, 26, 26, 26, 27, 27, 28, 28, 28, 28, 26, 29, 29, 30, 31, 31, 32, 32, 30, 33, 33, 30, 30, };
-const unsigned rule_body_lengths[c_rule_cnt] = {4, 2, 1, 2, 2, 2, 3, 2, 1, 1, 1, 1, 1, 3, 2, 1, 3, 2, 1, 1, 3, 3, 2, 1, 2, 1, };
+const unsigned c_rule_cnt = 27;
+const unsigned rule_head_idxs[c_rule_cnt] = {25, 26, 26, 27, 27, 27, 27, 27, 28, 28, 29, 29, 29, 29, 27, 30, 30, 31, 32, 32, 33, 33, 31, 34, 34, 31, 31, };
+const unsigned rule_body_lengths[c_rule_cnt] = {4, 2, 1, 2, 2, 2, 3, 3, 2, 1, 1, 1, 1, 1, 3, 2, 1, 3, 2, 1, 1, 3, 3, 2, 1, 2, 1, };
 
 // - parsing table -
 #define blank c_idx_not_exist
@@ -49,54 +50,58 @@ const unsigned rule_body_lengths[c_rule_cnt] = {4, 2, 1, 2, 2, 2, 3, 2, 1, 1, 1,
 #define GOTO(VALUE) VALUE
 
 const unsigned c_lalr_table_reduce_base = 0x80000000;
-const unsigned c_terminal_plus_nonterminal_cnt = 34;
-const unsigned lalr_state_cnt = 43;
+const unsigned c_terminal_plus_nonterminal_cnt = 35;
+const unsigned lalr_state_cnt = 46;
 
-const unsigned lalr_table[lalr_state_cnt*c_terminal_plus_nonterminal_cnt] = {
-    SHIFT(1),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,    SHIFT(4),    SHIFT(5),    SHIFT(6),    SHIFT(7),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    SHIFT(8),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,     GOTO(2),     GOTO(3),       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   SHIFT(10),    SHIFT(4),    SHIFT(5),    SHIFT(6),    SHIFT(7),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    SHIFT(8),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,     GOTO(9),       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(2),   REDUCE(2),   REDUCE(2),   REDUCE(2),   REDUCE(2),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(2),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(11),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(12),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(13),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(14),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(18),   SHIFT(19),       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(20),   SHIFT(17),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(15),    GOTO(16),       blank,       blank,       blank,
-       blank,   REDUCE(1),   REDUCE(1),   REDUCE(1),   REDUCE(1),   REDUCE(1),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(1),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(21),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(3),   REDUCE(3),   REDUCE(3),   REDUCE(3),   REDUCE(3),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(3),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(4),   REDUCE(4),   REDUCE(4),   REDUCE(4),   REDUCE(4),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(4),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(5),   REDUCE(5),   REDUCE(5),   REDUCE(5),   REDUCE(5),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(5),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(24),   SHIFT(25),   SHIFT(26),   SHIFT(27),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(22),    GOTO(23),       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(18),   SHIFT(19),       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(20),   SHIFT(17),       blank,       blank,       blank,       blank,   SHIFT(29),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(28),       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(15),  REDUCE(15),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(15),  REDUCE(15),       blank,       blank,       blank,       blank,  REDUCE(15),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(32),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(30),    GOTO(31),       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(34),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(33),
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(35),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(25),  REDUCE(25),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(25),  REDUCE(25),       blank,       blank,       blank,       blank,  REDUCE(25),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(6),   REDUCE(6),   REDUCE(6),   REDUCE(6),   REDUCE(6),       blank,       blank,   SHIFT(24),   SHIFT(25),   SHIFT(26),   SHIFT(27),       blank,       blank,   REDUCE(6),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(36),       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(8),   REDUCE(8),   REDUCE(8),   REDUCE(8),   REDUCE(8),       blank,       blank,   REDUCE(8),   REDUCE(8),   REDUCE(8),   REDUCE(8),       blank,       blank,   REDUCE(8),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(9),   REDUCE(9),   REDUCE(9),   REDUCE(9),   REDUCE(9),       blank,       blank,   REDUCE(9),   REDUCE(9),   REDUCE(9),   REDUCE(9),       blank,       blank,   REDUCE(9),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,  REDUCE(10),  REDUCE(10),  REDUCE(10),  REDUCE(10),  REDUCE(10),       blank,       blank,  REDUCE(10),  REDUCE(10),  REDUCE(10),  REDUCE(10),       blank,       blank,  REDUCE(10),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,  REDUCE(11),  REDUCE(11),  REDUCE(11),  REDUCE(11),  REDUCE(11),       blank,       blank,  REDUCE(11),  REDUCE(11),  REDUCE(11),  REDUCE(11),       blank,       blank,  REDUCE(11),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,  REDUCE(12),  REDUCE(12),  REDUCE(12),  REDUCE(12),  REDUCE(12),       blank,       blank,  REDUCE(12),  REDUCE(12),  REDUCE(12),  REDUCE(12),       blank,       blank,  REDUCE(12),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(14),  REDUCE(14),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(14),  REDUCE(14),       blank,       blank,       blank,       blank,  REDUCE(14),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,  REDUCE(13),  REDUCE(13),  REDUCE(13),  REDUCE(13),  REDUCE(13),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(13),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(32),       blank,   SHIFT(38),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(37),       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(18),       blank,  REDUCE(18),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(19),       blank,  REDUCE(19),       blank,       blank,   SHIFT(39),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(40),       blank,       blank,       blank,   SHIFT(41),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(23),       blank,       blank,       blank,  REDUCE(23),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(24),  REDUCE(24),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(24),  REDUCE(24),       blank,       blank,       blank,       blank,  REDUCE(24),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,   REDUCE(7),   REDUCE(7),   REDUCE(7),   REDUCE(7),   REDUCE(7),       blank,       blank,   REDUCE(7),   REDUCE(7),   REDUCE(7),   REDUCE(7),       blank,       blank,   REDUCE(7),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(17),       blank,  REDUCE(17),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(16),  REDUCE(16),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(16),  REDUCE(16),       blank,       blank,       blank,       blank,  REDUCE(16),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(42),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(22),       blank,       blank,       blank,  REDUCE(22),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(21),  REDUCE(21),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(21),  REDUCE(21),       blank,       blank,       blank,       blank,  REDUCE(21),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(20),       blank,  REDUCE(20),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
-};
+const unsigned lalr_table[lalr_state_cnt*c_terminal_plus_nonterminal_cnt] = 
+{/*{{{*/
+    SHIFT(1),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,    SHIFT(4),    SHIFT(5),    SHIFT(6),    SHIFT(7),    SHIFT(8),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    SHIFT(9),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,     GOTO(2),     GOTO(3),       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   SHIFT(11),    SHIFT(4),    SHIFT(5),    SHIFT(6),    SHIFT(7),    SHIFT(8),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    SHIFT(9),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(10),       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(2),   REDUCE(2),   REDUCE(2),   REDUCE(2),   REDUCE(2),   REDUCE(2),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(2),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(12),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(13),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(14),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(15),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(16),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(20),   SHIFT(21),       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(22),   SHIFT(19),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(17),    GOTO(18),       blank,       blank,       blank,
+       blank,   REDUCE(1),   REDUCE(1),   REDUCE(1),   REDUCE(1),   REDUCE(1),   REDUCE(1),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(1),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(23),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(3),   REDUCE(3),   REDUCE(3),   REDUCE(3),   REDUCE(3),   REDUCE(3),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(3),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(4),   REDUCE(4),   REDUCE(4),   REDUCE(4),   REDUCE(4),   REDUCE(4),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(4),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(5),   REDUCE(5),   REDUCE(5),   REDUCE(5),   REDUCE(5),   REDUCE(5),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(5),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(26),   SHIFT(27),   SHIFT(28),   SHIFT(29),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(24),    GOTO(25),       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(30),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(20),   SHIFT(21),       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(22),   SHIFT(19),       blank,       blank,       blank,       blank,   SHIFT(32),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(31),       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(16),  REDUCE(16),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(16),  REDUCE(16),       blank,       blank,       blank,       blank,  REDUCE(16),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(35),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(33),    GOTO(34),       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(37),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(36),
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(38),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(26),  REDUCE(26),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(26),  REDUCE(26),       blank,       blank,       blank,       blank,  REDUCE(26),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(6),   REDUCE(6),   REDUCE(6),   REDUCE(6),   REDUCE(6),   REDUCE(6),       blank,       blank,   SHIFT(26),   SHIFT(27),   SHIFT(28),   SHIFT(29),       blank,       blank,   REDUCE(6),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(39),       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(9),   REDUCE(9),   REDUCE(9),   REDUCE(9),   REDUCE(9),   REDUCE(9),       blank,       blank,   REDUCE(9),   REDUCE(9),   REDUCE(9),   REDUCE(9),       blank,       blank,   REDUCE(9),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,  REDUCE(10),  REDUCE(10),  REDUCE(10),  REDUCE(10),  REDUCE(10),  REDUCE(10),       blank,       blank,  REDUCE(10),  REDUCE(10),  REDUCE(10),  REDUCE(10),       blank,       blank,  REDUCE(10),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,  REDUCE(11),  REDUCE(11),  REDUCE(11),  REDUCE(11),  REDUCE(11),  REDUCE(11),       blank,       blank,  REDUCE(11),  REDUCE(11),  REDUCE(11),  REDUCE(11),       blank,       blank,  REDUCE(11),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,  REDUCE(12),  REDUCE(12),  REDUCE(12),  REDUCE(12),  REDUCE(12),  REDUCE(12),       blank,       blank,  REDUCE(12),  REDUCE(12),  REDUCE(12),  REDUCE(12),       blank,       blank,  REDUCE(12),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,  REDUCE(13),  REDUCE(13),  REDUCE(13),  REDUCE(13),  REDUCE(13),  REDUCE(13),       blank,       blank,  REDUCE(13),  REDUCE(13),  REDUCE(13),  REDUCE(13),       blank,       blank,  REDUCE(13),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(7),   REDUCE(7),   REDUCE(7),   REDUCE(7),   REDUCE(7),   REDUCE(7),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   REDUCE(7),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(15),  REDUCE(15),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(15),  REDUCE(15),       blank,       blank,       blank,       blank,  REDUCE(15),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,  REDUCE(14),  REDUCE(14),  REDUCE(14),  REDUCE(14),  REDUCE(14),  REDUCE(14),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(14),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(35),       blank,   SHIFT(41),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,    GOTO(40),       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(19),       blank,  REDUCE(19),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(20),       blank,  REDUCE(20),       blank,       blank,   SHIFT(42),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(43),       blank,       blank,       blank,   SHIFT(44),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(24),       blank,       blank,       blank,  REDUCE(24),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(25),  REDUCE(25),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(25),  REDUCE(25),       blank,       blank,       blank,       blank,  REDUCE(25),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,   REDUCE(8),   REDUCE(8),   REDUCE(8),   REDUCE(8),   REDUCE(8),   REDUCE(8),       blank,       blank,   REDUCE(8),   REDUCE(8),   REDUCE(8),   REDUCE(8),       blank,       blank,   REDUCE(8),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(18),       blank,  REDUCE(18),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(17),  REDUCE(17),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(17),  REDUCE(17),       blank,       blank,       blank,       blank,  REDUCE(17),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,   SHIFT(45),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(23),       blank,       blank,       blank,  REDUCE(23),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(22),  REDUCE(22),       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(22),  REDUCE(22),       blank,       blank,       blank,       blank,  REDUCE(22),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,  REDUCE(21),       blank,  REDUCE(21),       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,       blank,
+};/*}}}*/
 
 /*
  * methods of generated structures
@@ -141,451 +146,447 @@ unsigned process_s::find_terminal(unsigned &a_input_idx)
 }
 
    unsigned char in_char;
-
 // - STATE 0 -
    GET_NEXT_CHAR();
 
-   if (in_char == 0)
+   if (in_char == 0) {
       goto state_1_label;
-
-   if (in_char >= 8 && in_char < 14)
+   }
+   if (in_char >= 8 && in_char < 14) {
       goto state_21_label;
-
-   if (in_char == 32)
+   }
+   if (in_char == 32) {
       goto state_21_label;
-
-   if (in_char == 34)
+   }
+   if (in_char == 34) {
       goto state_2_label;
-
-   if (in_char == 36)
+   }
+   if (in_char == 36) {
       goto state_3_label;
-
-   if (in_char == 40)
+   }
+   if (in_char == 40) {
       goto state_4_label;
-
-   if (in_char == 41)
+   }
+   if (in_char == 41) {
       goto state_5_label;
-
-   if (in_char == 58)
+   }
+   if (in_char == 58) {
       goto state_6_label;
-
-   if (in_char == 59)
+   }
+   if (in_char == 59) {
       goto state_7_label;
-
-   if (in_char == 60)
+   }
+   if (in_char == 60) {
       goto state_8_label;
-
-   if (in_char == 62)
+   }
+   if (in_char == 62) {
       goto state_9_label;
-
-   if (in_char == 64)
+   }
+   if (in_char == 64) {
       goto state_10_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char == 97)
+   }
+   if (in_char == 97) {
       goto state_12_label;
-
-   if (in_char == 98)
+   }
+   if (in_char == 98) {
       goto state_13_label;
-
-   if (in_char == 99)
+   }
+   if (in_char == 99) {
       goto state_11_label;
-
-   if (in_char == 100)
+   }
+   if (in_char == 100) {
       goto state_14_label;
-
-   if (in_char == 101)
+   }
+   if (in_char == 101) {
       goto state_11_label;
-
-   if (in_char == 102)
+   }
+   if (in_char == 102) {
       goto state_15_label;
-
-   if (in_char >= 103 && in_char < 105)
+   }
+   if (in_char >= 103 && in_char < 105) {
       goto state_11_label;
-
-   if (in_char == 105)
+   }
+   if (in_char == 105) {
       goto state_16_label;
-
-   if (in_char >= 106 && in_char < 109)
+   }
+   if (in_char >= 106 && in_char < 109) {
       goto state_11_label;
-
-   if (in_char == 109)
+   }
+   if (in_char == 109) {
       goto state_17_label;
-
-   if (in_char == 110)
+   }
+   if (in_char == 110) {
       goto state_11_label;
-
-   if (in_char == 111)
+   }
+   if (in_char == 111) {
       goto state_18_label;
-
-   if (in_char >= 112 && in_char < 115)
+   }
+   if (in_char >= 112 && in_char < 115) {
       goto state_11_label;
-
-   if (in_char == 115)
+   }
+   if (in_char == 115) {
       goto state_19_label;
-
-   if (in_char >= 116 && in_char < 123)
+   }
+   if (in_char >= 116 && in_char < 123) {
       goto state_11_label;
-
-   if (in_char == 123)
+   }
+   if (in_char == 123) {
       goto state_20_label;
-
+   }
    return c_idx_not_exist;
 
 // - STATE 1 -
 state_1_label:
-   CLOSE_CHAR(23);
-   return 23;
+   CLOSE_CHAR(24);
+   return 24;
 
 // - STATE 2 -
 state_2_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char < 34)
+   if (in_char < 34) {
       goto state_2_label;
-
-   if (in_char == 34)
+   }
+   if (in_char == 34) {
       goto state_22_label;
-
-   if (in_char >= 35)
-      goto state_2_label;
-
-   return c_idx_not_exist;
+   }
+   goto state_2_label;
 
 // - STATE 3 -
 state_3_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char < 10)
+   if (in_char < 10) {
       goto state_3_label;
-
-   if (in_char == 10)
+   }
+   if (in_char == 10) {
       goto state_23_label;
-
-   if (in_char >= 11)
-      goto state_3_label;
-
-   return c_idx_not_exist;
+   }
+   goto state_3_label;
 
 // - STATE 4 -
 state_4_label:
-   CLOSE_CHAR(17);
-   return 17;
-
-// - STATE 5 -
-state_5_label:
    CLOSE_CHAR(18);
    return 18;
 
-// - STATE 6 -
-state_6_label:
+// - STATE 5 -
+state_5_label:
    CLOSE_CHAR(19);
    return 19;
 
-// - STATE 7 -
-state_7_label:
+// - STATE 6 -
+state_6_label:
    CLOSE_CHAR(20);
    return 20;
 
+// - STATE 7 -
+state_7_label:
+   CLOSE_CHAR(21);
+   return 21;
+
 // - STATE 8 -
 state_8_label:
-   CLOSE_CHAR(15);
-   return 15;
+   CLOSE_CHAR(16);
+   return 16;
 
 // - STATE 9 -
 state_9_label:
-   CLOSE_CHAR(16);
-   return 16;
+   CLOSE_CHAR(17);
+   return 17;
 
 // - STATE 10 -
 state_10_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char == 98)
+   if (in_char == 98) {
       goto state_24_label;
-
-   if (in_char == 101)
+   }
+   if (in_char == 101) {
       goto state_25_label;
-
+   }
    return c_idx_not_exist;
 
 // - STATE 11 -
 state_11_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 12 -
 state_12_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 100)
+   }
+   if (in_char == 97) {
       goto state_11_label;
-
-   if (in_char == 100)
+   }
+   if (in_char == 98) {
       goto state_26_label;
-
-   if (in_char >= 101 && in_char < 123)
+   }
+   if (in_char == 99) {
       goto state_11_label;
-
-   return 14;
+   }
+   if (in_char == 100) {
+      goto state_27_label;
+   }
+   if (in_char >= 101 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 13 -
 state_13_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char == 97)
-      goto state_27_label;
-
-   if (in_char >= 98 && in_char < 123)
+   }
+   if (in_char == 97) {
+      goto state_28_label;
+   }
+   if (in_char >= 98 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 14 -
 state_14_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 101)
+   }
+   if (in_char >= 97 && in_char < 101) {
       goto state_11_label;
-
-   if (in_char == 101)
-      goto state_28_label;
-
-   if (in_char >= 102 && in_char < 121)
-      goto state_11_label;
-
-   if (in_char == 121)
+   }
+   if (in_char == 101) {
       goto state_29_label;
-
-   if (in_char == 122)
+   }
+   if (in_char >= 102 && in_char < 121) {
       goto state_11_label;
-
-   return 14;
+   }
+   if (in_char == 121) {
+      goto state_30_label;
+   }
+   if (in_char == 122) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 15 -
 state_15_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 108)
+   }
+   if (in_char >= 97 && in_char < 108) {
       goto state_11_label;
-
-   if (in_char == 108)
-      goto state_30_label;
-
-   if (in_char >= 109 && in_char < 123)
+   }
+   if (in_char == 108) {
+      goto state_31_label;
+   }
+   if (in_char >= 109 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 16 -
 state_16_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 110)
+   }
+   if (in_char >= 97 && in_char < 110) {
       goto state_11_label;
-
-   if (in_char == 110)
-      goto state_31_label;
-
-   if (in_char >= 111 && in_char < 123)
+   }
+   if (in_char == 110) {
+      goto state_32_label;
+   }
+   if (in_char >= 111 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 17 -
 state_17_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 101)
+   }
+   if (in_char >= 97 && in_char < 101) {
       goto state_11_label;
-
-   if (in_char == 101)
-      goto state_32_label;
-
-   if (in_char >= 102 && in_char < 123)
+   }
+   if (in_char == 101) {
+      goto state_33_label;
+   }
+   if (in_char >= 102 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 18 -
 state_18_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 112)
+   }
+   if (in_char >= 97 && in_char < 112) {
       goto state_11_label;
-
-   if (in_char == 112)
-      goto state_33_label;
-
-   if (in_char >= 113 && in_char < 123)
+   }
+   if (in_char == 112) {
+      goto state_34_label;
+   }
+   if (in_char >= 113 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 19 -
 state_19_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 116)
+   }
+   if (in_char >= 97 && in_char < 116) {
       goto state_11_label;
-
-   if (in_char == 116)
-      goto state_34_label;
-
-   if (in_char >= 117 && in_char < 123)
+   }
+   if (in_char == 116) {
+      goto state_35_label;
+   }
+   if (in_char >= 117 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 20 -
 state_20_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char < 125)
+   if (in_char < 125) {
       goto state_20_label;
-
-   if (in_char == 125)
-      goto state_35_label;
-
-   if (in_char >= 126)
-      goto state_20_label;
-
-   return c_idx_not_exist;
+   }
+   if (in_char == 125) {
+      goto state_36_label;
+   }
+   goto state_20_label;
 
 // - STATE 21 -
 state_21_label:
-   CLOSE_CHAR(21);
+   CLOSE_CHAR(22);
    GET_NEXT_CHAR();
 
-   if (in_char >= 8 && in_char < 14)
+   if (in_char >= 8 && in_char < 14) {
       goto state_21_label;
-
-   if (in_char == 32)
+   }
+   if (in_char == 32) {
       goto state_21_label;
-
-   return 21;
+   }
+   return 22;
 
 // - STATE 22 -
 state_22_label:
-   CLOSE_CHAR(12);
-   return 12;
+   CLOSE_CHAR(13);
+   return 13;
 
 // - STATE 23 -
 state_23_label:
-   CLOSE_CHAR(22);
-   return 22;
+   CLOSE_CHAR(23);
+   return 23;
 
 // - STATE 24 -
 state_24_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char == 101)
-      goto state_36_label;
-
+   if (in_char == 101) {
+      goto state_37_label;
+   }
    return c_idx_not_exist;
 
 // - STATE 25 -
@@ -593,1477 +594,1743 @@ state_25_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char == 110)
-      goto state_37_label;
-
+   if (in_char == 110) {
+      goto state_38_label;
+   }
    return c_idx_not_exist;
 
 // - STATE 26 -
 state_26_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 100)
+   }
+   if (in_char == 97) {
       goto state_11_label;
-
-   if (in_char == 100)
-      goto state_38_label;
-
-   if (in_char >= 101 && in_char < 123)
+   }
+   if (in_char == 98) {
+      goto state_39_label;
+   }
+   if (in_char >= 99 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 27 -
 state_27_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 115)
+   }
+   if (in_char >= 97 && in_char < 100) {
       goto state_11_label;
-
-   if (in_char == 115)
-      goto state_39_label;
-
-   if (in_char >= 116 && in_char < 123)
+   }
+   if (in_char == 100) {
+      goto state_40_label;
+   }
+   if (in_char >= 101 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 28 -
 state_28_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 102)
+   }
+   if (in_char >= 97 && in_char < 115) {
       goto state_11_label;
-
-   if (in_char == 102)
-      goto state_40_label;
-
-   if (in_char >= 103 && in_char < 123)
+   }
+   if (in_char == 115) {
+      goto state_41_label;
+   }
+   if (in_char >= 116 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 29 -
 state_29_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 110)
+   }
+   if (in_char >= 97 && in_char < 102) {
       goto state_11_label;
-
-   if (in_char == 110)
-      goto state_41_label;
-
-   if (in_char >= 111 && in_char < 123)
+   }
+   if (in_char == 102) {
+      goto state_42_label;
+   }
+   if (in_char >= 103 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 30 -
 state_30_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 117)
+   }
+   if (in_char >= 97 && in_char < 110) {
       goto state_11_label;
-
-   if (in_char == 117)
-      goto state_42_label;
-
-   if (in_char >= 118 && in_char < 123)
+   }
+   if (in_char == 110) {
+      goto state_43_label;
+   }
+   if (in_char >= 111 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 31 -
 state_31_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 99)
+   }
+   if (in_char >= 97 && in_char < 117) {
       goto state_11_label;
-
-   if (in_char == 99)
-      goto state_43_label;
-
-   if (in_char >= 100 && in_char < 108)
-      goto state_11_label;
-
-   if (in_char == 108)
+   }
+   if (in_char == 117) {
       goto state_44_label;
-
-   if (in_char >= 109 && in_char < 123)
+   }
+   if (in_char >= 118 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 32 -
 state_32_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 116)
+   }
+   if (in_char >= 97 && in_char < 99) {
       goto state_11_label;
-
-   if (in_char == 116)
+   }
+   if (in_char == 99) {
       goto state_45_label;
-
-   if (in_char >= 117 && in_char < 123)
+   }
+   if (in_char >= 100 && in_char < 108) {
       goto state_11_label;
-
-   return 14;
+   }
+   if (in_char == 108) {
+      goto state_46_label;
+   }
+   if (in_char >= 109 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 33 -
 state_33_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 116)
+   }
+   if (in_char >= 97 && in_char < 116) {
       goto state_11_label;
-
-   if (in_char == 116)
-      goto state_46_label;
-
-   if (in_char >= 117 && in_char < 123)
+   }
+   if (in_char == 116) {
+      goto state_47_label;
+   }
+   if (in_char >= 117 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 34 -
 state_34_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char == 97)
-      goto state_47_label;
-
-   if (in_char >= 98 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 116) {
       goto state_11_label;
-
-   return 14;
+   }
+   if (in_char == 116) {
+      goto state_48_label;
+   }
+   if (in_char >= 117 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 35 -
 state_35_label:
-   CLOSE_CHAR(13);
-   return 13;
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char == 97) {
+      goto state_49_label;
+   }
+   if (in_char >= 98 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 36 -
 state_36_label:
-   CLOSE_CHAR(c_idx_not_exist);
-   GET_NEXT_CHAR();
-
-   if (in_char == 103)
-      goto state_48_label;
-
-   return c_idx_not_exist;
+   CLOSE_CHAR(14);
+   return 14;
 
 // - STATE 37 -
 state_37_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char == 100)
-      goto state_49_label;
-
+   if (in_char == 103) {
+      goto state_50_label;
+   }
    return c_idx_not_exist;
 
 // - STATE 38 -
 state_38_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
-      goto state_11_label;
-
-   if (in_char == 105)
-      goto state_50_label;
-
-   if (in_char >= 106 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
+   if (in_char == 100) {
+      goto state_51_label;
+   }
+   return c_idx_not_exist;
 
 // - STATE 39 -
 state_39_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
+   }
+   if (in_char >= 97 && in_char < 114) {
       goto state_11_label;
-
-   if (in_char == 105)
-      goto state_51_label;
-
-   if (in_char >= 106 && in_char < 123)
+   }
+   if (in_char == 114) {
+      goto state_52_label;
+   }
+   if (in_char >= 115 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 40 -
 state_40_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
+   }
+   if (in_char >= 97 && in_char < 105) {
       goto state_11_label;
-
-   if (in_char == 105)
-      goto state_52_label;
-
-   if (in_char >= 106 && in_char < 123)
+   }
+   if (in_char == 105) {
+      goto state_53_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 41 -
 state_41_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char == 97)
-      goto state_53_label;
-
-   if (in_char >= 98 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 105) {
       goto state_11_label;
-
-   return 14;
+   }
+   if (in_char == 105) {
+      goto state_54_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 42 -
 state_42_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 115)
+   }
+   if (in_char >= 97 && in_char < 105) {
       goto state_11_label;
-
-   if (in_char == 115)
-      goto state_54_label;
-
-   if (in_char >= 116 && in_char < 123)
+   }
+   if (in_char == 105) {
+      goto state_55_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 43 -
 state_43_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 108)
+   }
+   if (in_char == 97) {
+      goto state_56_label;
+   }
+   if (in_char >= 98 && in_char < 123) {
       goto state_11_label;
-
-   if (in_char == 108)
-      goto state_55_label;
-
-   if (in_char >= 109 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 44 -
 state_44_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
+   }
+   if (in_char >= 97 && in_char < 115) {
       goto state_11_label;
-
-   if (in_char == 105)
-      goto state_56_label;
-
-   if (in_char >= 106 && in_char < 123)
+   }
+   if (in_char == 115) {
+      goto state_57_label;
+   }
+   if (in_char >= 116 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 45 -
 state_45_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 104)
+   }
+   if (in_char >= 97 && in_char < 108) {
       goto state_11_label;
-
-   if (in_char == 104)
-      goto state_57_label;
-
-   if (in_char >= 105 && in_char < 123)
+   }
+   if (in_char == 108) {
+      goto state_58_label;
+   }
+   if (in_char >= 109 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 46 -
 state_46_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
+   }
+   if (in_char >= 97 && in_char < 105) {
       goto state_11_label;
-
-   if (in_char == 105)
-      goto state_58_label;
-
-   if (in_char >= 106 && in_char < 123)
+   }
+   if (in_char == 105) {
+      goto state_59_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 47 -
 state_47_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 116)
+   }
+   if (in_char >= 97 && in_char < 104) {
       goto state_11_label;
-
-   if (in_char == 116)
-      goto state_59_label;
-
-   if (in_char >= 117 && in_char < 123)
+   }
+   if (in_char == 104) {
+      goto state_60_label;
+   }
+   if (in_char >= 105 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 48 -
 state_48_label:
-   CLOSE_CHAR(c_idx_not_exist);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char == 105)
-      goto state_60_label;
-
-   return c_idx_not_exist;
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 105) {
+      goto state_11_label;
+   }
+   if (in_char == 105) {
+      goto state_61_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 49 -
 state_49_label:
-   CLOSE_CHAR(1);
-   return 1;
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 116) {
+      goto state_11_label;
+   }
+   if (in_char == 116) {
+      goto state_62_label;
+   }
+   if (in_char >= 117 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 50 -
 state_50_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 116)
-      goto state_11_label;
-
-   if (in_char == 116)
-      goto state_61_label;
-
-   if (in_char >= 117 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 51 -
-state_51_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 99)
-      goto state_11_label;
-
-   if (in_char == 99)
-      goto state_62_label;
-
-   if (in_char >= 100 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 52 -
-state_52_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 110)
-      goto state_11_label;
-
-   if (in_char == 110)
-      goto state_63_label;
-
-   if (in_char >= 111 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 53 -
-state_53_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 109)
-      goto state_11_label;
-
-   if (in_char == 109)
-      goto state_64_label;
-
-   if (in_char >= 110 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 54 -
-state_54_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 104)
-      goto state_11_label;
-
-   if (in_char == 104)
-      goto state_65_label;
-
-   if (in_char >= 105 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 55 -
-state_55_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 117)
-      goto state_11_label;
-
-   if (in_char == 117)
-      goto state_66_label;
-
-   if (in_char >= 118 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 56 -
-state_56_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 110)
-      goto state_11_label;
-
-   if (in_char == 110)
-      goto state_67_label;
-
-   if (in_char >= 111 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 57 -
-state_57_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 111)
-      goto state_11_label;
-
-   if (in_char == 111)
-      goto state_68_label;
-
-   if (in_char >= 112 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 58 -
-state_58_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 111)
-      goto state_11_label;
-
-   if (in_char == 111)
-      goto state_69_label;
-
-   if (in_char >= 112 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 59 -
-state_59_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
-      goto state_11_label;
-
-   if (in_char == 105)
-      goto state_70_label;
-
-   if (in_char >= 106 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 60 -
-state_60_label:
    CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char == 110)
-      goto state_71_label;
-
+   if (in_char == 105) {
+      goto state_63_label;
+   }
    return c_idx_not_exist;
+
+// - STATE 51 -
+state_51_label:
+   CLOSE_CHAR(1);
+   return 1;
+
+// - STATE 52 -
+state_52_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 101) {
+      goto state_11_label;
+   }
+   if (in_char == 101) {
+      goto state_64_label;
+   }
+   if (in_char >= 102 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 53 -
+state_53_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 116) {
+      goto state_11_label;
+   }
+   if (in_char == 116) {
+      goto state_65_label;
+   }
+   if (in_char >= 117 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 54 -
+state_54_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 99) {
+      goto state_11_label;
+   }
+   if (in_char == 99) {
+      goto state_66_label;
+   }
+   if (in_char >= 100 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 55 -
+state_55_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 110) {
+      goto state_11_label;
+   }
+   if (in_char == 110) {
+      goto state_67_label;
+   }
+   if (in_char >= 111 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 56 -
+state_56_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 109) {
+      goto state_11_label;
+   }
+   if (in_char == 109) {
+      goto state_68_label;
+   }
+   if (in_char >= 110 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 57 -
+state_57_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 104) {
+      goto state_11_label;
+   }
+   if (in_char == 104) {
+      goto state_69_label;
+   }
+   if (in_char >= 105 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 58 -
+state_58_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 117) {
+      goto state_11_label;
+   }
+   if (in_char == 117) {
+      goto state_70_label;
+   }
+   if (in_char >= 118 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 59 -
+state_59_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 110) {
+      goto state_11_label;
+   }
+   if (in_char == 110) {
+      goto state_71_label;
+   }
+   if (in_char >= 111 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 60 -
+state_60_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 111) {
+      goto state_11_label;
+   }
+   if (in_char == 111) {
+      goto state_72_label;
+   }
+   if (in_char >= 112 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 61 -
 state_61_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
+   }
+   if (in_char >= 97 && in_char < 111) {
       goto state_11_label;
-
-   if (in_char == 105)
-      goto state_72_label;
-
-   if (in_char >= 106 && in_char < 123)
+   }
+   if (in_char == 111) {
+      goto state_73_label;
+   }
+   if (in_char >= 112 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 62 -
 state_62_label:
-   CLOSE_CHAR(8);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 105) {
       goto state_11_label;
-
-   return 8;
+   }
+   if (in_char == 105) {
+      goto state_74_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 63 -
 state_63_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(c_idx_not_exist);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 101)
-      goto state_11_label;
-
-   if (in_char == 101)
-      goto state_73_label;
-
-   if (in_char >= 102 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
+   if (in_char == 110) {
+      goto state_75_label;
+   }
+   return c_idx_not_exist;
 
 // - STATE 64 -
 state_64_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 105)
+   }
+   if (in_char >= 97 && in_char < 118) {
       goto state_11_label;
-
-   if (in_char == 105)
-      goto state_74_label;
-
-   if (in_char >= 106 && in_char < 123)
+   }
+   if (in_char == 118) {
+      goto state_76_label;
+   }
+   if (in_char >= 119 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 65 -
 state_65_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char == 97)
-      goto state_75_label;
-
-   if (in_char >= 98 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 105) {
       goto state_11_label;
-
-   return 14;
+   }
+   if (in_char == 105) {
+      goto state_77_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 66 -
 state_66_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 100)
-      goto state_11_label;
-
-   if (in_char == 100)
-      goto state_76_label;
-
-   if (in_char >= 101 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 67 -
-state_67_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 101)
-      goto state_11_label;
-
-   if (in_char == 101)
-      goto state_77_label;
-
-   if (in_char >= 102 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 68 -
-state_68_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 100)
-      goto state_11_label;
-
-   if (in_char == 100)
-      goto state_78_label;
-
-   if (in_char >= 101 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 69 -
-state_69_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 110)
-      goto state_11_label;
-
-   if (in_char == 110)
-      goto state_79_label;
-
-   if (in_char >= 111 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 70 -
-state_70_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 99)
-      goto state_11_label;
-
-   if (in_char == 99)
-      goto state_80_label;
-
-   if (in_char >= 100 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 71 -
-state_71_label:
-   CLOSE_CHAR(0);
-   return 0;
-
-// - STATE 72 -
-state_72_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 111)
-      goto state_11_label;
-
-   if (in_char == 111)
-      goto state_81_label;
-
-   if (in_char >= 112 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 73 -
-state_73_label:
-   CLOSE_CHAR(5);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
-      goto state_11_label;
-
-   return 5;
-
-// - STATE 74 -
-state_74_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 99)
-      goto state_11_label;
-
-   if (in_char == 99)
-      goto state_82_label;
-
-   if (in_char >= 100 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 75 -
-state_75_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char == 97)
-      goto state_11_label;
-
-   if (in_char == 98)
-      goto state_83_label;
-
-   if (in_char >= 99 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 76 -
-state_76_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 101)
-      goto state_11_label;
-
-   if (in_char == 101)
-      goto state_84_label;
-
-   if (in_char >= 102 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 77 -
-state_77_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 115)
-      goto state_11_label;
-
-   if (in_char == 115)
-      goto state_85_label;
-
-   if (in_char >= 116 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 78 -
-state_78_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 115)
-      goto state_11_label;
-
-   if (in_char == 115)
-      goto state_86_label;
-
-   if (in_char >= 116 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 79 -
-state_79_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 115)
-      goto state_11_label;
-
-   if (in_char == 115)
-      goto state_87_label;
-
-   if (in_char >= 116 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 80 -
-state_80_label:
    CLOSE_CHAR(9);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 123) {
       goto state_11_label;
-
+   }
    return 9;
+
+// - STATE 67 -
+state_67_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 101) {
+      goto state_11_label;
+   }
+   if (in_char == 101) {
+      goto state_78_label;
+   }
+   if (in_char >= 102 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 68 -
+state_68_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 105) {
+      goto state_11_label;
+   }
+   if (in_char == 105) {
+      goto state_79_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 69 -
+state_69_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char == 97) {
+      goto state_80_label;
+   }
+   if (in_char >= 98 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 70 -
+state_70_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 100) {
+      goto state_11_label;
+   }
+   if (in_char == 100) {
+      goto state_81_label;
+   }
+   if (in_char >= 101 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 71 -
+state_71_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 101) {
+      goto state_11_label;
+   }
+   if (in_char == 101) {
+      goto state_82_label;
+   }
+   if (in_char >= 102 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 72 -
+state_72_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 100) {
+      goto state_11_label;
+   }
+   if (in_char == 100) {
+      goto state_83_label;
+   }
+   if (in_char >= 101 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 73 -
+state_73_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 110) {
+      goto state_11_label;
+   }
+   if (in_char == 110) {
+      goto state_84_label;
+   }
+   if (in_char >= 111 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 74 -
+state_74_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 99) {
+      goto state_11_label;
+   }
+   if (in_char == 99) {
+      goto state_85_label;
+   }
+   if (in_char >= 100 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 75 -
+state_75_label:
+   CLOSE_CHAR(0);
+   return 0;
+
+// - STATE 76 -
+state_76_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 105) {
+      goto state_11_label;
+   }
+   if (in_char == 105) {
+      goto state_86_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 77 -
+state_77_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 111) {
+      goto state_11_label;
+   }
+   if (in_char == 111) {
+      goto state_87_label;
+   }
+   if (in_char >= 112 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 78 -
+state_78_label:
+   CLOSE_CHAR(5);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 5;
+
+// - STATE 79 -
+state_79_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 99) {
+      goto state_11_label;
+   }
+   if (in_char == 99) {
+      goto state_88_label;
+   }
+   if (in_char >= 100 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 80 -
+state_80_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char == 97) {
+      goto state_11_label;
+   }
+   if (in_char == 98) {
+      goto state_89_label;
+   }
+   if (in_char >= 99 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 81 -
 state_81_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 110)
+   }
+   if (in_char >= 97 && in_char < 101) {
       goto state_11_label;
-
-   if (in_char == 110)
-      goto state_88_label;
-
-   if (in_char >= 111 && in_char < 123)
+   }
+   if (in_char == 101) {
+      goto state_90_label;
+   }
+   if (in_char >= 102 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 82 -
 state_82_label:
-   CLOSE_CHAR(10);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 115) {
       goto state_11_label;
-
-   return 10;
+   }
+   if (in_char == 115) {
+      goto state_91_label;
+   }
+   if (in_char >= 116 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 83 -
 state_83_label:
-   CLOSE_CHAR(14);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 108)
+   }
+   if (in_char >= 97 && in_char < 115) {
       goto state_11_label;
-
-   if (in_char == 108)
-      goto state_89_label;
-
-   if (in_char >= 109 && in_char < 123)
+   }
+   if (in_char == 115) {
+      goto state_92_label;
+   }
+   if (in_char >= 116 && in_char < 123) {
       goto state_11_label;
-
-   return 14;
+   }
+   return 15;
 
 // - STATE 84 -
 state_84_label:
-   CLOSE_CHAR(2);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 115) {
       goto state_11_label;
-
-   return 2;
+   }
+   if (in_char == 115) {
+      goto state_93_label;
+   }
+   if (in_char >= 116 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 85 -
 state_85_label:
-   CLOSE_CHAR(3);
+   CLOSE_CHAR(10);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 123) {
       goto state_11_label;
-
-   return 3;
+   }
+   return 10;
 
 // - STATE 86 -
 state_86_label:
-   CLOSE_CHAR(4);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char == 97) {
+      goto state_94_label;
+   }
+   if (in_char >= 98 && in_char < 123) {
       goto state_11_label;
-
-   return 4;
+   }
+   return 15;
 
 // - STATE 87 -
 state_87_label:
-   CLOSE_CHAR(6);
+   CLOSE_CHAR(15);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 110) {
       goto state_11_label;
-
-   return 6;
+   }
+   if (in_char == 110) {
+      goto state_95_label;
+   }
+   if (in_char >= 111 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
 
 // - STATE 88 -
 state_88_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 115)
-      goto state_11_label;
-
-   if (in_char == 115)
-      goto state_90_label;
-
-   if (in_char >= 116 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 89 -
-state_89_label:
-   CLOSE_CHAR(14);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 101)
-      goto state_11_label;
-
-   if (in_char == 101)
-      goto state_91_label;
-
-   if (in_char >= 102 && in_char < 123)
-      goto state_11_label;
-
-   return 14;
-
-// - STATE 90 -
-state_90_label:
-   CLOSE_CHAR(7);
-   GET_NEXT_CHAR();
-
-   if (in_char >= 48 && in_char < 58)
-      goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
-      goto state_11_label;
-
-   if (in_char == 95)
-      goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
-      goto state_11_label;
-
-   return 7;
-
-// - STATE 91 -
-state_91_label:
    CLOSE_CHAR(11);
    GET_NEXT_CHAR();
 
-   if (in_char >= 48 && in_char < 58)
+   if (in_char >= 48 && in_char < 58) {
       goto state_11_label;
-
-   if (in_char >= 65 && in_char < 91)
+   }
+   if (in_char >= 65 && in_char < 91) {
       goto state_11_label;
-
-   if (in_char == 95)
+   }
+   if (in_char == 95) {
       goto state_11_label;
-
-   if (in_char >= 97 && in_char < 123)
+   }
+   if (in_char >= 97 && in_char < 123) {
       goto state_11_label;
-
+   }
    return 11;
+
+// - STATE 89 -
+state_89_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 108) {
+      goto state_11_label;
+   }
+   if (in_char == 108) {
+      goto state_96_label;
+   }
+   if (in_char >= 109 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 90 -
+state_90_label:
+   CLOSE_CHAR(2);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 2;
+
+// - STATE 91 -
+state_91_label:
+   CLOSE_CHAR(3);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 3;
+
+// - STATE 92 -
+state_92_label:
+   CLOSE_CHAR(4);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 4;
+
+// - STATE 93 -
+state_93_label:
+   CLOSE_CHAR(7);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 7;
+
+// - STATE 94 -
+state_94_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 116) {
+      goto state_11_label;
+   }
+   if (in_char == 116) {
+      goto state_97_label;
+   }
+   if (in_char >= 117 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 95 -
+state_95_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 115) {
+      goto state_11_label;
+   }
+   if (in_char == 115) {
+      goto state_98_label;
+   }
+   if (in_char >= 116 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 96 -
+state_96_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 101) {
+      goto state_11_label;
+   }
+   if (in_char == 101) {
+      goto state_99_label;
+   }
+   if (in_char >= 102 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 97 -
+state_97_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 105) {
+      goto state_11_label;
+   }
+   if (in_char == 105) {
+      goto state_100_label;
+   }
+   if (in_char >= 106 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 98 -
+state_98_label:
+   CLOSE_CHAR(8);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 8;
+
+// - STATE 99 -
+state_99_label:
+   CLOSE_CHAR(12);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 12;
+
+// - STATE 100 -
+state_100_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 111) {
+      goto state_11_label;
+   }
+   if (in_char == 111) {
+      goto state_101_label;
+   }
+   if (in_char >= 112 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 101 -
+state_101_label:
+   CLOSE_CHAR(15);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 110) {
+      goto state_11_label;
+   }
+   if (in_char == 110) {
+      goto state_102_label;
+   }
+   if (in_char >= 111 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 15;
+
+// - STATE 102 -
+state_102_label:
+   CLOSE_CHAR(6);
+   GET_NEXT_CHAR();
+
+   if (in_char >= 48 && in_char < 58) {
+      goto state_11_label;
+   }
+   if (in_char >= 65 && in_char < 91) {
+      goto state_11_label;
+   }
+   if (in_char == 95) {
+      goto state_11_label;
+   }
+   if (in_char >= 97 && in_char < 123) {
+      goto state_11_label;
+   }
+   return 6;
 
 }/*}}}*/
 
@@ -2089,7 +2356,7 @@ bool process_s::parse_code(string_s &a_code)
             return false;
          }
 
-         if (ret_term == 21 || ret_term == 22) {
+         if (ret_term == 22 || ret_term == 23) {
             ret_term = c_idx_not_exist;
          }
       }
@@ -2106,7 +2373,7 @@ bool process_s::parse_code(string_s &a_code)
       // - SHIFT action -
       if (parse_action < c_lalr_table_reduce_base) {
 
-         if (ret_term == 23) {
+         if (ret_term == 24) {
             break;
          }
 
@@ -2324,6 +2591,41 @@ void process_s::pa_reduce_define(process_s &proc)
 
    // - reset type_setting -
    processor.type_settings = 0;
+}/*}}}*/
+
+void process_s::pa_reduce_abbreviation(process_s &proc)
+{/*{{{*/
+   processor_s &processor = *proc.processor_ptr;
+   string_s &code = proc.code;
+   lalr_stack_element_s &lse_orig = proc.lalr_stack[proc.lalr_stack.used - 2];
+   lalr_stack_element_s &lse_new = proc.lalr_stack[proc.lalr_stack.used - 1];
+
+   // -----
+
+   unsigned str_length = lse_orig.terminal_end - lse_orig.terminal_start;
+   char *str_data = code.data + lse_orig.terminal_start;
+
+   unsigned abb_idx = processor.abbreviations.get_idx_by_name(str_length,str_data);
+
+   if (abb_idx == c_idx_not_exist) {
+      fprintf(stderr,"ERROR: Cannot define abbreviation, type name does not exist.\n");
+      cassert(0);
+   }
+
+   // - define data type abbreviation -
+   processor.abbreviations.push_blank();
+
+   abbreviation_s &abb_orig = processor.abbreviations.data[abb_idx];
+   abbreviation_s &abb_new = processor.abbreviations.last();
+
+   unsigned abbr_length = lse_new.terminal_end - lse_new.terminal_start;
+   char *abbr_data = code.data + lse_new.terminal_start;
+
+   abb_new.name.set(abbr_length,abbr_data);
+   abb_new.data_type_idx = abb_orig.data_type_idx;
+
+   // - generate code -
+   processor.generate_abbreviation(abb_orig.name,abb_new.name);
 }/*}}}*/
 
 void process_s::pa_reduce_mod_basic(process_s &proc)
