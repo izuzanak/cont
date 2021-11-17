@@ -11115,6 +11115,8 @@ fprintf(out_file,
       }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
+"    default:\n"
+"      return 0;\n"
 "  }\n"
 "}/*}}}*/\n"
 "\n"
@@ -11155,6 +11157,9 @@ fprintf(out_file,
 "#if OPTION_TO_STRING == ENABLED\n"
 "static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
 "{/*{{{*/\n"
+"  (void)a_count;\n"
+"  (void)a_data;\n"
+"\n"
 "  switch (this->type)\n"
 "  {\n"
 ,STRUCT_NAME,STRUCT_NAME);
