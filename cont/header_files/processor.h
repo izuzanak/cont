@@ -96,13 +96,14 @@ extern const char *c_basic_abbreviations[c_basic_abbreviation_cnt];
 extern const int c_basic_abbreviation_types[c_basic_abbreviation_cnt];
 
 // - constant describing containers -
-const unsigned c_cont_cnt = 7;
+const unsigned c_cont_cnt = 8;
 
 enum {
    c_cont_array = 0,
    c_cont_queue,
    c_cont_list,
    c_cont_struct,
+   c_cont_choice,
    c_cont_rb_tree,
    c_cont_safe_list,
    c_cont_safe_rb_tree,
@@ -211,6 +212,9 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    void generate_struct_type();
    void generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx);
    void generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_choice_type();
+   void generate_choice_inlines(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_choice_methods(unsigned abb_idx,unsigned a_dt_idx);
    void generate_rb_tree_type();
    void generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx);
    void generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx);

@@ -90,6 +90,7 @@ const char *c_cont_names[c_cont_cnt] = {
    "queue",
    "list",
    "struct",
+   "choice",
    "rb_tree",
    "safe_list",
    "safe_rb_tree",
@@ -100,6 +101,7 @@ const char *c_cont_postfixes[c_cont_cnt] = {
    "_q",
    "_l",
    "_s",
+   "_ch",
    "_rbt",
    "_sl",
    "_srbt",
@@ -174,6 +176,7 @@ unsigned abbreviation_array_s::get_idx_by_name(unsigned a_length,const char *a_d
    include "gen_queue.cc"
    include "gen_list.cc"
    include "gen_struct.cc"
+   include "gen_choice.cc"
    include "gen_rb_tree.cc"
 @end
 
@@ -204,6 +207,9 @@ void processor_s::generate_type_inlines(unsigned a_length,char *a_data)
       break;
    case c_cont_struct:
       generate_struct_inlines(abb_idx,data_type_idx);
+      break;
+   case c_cont_choice:
+      generate_choice_inlines(abb_idx,data_type_idx);
       break;
    case c_cont_rb_tree:
       generate_rb_tree_inlines(abb_idx,data_type_idx);
@@ -247,6 +253,9 @@ void processor_s::generate_type_methods(unsigned a_length,char *a_data)
    case c_cont_struct:
       generate_struct_methods(abb_idx,data_type_idx);
       break;
+   case c_cont_choice:
+      generate_choice_methods(abb_idx,data_type_idx);
+      break;
    case c_cont_rb_tree:
       generate_rb_tree_methods(abb_idx,data_type_idx);
       break;
@@ -287,6 +296,9 @@ void processor_s::generate_container_def(string_s &a_cont_name)
       break;
    case c_cont_struct:
       generate_struct_type();
+      break;
+   case c_cont_choice:
+      generate_choice_type();
       break;
    case c_cont_rb_tree:
       generate_rb_tree_type();
