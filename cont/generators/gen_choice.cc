@@ -9,7 +9,7 @@ fprintf(out_file,
 "{/*{{{*/\n"
 "  this->type = c_%s_type_%s;\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,VAR_NAMES(0));
-    if (TYPE_NUMBERS(0) & c_type_dynamic) {
+    if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "  %s_init(&this->data.%s);\n"
 ,TYPE_NAMES(0),VAR_NAMES(0));
@@ -67,7 +67,7 @@ fprintf(out_file,
 ,TYPE_NAMES(t_idx),STRUCT_NAME,VAR_NAMES(t_idx),STRUCT_NAME
 ,STRUCT_NAME,VAR_NAMES(t_idx),STRUCT_NAME
 ,STRUCT_NAME,VAR_NAMES(t_idx));
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+      if (TYPE_NUMBERS(t_idx) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "    %s_init(&this->data.%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
@@ -525,7 +525,8 @@ void processor_s::generate_choice_type()
 
       data_type.properties =
         (dynamic ? c_type_dynamic : c_type_static) |
-        (flushable ? c_type_flushable : 0);
+        (flushable ? c_type_flushable : 0) |
+        c_type_option_force_init;
 
       data_type.properties |= type_settings & c_type_option_mask;
 

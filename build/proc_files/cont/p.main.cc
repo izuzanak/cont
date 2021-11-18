@@ -2391,18 +2391,20 @@ enum {
    c_type_option_nogen_swap       = 0x100 << 2,
    c_type_option_nogen_copy       = 0x100 << 3,
 
-   c_type_option_strict_dynamic   = 0x100 << 4,
-   c_type_option_fixed_buffer     = 0x100 << 5,
+   c_type_option_force_init       = 0x100 << 4,
 
-   c_type_option_safe             = 0x100 << 6,
-   c_type_option_rehash           = 0x100 << 7,
-   c_type_option_print_dot_code   = 0x100 << 8,
-   c_type_option_check_properties = 0x100 << 9,
+   c_type_option_strict_dynamic   = 0x100 << 5,
+   c_type_option_fixed_buffer     = 0x100 << 6,
 
-   c_type_option_to_json          = 0x100 << 10,
-   c_type_option_to_json_nice     = 0x100 << 11,
-   c_type_option_from_var         = 0x100 << 12,
-   c_type_option_from_json        = 0x100 << 13,
+   c_type_option_safe             = 0x100 << 7,
+   c_type_option_rehash           = 0x100 << 8,
+   c_type_option_print_dot_code   = 0x100 << 9,
+   c_type_option_check_properties = 0x100 << 10,
+
+   c_type_option_to_json          = 0x100 << 11,
+   c_type_option_to_json_nice     = 0x100 << 12,
+   c_type_option_from_var         = 0x100 << 13,
+   c_type_option_from_json        = 0x100 << 14,
 };
 
 // - names of basic data types -

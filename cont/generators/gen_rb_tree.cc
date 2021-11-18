@@ -780,7 +780,7 @@ fprintf(out_file,
 );
       unsigned t_idx = 0;
       do {
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+         if (TYPE_NUMBERS(t_idx + 1) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
 ,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
@@ -910,7 +910,7 @@ fprintf(out_file,
 "\n"
 "  %s_clear(this);\n"
 ,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+   if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  %s_node *ptr = a_data;\n"
@@ -1377,7 +1377,7 @@ fprintf(out_file,
 "    this->data = (%s_node *)crealloc(this->data,a_size*sizeof(%s_node));\n"
 "  }\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+   if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  if (a_size > this->size)\n"
@@ -2094,13 +2094,20 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
+,TYPE_NAMES(0));
+      if (TYPE_NUMBERS(0) & c_type_option_force_init) {
+fprintf(out_file,
+"      %s_init(&value);\n"
+,TYPE_NAMES(0));
+      }
+fprintf(out_file,
 "\n"
 "      if (%s_from_var(&value,*v_ptr))\n"
 "      {\n"
 "        throw_error(FROM_VAR_ERROR);\n"
 "      }\n"
 "\n"
-,TYPE_NAMES(0),TYPE_NAMES(0));
+,TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,
@@ -2165,13 +2172,20 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
+,TYPE_NAMES(0));
+      if (TYPE_NUMBERS(0) & c_type_option_force_init) {
+fprintf(out_file,
+"      %s_init(&value);\n"
+,TYPE_NAMES(0));
+      }
+fprintf(out_file,
 "\n"
 "      if (%s_from_json(&value,a_src,a_from_json))\n"
 "      {\n"
 "        throw_error(FROM_JSON_ERROR);\n"
 "      }\n"
 "\n"
-,TYPE_NAMES(0),TYPE_NAMES(0));
+,TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,

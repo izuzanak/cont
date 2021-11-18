@@ -2387,18 +2387,20 @@ enum {
    c_type_option_nogen_swap       = 0x100 << 2,
    c_type_option_nogen_copy       = 0x100 << 3,
 
-   c_type_option_strict_dynamic   = 0x100 << 4,
-   c_type_option_fixed_buffer     = 0x100 << 5,
+   c_type_option_force_init       = 0x100 << 4,
 
-   c_type_option_safe             = 0x100 << 6,
-   c_type_option_rehash           = 0x100 << 7,
-   c_type_option_print_dot_code   = 0x100 << 8,
-   c_type_option_check_properties = 0x100 << 9,
+   c_type_option_strict_dynamic   = 0x100 << 5,
+   c_type_option_fixed_buffer     = 0x100 << 6,
 
-   c_type_option_to_json          = 0x100 << 10,
-   c_type_option_to_json_nice     = 0x100 << 11,
-   c_type_option_from_var         = 0x100 << 12,
-   c_type_option_from_json        = 0x100 << 13,
+   c_type_option_safe             = 0x100 << 7,
+   c_type_option_rehash           = 0x100 << 8,
+   c_type_option_print_dot_code   = 0x100 << 9,
+   c_type_option_check_properties = 0x100 << 10,
+
+   c_type_option_to_json          = 0x100 << 11,
+   c_type_option_to_json_nice     = 0x100 << 12,
+   c_type_option_from_var         = 0x100 << 13,
+   c_type_option_from_json        = 0x100 << 14,
 };
 
 // - names of basic data types -
@@ -4795,7 +4797,7 @@ fprintf(out_file,
 "\n"
 "  %s_clear(this);\n"
 ,STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  %s *ptr = a_data;\n"
@@ -5221,7 +5223,7 @@ fprintf(out_file,
 "    this->data = (%s *)crealloc(this->data,a_size*sizeof(%s));\n"
 "  }\n"
 ,TYPE_NAME,TYPE_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  if (a_size > this->size)\n"
@@ -6408,7 +6410,7 @@ fprintf(out_file,
 "\n"
 "  %s_clear(this);\n"
 ,STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  %s *ptr = a_data;\n"
@@ -6706,7 +6708,7 @@ fprintf(out_file,
 "  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "    if (a_size > this->used)\n"
@@ -8010,7 +8012,7 @@ fprintf(out_file,
 "\n"
 "  %s_clear(this);\n"
 ,STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  %s_element *ptr = this->data + this->size;\n"
@@ -9000,7 +9002,7 @@ fprintf(out_file,
 "    this->data = (%s_element *)crealloc(this->data,a_size*sizeof(%s_element));\n"
 "  }\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  if (a_size > this->size)\n"
@@ -10033,7 +10035,7 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+      if (TYPE_NUMBERS(t_idx) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
@@ -10928,7 +10930,7 @@ fprintf(out_file,
 "{/*{{{*/\n"
 "  this->type = c_%s_type_%s;\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,VAR_NAMES(0));
-    if (TYPE_NUMBERS(0) & c_type_dynamic) {
+    if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "  %s_init(&this->data.%s);\n"
 ,TYPE_NAMES(0),VAR_NAMES(0));
@@ -10986,7 +10988,7 @@ fprintf(out_file,
 ,TYPE_NAMES(t_idx),STRUCT_NAME,VAR_NAMES(t_idx),STRUCT_NAME
 ,STRUCT_NAME,VAR_NAMES(t_idx),STRUCT_NAME
 ,STRUCT_NAME,VAR_NAMES(t_idx));
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+      if (TYPE_NUMBERS(t_idx) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "    %s_init(&this->data.%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
@@ -11444,7 +11446,8 @@ void processor_s::generate_choice_type()
 
       data_type.properties =
         (dynamic ? c_type_dynamic : c_type_static) |
-        (flushable ? c_type_flushable : 0);
+        (flushable ? c_type_flushable : 0) |
+        c_type_option_force_init;
 
       data_type.properties |= type_settings & c_type_option_mask;
 
@@ -12577,7 +12580,7 @@ fprintf(out_file,
 );
       unsigned t_idx = 0;
       do {
-         if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
+         if (TYPE_NUMBERS(t_idx + 1) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
 ,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
@@ -12707,7 +12710,7 @@ fprintf(out_file,
 "\n"
 "  %s_clear(this);\n"
 ,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+   if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  %s_node *ptr = a_data;\n"
@@ -13174,7 +13177,7 @@ fprintf(out_file,
 "    this->data = (%s_node *)crealloc(this->data,a_size*sizeof(%s_node));\n"
 "  }\n"
 ,STRUCT_NAME,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+   if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  if (a_size > this->size)\n"
@@ -13891,13 +13894,20 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
+,TYPE_NAMES(0));
+      if (TYPE_NUMBERS(0) & c_type_option_force_init) {
+fprintf(out_file,
+"      %s_init(&value);\n"
+,TYPE_NAMES(0));
+      }
+fprintf(out_file,
 "\n"
 "      if (%s_from_var(&value,*v_ptr))\n"
 "      {\n"
 "        throw_error(FROM_VAR_ERROR);\n"
 "      }\n"
 "\n"
-,TYPE_NAMES(0),TYPE_NAMES(0));
+,TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,
@@ -13962,13 +13972,20 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "      %s value;\n"
+,TYPE_NAMES(0));
+      if (TYPE_NUMBERS(0) & c_type_option_force_init) {
+fprintf(out_file,
+"      %s_init(&value);\n"
+,TYPE_NAMES(0));
+      }
+fprintf(out_file,
 "\n"
 "      if (%s_from_json(&value,a_src,a_from_json))\n"
 "      {\n"
 "        throw_error(FROM_JSON_ERROR);\n"
 "      }\n"
 "\n"
-,TYPE_NAMES(0),TYPE_NAMES(0));
+,TYPE_NAMES(0));
       if (TYPE_NUMBERS(0) & c_type_basic)
       {
 fprintf(out_file,

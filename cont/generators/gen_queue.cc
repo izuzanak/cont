@@ -120,7 +120,7 @@ fprintf(out_file,
 "\n"
 "  %s_clear(this);\n"
 ,STRUCT_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "  %s *ptr = a_data;\n"
@@ -418,7 +418,7 @@ fprintf(out_file,
 "  {\n"
 "    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
-   if (TYPE_NUMBER & c_type_dynamic) {
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "\n"
 "    if (a_size > this->used)\n"

@@ -10,7 +10,7 @@ fprintf(out_file,
 ,STRUCT_NAME,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
-      if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
+      if (TYPE_NUMBERS(t_idx) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
