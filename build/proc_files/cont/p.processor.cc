@@ -4922,10 +4922,12 @@ fprintf(out_file,
 );
       }
 fprintf(out_file,
-"  if (this->used == 0)\n"
+"  if (this->used != 0)\n"
 "  {\n"
 "    return;\n"
 "  }\n"
+"\n"
+"  debug_assert(this->data != NULL);\n"
 "\n"
 "  %s *ptr = this->data;\n"
 "  %s *ptr_end = ptr + this->used;\n"
