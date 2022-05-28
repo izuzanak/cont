@@ -9,6 +9,21 @@
 #include <math.h>
 #include <limits.h>
 
+// - basic data types -
+typedef char bc;
+typedef unsigned char uc;
+typedef short int si;
+typedef unsigned short int usi;
+typedef int bi;
+typedef unsigned int ui;
+typedef long int li;
+typedef unsigned long uli;
+typedef long long int lli;
+typedef unsigned long long int ulli;
+typedef float bf;
+typedef double bd;
+typedef long double ld;
+
 #define ENABLED 1
 
 // - export of dynamically linked symbols -
