@@ -98,7 +98,7 @@ extern const char *c_basic_abbreviations[c_basic_abbreviation_cnt];
 extern const int c_basic_abbreviation_types[c_basic_abbreviation_cnt];
 
 // - constant describing containers -
-const unsigned c_cont_cnt = 8;
+const unsigned c_cont_cnt = 9;
 
 enum {
    c_cont_array = 0,
@@ -109,6 +109,7 @@ enum {
    c_cont_rb_tree,
    c_cont_safe_list,
    c_cont_safe_rb_tree,
+   c_cont_rust_array,
 };
 
 extern const char *c_cont_names[c_cont_cnt];
@@ -117,6 +118,11 @@ extern const char *c_cont_postfixes[c_cont_cnt];
 /*
  * definitions of generated structures
  */
+
+// -- string_tree_s --
+@begin
+   rb_tree<string_s> string_tree_s;
+@end
 
 // -- data_type_s --
 @begin
@@ -198,6 +204,8 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    abbreviation_array_s:abbreviations
    unsigned:type_settings
    container_parameters_s:cont_params
+   string_tree_s:define_tree
+   ui_array_s:enable_stack
    >
 
    additions {
@@ -220,6 +228,9 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    void generate_rb_tree_type();
    void generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx);
    void generate_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_rust_array_type();
+   void generate_rust_array_inlines(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_rust_array_methods(unsigned abb_idx,unsigned a_dt_idx);
 
    void generate_type_inlines(unsigned a_length,char *a_data);
    void generate_type_methods(unsigned a_length,char *a_data);
@@ -246,6 +257,18 @@ typedef processor_s * processor_s_ptr;
 /*
  * inline methods of generated structures
  */
+
+// -- string_tree_s --
+@begin
+   inlines string_tree_s
+@end
+
+int string_tree_s::__compare_value(string_s &a_first,string_s &a_second)
+{/*{{{*/
+  if (a_first.size < a_second.size) { return -1; }
+  if (a_first.size > a_second.size) { return 1; }
+  return memcmp(a_first.data,a_second.data,a_first.size - 1);
+}/*}}}*/
 
 // -- data_type_s --
 @begin

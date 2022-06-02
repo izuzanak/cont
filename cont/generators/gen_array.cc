@@ -243,7 +243,7 @@ fprintf(out_file,
 );
       }
 fprintf(out_file,
-"  if (this->used != 0)\n"
+"  if (this->used == 0)\n"
 "  {\n"
 "    return;\n"
 "  }\n"
