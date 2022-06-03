@@ -113,6 +113,11 @@ extern const char *c_cont_postfixes[c_cont_cnt];
  * definitions of generated structures
  */
 
+// -- string_tree_s --
+@begin
+   rb_tree<string_s> string_tree_s;
+@end
+
 // -- data_type_s --
 @begin
    struct
@@ -193,6 +198,8 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    abbreviation_array_s:abbreviations
    unsigned:type_settings
    container_parameters_s:cont_params
+   string_tree_s:define_tree
+   ui_array_s:enable_stack
    >
 
    additions {
@@ -238,6 +245,18 @@ typedef processor_s * processor_s_ptr;
 /*
  * inline methods of generated structures
  */
+
+// -- string_tree_s --
+@begin
+   inlines string_tree_s
+@end
+
+int string_tree_s::__compare_value(string_s &a_first,string_s &a_second)
+{/*{{{*/
+  if (a_first.size < a_second.size) { return -1; }
+  if (a_first.size > a_second.size) { return 1; }
+  return memcmp(a_first.data,a_second.data,a_first.size - 1);
+}/*}}}*/
 
 // -- data_type_s --
 @begin

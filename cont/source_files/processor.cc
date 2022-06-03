@@ -115,6 +115,11 @@ const char *c_cont_postfixes[c_cont_cnt] = {
  * methods of generated structures
  */
 
+// -- string_tree_s --
+@begin
+   methods string_tree_s
+@end
+
 // -- data_type_s --
 @begin
    methods data_type_s
@@ -413,6 +418,9 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
    include_dirs.swap(a_include_dirs);
    include_dirs.push_blank();
    include_dirs.last().set(0,"");
+
+   enable_stack.used = 0;
+   enable_stack.push(1);
 
    // - not used any more -
 #if 0

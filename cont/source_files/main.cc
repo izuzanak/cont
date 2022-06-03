@@ -16,6 +16,9 @@ int main(int argc,char **argv)
       FILE *out_file = stdout;
       unsigned gen_options = c_option_gen_code;
 
+      string_tree_s define_tree;
+      define_tree.init();
+
       // - process options -
       if (argc > 0)
       {/*{{{*/
@@ -28,6 +31,8 @@ int main(int argc,char **argv)
             if (++ptr >= ptr_end || (out_file = fopen(*ptr,"w")) == nullptr)
             {
               fprintf(stderr,"ERROR: Cannot open output file.\n");
+              
+              define_tree.clear();
               mc_clear();
               return 1;
             }
@@ -57,6 +62,18 @@ int main(int argc,char **argv)
             ++argv;
             --argc;
           }
+          else if (strncmp(*ptr,"--def=",6) == 0)
+          {
+            size_t arg_len = strlen(*ptr);
+            if (arg_len > 6)
+            {
+              string_s define = {(unsigned)(arg_len - 5),*ptr + 6};
+              define_tree.insert(define);
+            }
+
+            ++argv;
+            --argc;
+          }
           else
           {
             break;
@@ -67,6 +84,8 @@ int main(int argc,char **argv)
       if (argc <= 0)
       {
         fprintf(stderr,"ERROR: Missing name of file to process.\n");
+
+        define_tree.clear();
         mc_clear();
         return 1;
       }
@@ -89,6 +108,8 @@ int main(int argc,char **argv)
       processor.init();
 
       processor.initialize_data_types();
+      processor.define_tree.swap(define_tree);
+
       cassert(processor.run(argv[0],include_dirs,out_file,gen_options));
 
       processor.clear();
@@ -99,6 +120,8 @@ int main(int argc,char **argv)
       {
         fclose(out_file);
       }
+
+      define_tree.clear();
    }
 
    mc_clear();

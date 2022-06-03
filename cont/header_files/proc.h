@@ -59,6 +59,7 @@
    static void pa_reduce_inlines(process_s &proc);
    static void pa_reduce_methods(process_s &proc);
    static void pa_reduce_define(process_s &proc);
+   static void pa_reduce_abbreviation(process_s &proc);
    static void pa_reduce_mod_basic(process_s &proc);
    static void pa_reduce_mod_static(process_s &proc);
    static void pa_reduce_mod_dynamic(process_s &proc);
@@ -66,6 +67,10 @@
    static void pa_reduce_gen_container(process_s &proc);
    static void pa_reduce_type(process_s &proc);
    static void pa_reduce_type_and_name(process_s &proc);
+   static void pa_reduce_ifdef(process_s &proc);
+   static void pa_reduce_ifndef(process_s &proc);
+   static void pa_reduce_else(process_s &proc);
+   static void pa_reduce_endif(process_s &proc);
    static void pa_reduce_option(process_s &proc);
    static void pa_reduce_additions_body(process_s &proc);
    static void pa_reduce_name(process_s &proc);

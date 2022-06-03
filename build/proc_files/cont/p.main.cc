@@ -2455,6 +2455,187 @@ extern const char *c_cont_postfixes[c_cont_cnt];
  * definitions of generated structures
  */
 
+// -- string_tree_s --
+// struct string_tree_s definition
+
+/*!
+ * \brief __GEN node of rb_tree of type string_s
+ */
+
+struct string_tree_s_node
+{
+  unsigned parent_idx;
+  unsigned left_idx;
+  unsigned right_idx;
+  bool color;
+  string_s object;
+};
+
+/*!
+ * \brief __GEN rb_tree of type string_s
+ */
+struct string_tree_s
+{
+  unsigned size;
+  unsigned used;
+  string_tree_s_node *data;
+  unsigned free_idx;
+  unsigned root_idx;
+  unsigned leaf_idx;
+
+  // - internal support methods -
+  inline unsigned __get_grandparent_idx(unsigned a_idx);
+  inline unsigned __get_uncle_idx(unsigned a_idx);
+  inline unsigned __get_sibling_idx(unsigned a_idx);
+
+  inline unsigned get_descent_stack_size();
+  EXPORT unsigned get_stack_min_value_idx(unsigned a_idx,unsigned **a_s_ptr);
+  inline unsigned get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base);
+
+  EXPORT unsigned get_min_value_idx(unsigned a_idx);
+  EXPORT unsigned get_max_value_idx(unsigned a_idx);
+  EXPORT unsigned get_next_idx(unsigned a_idx);
+  EXPORT unsigned get_prev_idx(unsigned a_idx);
+
+  inline void __rotate_left(unsigned a_idx);
+  inline void __rotate_right(unsigned a_idx);
+
+  inline unsigned __get_new_index();
+  EXPORT unsigned __binary_tree_insert(unsigned a_new_idx,string_s &a_value,bool a_unique);
+
+  inline void __replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx);
+  void __remove_black_black(unsigned a_idx);
+
+  inline void __remove_one_child(unsigned a_idx,unsigned a_ch_idx);
+
+  EXPORT void __insert_operation(unsigned a_idx);
+
+  inline int __compare_value(string_s &a_first,string_s &a_second);
+
+  string_tree_s() = default;
+  string_tree_s(string_tree_s &a_src) = delete;
+
+  /*!
+    * \brief __GEN initialize rb_tree
+    */
+  inline void init();
+
+  /*!
+    * \brief __GEN release memory used by rb_tree
+    */
+  EXPORT void clear();
+
+  /*!
+    * \brief __GEN flush rb_tree memory usage
+    */
+  inline void flush();
+
+  /*!
+    * \brief __GEN flush rb_tree memory usage, recursive on nodes
+    */
+  inline void flush_all();
+
+  /*!
+    * \brief __GEN swap members of rb_tree with another rb_tree
+    * \param a_second - reference to another rb_tree
+    */
+  inline void swap(string_tree_s &a_second);
+
+  /*!
+    * \brief __GEN select ode of rb_tree
+    * \param a_idx - index of node in rb_tree
+    * \return reference to node of rb_tree
+    */
+  inline string_s &operator[](unsigned a_idx);
+
+  /*!
+    * \brief __GEN insert node to rb_tree
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+  inline unsigned insert(string_s &a_value);
+
+  /*!
+    * \brief __GEN insert node to rb_tree if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+  inline unsigned unique_insert(string_s &a_value);
+
+  /*!
+    * \brief __GEN insert node to rb_tree by swapping
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+  inline unsigned swap_insert(string_s &a_value);
+
+  /*!
+    * \brief __GEN insert node to rb_tree by swapping if it not exist yet
+    * \param a_value - reference to value inserted to rb_tree
+    * \return - position of node in rb_tree
+    */
+  inline unsigned unique_swap_insert(string_s &a_value);
+
+  /*!
+    * \brief __GEN remove node at index from rb_tree
+    * \param a_idx - index of node to remove
+    */
+  EXPORT void remove(unsigned a_idx);
+
+  /*!
+    * \brief __GEN resize rb_tree capacity
+    * \param a_size - requested rb_tree capacity
+    */
+  EXPORT void copy_resize(unsigned a_size);
+
+  /*!
+    * \brief __GEN search for index of node
+    * \param a_value - value which index is searched
+    */
+  EXPORT unsigned get_idx(string_s &a_value);
+
+  /*!
+    * \brief __GEN search for leftmost index of node
+    * \param a_value - value which index is searched
+    */
+  EXPORT unsigned get_idx_left(string_s &a_value);
+
+  /*!
+    * \brief __GEN search for index of node with greater or equal value
+    * \param a_value - value which index is searched
+    */
+  EXPORT unsigned get_gre_idx(string_s &a_value);
+
+  /*!
+    * \brief __GEN search for index of node with less or equal value
+    * \param a_value - value which index is searched
+    */
+  EXPORT unsigned get_lee_idx(string_s &a_value);
+
+  /*!
+    * \brief __GEN search for all indexes of node
+    * \param a_value - value of searched index
+    */
+  EXPORT void get_idxs(string_s &a_value,ui_array_s &a_idxs_array);
+
+  /*!
+    * \brief __GEN copy rb_tree from another rb_tree
+    * \param a_src - reference to another rb_tree
+    * \return reference to this rb_tree
+    */
+  EXPORT string_tree_s &operator=(string_tree_s &a_src);
+
+  /*!
+    * \brief __GEN compare rb_tree with another rb_tree
+    * \param a_second - reference to another rb_tree
+    * \return result of comparision
+    */
+  EXPORT bool operator==(string_tree_s &a_second);
+
+};
+
+
+
 // -- data_type_s --
 // structure data_type_s definition
 
@@ -2931,6 +3112,8 @@ struct processor_s
   abbreviation_array_s abbreviations; //!< member - 6
   unsigned type_settings; //!< member - 7
   container_parameters_s cont_params; //!< member - 8
+  string_tree_s define_tree; //!< member - 9
+  ui_array_s enable_stack; //!< member - 10
 
   processor_s() = default;
   processor_s(processor_s &a_src) = delete;
@@ -2948,7 +3131,7 @@ struct processor_s
   /*!
     * \brief __GEN set structure members
     */
-  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params);
+  inline void set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params,string_tree_s &a_define_tree,ui_array_s &a_enable_stack);
   /*!
     * \brief __GEN flush structure memory usage, recursive on members
     */
@@ -3014,6 +3197,312 @@ typedef processor_s * processor_s_ptr;
 /*
  * inline methods of generated structures
  */
+
+// -- string_tree_s --
+// --- struct string_tree_s inline method definition ---
+// LCOV_EXCL_START
+
+inline unsigned string_tree_s::__get_grandparent_idx(unsigned a_idx)
+{/*{{{*/
+  string_tree_s_node &node = data[a_idx];
+
+  if (node.parent_idx != c_idx_not_exist)
+  {
+    return data[node.parent_idx].parent_idx;
+  }
+
+  return c_idx_not_exist;
+}/*}}}*/
+
+inline unsigned string_tree_s::__get_uncle_idx(unsigned a_idx)
+{/*{{{*/
+  unsigned gp_idx = __get_grandparent_idx(a_idx);
+
+  if (gp_idx != c_idx_not_exist)
+  {
+    string_tree_s_node &gp = data[gp_idx];
+    return gp.left_idx == data[a_idx].parent_idx?gp.right_idx:gp.left_idx;
+  }
+
+  return c_idx_not_exist;
+}/*}}}*/
+
+inline unsigned string_tree_s::__get_sibling_idx(unsigned a_idx)
+{/*{{{*/
+  string_tree_s_node &p = data[data[a_idx].parent_idx];
+  return p.left_idx == a_idx?p.right_idx:p.left_idx;
+}/*}}}*/
+
+inline unsigned string_tree_s::get_descent_stack_size()
+{/*{{{*/
+  return (unsigned)(logf(used)/c_log_of_2) << 1;
+}/*}}}*/
+
+inline unsigned string_tree_s::get_stack_next_idx(unsigned a_idx,unsigned **a_s_ptr,const unsigned *a_stack_base)
+{/*{{{*/
+  debug_assert(a_idx < used);
+
+  string_tree_s_node &node = data[a_idx];
+
+  if (node.right_idx != leaf_idx)
+  {
+    return get_stack_min_value_idx(node.right_idx,a_s_ptr);
+  }
+
+  if (*a_s_ptr > a_stack_base)
+  {
+    return *(--(*a_s_ptr));
+  }
+
+  return c_idx_not_exist;
+}/*}}}*/
+
+inline void string_tree_s::__rotate_left(unsigned a_idx)
+{/*{{{*/
+  string_tree_s_node &root = data[a_idx];
+  string_tree_s_node &pivot = data[root.right_idx];
+
+  if (a_idx == root_idx)
+  {
+    root_idx = root.right_idx;
+    pivot.parent_idx = c_idx_not_exist;
+  }
+  else
+  {
+    string_tree_s_node &rp = data[root.parent_idx];
+    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.right_idx;
+
+    pivot.parent_idx = root.parent_idx;
+  }
+
+  root.parent_idx = root.right_idx;
+
+  root.right_idx = pivot.left_idx;
+  data[root.right_idx].parent_idx = a_idx;
+
+  pivot.left_idx = a_idx;
+}/*}}}*/
+
+inline void string_tree_s::__rotate_right(unsigned a_idx)
+{/*{{{*/
+  string_tree_s_node &root = data[a_idx];
+  string_tree_s_node &pivot = data[root.left_idx];
+
+  if (a_idx == root_idx)
+  {
+    root_idx = root.left_idx;
+    pivot.parent_idx = c_idx_not_exist;
+  }
+  else
+  {
+    string_tree_s_node &rp = data[root.parent_idx];
+    (rp.right_idx == a_idx?rp.right_idx:rp.left_idx) = root.left_idx;
+
+    pivot.parent_idx = root.parent_idx;
+  }
+
+  root.parent_idx = root.left_idx;
+
+  root.left_idx = pivot.right_idx;
+  data[root.left_idx].parent_idx = a_idx;
+
+  pivot.right_idx = a_idx;
+}/*}}}*/
+
+inline unsigned string_tree_s::__get_new_index()
+{/*{{{*/
+  unsigned new_idx;
+
+  if (free_idx != c_idx_not_exist)
+  {
+    new_idx = free_idx;
+    free_idx = data[new_idx].parent_idx;
+  }
+  else
+  {
+    if (used >= size)
+    {
+      copy_resize((size << 1) + c_array_add);
+    }
+
+    new_idx = used++;
+  }
+
+  return new_idx;
+}/*}}}*/
+
+inline void string_tree_s::__replace_delete_node_by_child(unsigned a_idx,unsigned a_ch_idx)
+{/*{{{*/
+  string_tree_s_node &node = data[a_idx];
+
+  if (node.parent_idx != c_idx_not_exist)
+  {
+    string_tree_s_node &parent = data[node.parent_idx];
+    (parent.left_idx == a_idx?parent.left_idx:parent.right_idx) = a_ch_idx;
+
+    data[a_ch_idx].parent_idx = node.parent_idx;
+  }
+  else
+  {
+    root_idx = a_ch_idx == leaf_idx?c_idx_not_exist:a_ch_idx;
+    data[a_ch_idx].parent_idx = c_idx_not_exist;
+  }
+}/*}}}*/
+
+inline void string_tree_s::__remove_one_child(unsigned a_idx,unsigned a_ch_idx)
+{/*{{{*/
+  string_tree_s_node &node = data[a_idx];
+  __replace_delete_node_by_child(a_idx,a_ch_idx);
+
+  node.parent_idx = free_idx;
+  free_idx = a_idx;
+
+  if (node.color)
+  {
+    string_tree_s_node &child_node = data[a_ch_idx];
+
+    if (!child_node.color)
+    {
+      child_node.color = true;
+    }
+    else
+    {
+      __remove_black_black(a_ch_idx);
+    }
+  }
+}/*}}}*/
+
+inline void string_tree_s::init()
+{/*{{{*/
+  size = 0;
+  used = 0;
+  data = nullptr;
+  free_idx = c_idx_not_exist;
+  root_idx = c_idx_not_exist;
+  leaf_idx = c_idx_not_exist;
+}/*}}}*/
+
+inline void string_tree_s::flush()
+{/*{{{*/
+  copy_resize(used);
+}/*}}}*/
+
+inline void string_tree_s::flush_all()
+{/*{{{*/
+  copy_resize(used);
+}/*}}}*/
+
+inline void string_tree_s::swap(string_tree_s &a_second)
+{/*{{{*/
+  unsigned tmp_unsigned = size;
+  size = a_second.size;
+  a_second.size = tmp_unsigned;
+
+  tmp_unsigned = used;
+  used = a_second.used;
+  a_second.used = tmp_unsigned;
+
+  string_tree_s_node *tmp_data = data;
+  data = a_second.data;
+  a_second.data = tmp_data;
+
+  tmp_unsigned = free_idx;
+  free_idx = a_second.free_idx;
+  a_second.free_idx = tmp_unsigned;
+
+  tmp_unsigned = root_idx;
+  root_idx = a_second.root_idx;
+  a_second.root_idx = tmp_unsigned;
+
+  tmp_unsigned = leaf_idx;
+  leaf_idx = a_second.leaf_idx;
+  a_second.leaf_idx = tmp_unsigned;
+}/*}}}*/
+
+inline string_s &string_tree_s::operator[](unsigned a_idx)
+{/*{{{*/
+  debug_assert(a_idx < used);
+  return data[a_idx].object;
+}/*}}}*/
+
+inline unsigned string_tree_s::insert(string_s &a_value)
+{/*{{{*/
+  unsigned new_node_idx = __get_new_index();
+
+  __binary_tree_insert(new_node_idx,a_value,false);
+  __insert_operation(new_node_idx);
+
+  data[new_node_idx].object = a_value;
+
+  return new_node_idx;
+}/*}}}*/
+
+inline unsigned string_tree_s::swap_insert(string_s &a_value)
+{/*{{{*/
+  unsigned new_node_idx = __get_new_index();
+
+  __binary_tree_insert(new_node_idx,a_value,false);
+  __insert_operation(new_node_idx);
+
+  data[new_node_idx].object.swap(a_value);
+
+  return new_node_idx;
+}/*}}}*/
+
+inline unsigned string_tree_s::unique_insert(string_s &a_value)
+{/*{{{*/
+  unsigned new_node_idx = __get_new_index();
+  unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+  if (old_node_idx != c_idx_not_exist)
+  {
+    string_tree_s_node &new_node = data[new_node_idx];
+
+    new_node.parent_idx = free_idx;
+    free_idx = new_node_idx;
+
+    return old_node_idx;
+  }
+
+  __insert_operation(new_node_idx);
+
+  data[new_node_idx].object = a_value;
+
+  return new_node_idx;
+}/*}}}*/
+
+inline unsigned string_tree_s::unique_swap_insert(string_s &a_value)
+{/*{{{*/
+  unsigned new_node_idx = __get_new_index();
+  unsigned old_node_idx = __binary_tree_insert(new_node_idx,a_value,true);
+
+  if (old_node_idx != c_idx_not_exist)
+  {
+    string_tree_s_node &new_node = data[new_node_idx];
+
+    new_node.parent_idx = free_idx;
+    free_idx = new_node_idx;
+
+    return old_node_idx;
+  }
+
+  __insert_operation(new_node_idx);
+
+  data[new_node_idx].object.swap(a_value);
+
+  return new_node_idx;
+}/*}}}*/
+
+// LCOV_EXCL_STOP
+
+
+
+int string_tree_s::__compare_value(string_s &a_first,string_s &a_second)
+{/*{{{*/
+  if (a_first.size < a_second.size) { return -1; }
+  if (a_first.size > a_second.size) { return 1; }
+  return memcmp(a_first.data,a_second.data,a_first.size - 1);
+}/*}}}*/
 
 // -- data_type_s --
 // --- struct data_type_s inline method definition ---
@@ -3409,6 +3898,8 @@ inline void processor_s::init()
   data_types.init();
   abbreviations.init();
   cont_params.init();
+  define_tree.init();
+  enable_stack.init();
 }/*}}}*/
 
 inline void processor_s::clear()
@@ -3418,9 +3909,11 @@ inline void processor_s::clear()
   data_types.clear();
   abbreviations.clear();
   cont_params.clear();
+  define_tree.clear();
+  enable_stack.clear();
 }/*}}}*/
 
-inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params)
+inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params,string_tree_s &a_define_tree,ui_array_s &a_enable_stack)
 {/*{{{*/
   out_file = a_out_file;
   gen_options = a_gen_options;
@@ -3431,6 +3924,8 @@ inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned
   abbreviations = a_abbreviations;
   type_settings = a_type_settings;
   cont_params = a_cont_params;
+  define_tree = a_define_tree;
+  enable_stack = a_enable_stack;
 }/*}}}*/
 
 inline void processor_s::flush_all()
@@ -3440,6 +3935,8 @@ inline void processor_s::flush_all()
   data_types.flush_all();
   abbreviations.flush_all();
   cont_params.flush_all();
+  define_tree.flush_all();
+  enable_stack.flush_all();
 }/*}}}*/
 
 inline void processor_s::swap(processor_s &a_second)
@@ -3469,6 +3966,10 @@ inline void processor_s::swap(processor_s &a_second)
   a_second.type_settings = tmp_type_settings;
 
   cont_params.swap(a_second.cont_params);
+
+  define_tree.swap(a_second.define_tree);
+
+  enable_stack.swap(a_second.enable_stack);
 }/*}}}*/
 
 inline processor_s &processor_s::operator=(processor_s &a_src)
@@ -3482,13 +3983,15 @@ inline processor_s &processor_s::operator=(processor_s &a_src)
   abbreviations = a_src.abbreviations;
   type_settings = a_src.type_settings;
   cont_params = a_src.cont_params;
+  define_tree = a_src.define_tree;
+  enable_stack = a_src.enable_stack;
 
   return *this;
 }/*}}}*/
 
 inline bool processor_s::operator==(processor_s &a_second)
 {/*{{{*/
-  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_level == a_second.include_level && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params);
+  return (out_file == a_second.out_file && gen_options == a_second.gen_options && include_level == a_second.include_level && include_dirs == a_second.include_dirs && include_names == a_second.include_names && data_types == a_second.data_types && abbreviations == a_second.abbreviations && type_settings == a_second.type_settings && cont_params == a_second.cont_params && define_tree == a_second.define_tree && enable_stack == a_second.enable_stack);
 }/*}}}*/
 
 // LCOV_EXCL_STOP
@@ -3518,6 +4021,9 @@ int main(int argc,char **argv)
       FILE *out_file = stdout;
       unsigned gen_options = c_option_gen_code;
 
+      string_tree_s define_tree;
+      define_tree.init();
+
       // - process options -
       if (argc > 0)
       {/*{{{*/
@@ -3530,6 +4036,8 @@ int main(int argc,char **argv)
             if (++ptr >= ptr_end || (out_file = fopen(*ptr,"w")) == nullptr)
             {
               fprintf(stderr,"ERROR: Cannot open output file.\n");
+              
+              define_tree.clear();
               mc_clear();
               return 1;
             }
@@ -3559,6 +4067,18 @@ int main(int argc,char **argv)
             ++argv;
             --argc;
           }
+          else if (strncmp(*ptr,"--def=",6) == 0)
+          {
+            size_t arg_len = strlen(*ptr);
+            if (arg_len > 6)
+            {
+              string_s define = {(unsigned)(arg_len - 5),*ptr + 6};
+              define_tree.insert(define);
+            }
+
+            ++argv;
+            --argc;
+          }
           else
           {
             break;
@@ -3569,6 +4089,8 @@ int main(int argc,char **argv)
       if (argc <= 0)
       {
         fprintf(stderr,"ERROR: Missing name of file to process.\n");
+
+        define_tree.clear();
         mc_clear();
         return 1;
       }
@@ -3591,6 +4113,8 @@ int main(int argc,char **argv)
       processor.init();
 
       processor.initialize_data_types();
+      processor.define_tree.swap(define_tree);
+
       cassert(processor.run(argv[0],include_dirs,out_file,gen_options));
 
       processor.clear();
@@ -3601,6 +4125,8 @@ int main(int argc,char **argv)
       {
         fclose(out_file);
       }
+
+      define_tree.clear();
    }
 
    mc_clear();
