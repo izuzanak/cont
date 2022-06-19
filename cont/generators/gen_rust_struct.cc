@@ -1,19 +1,19 @@
 
-#define STRUCT_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
-#define STRUCT_GEN_VALUES out_file,abbreviations,abb_idx,type_cnt,data_type,types
+#define RUST_STRUCT_GEN_PARAMS FILE *out_file,abbreviation_array_s &abbreviations,unsigned abb_idx,unsigned type_cnt,data_type_s &data_type,data_type_s **types
+#define RUST_STRUCT_GEN_VALUES out_file,abbreviations,abb_idx,type_cnt,data_type,types
 
-void STRUCT_INIT(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_INIT(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_init(%s *this)\n"
+"fn init(&mut self)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
+);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
-"  %s_init(&this->%s);\n"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  self.%s.init();\n"
+,VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -22,18 +22,18 @@ fprintf(out_file,
 );
 }/*}}}*/
 
-void STRUCT_CLEAR(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_CLEAR(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_clear(%s *this)\n"
+"fn clear(&mut self)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
+);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 fprintf(out_file,
-"  %s_clear(&this->%s);\n"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  self.%s.clear();\n"
+,VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -42,33 +42,33 @@ fprintf(out_file,
 );
 }/*}}}*/
 
-void STRUCT_SET(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_SET(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_set(%s *this,"
-,STRUCT_NAME,STRUCT_NAME);
+"fn set(&mut self,"
+);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
-"%s a_%s"
-,TYPE_NAMES(0),VAR_NAMES(0));
+"a_%s:%s"
+,VAR_NAMES(0),TYPE_NAMES(0));
    }
    else {
 fprintf(out_file,
-"const %s *a_%s"
-,TYPE_NAMES(0),VAR_NAMES(0));
+"a_%s:&%s"
+,VAR_NAMES(0),TYPE_NAMES(0));
    }
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
          if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 fprintf(out_file,
-",%s a_%s"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+",a_%s:%s"
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx));
          }
          else {
 fprintf(out_file,
-",const %s *a_%s"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+",a_%s:&%s"
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
@@ -80,18 +80,18 @@ fprintf(out_file,
    do {
        if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 fprintf(out_file,
-"  this->%s = a_%s;\n"
+"  self.%s = a_%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else if (TYPE_NUMBERS(t_idx) & c_type_static) {
 fprintf(out_file,
-"  this->%s = *a_%s;\n"
+"  self.%s = a_%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
 fprintf(out_file,
-"  %s_copy(&this->%s,a_%s);\n"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+"  self.%s.copy(a_%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -100,18 +100,18 @@ fprintf(out_file,
 );
 }/*}}}*/
 
-void STRUCT_FLUSH_ALL(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_FLUSH_ALL(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_flush_all(%s *this)\n"
+"fn flush_all(&mut self)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
+);
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
 fprintf(out_file,
-"  %s_flush_all(&this->%s);\n"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  self.%s.flush_all();\n"
+,VAR_NAMES(t_idx));
       }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -120,36 +120,34 @@ fprintf(out_file,
 );
 }/*}}}*/
 
-void STRUCT_SWAP(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_SWAP(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_swap(%s *this,%s *a_second)\n"
+"fn swap(&mut self,a_second:&mut Self)\n"
 "{/*{{{*/\n"
-"  %s tmp = *this;\n"
-"  *this = *a_second;\n"
-"  *a_second = tmp;\n"
+"  std::mem::swap(self,a_second);\n"
 "}/*}}}*/\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+);
 }/*}}}*/
 
-void STRUCT_OPERATOR_EQUAL(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_OPERATOR_EQUAL(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_copy(%s *this,const %s *a_src)\n"
+"fn copy(&mut self,a_src:&Self)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+);
    unsigned t_idx = 0;
    do {
        if (!(TYPE_NUMBERS(t_idx) & c_type_dynamic)) {
 fprintf(out_file,
-"  this->%s = a_src->%s;\n"
+"  self.%s = a_src.%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
        else {
 fprintf(out_file,
-"  %s_copy(&this->%s,&a_src->%s);\n"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+"  self.%s.copy(&a_src.%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
        }
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
@@ -158,21 +156,21 @@ fprintf(out_file,
 );
 }/*}}}*/
 
-void STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_OPERATOR_DOUBLE_EQUAL(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline int %s_compare(const %s *this,const %s *a_second)\n"
+"fn compare(&self,a_second:&Self) -> bool\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+);
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
-"  return (this->%s == a_second->%s"
+"  (self.%s == a_second.%s"
 ,VAR_NAMES(0),VAR_NAMES(0));
    }
    else {
 fprintf(out_file,
-"  return (%s_compare(&this->%s,&a_second->%s)"
-,TYPE_NAMES(0),VAR_NAMES(0),VAR_NAMES(0));
+"  (self.%s.compare(&a_second.%s)"
+,VAR_NAMES(0),VAR_NAMES(0));
    }
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
@@ -182,154 +180,143 @@ fprintf(out_file,
 );
          if (TYPE_NUMBERS(t_idx) & c_type_basic) {
 fprintf(out_file,
-"          this->%s == a_second->%s"
+"          self.%s == a_second.%s"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
 fprintf(out_file,
-"          %s_compare(&this->%s,&a_second->%s)"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+"          self.%s.compare(&a_second.%s)"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
-");\n"
+")\n"
 "}/*}}}*/\n"
 "\n"
 );
 }/*}}}*/
 
-void STRUCT_TO_STRING(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_TO_STRING(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s___to_string(const %s *this,bc_array_s *a_trg)\n"
+"#[cfg(OPTION_TO_STRING = \"ENABLED\")]\n"
+"fn to_string(&self,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
+);
 fprintf(out_file,
-"  bc_array_s_append_ptr(a_trg,\"{%s:\");\n"
-"  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
+"  a_trg.append(b\"{%s:\");\n"
+"  Cont::to_string(&self.%s,a_trg);\n"
+,VAR_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
-"  bc_array_s_append_ptr(a_trg,\",%s:\");\n"
-"  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  a_trg.append(b\",%s:\");\n"
+"  Cont::to_string(&self.%s,a_trg);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
-"  bc_array_s_push(a_trg,'}');\n"
+"  a_trg.push(b'}' as bc);\n"
 );
 fprintf(out_file,
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
 );
 }/*}}}*/
 
-void STRUCT_TO_STRING_SEPARATOR(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_TO_STRING_SEPARATOR(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"#[cfg(OPTION_TO_STRING = \"ENABLED\")]\n"
+"fn to_string_separator(&self,a_trg:&mut bc_array_s,a_data:&[u8])\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
-   if (TYPE_CNT <= 1) {
-fprintf(out_file,
-"  (void)a_count;\n"
-"  (void)a_data;\n"
-"\n"
 );
-   }
 fprintf(out_file,
-"  bc_array_s_append_ptr(a_trg,\"%s:\");\n"
-"  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
+"  a_trg.append(b\"%s:\");\n"
+"  Cont::to_string(&self.%s,a_trg);\n"
+,VAR_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
-"  bc_array_s_append(a_trg,a_count,a_data);\n"
-"  bc_array_s_append_ptr(a_trg,\"%s:\");\n"
-"  %s_to_string(&this->%s,a_trg);\n"
-,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  a_trg.append(a_data);\n"
+"  a_trg.append(b\"%s:\");\n"
+"  Cont::to_string(&self.%s,a_trg);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
 );
 }/*}}}*/
 
-void STRUCT_TO_JSON(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_TO_JSON(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_JSON == ENABLED\n"
-"static inline void %s_to_json(const %s *this,bc_array_s *a_trg)\n"
+"#[cfg(OPTION_TO_JSON = \"ENABLED\")]\n"
+"fn to_json(&self,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
+);
 fprintf(out_file,
-"  bc_array_s_append_ptr(a_trg,\"{\\\"%s\\\":\");\n"
-"  %s_to_json(&this->%s,a_trg);\n"
-,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
+"  a_trg.append(b\"{\\\"%s\\\":\");\n"
+"  Cont::to_json(&self.%s,a_trg);\n"
+,VAR_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
-"  bc_array_s_append_ptr(a_trg,\",\\\"%s\\\":\");\n"
-"  %s_to_json(&this->%s,a_trg);\n"
-,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  a_trg.append(b\",\\\"%s\\\":\");\n"
+"  Cont::to_json(&self.%s,a_trg);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
-"  bc_array_s_push(a_trg,'}');\n"
+"  a_trg.push('}' as bc);\n"
 );
 fprintf(out_file,
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
 );
 }/*}}}*/
 
-void STRUCT_TO_JSON_NICE(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_TO_JSON_NICE(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_JSON == ENABLED\n"
-"static inline void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg)\n"
+"#[cfg(OPTION_TO_JSON = \"ENABLED\")]\n"
+"fn to_json_nice(&self,a_json_nice:&mut json_nice_s,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
+);
 fprintf(out_file,
-"  bc_array_s_push(a_trg,'{');\n"
-"  json_nice_s_push_indent(a_json_nice,a_trg);\n"
-"  bc_array_s_append_ptr(a_trg,\"\\\"%s\\\": \");\n"
-"  %s_to_json_nice(&this->%s,a_json_nice,a_trg);\n"
-,VAR_NAMES(0),TYPE_NAMES(0),VAR_NAMES(0));
+"  a_trg.push(b'{' as bc);\n"
+"  a_json_nice.push_indent(a_trg);\n"
+"  a_trg.append(b\"\\\"%s\\\": \");\n"
+"  Cont::to_json_nice(&self.%s,a_json_nice,a_trg);\n"
+,VAR_NAMES(0),VAR_NAMES(0));
    if (TYPE_CNT > 1) {
       unsigned t_idx = 1;
       do {
 fprintf(out_file,
-"  bc_array_s_push(a_trg,',');\n"
-"  json_nice_s_indent(a_json_nice,a_trg);\n"
-"  bc_array_s_append_ptr(a_trg,\"\\\"%s\\\": \");\n"
-"  %s_to_json_nice(&this->%s,a_json_nice,a_trg);\n"
-,VAR_NAMES(t_idx),TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  a_trg.push(b',' as bc);\n"
+"  a_json_nice.indent(a_trg);\n"
+"  a_trg.append(b\"\\\"%s\\\": \");\n"
+"  Cont::to_json_nice(&self.%s,a_json_nice,a_trg);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
       } while(++t_idx < TYPE_CNT);
    }
 fprintf(out_file,
-"  json_nice_s_pop_indent(a_json_nice,a_trg);\n"
-"  bc_array_s_push(a_trg,'}');\n"
+"  a_json_nice.pop_indent(a_trg);\n"
+"  a_trg.push(b'}' as bc);\n"
 );
 fprintf(out_file,
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
 );
 }/*}}}*/
 
-void STRUCT_FROM_VAR(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_FROM_VAR(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#if OPTION_FROM_VAR == ENABLED\n"
@@ -373,7 +360,7 @@ fprintf(out_file,
 );
 }/*}}}*/
 
-void STRUCT_FROM_JSON(STRUCT_GEN_PARAMS)
+void RUST_STRUCT_FROM_JSON(RUST_STRUCT_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#if OPTION_FROM_JSON == ENABLED\n"
@@ -405,7 +392,7 @@ fprintf(out_file,
 );
 }/*}}}*/
 
-void processor_s::generate_struct_type()
+void processor_s::generate_rust_struct_type()
 {/*{{{*/
    string_array_s &type_names = cont_params.types;
    string_array_s &variables = cont_params.variables;
@@ -467,7 +454,7 @@ void processor_s::generate_struct_type()
          data_type_name_len += data_types[type_idxs[t_idx]].name.size;
       } while(++t_idx < type_cnt);
 
-      data_type_name_len += strlen(c_cont_postfixes[c_cont_struct]) - 1;
+      data_type_name_len += strlen(c_cont_postfixes[c_cont_rust_struct]) - 1;
    }
 
    // - compose name of type -
@@ -485,7 +472,7 @@ void processor_s::generate_struct_type()
          *dtn_ptr++ = '_';
       } while(++t_idx < type_cnt);
 
-      memcpy(--dtn_ptr,c_cont_postfixes[c_cont_struct],strlen(c_cont_postfixes[c_cont_struct]));
+      memcpy(--dtn_ptr,c_cont_postfixes[c_cont_rust_struct],strlen(c_cont_postfixes[c_cont_rust_struct]));
    }
 
    string_s &data_type_name = abbs[0];
@@ -504,7 +491,7 @@ void processor_s::generate_struct_type()
       data_types.push_blank();
       data_type_s &data_type = data_types.last();
 
-      data_type.cont_idx = c_cont_struct;
+      data_type.cont_idx = c_cont_rust_struct;
       data_type.name.set(data_type_name.size - 1,data_type_name.data);
       data_type.real_name.swap(real_name);
 
@@ -592,123 +579,123 @@ fprintf(out_file,
 ,STRUCT_NAME);
 
     unsigned idx = 0;
-    do {
+    while(++idx < abbs.used) {
 fprintf(out_file,
-"typedef struct %s %s;\n"
-,abbs[0].data,abbs[idx].data);
-    } while(++idx < abbs.used);
+"type %s = %s;\n"
+,abbs[idx].data,abbs[0].data);
+    }
 fprintf(out_file,
 "\n"
 );
 
 fprintf(out_file,
-"struct %s\n"
+"#[repr(C)] pub struct %s\n"
 "{\n"
 ,STRUCT_NAME);
    unsigned t_idx = 0;
    do {
 fprintf(out_file,
-"  %s %s;\n"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+"  %s:%s,\n"
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx));
    } while(++t_idx < TYPE_CNT);
 fprintf(out_file,
-"};\n"
+"}\n"
 "\n"
 );
-   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-fprintf(out_file,
-"static inline void %s_init(%s *this);\n"
-,STRUCT_NAME,STRUCT_NAME);
-   }
-   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
-fprintf(out_file,
-"static inline void %s_clear(%s *this);\n"
-,STRUCT_NAME,STRUCT_NAME);
-   }
-fprintf(out_file,
-"static inline void %s_set(%s *this,"
-,STRUCT_NAME,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
-fprintf(out_file,
-"%s a_%s"
-,TYPE_NAMES(0),VAR_NAMES(0));
-   }
-   else {
-fprintf(out_file,
-"const %s *a_%s"
-,TYPE_NAMES(0),VAR_NAMES(0));
-   }
-   if (TYPE_CNT > 1) {
-      unsigned t_idx = 1;
-      do {
-         if (TYPE_NUMBERS(t_idx) & c_type_basic) {
-fprintf(out_file,
-",%s a_%s"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
-         }
-         else {
-fprintf(out_file,
-",const %s *a_%s"
-,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
-         }
-      } while(++t_idx < TYPE_CNT);
-   }
-fprintf(out_file,
-");\n"
-"static inline void %s_flush_all(%s *this);\n"
-,STRUCT_NAME,STRUCT_NAME);
-   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-fprintf(out_file,
-"static inline void %s_swap(%s *this,%s *a_second);\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   }
-   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-fprintf(out_file,
-"static inline void %s_copy(%s *this,const %s *a_src);\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   }
-fprintf(out_file,
-"static inline int %s_compare(const %s *this,const %s *a_second);\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-fprintf(out_file,
-"#if OPTION_TO_STRING == ENABLED\n"
-"static inline void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
-"#define %s_to_string %s___to_string\n"
-"static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
-"#endif\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (STRUCT_NUMBER & (c_type_option_to_json | c_type_option_to_json_nice)) {
-fprintf(out_file,
-"#if OPTION_TO_JSON == ENABLED\n"
-);
-      if (STRUCT_NUMBER & c_type_option_to_json) {
-fprintf(out_file,
-"static inline void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
-,STRUCT_NAME,STRUCT_NAME);
-      }
-      if (STRUCT_NUMBER & c_type_option_to_json_nice) {
-fprintf(out_file,
-"static inline void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
-,STRUCT_NAME,STRUCT_NAME);
-      }
-fprintf(out_file,
-"#endif\n"
-);
-   }
-   if (STRUCT_NUMBER & c_type_option_from_var) {
-fprintf(out_file,
-"#if OPTION_FROM_VAR == ENABLED\n"
-"WUR static inline int %s_from_var(%s *this,var_s a_var);\n"
-"#endif\n"
-,STRUCT_NAME,STRUCT_NAME);
-   }
-   if (STRUCT_NUMBER & c_type_option_from_json) {
-fprintf(out_file,
-"#if OPTION_FROM_JSON == ENABLED\n"
-"WUR static inline int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json);\n"
-"#endif\n"
-,STRUCT_NAME,STRUCT_NAME);
-   }
+//   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
+//fprintf(out_file,
+//"static inline void %s_init(%s *this);\n"
+//,STRUCT_NAME,STRUCT_NAME);
+//   }
+//   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
+//fprintf(out_file,
+//"static inline void %s_clear(%s *this);\n"
+//,STRUCT_NAME,STRUCT_NAME);
+//   }
+//fprintf(out_file,
+//"static inline void %s_set(%s *this,"
+//,STRUCT_NAME,STRUCT_NAME);
+//   if (TYPE_NUMBERS(0) & c_type_basic) {
+//fprintf(out_file,
+//"%s a_%s"
+//,TYPE_NAMES(0),VAR_NAMES(0));
+//   }
+//   else {
+//fprintf(out_file,
+//"const %s *a_%s"
+//,TYPE_NAMES(0),VAR_NAMES(0));
+//   }
+//   if (TYPE_CNT > 1) {
+//      unsigned t_idx = 1;
+//      do {
+//         if (TYPE_NUMBERS(t_idx) & c_type_basic) {
+//fprintf(out_file,
+//",%s a_%s"
+//,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+//         }
+//         else {
+//fprintf(out_file,
+//",const %s *a_%s"
+//,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+//         }
+//      } while(++t_idx < TYPE_CNT);
+//   }
+//fprintf(out_file,
+//");\n"
+//"static inline void %s_flush_all(%s *this);\n"
+//,STRUCT_NAME,STRUCT_NAME);
+//   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
+//fprintf(out_file,
+//"static inline void %s_swap(%s *this,%s *a_second);\n"
+//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+//   }
+//   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+//fprintf(out_file,
+//"static inline void %s_copy(%s *this,const %s *a_src);\n"
+//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+//   }
+//fprintf(out_file,
+//"static inline int %s_compare(const %s *this,const %s *a_second);\n"
+//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+//fprintf(out_file,
+//"#if OPTION_TO_STRING == ENABLED\n"
+//"static inline void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
+//"#define %s_to_string %s___to_string\n"
+//"static inline void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
+//"#endif\n"
+//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+//   if (STRUCT_NUMBER & (c_type_option_to_json | c_type_option_to_json_nice)) {
+//fprintf(out_file,
+//"#if OPTION_TO_JSON == ENABLED\n"
+//);
+//      if (STRUCT_NUMBER & c_type_option_to_json) {
+//fprintf(out_file,
+//"static inline void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
+//,STRUCT_NAME,STRUCT_NAME);
+//      }
+//      if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+//fprintf(out_file,
+//"static inline void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
+//,STRUCT_NAME,STRUCT_NAME);
+//      }
+//fprintf(out_file,
+//"#endif\n"
+//);
+//   }
+//   if (STRUCT_NUMBER & c_type_option_from_var) {
+//fprintf(out_file,
+//"#if OPTION_FROM_VAR == ENABLED\n"
+//"WUR static inline int %s_from_var(%s *this,var_s a_var);\n"
+//"#endif\n"
+//,STRUCT_NAME,STRUCT_NAME);
+//   }
+//   if (STRUCT_NUMBER & c_type_option_from_json) {
+//fprintf(out_file,
+//"#if OPTION_FROM_JSON == ENABLED\n"
+//"WUR static inline int %s_from_json(%s *this,const bc_array_s *a_src,from_json_s *a_from_json);\n"
+//"#endif\n"
+//,STRUCT_NAME,STRUCT_NAME);
+//   }
    if (fun_defs.used != 0) {
       unsigned f_idx = 0;
       do {
@@ -723,7 +710,7 @@ fprintf(out_file,
    }
 }/*}}}*/
 
-void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
+void processor_s::generate_rust_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 {/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
@@ -766,72 +753,100 @@ void processor_s::generate_struct_inlines(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s inline method definition ---\n"
-"// LCOV_EXCL_START\n"
 "\n"
-,STRUCT_NAME);
+"impl %s {\n"
+"\n"
+"fn new() -> Self\n"
+"{/*{{{*/\n"
+"  <Self as Cont>::default()\n"
+"}/*}}}*/\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME);
 
    // - struct init method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-STRUCT_INIT(STRUCT_GEN_VALUES);
+RUST_STRUCT_INIT(RUST_STRUCT_GEN_VALUES);
    }
 
    // - struct clear method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
-STRUCT_CLEAR(STRUCT_GEN_VALUES);
+RUST_STRUCT_CLEAR(RUST_STRUCT_GEN_VALUES);
    }
 
    // - struct set method -
-STRUCT_SET(STRUCT_GEN_VALUES);
+RUST_STRUCT_SET(RUST_STRUCT_GEN_VALUES);
 
    // - struct flush_all method  -
-STRUCT_FLUSH_ALL(STRUCT_GEN_VALUES);
+RUST_STRUCT_FLUSH_ALL(RUST_STRUCT_GEN_VALUES);
 
    // - struct swap method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-STRUCT_SWAP(STRUCT_GEN_VALUES);
+RUST_STRUCT_SWAP(RUST_STRUCT_GEN_VALUES);
    }
 
    // - struct operator= method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-STRUCT_OPERATOR_EQUAL(STRUCT_GEN_VALUES);
+RUST_STRUCT_OPERATOR_EQUAL(RUST_STRUCT_GEN_VALUES);
    }
 
    // - struct operator== method -
-STRUCT_OPERATOR_DOUBLE_EQUAL(STRUCT_GEN_VALUES);
-
-   // - struct to_string method -
-STRUCT_TO_STRING(STRUCT_GEN_VALUES);
+RUST_STRUCT_OPERATOR_DOUBLE_EQUAL(RUST_STRUCT_GEN_VALUES);
 
    // - struct to_string_separator method -
-STRUCT_TO_STRING_SEPARATOR(STRUCT_GEN_VALUES);
+RUST_STRUCT_TO_STRING_SEPARATOR(RUST_STRUCT_GEN_VALUES);
+
+//   // - struct from_var method -
+//   if (STRUCT_NUMBER & c_type_option_from_var) {
+//RUST_STRUCT_FROM_VAR(RUST_STRUCT_GEN_VALUES);
+//   }
+//
+//   // - struct from_json method -
+//   if (STRUCT_NUMBER & c_type_option_from_json) {
+//RUST_STRUCT_FROM_JSON(RUST_STRUCT_GEN_VALUES);
+//   }
+
+fprintf(out_file,
+"}\n"
+"\n"
+"impl Cont for %s\n"
+"{\n"
+"\n"
+"fn default() -> Self\n"
+"{/*{{{*/\n"
+"  %s{\n"
+,STRUCT_NAME,STRUCT_NAME);
+   unsigned t_idx = 0;
+   do {
+fprintf(out_file,
+"    %s:<%s as Cont>::default(),\n"
+,VAR_NAMES(t_idx),TYPE_NAMES(t_idx));
+   } while(++t_idx < TYPE_CNT);
+fprintf(out_file,
+"  }\n"
+"}/*}}}*/\n"
+"\n"
+);
+
+   // - struct to_string method -
+RUST_STRUCT_TO_STRING(RUST_STRUCT_GEN_VALUES);
 
    // - struct to_json method -
    if (STRUCT_NUMBER & c_type_option_to_json) {
-STRUCT_TO_JSON(STRUCT_GEN_VALUES);
+RUST_STRUCT_TO_JSON(RUST_STRUCT_GEN_VALUES);
    }
 
    // - struct to_json_nice method -
    if (STRUCT_NUMBER & c_type_option_to_json_nice) {
-STRUCT_TO_JSON_NICE(STRUCT_GEN_VALUES);
-   }
-
-   // - struct from_var method -
-   if (STRUCT_NUMBER & c_type_option_from_var) {
-STRUCT_FROM_VAR(STRUCT_GEN_VALUES);
-   }
-
-   // - struct from_json method -
-   if (STRUCT_NUMBER & c_type_option_from_json) {
-STRUCT_FROM_JSON(STRUCT_GEN_VALUES);
+RUST_STRUCT_TO_JSON_NICE(RUST_STRUCT_GEN_VALUES);
    }
 
 fprintf(out_file,
-"// LCOV_EXCL_STOP\n"
+"}\n"
 "\n");
    }
 }/*}}}*/
 
-void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
+void processor_s::generate_rust_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 {/*{{{*/
    data_type_s &data_type = data_types[a_dt_idx];
 
@@ -858,9 +873,10 @@ void processor_s::generate_struct_methods(unsigned abb_idx,unsigned a_dt_idx)
 
 fprintf(out_file,
 "// --- struct %s method definition ---\n"
-"// LCOV_EXCL_START\n"
 "\n"
-,STRUCT_NAME);
+"impl %s {\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME);
 
    // - struct init method -
 
@@ -889,8 +905,16 @@ fprintf(out_file,
    // - struct from_json method -
 
 fprintf(out_file,
-"// LCOV_EXCL_STOP\n"
-"\n");
+"}\n"
+"\n"
+"impl Drop for %s\n"
+"{\n"
+"  fn drop(&mut self) {\n"
+"    self.clear();\n"
+"  }\n"
+"}\n"
+"\n"
+,STRUCT_NAME);
    }
 }/*}}}*/
 

@@ -55,7 +55,7 @@ fprintf(out_file,
 );
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
-"    unsafe { free(self.data as *mut c_void); }\n"
+"    unsafe{free(self.data as *mut c_void);}\n"
 );
       }
 fprintf(out_file,
@@ -82,7 +82,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn clear(&mut self)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_clear(self as *mut Self); }\n"
+"  unsafe{%s_clear(self as *mut Self);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -100,6 +100,19 @@ fprintf(out_file,
 "  debug_assert!(a_size != 0 && !a_data.is_null());\n"
 "\n"
 "  self.clear();\n"
+);
+   if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
+fprintf(out_file,
+"\n"
+"  let mut idx:u32 = 0;\n"
+"  while idx < a_size\n"
+"  {\n"
+"    unsafe{&mut *self.data.offset(idx as isize)}.init();\n"
+"    idx += 1;\n"
+"  }\n"
+);
+   }
+fprintf(out_file,
 "\n"
 "  self.size = a_size;\n"
 "  self.data = a_data;\n"
@@ -111,7 +124,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn set_buffer(&mut self,a_size:u32,a_data:*mut %s)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_set_buffer(self as *mut Self,a_size as c_uint,a_data); }\n"
+"  unsafe{%s_set_buffer(self as *mut Self,a_size as c_uint,a_data);}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME);
@@ -150,7 +163,7 @@ fprintf(out_file,
 );
    }
 fprintf(out_file,
-"  unsafe { std::ptr::copy_nonoverlapping(a_data,self.data,a_used as usize); }\n"
+"  unsafe{std::ptr::copy_nonoverlapping(a_data,self.data,a_used as usize);}\n"
 );
 fprintf(out_file,
 "  self.used = a_used;\n"
@@ -162,7 +175,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn set(&mut self,a_used:u32,a_data:*const %s)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_set(self as *mut Self,a_used as c_uint,a_data); }\n"
+"  unsafe{%s_set(self as *mut Self,a_used as c_uint,a_data);}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME);
@@ -209,7 +222,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn flush_all(&mut self)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_flush_all(self as *mut Self); }\n"
+"  unsafe{%s_flush_all(self as *mut Self);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -233,7 +246,7 @@ fprintf(out_file,
 "fn at(&mut self,a_idx:u32) -> &mut %s\n"
 "{/*{{{*/\n"
 "  debug_assert!(a_idx < self.used);\n"
-"  unsafe { &mut *self.data.offset(a_idx as isize) }\n"
+"  unsafe{&mut *self.data.offset(a_idx as isize)}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME);
@@ -273,19 +286,19 @@ fprintf(out_file,
    }
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
-"  unsafe { *self.data.offset(self.used as isize) = a_value; }\n"
+"  unsafe{*self.data.offset(self.used as isize) = a_value;}\n"
 "  self.used += 1;\n"
 );
    }
    else if (TYPE_NUMBER & c_type_static) {
 fprintf(out_file,
-"  unsafe { *self.data.offset(self.used as isize) = *a_value; }\n"
+"  unsafe{*self.data.offset(self.used as isize) = *a_value;}\n"
 "  self.used += 1;\n"
 );
    }
    else {
 fprintf(out_file,
-"  unsafe { (*self.data.offset(self.used as isize)).copy(a_value); }\n"
+"  unsafe{(*self.data.offset(self.used as isize)).copy(a_value);}\n"
 "  self.used += 1;\n"
 );
    }
@@ -412,7 +425,7 @@ fprintf(out_file,
    }
    else {
 fprintf(out_file,
-"  unsafe { (*self.data.offset(self.used as isize)).clear(); }\n"
+"  unsafe{(*self.data.offset(self.used as isize)).clear();}\n"
 "  self.used += 1;\n"
 );
    }
@@ -441,13 +454,13 @@ fprintf(out_file,
    if (TYPE_NUMBER & c_type_basic) {
 fprintf(out_file,
 "  self.used -= 1;\n"
-"  unsafe { *self.data.offset(self.used as isize) }\n"
+"  unsafe{*self.data.offset(self.used as isize)}\n"
 );
    }
    else {
 fprintf(out_file,
 "  self.used -= 1;\n"
-"  unsafe { &mut *self.data.offset(self.used as isize) }\n"
+"  unsafe{&mut *self.data.offset(self.used as isize)}\n"
 );
    }
 fprintf(out_file,
@@ -462,7 +475,7 @@ fprintf(out_file,
 "fn last(&self) -> &mut %s\n"
 "{/*{{{*/\n"
 "  debug_assert!(self.used > 0);\n"
-"  unsafe { &mut *self.data.offset(self.used as isize - 1) }\n"
+"  unsafe{&mut *self.data.offset(self.used as isize - 1)}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME);
@@ -473,7 +486,7 @@ void RUST_ARRAY_COPY_RESIZE(RUST_ARRAY_GEN_PARAMS)
 fprintf(out_file,
 "fn copy_resize(&mut self,a_size:u32)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_copy_resize(self as *mut Self,a_size as c_uint); }\n"
+"  unsafe{%s_copy_resize(self as *mut Self,a_size as c_uint);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -494,7 +507,7 @@ fprintf(out_file,
 "\n"
 );
 fprintf(out_file,
-"  unsafe { self.data.write_bytes(a_value as u8,self.size as usize); }\n"
+"  unsafe{self.data.write_bytes(a_value as u8,self.size as usize);}\n"
 );
 fprintf(out_file,
 "\n"
@@ -508,7 +521,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn fill(&mut self,a_value:%s)\n"
 "{/*{{{{*/\n"
-"  unsafe { %s_fill(self as *mut Self,a_value); }\n"
+"  unsafe{%s_fill(self as *mut Self,a_value);}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME);
@@ -517,7 +530,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn fill(&mut self,a_value:&%s)\n"
 "{/*{{{{*/\n"
-"  unsafe { %s_fill(self as *mut Self,a_value as *const %s); }\n"
+"  unsafe{%s_fill(self as *mut Self,a_value as *const %s);}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
@@ -531,7 +544,7 @@ void RUST_ARRAY_GET_IDX(RUST_ARRAY_GEN_PARAMS)
 fprintf(out_file,
 "fn get_idx(&self,a_value:%s) -> u32\n"
 "{/*{{{*/\n"
-"  unsafe { %s_get_idx(self as *const Self,a_value) }\n"
+"  unsafe{%s_get_idx(self as *const Self,a_value)}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME);
@@ -540,7 +553,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn get_idx(&self,a_value:&%s) -> u32\n"
 "{/*{{{*/\n"
-"  unsafe { %s_get_idx(self as *const Self,a_value as *const %s) }\n"
+"  unsafe{%s_get_idx(self as *const Self,a_value as *const %s)}\n"
 "}/*}}}*/\n"
 "\n"
 ,TYPE_NAME,STRUCT_NAME,TYPE_NAME);
@@ -578,7 +591,7 @@ fprintf(out_file,
    }
 fprintf(out_file,
 "\n"
-"  unsafe { std::ptr::copy_nonoverlapping(a_src.data,self.data,a_src.used as usize); }\n"
+"  unsafe{std::ptr::copy_nonoverlapping(a_src.data,self.data,a_src.used as usize);}\n"
 );
 fprintf(out_file,
 "\n"
@@ -591,7 +604,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn copy(&mut self,a_src:&Self)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_copy(self as *mut Self,a_src as *const Self); }\n"
+"  unsafe{%s_copy(self as *mut Self,a_src as *const Self);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -618,7 +631,7 @@ fprintf(out_file,
 );
 fprintf(out_file,
 "\n"
-"  unsafe { memcmp(self.data as *const c_void,a_second.data as *const c_void,self.used as usize*std::mem::size_of::<%s>()) == 0 }\n"
+"  unsafe{memcmp(self.data as *const c_void,a_second.data as *const c_void,self.used as usize*std::mem::size_of::<%s>()) == 0}\n"
 ,TYPE_NAME);
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -629,7 +642,7 @@ fprintf(out_file,
 fprintf(out_file,
 "fn compare(&self,a_second:&Self) -> bool\n"
 "{/*{{{*/\n"
-"  unsafe { %s_compare(self as *const Self,a_second as *const Self) != 0 }\n"
+"  unsafe{%s_compare(self as *const Self,a_second as *const Self) != 0}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -642,7 +655,7 @@ fprintf(out_file,
 "#[cfg(OPTION_TO_STRING = \"ENABLED\")]\n"
 "fn to_string(&self,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-"  unsafe { %s___to_string(self as *const Self,a_trg as *mut bc_array_s); }\n"
+"  unsafe{%s___to_string(self as *const Self,a_trg as *mut bc_array_s);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -654,7 +667,7 @@ fprintf(out_file,
 "#[cfg(OPTION_TO_STRING = \"ENABLED\")]\n"
 "fn to_string_separator(&self,a_trg:&mut bc_array_s,a_sep:&str)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_to_string_separator(self as *const Self,a_trg as *mut bc_array_s,a_sep.len() as c_uint,a_sep.as_ptr() as *const c_char); }\n"
+"  unsafe{%s_to_string_separator(self as *const Self,a_trg as *mut bc_array_s,a_sep.len() as c_uint,a_sep.as_ptr() as *const c_char);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -666,7 +679,7 @@ fprintf(out_file,
 "#[cfg(OPTION_TO_JSON = \"ENABLED\")]\n"
 "fn to_json(&self,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_to_json(self as *const Self,a_trg as *mut bc_array_s); }\n"
+"  unsafe{%s_to_json(self as *const Self,a_trg as *mut bc_array_s);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -676,9 +689,9 @@ void RUST_ARRAY_TO_JSON_NICE(RUST_ARRAY_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#[cfg(OPTION_TO_JSON = \"ENABLED\")]\n"
-"fn to_json_nice(&self,a_json:&mut json_nice_s,a_trg:&mut bc_array_s)\n"
+"fn to_json_nice(&self,a_json_nice:&mut json_nice_s,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-"  unsafe { %s_to_json_nice(self as *const Self,a_json_nice as *mut json_nice_s,a_trg as *mut bc_array_s); }\n"
+"  unsafe{%s_to_json_nice(self as *const Self,a_json_nice as *mut json_nice_s,a_trg as *mut bc_array_s);}\n"
 "}/*}}}*/\n"
 "\n"
 ,STRUCT_NAME);
@@ -801,7 +814,7 @@ void processor_s::generate_rust_array_type()
          cassert(0);
       }
 
-      real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_array]),(char *)c_cont_postfixes[c_cont_array]);
+      real_name.conc_set(type.name.size - 1,type.name.data,strlen(c_cont_postfixes[c_cont_rust_array]),(char *)c_cont_postfixes[c_cont_rust_array]);
    }
 
    string_s &data_type_name = abbs[0];
@@ -876,7 +889,7 @@ fprintf(out_file,
 );
 
 fprintf(out_file,
-"#[repr(C)] struct %s\n"
+"#[repr(C)] pub struct %s\n"
 "{\n"
 "  size:u32,\n"
 "  used:u32,\n"
@@ -1022,14 +1035,10 @@ fprintf(out_file,
 "\n"
 "fn new() -> Self\n"
 "{/*{{{*/\n"
-"  %s{\n"
-"    size:0,\n"
-"    used:0,\n"
-"    data:std::ptr::null_mut(),\n"
-"  }\n"
+"  <Self as Cont>::default()\n"
 "}/*}}}*/\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME,STRUCT_NAME);
 
    // - array init method -
    if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
@@ -1241,21 +1250,8 @@ RUST_ARRAY_OPERATOR_EQUAL(RUST_ARRAY_GEN_VALUES);
 RUST_ARRAY_OPERATOR_DOUBLE_EQUAL(RUST_ARRAY_GEN_VALUES);
    }
 
-   // - array to_string method -
-RUST_ARRAY_TO_STRING(RUST_ARRAY_GEN_VALUES);
-
    // - array to_string_separator method -
 RUST_ARRAY_TO_STRING_SEPARATOR(RUST_ARRAY_GEN_VALUES);
-
-   // - array to_json method -
-   if (STRUCT_NUMBER & c_type_option_to_json) {
-RUST_ARRAY_TO_JSON(RUST_ARRAY_GEN_VALUES);
-   }
-
-   // - array to_json_nice method -
-   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
-RUST_ARRAY_TO_JSON_NICE(RUST_ARRAY_GEN_VALUES);
-   }
 
 //   // - array from_var method -
 //   if (STRUCT_NUMBER & c_type_option_from_var) {
@@ -1270,11 +1266,41 @@ RUST_ARRAY_TO_JSON_NICE(RUST_ARRAY_GEN_VALUES);
 fprintf(out_file,
 "}\n"
 "\n"
+"impl Cont for %s\n"
+"{\n"
+"\n"
+"fn default() -> Self\n"
+"{/*{{{*/\n"
+"  %s{\n"
+"    size:0,\n"
+"    used:0,\n"
+"    data:std::ptr::null_mut(),\n"
+"  }\n"
+"}/*}}}*/\n"
+"\n"
+,STRUCT_NAME,STRUCT_NAME);
+
+   // - array to_string method -
+RUST_ARRAY_TO_STRING(RUST_ARRAY_GEN_VALUES);
+
+   // - array to_json method -
+   if (STRUCT_NUMBER & c_type_option_to_json) {
+RUST_ARRAY_TO_JSON(RUST_ARRAY_GEN_VALUES);
+   }
+
+   // - array to_json_nice method -
+   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+RUST_ARRAY_TO_JSON_NICE(RUST_ARRAY_GEN_VALUES);
+   }
+
+fprintf(out_file,
+"}\n"
+"\n"
 "impl Drop for %s\n"
 "{\n"
-"    fn drop(&mut self) {\n"
-"        self.clear();\n"
-"    }\n"
+"  fn drop(&mut self) {\n"
+"    self.clear();\n"
+"  }\n"
 "}\n"
 "\n"
 ,STRUCT_NAME);

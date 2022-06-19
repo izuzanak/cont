@@ -98,7 +98,7 @@ extern const char *c_basic_abbreviations[c_basic_abbreviation_cnt];
 extern const int c_basic_abbreviation_types[c_basic_abbreviation_cnt];
 
 // - constant describing containers -
-const unsigned c_cont_cnt = 9;
+const unsigned c_cont_cnt = 12;
 
 enum {
    c_cont_array = 0,
@@ -110,6 +110,9 @@ enum {
    c_cont_safe_list,
    c_cont_safe_rb_tree,
    c_cont_rust_array,
+   c_cont_rust_struct,
+   c_cont_rust_rb_tree,
+   c_cont_rust_safe_rb_tree,
 };
 
 extern const char *c_cont_names[c_cont_cnt];
@@ -231,6 +234,12 @@ extern const char *c_cont_postfixes[c_cont_cnt];
    void generate_rust_array_type();
    void generate_rust_array_inlines(unsigned abb_idx,unsigned a_dt_idx);
    void generate_rust_array_methods(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_rust_struct_type();
+   void generate_rust_struct_inlines(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_rust_struct_methods(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_rust_rb_tree_type();
+   void generate_rust_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx);
+   void generate_rust_rb_tree_methods(unsigned abb_idx,unsigned a_dt_idx);
 
    void generate_type_inlines(unsigned a_length,char *a_data);
    void generate_type_methods(unsigned a_length,char *a_data);

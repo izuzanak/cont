@@ -95,6 +95,9 @@ const char *c_cont_names[c_cont_cnt] = {
    "safe_list",
    "safe_rb_tree",
    "rust_array",
+   "rust_struct",
+   "rust_rb_tree",
+   "rust_safe_rb_tree",
 };
 
 const char *c_cont_postfixes[c_cont_cnt] = {
@@ -107,6 +110,9 @@ const char *c_cont_postfixes[c_cont_cnt] = {
    "_sl",
    "_srbt",
    "_rsa",
+   "_rss",
+   "_rsrbt",
+   "_rssrbt",
 };
 
 /*
@@ -186,6 +192,8 @@ unsigned abbreviation_array_s::get_idx_by_name(unsigned a_length,const char *a_d
    include "gen_choice.cc"
    include "gen_rb_tree.cc"
    include "gen_rust_array.cc"
+   include "gen_rust_struct.cc"
+   include "gen_rust_rb_tree.cc"
 @end
 
 void processor_s::generate_type_inlines(unsigned a_length,char *a_data)
@@ -230,6 +238,15 @@ void processor_s::generate_type_inlines(unsigned a_length,char *a_data)
       break;
    case c_cont_rust_array:
       generate_rust_array_inlines(abb_idx,data_type_idx);
+      break;
+   case c_cont_rust_struct:
+      generate_rust_struct_inlines(abb_idx,data_type_idx);
+      break;
+   case c_cont_rust_rb_tree:
+      generate_rust_rb_tree_inlines(abb_idx,data_type_idx);
+      break;
+   case c_cont_rust_safe_rb_tree:
+      generate_rust_rb_tree_inlines(abb_idx,data_type_idx);
       break;
    default:
       cassert(0);
@@ -279,6 +296,15 @@ void processor_s::generate_type_methods(unsigned a_length,char *a_data)
    case c_cont_rust_array:
       generate_rust_array_methods(abb_idx,data_type_idx);
       break;
+   case c_cont_rust_struct:
+      generate_rust_struct_methods(abb_idx,data_type_idx);
+      break;
+   case c_cont_rust_rb_tree:
+      generate_rust_rb_tree_methods(abb_idx,data_type_idx);
+      break;
+   case c_cont_rust_safe_rb_tree:
+      generate_rust_rb_tree_methods(abb_idx,data_type_idx);
+      break;
    default:
       cassert(0);
    }
@@ -327,6 +353,16 @@ void processor_s::generate_container_def(string_s &a_cont_name)
       break;
    case c_cont_rust_array:
       generate_rust_array_type();
+      break;
+   case c_cont_rust_struct:
+      generate_rust_struct_type();
+      break;
+   case c_cont_rust_rb_tree:
+      generate_rust_rb_tree_type();
+      break;
+   case c_cont_rust_safe_rb_tree:
+      type_settings |= c_type_option_safe;
+      generate_rust_rb_tree_type();
       break;
    default:
       cassert(0);
