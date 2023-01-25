@@ -38,8 +38,8 @@ include "struct.h"
 
 static inline int rec_rb_tree_s___compare_value(const rec_rb_tree_s *this,const record_s *a_first,const record_s *a_second)
 {
-  register unsigned fi = a_first->index;
-  register unsigned si = a_second->index;
+  unsigned fi = a_first->index;
+  unsigned si = a_second->index;
 
   return fi < si ? -1 : fi > si ? 1 : 0;
 }

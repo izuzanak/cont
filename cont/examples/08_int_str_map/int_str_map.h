@@ -157,8 +157,8 @@ static inline int string_s_compare(const string_s *this,const string_s *a_second
 
 static inline int int_string_map_s___compare_value(const int_string_map_s *this,const int_string_s *a_first,const int_string_s *a_second)
 {/*{{{*/
-  register int fi = a_first->index;
-  register int si = a_second->index;
+  int fi = a_first->index;
+  int si = a_second->index;
 
   return fi < si ? -1 : fi > si ? 1 : 0;
 }/*}}}*/
