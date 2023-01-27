@@ -2595,7 +2595,10 @@ bool process_s::run_on(const char *a_file_name)
   // - retrieve file full path (search in include directories) -
   if (!processor_ptr->find_include_file(a_file_name,file_path))
   {
-    fprintf(stderr,"ERROR: Cannot found source file: \"%s\".\n",a_file_name);
+    if (processor_ptr->gen_options & c_option_gen_code)
+    {
+      fprintf(processor_ptr->out_file,"#error \"Cannot found source file: %s\"\n",a_file_name);
+    }
 
     file_path.clear();
     return false;
