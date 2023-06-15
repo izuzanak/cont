@@ -2924,8 +2924,7 @@ void process_s::pa_reduce_type_and_name(process_s &proc)
 
 void process_s::pa_reduce_if(process_s &proc)
 {/*{{{*/
-   processor_s &processor = *proc.processor_ptr;
-   ui_array_s &enable_stack = processor.enable_stack;
+   ui_array_s &enable_stack = proc.processor_ptr->enable_stack;
 
    // -----
 
@@ -2939,9 +2938,7 @@ void process_s::pa_reduce_endif(process_s &proc)
 
    // -----
 
-   if (enable_stack.used > 1) {
-     enable_stack.pop();
-   }
+   enable_stack.pop();
 }/*}}}*/
 
 void process_s::pa_reduce_else(process_s &proc)
@@ -2950,16 +2947,15 @@ void process_s::pa_reduce_else(process_s &proc)
 
    // -----
 
-
-   if (enable_stack.used > 1 && enable_stack[enable_stack.used - 2]) {
+   // - test previous depth state -
+   if (enable_stack[enable_stack.used - 2]) {
      enable_stack.last() = !enable_stack.last();
    }
 }/*}}}*/
 
 void process_s::pa_reduce_exp_double_ampersand(process_s &proc)
 {/*{{{*/
-   processor_s &processor = *proc.processor_ptr;
-   ui_array_s &enable_stack = processor.enable_stack;
+   ui_array_s &enable_stack = proc.processor_ptr->enable_stack;
 
    // -----
 
@@ -2970,8 +2966,7 @@ void process_s::pa_reduce_exp_double_ampersand(process_s &proc)
 
 void process_s::pa_reduce_exp_double_pipe(process_s &proc)
 {/*{{{*/
-   processor_s &processor = *proc.processor_ptr;
-   ui_array_s &enable_stack = processor.enable_stack;
+   ui_array_s &enable_stack = proc.processor_ptr->enable_stack;
 
    // -----
 
@@ -2982,8 +2977,7 @@ void process_s::pa_reduce_exp_double_pipe(process_s &proc)
 
 void process_s::pa_reduce_exp_exclamation(process_s &proc)
 {/*{{{*/
-   processor_s &processor = *proc.processor_ptr;
-   ui_array_s &enable_stack = processor.enable_stack;
+   ui_array_s &enable_stack = proc.processor_ptr->enable_stack;
 
    // -----
 
