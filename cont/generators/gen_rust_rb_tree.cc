@@ -261,7 +261,7 @@ fprintf(out_file,
 "  if self.free_idx != c_idx_not_exist\n"
 "  {\n"
 "    new_idx = self.free_idx;\n"
-"    self.free_idx = unsafe{&*self.data.offset(new_idx as isize)}.parent_idx; // NOLINT\n"
+"    self.free_idx = unsafe{&*self.data.offset(new_idx as isize)}.parent_idx;\n"
 "  }\n"
 "  else\n"
 "  {\n"
@@ -290,20 +290,20 @@ fprintf(out_file,
 fprintf(out_file,
 "    if self.leaf_idx == c_idx_not_exist\n"
 "    {\n"
-"      self.used += 1;\n"
 "      self.leaf_idx = self.used;\n"
+"      self.used += 1;\n"
 "      let leaf = unsafe{&mut *self.data.offset(self.leaf_idx as isize)};\n"
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
-"      leaf.valid = 0; // NOLINT\n"
-"      leaf.color = 1; // NOLINT\n"
+"      leaf.valid = 0;\n"
+"      leaf.color = 1;\n"
 );
    }
    else {
 fprintf(out_file,
-"      leaf.color = 1; // NOLINT\n"
+"      leaf.color = 1;\n"
 );
    }
    if (STRUCT_NUMBER & c_type_option_check_properties) {
@@ -319,14 +319,14 @@ fprintf(out_file,
 );
 
 fprintf(out_file,
-"    self.used += 1;\n"
 "    new_idx = self.used;\n"
+"    self.used += 1;\n"
 "  }\n"
 "\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
-"  unsafe{&mut *self.data.offset(new_idx as isize)}.valid = 1; // NOLINT\n"
+"  unsafe{&mut *self.data.offset(new_idx as isize)}.valid = 1;\n"
 "  self.count += 1;\n"
 "\n"
 );
@@ -630,21 +630,13 @@ void RUST_RB_TREE_FLUSH_ALL(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
 fprintf(out_file,
-"static inline void %s_flush_all(%s *this)\n"
-,STRUCT_NAME,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"void %s_flush_all(%s *this)\n"
-,STRUCT_NAME,STRUCT_NAME);
-   }
-fprintf(out_file,
+"fn flush_all(&mut self)\n"
 "{/*{{{*/\n"
 );
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
-"  %s_copy_resize(this,this->used);\n"
-,STRUCT_NAME);
+"  self.copy_resize(self.used);\n"
+);
    }
    if (VAR_NAMES_CNT > 0) {
       if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
@@ -656,108 +648,96 @@ fprintf(out_file,
       do {
          if (TYPE_NUMBERS(t_idx + 1) & c_type_flushable) {
 fprintf(out_file,
-"  %s_flush_all(&this->%s);\n"
-,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
+"  self.%s.flush_all();\n"
+,VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
-   }
-   if (TYPE_NUMBERS(0) & c_type_flushable) {
-      if (!(STRUCT_NUMBER & c_type_option_fixed_buffer) || VAR_NAMES_CNT > 0) {
-fprintf(out_file,
-"\n"
-);
-      }
-fprintf(out_file,
-"  if (this->used == 0)\n"
-"  {\n"
-"    return;\n"
-"  }\n"
-"\n"
-"  %s_node *ptr = this->data;\n"
-"  %s_node *ptr_end = ptr + this->used;\n"
-"\n"
-"  do {\n"
-"    %s_flush_all(&ptr->object);\n"
-"  } while(++ptr < ptr_end);\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
    }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
+   }
+   else {
+fprintf(out_file,
+"fn flush_all(&mut self)\n"
+"{/*{{{*/\n"
+"  unsafe{%s_flush_all(self as *mut Self)}\n"
+"}/*}}}*/\n"
+"\n"
+,STRUCT_NAME);
+   }
 }/*}}}*/
 
 void RUST_RB_TREE_SWAP(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline void %s_swap(%s *this,%s *a_second)\n"
+"fn swap(&mut self,a_second:&mut Self)\n"
 "{/*{{{*/\n"
-"  %s tmp = *this;\n"
-"  *this = *a_second;\n"
-"  *a_second = tmp;\n"
+"  std::mem::swap(self,a_second);\n"
 "}/*}}}*/\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+);
 }/*}}}*/
 
 void RUST_RB_TREE_OPERATOR_LE_BR_RE_BR(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"static inline %s *%s_at(const %s *this,unsigned a_idx)\n"
+"fn at(&self,a_idx:u32) -> &mut %s\n"
 "{/*{{{*/\n"
-,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
+,TYPE_NAMES(0));
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
-"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
+"  debug_assert!(a_idx < self.used && unsafe{(*self.data.offset(a_idx as isize)).valid} != 0);\n"
 );
    }
    else {
 fprintf(out_file,
-"  debug_assert(a_idx < this->used);\n"
+"  debug_assert!(a_idx < self.used);\n"
 );
    }
 fprintf(out_file,
-"  return &this->data[a_idx].object;\n"
+"  unsafe{&mut (*self.data.offset(a_idx as isize)).object}\n"
 "}/*}}}*/\n"
 "\n"
 );
 }/*}}}*/
 
-#define TEMPLATE_RB_TREE_INSERT(FUN_NAME,VALUE_CONST,VALUE_SET_CODE) \
+#define TEMPLATE_RUST_RB_TREE_INSERT(FUN_NAME,VALUE_CONST,VALUE_SET_CODE) \
 {/*{{{*/\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
-"static inline unsigned %s_%s(%s *this,%s a_value)\n"\
-,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,TYPE_NAMES(0));\
+"fn %s(&mut self,a_value:%s) -> u32\n"\
+,#FUN_NAME,TYPE_NAMES(0));\
    }\
    else {\
 fprintf(out_file,\
-"static inline unsigned %s_%s(%s *this,%s%s *a_value)\n"\
-,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,VALUE_CONST ? "const " : "",TYPE_NAMES(0));\
+"fn %s(&mut self,a_value:&%s%s) -> u32\n"\
+,#FUN_NAME,VALUE_CONST ? "" : "mut ",TYPE_NAMES(0));\
    }\
 fprintf(out_file,\
 "{/*{{{*/\n"\
-"  unsigned new_node_idx = %s___get_new_index(this);\n"\
+"  let new_node_idx = self.__get_new_index();\n"\
 "\n"\
-,STRUCT_NAME);\
+);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
-"  %s___binary_tree_insert(this,new_node_idx,&a_value,0);\n"\
-,STRUCT_NAME);\
+"  self.__binary_tree_insert(new_node_idx,&a_value,false);\n"\
+);\
    }\
    else {\
 fprintf(out_file,\
-"  %s___binary_tree_insert(this,new_node_idx,a_value,0);\n"\
-,STRUCT_NAME);\
+"  self.__binary_tree_insert(new_node_idx,a_value,false);\n"\
+);\
    }\
 fprintf(out_file,\
-"  %s___insert_operation(this,new_node_idx);\n"\
+"  self.__insert_operation(new_node_idx);\n"\
 "\n"\
-,STRUCT_NAME);\
+);\
    VALUE_SET_CODE;\
 fprintf(out_file,\
 "\n"\
-"  return new_node_idx;\n"\
+"  new_node_idx\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -765,21 +745,16 @@ fprintf(out_file,\
 
 void RUST_RB_TREE_INSERT(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
-TEMPLATE_RB_TREE_INSERT(insert,true,
-   if (TYPE_NUMBERS(0) & c_type_basic) {
+TEMPLATE_RUST_RB_TREE_INSERT(insert,true,
+   if (TYPE_NUMBERS(0) & (c_type_basic | c_type_static)) {
 fprintf(out_file,
-"  this->data[new_node_idx].object = a_value;\n"
-);
-   }
-   else if (TYPE_NUMBERS(0) & c_type_static) {
-fprintf(out_file,
-"  this->data[new_node_idx].object = *a_value;\n"
+"  unsafe{(*self.data.offset(new_node_idx as isize)).object = a_value};\n"
 );
    }
    else {
 fprintf(out_file,
-"  %s_copy(&this->data[new_node_idx].object,a_value);\n"
-,TYPE_NAMES(0));
+"  unsafe{(*self.data.offset(new_node_idx as isize)).object.copy(a_value)};\n"
+);
    }
 );
 }/*}}}*/
@@ -787,54 +762,54 @@ fprintf(out_file,
 void RUST_RB_TREE_SWAP_INSERT(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-TEMPLATE_RB_TREE_INSERT(swap_insert,false,
+TEMPLATE_RUST_RB_TREE_INSERT(swap_insert,false,
 fprintf(out_file,
-"  %s_swap(&this->data[new_node_idx].object,a_value);\n"
-,TYPE_NAMES(0));
+"  unsafe{(*self.data.offset(new_node_idx as isize)).object.swap(a_value)};\n"
+);
 );
    }
 }/*}}}*/
 
-#define TEMPLATE_RB_TREE_UNIQUE_INSERT(FUN_NAME,VALUE_CONST,VALUE_SET_CODE) \
+#define TEMPLATE_RUST_RB_TREE_UNIQUE_INSERT(FUN_NAME,VALUE_CONST,VALUE_SET_CODE) \
 {/*{{{*/\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
-"static inline unsigned %s_%s(%s *this,%s a_value)\n"\
-,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,TYPE_NAMES(0));\
+"fn %s(&mut self,a_value:%s) -> u32\n"\
+,#FUN_NAME,TYPE_NAMES(0));\
    }\
    else {\
 fprintf(out_file,\
-"static inline unsigned %s_%s(%s *this,%s%s *a_value)\n"\
-,STRUCT_NAME,#FUN_NAME,STRUCT_NAME,VALUE_CONST ? "const " : "",TYPE_NAMES(0));\
+"fn %s(&mut self,a_value:&%s%s) -> u32\n"\
+,#FUN_NAME,VALUE_CONST ? "" : "mut ",TYPE_NAMES(0));\
    }\
 fprintf(out_file,\
 "{/*{{{*/\n"\
-"  unsigned new_node_idx = %s___get_new_index(this);\n"\
-,STRUCT_NAME);\
+"  let new_node_idx = self.__get_new_index();\n"\
+);\
    if (TYPE_NUMBERS(0) & c_type_basic) {\
 fprintf(out_file,\
-"  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,&a_value,1);\n"\
-,STRUCT_NAME);\
+"  let old_node_idx = self.__binary_tree_insert(new_node_idx,&a_value,true);\n"\
+);\
    }\
    else {\
 fprintf(out_file,\
-"  unsigned old_node_idx = %s___binary_tree_insert(this,new_node_idx,a_value,1);\n"\
-,STRUCT_NAME);\
+"  let old_node_idx = self.__binary_tree_insert(new_node_idx,a_value,true);\n"\
+);\
    }\
 fprintf(out_file,\
 "\n"\
-"  if (old_node_idx != c_idx_not_exist)\n"\
+"  if old_node_idx != c_idx_not_exist\n"\
 "  {\n"\
-"    %s_node *new_node = this->data + new_node_idx;\n"\
+"    let new_node = unsafe {&mut *self.data.offset(new_node_idx as isize)};\n"\
 "\n"\
-"    new_node->parent_idx = this->free_idx;\n"\
-"    this->free_idx = new_node_idx;\n"\
+"    new_node.parent_idx = self.free_idx;\n"\
+"    self.free_idx = new_node_idx;\n"\
 "\n"\
-,STRUCT_NAME);\
+);\
    if (STRUCT_NUMBER & c_type_option_safe) {\
 fprintf(out_file,\
-"    new_node->valid = 0;\n"\
-"    this->count--;\n"\
+"    new_node.valid = 0;\n"\
+"    self.count -= 1;\n"\
 "\n"\
 );\
    }\
@@ -842,13 +817,13 @@ fprintf(out_file,\
 "    return old_node_idx;\n"\
 "  }\n"\
 "\n"\
-"  %s___insert_operation(this,new_node_idx);\n"\
+"  self.__insert_operation(new_node_idx);\n"\
 "\n"\
-,STRUCT_NAME);\
+);\
    VALUE_SET_CODE;\
 fprintf(out_file,\
 "\n"\
-"  return new_node_idx;\n"\
+"  new_node_idx\n"\
 "}/*}}}*/\n"\
 "\n"\
 );\
@@ -856,21 +831,16 @@ fprintf(out_file,\
 
 void RUST_RB_TREE_UNIQUE_INSERT(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
-TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_insert,true,
-   if (TYPE_NUMBERS(0) & c_type_basic) {
+TEMPLATE_RUST_RB_TREE_UNIQUE_INSERT(unique_insert,true,
+   if (TYPE_NUMBERS(0) & (c_type_basic | c_type_static)) {
 fprintf(out_file,
-"  this->data[new_node_idx].object = a_value;\n"
-);
-   }
-   else if (TYPE_NUMBERS(0) & c_type_static) {
-fprintf(out_file,
-"  this->data[new_node_idx].object = *a_value;\n"
+"  unsafe{(*self.data.offset(new_node_idx as isize)).object = a_value};\n"
 );
    }
    else {
 fprintf(out_file,
-"  %s_copy(&this->data[new_node_idx].object,a_value);\n"
-,TYPE_NAMES(0));
+"  unsafe{(*self.data.offset(new_node_idx as isize)).object.copy(a_value)};\n"
+);
    }
 );
 }/*}}}*/
@@ -878,10 +848,10 @@ fprintf(out_file,
 void RUST_RB_TREE_UNIQUE_SWAP_INSERT(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
-TEMPLATE_RB_TREE_UNIQUE_INSERT(unique_swap_insert,false,
+TEMPLATE_RUST_RB_TREE_UNIQUE_INSERT(unique_swap_insert,false,
 fprintf(out_file,
-"  %s_swap(&this->data[new_node_idx].object,a_value);\n"
-,TYPE_NAMES(0));
+"  unsafe{(*self.data.offset(new_node_idx as isize)).object.swap(a_value)};\n"
+);
 );
    }
 }/*}}}*/
@@ -889,135 +859,12 @@ fprintf(out_file,
 void RUST_RB_TREE_REMOVE(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"void %s_remove(%s *this,unsigned a_idx)\n"
+"fn remove(&mut self,a_idx:u32)\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME);
-   if (STRUCT_NUMBER & c_type_option_safe) {
-fprintf(out_file,
-"  debug_assert(a_idx < this->used && this->data[a_idx].valid);\n"
-);
-   }
-   else {
-fprintf(out_file,
-"  debug_assert(a_idx < this->used);\n"
-);
-   }
-fprintf(out_file,
-"\n"
-"  %s_node *del_node = this->data + a_idx;\n"
-"\n"
-"  if (del_node->left_idx != this->leaf_idx)\n"
-"  {\n"
-"    if (del_node->right_idx != this->leaf_idx)\n"
-"    {\n"
-"      unsigned found_idx = del_node->right_idx;\n"
-"      do {\n"
-"        %s_node *node = this->data + found_idx;\n"
-"\n"
-"        if (node->left_idx == this->leaf_idx)\n"
-"        {\n"
-"          break;\n"
-"        }\n"
-"\n"
-"        found_idx = node->left_idx;\n"
-"      } while(1);\n"
-"\n"
-"      %s_node *found_node = this->data + found_idx;\n"
-"\n"
-"      /* - process del_node parent_idx - */\n"
-"      if (del_node->parent_idx != c_idx_not_exist)\n"
-"      {\n"
-"        %s_node *del_node_parent = this->data + del_node->parent_idx;\n"
-"\n"
-"        if (del_node_parent->left_idx == a_idx)\n"
-"        {\n"
-"          del_node_parent->left_idx = found_idx;\n"
-"        }\n"
-"        else\n"
-"        {\n"
-"          del_node_parent->right_idx = found_idx;\n"
-"        }\n"
-"      }\n"
-"      else\n"
-"      {\n"
-"        this->root_idx = found_idx;\n"
-"      }\n"
-"\n"
-"      /* - process del_node left_idx - */\n"
-"      this->data[del_node->left_idx].parent_idx = found_idx;\n"
-"\n"
-"      /* - process found_node right_idx - */\n"
-"      if (found_node->right_idx != this->leaf_idx)\n"
-"      {\n"
-"        this->data[found_node->right_idx].parent_idx = a_idx;\n"
-"      }\n"
-"\n"
-"      if (del_node->right_idx == found_idx)\n"
-"      {\n"
-"        /* - found node is right child of deleted node - */\n"
-"        del_node->right_idx = found_node->right_idx;\n"
-"        found_node->right_idx = a_idx;\n"
-"\n"
-"        found_node->parent_idx = del_node->parent_idx;\n"
-"        del_node->parent_idx = found_idx;\n"
-"\n"
-"        found_node->left_idx = del_node->left_idx;\n"
-"        del_node->left_idx = this->leaf_idx;\n"
-"\n"
-"        char tmp_char = found_node->color;\n"
-"        found_node->color = del_node->color;\n"
-"        del_node->color = tmp_char;\n"
-"      }\n"
-"      else\n"
-"      {\n"
-"        /* - process found_node parent - */\n"
-"        %s_node *found_node_parent = this->data + found_node->parent_idx;\n"
-"\n"
-"        if (found_node_parent->left_idx == found_idx)\n"
-"        {\n"
-"          found_node_parent->left_idx = a_idx;\n"
-"        }\n"
-"        else\n"
-"        {\n"
-"          found_node_parent->right_idx = a_idx;\n"
-"        }\n"
-"\n"
-"        /* - process del_node right_idx - */\n"
-"        this->data[del_node->right_idx].parent_idx = found_idx;\n"
-"\n"
-"        /* - swap index pointers between nodes - */\n"
-"        unsigned tmp_unsigned = found_node->parent_idx;\n"
-"        found_node->parent_idx = del_node->parent_idx;\n"
-"        del_node->parent_idx = tmp_unsigned;\n"
-"\n"
-"        found_node->left_idx = del_node->left_idx;\n"
-"        del_node->left_idx = this->leaf_idx;\n"
-"\n"
-"        tmp_unsigned = found_node->right_idx;\n"
-"        found_node->right_idx = del_node->right_idx;\n"
-"        del_node->right_idx = tmp_unsigned;\n"
-"\n"
-"        char tmp_char = found_node->color;\n"
-"        found_node->color = del_node->color;\n"
-"        del_node->color = tmp_char;\n"
-"      }\n"
-"\n"
-"      %s___remove_one_child(this,a_idx,del_node->right_idx);\n"
-"    }\n"
-"    else\n"
-"    {\n"
-"      %s___remove_one_child(this,a_idx,del_node->left_idx);\n"
-"    }\n"
-"  }\n"
-"  else\n"
-"  {\n"
-"    %s___remove_one_child(this,a_idx,del_node->right_idx);\n"
-"  }\n"
-"\n"
+"  unsafe{%s_remove(self as *mut Self,a_idx)}\n"
 "}/*}}}*/\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RUST_RB_TREE_COPY_RESIZE(RUST_RB_TREE_GEN_PARAMS)
@@ -1035,392 +882,159 @@ void RUST_RB_TREE_GET_IDX(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
-"unsigned %s_get_idx(const %s *this,%s a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-   else {
-fprintf(out_file,
-"unsigned %s_get_idx(const %s *this,const %s *a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-fprintf(out_file,
+"fn get_idx(&self,a_value:%s) -> u32\n"
 "{/*{{{*/\n"
-"  if (this->root_idx == c_idx_not_exist)\n"
-"  {\n"
-"    return c_idx_not_exist;\n"
-"  }\n"
-"\n"
-"  unsigned node_idx = this->root_idx;\n"
-"  do {\n"
-"    %s_node *node = this->data + node_idx;\n"
-"\n"
-,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-fprintf(out_file,
-"    if (comp_result < 0)\n"
-"    {\n"
-"      node_idx = node->left_idx;\n"
-"    }\n"
-"    else\n"
-"    {\n"
-"      if (comp_result == 0)\n"
-"      {\n"
-"        return node_idx;\n"
-"      }\n"
-"\n"
-"      node_idx = node->right_idx;\n"
-"    }\n"
-"  } while(node_idx != this->leaf_idx);\n"
-"\n"
-"  return c_idx_not_exist;\n"
+"  unsafe{%s_get_idx(self as *const Self,a_value)}\n"
 "}/*}}}*/\n"
 "\n"
-);
+,TYPE_NAMES(0),STRUCT_NAME);
+   }
+   else {
+fprintf(out_file,
+"fn get_idx(&self,a_value:&%s) -> u32\n"
+"{/*{{{*/\n"
+"  unsafe{%s_get_idx(self as *const Self,a_value as *const %s)}\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAMES(0),STRUCT_NAME,TYPE_NAMES(0));
+   }
 }/*}}}*/
 
 void RUST_RB_TREE_GET_IDX_LEFT(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
-"unsigned %s_get_idx_left(const %s *this,%s a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-   else {
-fprintf(out_file,
-"unsigned %s_get_idx_left(const %s *this,const %s *a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-fprintf(out_file,
+"fn get_idx_left(&self,a_value:%s) -> u32\n"
 "{/*{{{*/\n"
-"  if (this->root_idx == c_idx_not_exist)\n"
-"  {\n"
-"    return c_idx_not_exist;\n"
-"  }\n"
-"\n"
-"  unsigned good_idx = c_idx_not_exist;\n"
-"  unsigned node_idx = this->root_idx;\n"
-"  do {\n"
-"    %s_node *node = this->data + node_idx;\n"
-"\n"
-,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-fprintf(out_file,
-"    if (comp_result < 0)\n"
-"    {\n"
-"      node_idx = node->left_idx;\n"
-"    }\n"
-"    else\n"
-"    {\n"
-"      if (comp_result == 0)\n"
-"      {\n"
-"        good_idx = node_idx;\n"
-"        node_idx = node->left_idx;\n"
-"      }\n"
-"      else\n"
-"      {\n"
-"        node_idx = node->right_idx;\n"
-"      }\n"
-"    }\n"
-"  } while(node_idx != this->leaf_idx);\n"
-"\n"
-"  return good_idx;\n"
+"  unsafe{%s_get_idx_left(self as *const Self,a_value)}\n"
 "}/*}}}*/\n"
 "\n"
-);
+,TYPE_NAMES(0),STRUCT_NAME);
+   }
+   else {
+fprintf(out_file,
+"fn get_idx_left(&self,a_value:&%s) -> u32\n"
+"{/*{{{*/\n"
+"  unsafe{%s_get_idx_left(self as *const Self,a_value as *const %s)}\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAMES(0),STRUCT_NAME,TYPE_NAMES(0));
+   }
 }/*}}}*/
 
 void RUST_RB_TREE_GET_GRE_IDX(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
-"unsigned %s_get_gre_idx(const %s *this,%s a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-   else {
-fprintf(out_file,
-"unsigned %s_get_gre_idx(const %s *this,const %s *a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-fprintf(out_file,
+"fn get_gre_idx(&self,a_value:%s) -> u32\n"
 "{/*{{{*/\n"
-"  if (this->root_idx == c_idx_not_exist)\n"
-"  {\n"
-"    return c_idx_not_exist;\n"
-"  }\n"
-"\n"
-"  unsigned good_idx = c_idx_not_exist;\n"
-"  unsigned node_idx = this->root_idx;\n"
-"  do {\n"
-"    %s_node *node = this->data + node_idx;\n"
-"\n"
-,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-fprintf(out_file,
-"    if (comp_result < 0)\n"
-"    {\n"
-"      good_idx = node_idx;\n"
-"      node_idx = node->left_idx;\n"
-"    }\n"
-"    else\n"
-"    {\n"
-"      if (comp_result == 0)\n"
-"      {\n"
-"        return node_idx;\n"
-"      }\n"
-"\n"
-"      node_idx = node->right_idx;\n"
-"    }\n"
-"  } while(node_idx != this->leaf_idx);\n"
-"\n"
-"  return good_idx;\n"
+"  unsafe{%s_get_gre_idx(self as *const Self,a_value)}\n"
 "}/*}}}*/\n"
 "\n"
-);
+,TYPE_NAMES(0),STRUCT_NAME);
+   }
+   else {
+fprintf(out_file,
+"fn get_gre_idx(&self,a_value:&%s) -> u32\n"
+"{/*{{{*/\n"
+"  unsafe{%s_get_gre_idx(self as *const Self,a_value as *const %s)}\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAMES(0),STRUCT_NAME,TYPE_NAMES(0));
+   }
 }/*}}}*/
 
 void RUST_RB_TREE_GET_LEE_IDX(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
-"unsigned %s_get_lee_idx(const %s *this,%s a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-   else {
-fprintf(out_file,
-"unsigned %s_get_lee_idx(const %s *this,const %s *a_value)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-fprintf(out_file,
+"fn get_lee_idx(&self,a_value:%s) -> u32\n"
 "{/*{{{*/\n"
-"  if (this->root_idx == c_idx_not_exist)\n"
-"  {\n"
-"    return c_idx_not_exist;\n"
-"  }\n"
-"\n"
-"  unsigned good_idx = c_idx_not_exist;\n"
-"  unsigned node_idx = this->root_idx;\n"
-"  do {\n"
-"    %s_node *node = this->data + node_idx;\n"
-"\n"
-,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-fprintf(out_file,
-"    if (comp_result < 0)\n"
-"    {\n"
-"      node_idx = node->left_idx;\n"
-"    }\n"
-"    else\n"
-"    {\n"
-"      if (comp_result == 0)\n"
-"      {\n"
-"        return node_idx;\n"
-"      }\n"
-"\n"
-"      good_idx = node_idx;\n"
-"      node_idx = node->right_idx;\n"
-"    }\n"
-"  } while(node_idx != this->leaf_idx);\n"
-"\n"
-"  return good_idx;\n"
+"  unsafe{%s_get_lee_idx(self as *const Self,a_value)}\n"
 "}/*}}}*/\n"
 "\n"
-);
+,TYPE_NAMES(0),STRUCT_NAME);
+   }
+   else {
+fprintf(out_file,
+"fn get_lee_idx(&self,a_value:&%s) -> u32\n"
+"{/*{{{*/\n"
+"  unsafe{%s_get_lee_idx(self as *const Self,a_value as *const %s)}\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAMES(0),STRUCT_NAME,TYPE_NAMES(0));
+   }
 }/*}}}*/
 
 void RUST_RB_TREE_GET_IDXS(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (TYPE_NUMBERS(0) & c_type_basic) {
 fprintf(out_file,
-"void %s_get_idxs(const %s *this,%s a_value,ui_array_s *a_idxs_array)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-   else {
-fprintf(out_file,
-"void %s_get_idxs(const %s *this,const %s *a_value,ui_array_s *a_idxs_array)\n"
-,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-   }
-fprintf(out_file,
+"fn get_idxs(&self,a_value:%s,a_idxs_array:&mut ui_array_s)\n"
 "{/*{{{*/\n"
-"  a_idxs_array->used = 0;\n"
-"\n"
-"  if (this->root_idx == c_idx_not_exist)\n"
-"  {\n"
-"    return;\n"
-"  }\n"
-"\n"
-"  unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"  unsigned *stack_ptr = stack;\n"
-"\n"
-"  *(stack_ptr++) = this->root_idx;\n"
-"  do {\n"
-"    unsigned node_idx = *(--stack_ptr);\n"
-"    %s_node *node = this->data + node_idx;\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,&a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"    int comp_result = %s___compare_value(this,a_value,&node->object);\n"
-,STRUCT_NAME);
-   }
-fprintf(out_file,
-"    if (comp_result < 0)\n"
-"    {\n"
-"      if (node->left_idx != this->leaf_idx)\n"
-"      {\n"
-"        *(stack_ptr++) = node->left_idx;\n"
-"      }\n"
-"    }\n"
-"    else\n"
-"    {\n"
-"      if (comp_result == 0)\n"
-"      {\n"
-"        ui_array_s_push(a_idxs_array,node_idx);\n"
-"\n"
-"        if (node->left_idx != this->leaf_idx)\n"
-"        {\n"
-"          *(stack_ptr++) = node->left_idx;\n"
-"        }\n"
-"      }\n"
-"\n"
-"      if (node->right_idx != this->leaf_idx)\n"
-"      {\n"
-"        *(stack_ptr++) = node->right_idx;\n"
-"      }\n"
-"    }\n"
-"  } while(stack_ptr > stack);\n"
+"  unsafe{%s_get_idxs(self as *const Self,a_value,a_idxs_array as *mut ui_array_s)}\n"
 "}/*}}}*/\n"
 "\n"
-);
+,TYPE_NAMES(0),STRUCT_NAME);
+   }
+   else {
+fprintf(out_file,
+"fn get_idxs(&self,a_value:*const %s,a_idxs_array:&mut ui_array_s)\n"
+"{/*{{{*/\n"
+"  unsafe{%s_get_idxs(self as *const Self,a_value,a_idxs_array as *mut ui_array_s)}\n"
+"}/*}}}*/\n"
+"\n"
+,TYPE_NAMES(0),STRUCT_NAME);
+   }
 }/*}}}*/
 
 void RUST_RB_TREE_OPERATOR_EQUAL(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
-"static inline void %s_copy(%s *this,const %s *a_src)\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"void %s_copy(%s *this,const %s *a_src)\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   }
-fprintf(out_file,
+"fn copy(&mut self,a_src:&Self)\n"
 "{/*{{{*/\n"
 );
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
 fprintf(out_file,
-"  debug_assert(a_src->used <= this->size);\n"
+"  debug_assert!(a_src.used <= self.size);\n"
 "\n"
 );
    }
 fprintf(out_file,
-"  %s_clear(this);\n"
+"  self.clear();\n"
 "\n"
-"  if (a_src->root_idx == c_idx_not_exist)\n"
+"  if self.root_idx == c_idx_not_exist\n"
 "  {\n"
 "    return;\n"
 "  }\n"
-,STRUCT_NAME);
+);
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
-"  debug_assert(a_src->used != 0);\n"
-"  %s_copy_resize(this,a_src->used);\n"
-,STRUCT_NAME);
+"  debug_assert!(a_src.used != 0);\n"
+"  self.copy_resize(a_src.used);\n"
+);
    }
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(this->data,a_src->data,a_src->used*sizeof(%s_node)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
-,STRUCT_NAME);
-   }
-   else {
-fprintf(out_file,
-"\n"
-"  %s_node *ptr = this->data;\n"
-"  %s_node *s_ptr = a_src->data;\n"
-"  %s_node *s_ptr_end = s_ptr + a_src->used;\n"
-"\n"
-"  do {\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-fprintf(out_file,
-"    ptr->object = s_ptr->object;\n"
-);
-   }
-   else {
-fprintf(out_file,
-"    %s_copy(&ptr->object,&s_ptr->object);\n"
-,TYPE_NAMES(0));
-   }
-   if (STRUCT_NUMBER & c_type_option_safe) {
-fprintf(out_file,
-"    ptr->valid = s_ptr->valid;\n"
-);
-   }
-fprintf(out_file,
-"    ptr->parent_idx = s_ptr->parent_idx;\n"
-"    ptr->left_idx = s_ptr->left_idx;\n"
-"    ptr->right_idx = s_ptr->right_idx;\n"
-"    ptr->color = s_ptr->color;\n"
-"  } while(++ptr,++s_ptr < s_ptr_end);\n"
+"  unsafe{std::ptr::copy_nonoverlapping(a_src.data,self.data,a_src.used as usize);}\n"
 );
    }
 fprintf(out_file,
 "\n"
-"  this->used = a_src->used;\n"
+"  self.used = a_src.used;\n"
 );
    if (STRUCT_NUMBER & c_type_option_safe) {
 fprintf(out_file,
-"  this->count = a_src->count;\n"
+"  self.count = a_src.count;\n"
 );
    }
 fprintf(out_file,
-"  this->free_idx = a_src->free_idx;\n"
-"  this->root_idx = a_src->root_idx;\n"
-"  this->leaf_idx = a_src->leaf_idx;\n"
+"  self.free_idx = a_src.free_idx;\n"
+"  self.root_idx = a_src.root_idx;\n"
+"  self.leaf_idx = a_src.leaf_idx;\n"
 );
    if (VAR_NAMES_CNT > 0) {
 fprintf(out_file,
@@ -1430,13 +1044,13 @@ fprintf(out_file,
       do {
          if (!(TYPE_NUMBERS(t_idx + 1) & c_type_dynamic)) {
 fprintf(out_file,
-"  this->%s = a_src->%s;\n"
+"  self.%s = a_src.%s;\n"
 ,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
          else {
 fprintf(out_file,
-"  %s_copy(&this->%s,&a_src->%s);\n"
-,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
+"  self.%s.copy(&a_src.%s);\n"
+,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
          }
       } while(++t_idx < VAR_NAMES_CNT);
    }
@@ -1444,261 +1058,75 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
+   }
+   else {
+fprintf(out_file,
+"fn copy(&mut self,a_src:&Self)\n"
+"{/*{{{*/\n"
+"  unsafe{%s_copy(self as *mut Self,a_src as *const Self);}\n"
+"}/*}}}*/\n"
+"\n"
+,STRUCT_NAME);
+   }
 }/*}}}*/
 
 void RUST_RB_TREE_OPERATOR_DOUBLE_EQUAL(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"int %s_compare(const %s *this,const %s *a_second)\n"
+"fn compare(&self,a_second:&%s) -> bool\n"
 "{/*{{{*/\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (STRUCT_NUMBER & c_type_option_safe) {
-fprintf(out_file,
-"  if (this->count != a_second->count)\n"
-"  {\n"
-"     return 0;\n"
-"  }\n"
-"\n"
-);
-   }
-fprintf(out_file,
-"  if (this->root_idx == c_idx_not_exist)\n"
-"  {\n"
-"    if (a_second->root_idx != c_idx_not_exist)\n"
-"    {\n"
-"      return 0;\n"
-"    }\n"
-"  }\n"
-"  else\n"
-"  {\n"
-"    if (a_second->root_idx == c_idx_not_exist)\n"
-"    {\n"
-"      return 0;\n"
-"    }\n"
-"\n"
-"    unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"    unsigned s_stack[RUST_RB_TREE_STACK_SIZE(%s,a_second)];\n"
-"\n"
-"    unsigned *stack_ptr = stack;\n"
-"    unsigned *s_stack_ptr = s_stack;\n"
-"\n"
-"    unsigned node_idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
-"    unsigned s_node_idx = %s_get_stack_min_value_idx(a_second,a_second->root_idx,&s_stack_ptr);\n"
-"    do {\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-   if (TYPE_NUMBERS(0) & c_type_basic) {
-fprintf(out_file,
-"      if (this->data[node_idx].object != a_second->data[s_node_idx].object)\n"
-"      {\n"
-);
-   }
-   else {
-fprintf(out_file,
-"      if (!%s_compare(&this->data[node_idx].object,&a_second->data[s_node_idx].object))\n"
-"      {\n"
-,TYPE_NAMES(0));
-   }
-fprintf(out_file,
-"        return 0;\n"
-"      }\n"
-"\n"
-"      node_idx = %s_get_stack_next_idx(this,node_idx,&stack_ptr,stack);\n"
-"      s_node_idx = %s_get_stack_next_idx(a_second,s_node_idx,&s_stack_ptr,s_stack);\n"
-"    } while(node_idx != c_idx_not_exist && s_node_idx != c_idx_not_exist);\n"
-"\n"
-"    if (node_idx != s_node_idx)\n"
-"    {\n"
-"      return 0;\n"
-"    }\n"
-"  }\n"
-"\n"
-,STRUCT_NAME,STRUCT_NAME);
-   if (VAR_NAMES_CNT > 0) {
-      if (TYPE_NUMBERS(1) & c_type_basic) {
-fprintf(out_file,
-"  return (this->%s == a_second->%s"
-,VAR_NAMES(0),VAR_NAMES(0));
-      }
-      else {
-fprintf(out_file,
-"  return (%s_compare(&this->%s,&a_second->%s)"
-,TYPE_NAMES(1),VAR_NAMES(0),VAR_NAMES(0));
-      }
-      if (VAR_NAMES_CNT > 1) {
-         unsigned t_idx = 1;
-         do {
-            if (TYPE_NUMBERS(t_idx + 1) & c_type_basic) {
-fprintf(out_file,
-" && this->%s == a_second->%s"
-,VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-            }
-            else {
-fprintf(out_file,
-" && %s_compare(&this->%s,&a_second->%s)"
-,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx),VAR_NAMES(t_idx));
-            }
-         } while(++t_idx < VAR_NAMES_CNT);
-      }
-fprintf(out_file,
-");\n"
-);
-   }
-   else {
-fprintf(out_file,
-"  return 1;\n"
-);
-   }
-fprintf(out_file,
+"  unsafe{%s_compare(self as *const Self,a_second as *const Self) != 0}\n"
 "}/*}}}*/\n"
 "\n"
-);
+,STRUCT_NAME,STRUCT_NAME);
 }/*}}}*/
 
 void RUST_RB_TREE_TO_STRING(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_STRING == ENABLED\n"
-"void %s___to_string(const %s *this,bc_array_s *a_trg)\n"
+"#[cfg(OPTION_TO_STRING = \"ENABLED\")]\n"
+"fn __to_string(&self,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-"  bc_array_s_push(a_trg,'[');\n"
-"\n"
-"  if (this->root_idx != c_idx_not_exist)\n"
-"  {\n"
-"    unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"    unsigned *stack_ptr = stack;\n"
-"\n"
-"    unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
-"    do {\n"
-"      %s_to_string(&(this->data + idx)->object,a_trg);\n"
-"\n"
-"      idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"
-"      if (idx == c_idx_not_exist)\n"
-"      {\n"
-"        break;\n"
-"      }\n"
-"\n"
-"      bc_array_s_push(a_trg,',');\n"
-"    } while(1);\n"
-"  }\n"
-"\n"
-"  bc_array_s_push(a_trg,']');\n"
+"  unsafe{%s___to_string(self as *const Self,a_trg as *mut bc_array_s);}\n"
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
-,TYPE_NAMES(0),STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RUST_RB_TREE_TO_STRING_SEPARATOR(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_STRING == ENABLED\n"
-"void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data)\n"
+"#[cfg(OPTION_TO_STRING = \"ENABLED\")]\n"
+"fn to_string_separator(&self,a_trg:&mut bc_array_s,a_sep:&str)\n"
 "{/*{{{*/\n"
-"  if (this->root_idx != c_idx_not_exist)\n"
-"  {\n"
-"    unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"    unsigned *stack_ptr = stack;\n"
-"\n"
-"    unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
-"    do {\n"
-"      %s_to_string(&(this->data + idx)->object,a_trg);\n"
-"\n"
-"      idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"
-"      if (idx == c_idx_not_exist)\n"
-"      {\n"
-"        break;\n"
-"      }\n"
-"\n"
-"      bc_array_s_append(a_trg,a_count,a_data);\n"
-"    } while(1);\n"
-"  }\n"
+"  unsafe{%s_to_string_separator(self as *const Self,a_trg as *mut bc_array_s,a_sep.len() as c_uint,a_sep.as_ptr() as *const c_char);}\n"
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
-,TYPE_NAMES(0),STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RUST_RB_TREE_TO_JSON(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_JSON == ENABLED\n"
-"void %s_to_json(const %s *this,bc_array_s *a_trg)\n"
+"#[cfg(OPTION_TO_JSON = \"ENABLED\")]\n"
+"void fn to_json(&self,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-"  if (this->root_idx != c_idx_not_exist)\n"
-"  {\n"
-"    bc_array_s_push(a_trg,'[');\n"
-"\n"
-"    unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"    unsigned *stack_ptr = stack;\n"
-"\n"
-"    unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
-"    do {\n"
-"      %s_to_json(&(this->data + idx)->object,a_trg);\n"
-"\n"
-"      idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"
-"      if (idx == c_idx_not_exist)\n"
-"      {\n"
-"        break;\n"
-"      }\n"
-"\n"
-"      bc_array_s_push(a_trg,',');\n"
-"    } while(1);\n"
-"\n"
-"    bc_array_s_push(a_trg,']');\n"
-"  }\n"
-"  else\n"
-"  {\n"
-"    bc_array_s_append(a_trg,2,\"[]\");\n"
-"  }\n"
+"  unsafe{%s_to_json(self as *const Self,a_trg as *mut bc_array_s);}\n"
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
-,TYPE_NAMES(0),STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RUST_RB_TREE_TO_JSON_NICE(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"#if OPTION_TO_JSON == ENABLED\n"
-"void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg)\n"
+"#[cfg(OPTION_TO_JSON = \"ENABLED\")]\n"
+"fn to_json_nice(&self,a_json_nice:&mut json_nice_s,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
-"  if (this->root_idx != c_idx_not_exist)\n"
-"  {\n"
-"    bc_array_s_push(a_trg,'[');\n"
-"    json_nice_s_push_indent(a_json_nice,a_trg);\n"
-"\n"
-"    unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"    unsigned *stack_ptr = stack;\n"
-"\n"
-"    unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
-"    do {\n"
-"      %s_to_json_nice(&(this->data + idx)->object,a_json_nice,a_trg);\n"
-"\n"
-"      idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"
-"      if (idx == c_idx_not_exist)\n"
-"      {\n"
-"        break;\n"
-"      }\n"
-"\n"
-"      bc_array_s_push(a_trg,',');\n"
-"      json_nice_s_indent(a_json_nice,a_trg);\n"
-"    } while(1);\n"
-"\n"
-"    json_nice_s_pop_indent(a_json_nice,a_trg);\n"
-"    bc_array_s_push(a_trg,']');\n"
-"  }\n"
-"  else\n"
-"  {\n"
-"    bc_array_s_append(a_trg,2,\"[]\");\n"
-"  }\n"
+"  unsafe{%s_to_json_nice(self as *const Self,a_json_nice as *mut json_nice_s,a_trg as *mut bc_array_s);}\n"
 "}/*}}}*/\n"
-"#endif\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
-,TYPE_NAMES(0),STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void RUST_RB_TREE_FROM_VAR(RUST_RB_TREE_GEN_PARAMS)
@@ -1871,62 +1299,11 @@ fprintf(out_file,
 void RUST_RB_TREE_REHASH_TREE(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"void %s_rehash_tree(%s *this)\n"
+"fn rehash_tree(&mut self)\n"
 "{/*{{{*/\n"
-"  if (this->root_idx == c_idx_not_exist)\n"
-"  {\n"
-"    return;\n"
-"  }\n"
-"\n"
-"  ui_array_s indexes;\n"
-"  ui_array_s_init(&indexes);\n"
-"\n"
-"  {\n"
-"    unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"    unsigned *stack_ptr = stack;\n"
-"\n"
-"    unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
-"    do {\n"
-"      ui_array_s_push(&indexes,idx);\n"
-"\n"
-"      idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"
-"    } while(idx != c_idx_not_exist);\n"
-"  }\n"
-"\n"
-"  this->root_idx = c_idx_not_exist;\n"
-"\n"
-"  char *processed = (char *)cmalloc(indexes.used);\n"
-"  memset(processed,0,indexes.used*sizeof(char)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
-"\n"
-"  unsigned step = indexes.used >> 1;\n"
-"  if (step > 0)\n"
-"  {\n"
-"    do {\n"
-"      unsigned idx = step;\n"
-"      do {\n"
-"        if (!processed[idx])\n"
-"        {\n"
-"          unsigned node_idx = indexes.data[idx];\n"
-"\n"
-"          %s___binary_tree_insert(this,node_idx,&this->data[node_idx].object,0);\n"
-"          %s___insert_operation(this,node_idx);\n"
-"\n"
-"          processed[idx] = 1;\n"
-"        }\n"
-"      } while((idx += step) < indexes.used);\n"
-"    } while((step >>= 1) > 0);\n"
-"  }\n"
-"\n"
-"  unsigned node_idx = indexes.data[0];\n"
-"  %s___binary_tree_insert(this,node_idx,&this->data[node_idx].object,0);\n"
-"  %s___insert_operation(this,node_idx);\n"
-"\n"
-"  cfree(processed);\n"
-"  ui_array_s_clear(&indexes);\n"
+"  unsafe{%s_rehash_tree(self as *mut Self);}\n"
 "}/*}}}*/\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
 ,STRUCT_NAME);
 }/*}}}*/
 
@@ -2008,138 +1385,12 @@ fprintf(out_file,
 void RUST_RB_TREE_CHECK_PROPERTIES(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
-"int %s_check_properties(const %s *this)\n"
+"fn check_properties(&self) -> bool\n"
 "{/*{{{*/\n"
-"  %s_node *leaf = this->data + this->leaf_idx;\n"
-"  if (!leaf->color)\n"
-"  {\n"
-"    fprintf(stderr,\"ERROR: leaf_node color\\n\");\n"
-"    return 0;\n"
-"  }\n"
-"\n"
-"  if (leaf->left_idx != c_idx_not_exist || leaf->right_idx != c_idx_not_exist)\n"
-"  {\n"
-"    fprintf(stderr,\"ERROR: leaf_node indexes (INFO: is allowed setting in mt_automaton code?)\\n\");\n"
-"    return 0;\n"
-"  }\n"
-"\n"
-"  if (this->root_idx != c_idx_not_exist)\n"
-"  {\n"
-"    /* - check if root node is black - */\n"
-"    %s_node *r_node = this->data + this->root_idx;\n"
-"    if (!r_node->color)\n"
-"    {\n"
-"      fprintf(stderr,\"ERROR: root node is not black\\n\");\n"
-"      return 0;\n"
-"    }\n"
-"\n"
-"    /* - create node index and path length stacks - */\n"
-"    ui_array_s ni_stack;\n"
-"    ui_array_s pl_stack;\n"
-"\n"
-"    ui_array_s_init(&ni_stack);\n"
-"    ui_array_s_init(&pl_stack);\n"
-"\n"
-"    /* - insert root on stack - */\n"
-"    ui_array_s_push(&ni_stack,this->root_idx);\n"
-"    ui_array_s_push(&pl_stack,0);\n"
-"\n"
-"    unsigned r_path_length = c_idx_not_exist;\n"
-"    do {\n"
-"      unsigned node_idx = ui_array_s_pop(&ni_stack);\n"
-"      unsigned path_length = ui_array_s_pop(&pl_stack);\n"
-"      unsigned stack_depth = ni_stack.used;\n"
-"\n"
-"      %s_node *node = this->data + node_idx;\n"
-"\n"
-"      if (node->color)\n"
-"      {\n"
-"        path_length++;\n"
-"      }\n"
-"      else\n"
-"      {\n"
-"        if (node->left_idx == c_idx_not_exist || node->right_idx == c_idx_not_exist)\n"
-"        {\n"
-"          fprintf(stderr,\"ERROR: red node has not two childs!\\n\");\n"
-"          ui_array_s_clear(&ni_stack);\n"
-"          ui_array_s_clear(&pl_stack);\n"
-"          return 0;\n"
-"        }\n"
-"\n"
-"        if (!this->data[node->left_idx].color || !this->data[node->right_idx].color)\n"
-"        {\n"
-"          fprintf(stderr,\"ERROR: child of red node is not black!\\n\");\n"
-"          ui_array_s_clear(&ni_stack);\n"
-"          ui_array_s_clear(&pl_stack);\n"
-"          return 0;\n"
-"        }\n"
-"      }\n"
-"\n"
-"      if (node->left_idx != c_idx_not_exist)\n"
-"      {\n"
-"        ui_array_s_push(&ni_stack,node->left_idx);\n"
-"        ui_array_s_push(&pl_stack,path_length);\n"
-"      }\n"
-"\n"
-"      if (node->right_idx != c_idx_not_exist)\n"
-"      {\n"
-"        ui_array_s_push(&ni_stack,node->right_idx);\n"
-"        ui_array_s_push(&pl_stack,path_length);\n"
-"      }\n"
-"\n"
-"      /* - if node is leaf node - */\n"
-"      if (stack_depth == ni_stack.used)\n"
-"      {\n"
-"        if (r_path_length != c_idx_not_exist)\n"
-"        {\n"
-"          if (r_path_length != path_length)\n"
-"          {\n"
-"            fprintf(stderr,\"ERROR: all path have no same length!\\n\");\n"
-"            ui_array_s_clear(&ni_stack);\n"
-"            ui_array_s_clear(&pl_stack);\n"
-"            return 0;\n"
-"          }\n"
-"        }\n"
-"        else\n"
-"        {\n"
-"          r_path_length = path_length;\n"
-"        }\n"
-"      }\n"
-"\n"
-"    } while(ni_stack.used > 0);\n"
-"\n"
-"    ui_array_s_clear(&ni_stack);\n"
-"    ui_array_s_clear(&pl_stack);\n"
-"  }\n"
-"\n"
-"  /* - test if are node values sorted - */\n"
-"  if (this->root_idx != c_idx_not_exist)\n"
-"  {\n"
-"    unsigned stack[RUST_RB_TREE_STACK_SIZE(%s,this)];\n"
-"    unsigned *stack_ptr = stack;\n"
-"\n"
-"    unsigned idx = %s_get_stack_min_value_idx(this,this->root_idx,&stack_ptr);\n"
-"    do {\n"
-"      unsigned l_idx = idx;\n"
-"      idx = %s_get_stack_next_idx(this,idx,&stack_ptr,stack);\n"
-"      if (idx == c_idx_not_exist)\n"
-"      {\n"
-"        break;\n"
-"      }\n"
-"\n"
-"      if (%s___compare_value(this,&this->data[l_idx].object,&this->data[idx].object) == 1)\n"
-"      {\n"
-"        fprintf(stderr,\"ERROR: values in rb_tree are not sorted\\n\");\n"
-"        return 0;\n"
-"      }\n"
-"    } while(1);\n"
-"  }\n"
-"\n"
-"  return 1;\n"
+"  unsafe{%s_check_properties(self as *const Self) != 0}\n"
 "}/*}}}*/\n"
 "\n"
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME
-,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+,STRUCT_NAME);
 }/*}}}*/
 
 void processor_s::generate_rust_rb_tree_type()
@@ -2379,14 +1630,6 @@ fprintf(out_file,
 "fn %s___remove_black_black(this:*mut %s,a_idx:c_uint);\n"
 "fn %s___insert_operation(this:*mut %s,a_idx:c_uint);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-//fprintf(out_file,
-//"static inline int %s___compare_value(const %s *this,const %s *a_first,const %s *a_second);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),TYPE_NAMES(0));
-//   if (!(STRUCT_NUMBER & c_type_option_nogen_init)) {
-//fprintf(out_file,
-//"static inline void %s_init(%s *this);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-//   }
    if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
       if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
@@ -2397,126 +1640,83 @@ fprintf(out_file,
    if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
       if (TYPE_NUMBERS(0) & c_type_dynamic) {
 fprintf(out_file,
-"fn %s_set_buffer(this:*mut %s,a_size:u32,a_data:*const %s_node);\n"
+"fn %s_set_buffer(this:*mut %s,a_size:c_uint,a_data:*const %s_node);\n"
 ,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
       }
    }
-//   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
-//fprintf(out_file,
-//"static inline void %s_flush_all(%s *this);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-//   }
-//   else {
-//fprintf(out_file,
-//"EXPORT void %s_flush_all(%s *this);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-//   }
-//   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-//fprintf(out_file,
-//"static inline void %s_swap(%s *this,%s *a_second);\n"
-//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-//   }
-//fprintf(out_file,
-//"static inline %s *%s_at(const %s *this,unsigned a_idx);\n"
-//,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME);
-//   if (TYPE_NUMBERS(0) & c_type_basic) {
-//fprintf(out_file,
-//"static inline unsigned %s_insert(%s *this,%s a_value);\n"
-//"static inline unsigned %s_unique_insert(%s *this,%s a_value);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-//   }
-//   else {
-//fprintf(out_file,
-//"static inline unsigned %s_insert(%s *this,const %s *a_value);\n"
-//"static inline unsigned %s_unique_insert(%s *this,const %s *a_value);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-//   }
-//   if (TYPE_NUMBERS(0) & c_type_dynamic) {
-//fprintf(out_file,
-//"static inline unsigned %s_swap_insert(%s *this,%s *a_value);\n"
-//"static inline unsigned %s_unique_swap_insert(%s *this,%s *a_value);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0),STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-//   }
-//fprintf(out_file,
-//"EXPORT void %s_remove(%s *this,unsigned a_idx);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+   if (TYPE_NUMBERS(0) & c_type_flushable) {
 fprintf(out_file,
-"fn %s_copy_resize(this:*mut %s,a_size:u32);\n"
+"fn %s_flush_all(this:*mut %s);\n"
 ,STRUCT_NAME,STRUCT_NAME);
    }
-//   if (TYPE_NUMBERS(0) & c_type_basic) {
-//fprintf(out_file,
-//"EXPORT unsigned %s_get_idx(const %s *this,%s a_value);\n"
-//"EXPORT unsigned %s_get_idx_left(const %s *this,%s a_value);\n"
-//"EXPORT unsigned %s_get_gre_idx(const %s *this,%s a_value);\n"
-//"EXPORT unsigned %s_get_lee_idx(const %s *this,%s a_value);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-//   }
-//   else {
-//fprintf(out_file,
-//"EXPORT unsigned %s_get_idx(const %s *this,const %s *a_value);\n"
-//"EXPORT unsigned %s_get_idx_left(const %s *this,const %s *a_value);\n"
-//"EXPORT unsigned %s_get_gre_idx(const %s *this,const %s *a_value);\n"
-//"EXPORT unsigned %s_get_lee_idx(const %s *this,const %s *a_value);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-//   }
-//   if (TYPE_NUMBERS(0) & c_type_basic) {
-//fprintf(out_file,
-//"EXPORT void %s_get_idxs(const %s *this,%s a_value,ui_array_s *a_idxs_array);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-//   }
-//   else {
-//fprintf(out_file,
-//"EXPORT void %s_get_idxs(const %s *this,const %s *a_value,ui_array_s *a_idxs_array);\n"
-//,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
-//   }
-//   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-//      if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-//fprintf(out_file,
-//"static inline void %s_copy(%s *this,const %s *a_src);\n"
-//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-//      }
-//      else {
-//fprintf(out_file,
-//"EXPORT void %s_copy(%s *this,const %s *a_src);\n"
-//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-//      }
-//   }
-//fprintf(out_file,
-//"EXPORT int %s_compare(const %s *this,const %s *a_second);\n"
-//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-//fprintf(out_file,
-//"#if OPTION_TO_STRING == ENABLED\n"
-//"EXPORT void %s___to_string(const %s *this,bc_array_s *a_trg);\n"
-//"#define %s_to_string %s___to_string\n"
-//"EXPORT void %s_to_string_separator(const %s *this,bc_array_s *a_trg,unsigned a_count,const char *a_data);\n"
-//"#endif\n"
-//,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
-//   if (STRUCT_NUMBER & (c_type_option_to_json | c_type_option_to_json_nice)) {
-//fprintf(out_file,
-//"#if OPTION_TO_JSON == ENABLED\n"
-//);
-//      if (STRUCT_NUMBER & c_type_option_to_json) {
-//fprintf(out_file,
-//"EXPORT void %s_to_json(const %s *this,bc_array_s *a_trg);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-//      }
-//      if (STRUCT_NUMBER & c_type_option_to_json_nice) {
-//fprintf(out_file,
-//"EXPORT void %s_to_json_nice(const %s *this,json_nice_s *a_json_nice,bc_array_s *a_trg);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-//      }
-//fprintf(out_file,
-//"#endif\n"
-//);
-//   }
+fprintf(out_file,
+"fn %s_remove(this:*mut %s,a_idx:c_uint);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
+fprintf(out_file,
+"fn %s_copy_resize(this:*mut %s,a_size:c_uint);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+fprintf(out_file,
+"fn %s_get_idx(this:*const %s,a_value:%s) -> c_uint;\n"
+"fn %s_get_idx_left(this:*const %s,a_value:%s) -> c_uint;\n"
+"fn %s_get_gre_idx(this:*const %s,a_value:%s) -> c_uint;\n"
+"fn %s_get_lee_idx(this:*const %s,a_value:%s) -> c_uint;\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+);
+   }
+   else {
+fprintf(out_file,
+"fn %s_get_idx(this:*const %s,a_value:*const %s) -> c_uint;\n"
+"fn %s_get_idx_left(this:*const %s,a_value:*const %s) -> c_uint;\n"
+"fn %s_get_gre_idx(this:*const %s,a_value:*const %s) -> c_uint;\n"
+"fn %s_get_lee_idx(this:*const %s,a_value:*const %s) -> c_uint;\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0)
+);
+   }
+   if (TYPE_NUMBERS(0) & c_type_basic) {
+fprintf(out_file,
+"fn %s_get_idxs(this:*const %s,a_value:%s,a_idxs_array:*mut ui_array_s);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
+   }
+   else {
+fprintf(out_file,
+"fn %s_get_idxs(this:*const %s,a_value:*const %s,a_idxs_array:*mut ui_array_s);\n"
+,STRUCT_NAME,STRUCT_NAME,TYPE_NAMES(0));
+   }
+   if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+      if (TYPE_NUMBERS(0) & c_type_dynamic) {
+fprintf(out_file,
+"fn %s_copy(this:*mut %s,a_src:*const %s);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+      }
+   }
+fprintf(out_file,
+"fn %s_compare(this:*const %s,a_second:*const %s) -> c_int;\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+fprintf(out_file,
+"fn %s___to_string(this:*const %s,a_trg:*mut bc_array_s);\n"
+"fn %s_to_string_separator(this:*const %s,a_trg:*mut bc_array_s,a_count:c_uint,a_data:*const c_char);\n"
+,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME,STRUCT_NAME);
+   if (STRUCT_NUMBER & (c_type_option_to_json | c_type_option_to_json_nice)) {
+      if (STRUCT_NUMBER & c_type_option_to_json) {
+fprintf(out_file,
+"fn %s_to_json(this:*const %s,a_trg:*mut bc_array_s);\n"
+,STRUCT_NAME,STRUCT_NAME);
+      }
+      if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+fprintf(out_file,
+"fn %s_to_json_nice(this:*const %s,a_json_nice:*mut json_nice_s,a_trg:*mut bc_array_s);\n"
+,STRUCT_NAME,STRUCT_NAME);
+      }
+   }
 //   if (STRUCT_NUMBER & c_type_option_from_var) {
 //fprintf(out_file,
 //"#if OPTION_FROM_VAR == ENABLED\n"
@@ -2531,21 +1731,21 @@ fprintf(out_file,
 //"#endif\n"
 //,STRUCT_NAME,STRUCT_NAME);
 //   }
-//   if (STRUCT_NUMBER & c_type_option_rehash) {
-//fprintf(out_file,
-//"EXPORT void %s_rehash_tree(%s *this);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-//   }
+   if (STRUCT_NUMBER & c_type_option_rehash) {
+fprintf(out_file,
+"fn %s_rehash_tree(this:*mut %s);\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
 //   if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 //fprintf(out_file,
 //"EXPORT void %s_print_dot_code(const %s *this,FILE *a_file);\n"
 //,STRUCT_NAME,STRUCT_NAME);
 //   }
-//   if (STRUCT_NUMBER & c_type_option_check_properties) {
-//fprintf(out_file,
-//"EXPORT int %s_check_properties(const %s *this);\n"
-//,STRUCT_NAME,STRUCT_NAME);
-//   }
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
+fprintf(out_file,
+"fn %s_check_properties(this:*const %s) -> c_int;\n"
+,STRUCT_NAME,STRUCT_NAME);
+   }
 fprintf(out_file,
 "}\n"
 );
@@ -2685,71 +1885,71 @@ RUST_RB_TREE_SET_BUFFER(RUST_RB_TREE_GEN_VALUES);
    // - rb_tree flush method -
 RUST_RB_TREE_FLUSH(RUST_RB_TREE_GEN_VALUES);
 
-//   // - rb_tree flush_all method -
-//   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
-//RUST_RB_TREE_FLUSH_ALL(RUST_RB_TREE_GEN_VALUES);
-//   }
-//
-//   // - rb_tree swap method -
-//   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
-//RUST_RB_TREE_SWAP(RUST_RB_TREE_GEN_VALUES);
-//   }
-//
-//   // - rb_tree operator[] method -
-//RUST_RB_TREE_OPERATOR_LE_BR_RE_BR(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree insert method -
-//RUST_RB_TREE_INSERT(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree swap_insert method -
-//RUST_RB_TREE_SWAP_INSERT(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree unique_insert method -
-//RUST_RB_TREE_UNIQUE_INSERT(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree unique_swap_insert method -
-//RUST_RB_TREE_UNIQUE_SWAP_INSERT(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree remove method -
-//
+   // - rb_tree flush_all method -
+   if (!(TYPE_NUMBERS(0) & c_type_flushable)) {
+RUST_RB_TREE_FLUSH_ALL(RUST_RB_TREE_GEN_VALUES);
+   }
+
+   // - rb_tree swap method -
+   if (!(STRUCT_NUMBER & c_type_option_nogen_swap)) {
+RUST_RB_TREE_SWAP(RUST_RB_TREE_GEN_VALUES);
+   }
+
+   // - rb_tree operator[] method -
+RUST_RB_TREE_OPERATOR_LE_BR_RE_BR(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree insert method -
+RUST_RB_TREE_INSERT(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree swap_insert method -
+RUST_RB_TREE_SWAP_INSERT(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree unique_insert method -
+RUST_RB_TREE_UNIQUE_INSERT(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree unique_swap_insert method -
+RUST_RB_TREE_UNIQUE_SWAP_INSERT(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree remove method -
+
    // - rb_tree copy_resize method -
 
-//   // - rb_tree get_idx method -
-//
-//   // - rb_tree get_idx_left method -
-//
-//   // - rb_tree get_gre_idx method -
-//
-//   // - rb_tree get_lee_idx method -
-//
-//   // - rb_tree get_idxs method -
-//
-//   // - rb_tree operator= method -
-//   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
-//      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-//RUST_RB_TREE_OPERATOR_EQUAL(RUST_RB_TREE_GEN_VALUES);
-//      }
-//   }
-//
-//   // - rb_tree operator== method -
-//
-//   // - rb_tree to_string method -
-//
-//   // - rb_tree to_string_separator method -
-//
-//   // - rb_tree rehash_tree -
-//
-//   // - rb_tree print_dot_code -
-//
-//   // - rb_tree check_properties -
-//
-//   // - rb_tree to_json method -
-//
-//   // - rb_tree to_json_nice method -
-//
-//   // - rb_tree from_var method -
-//
-//   // - rb_tree from_json method -
+   // - rb_tree get_idx method -
+
+   // - rb_tree get_idx_left method -
+
+   // - rb_tree get_gre_idx method -
+
+   // - rb_tree get_lee_idx method -
+
+   // - rb_tree get_idxs method -
+
+   // - rb_tree operator= method -
+   if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+RUST_RB_TREE_OPERATOR_EQUAL(RUST_RB_TREE_GEN_VALUES);
+      }
+   }
+
+   // - rb_tree operator== method -
+
+   // - rb_tree to_string method -
+
+   // - rb_tree to_string_separator method -
+
+   // - rb_tree rehash_tree -
+
+   // - rb_tree print_dot_code -
+
+   // - rb_tree check_properties -
+
+   // - rb_tree to_json method -
+
+   // - rb_tree to_json_nice method -
+
+   // - rb_tree from_var method -
+
+   // - rb_tree from_json method -
 
 fprintf(out_file,
 "}\n"
@@ -2867,11 +2067,11 @@ RUST_RB_TREE_SET_BUFFER(RUST_RB_TREE_GEN_VALUES);
 
    // - rb_tree flush method -
 
-//   // - rb_tree flush_all method -
-//   if (TYPE_NUMBERS(0) & c_type_flushable) {
-//RUST_RB_TREE_FLUSH_ALL(RUST_RB_TREE_GEN_VALUES);
-//   }
-//
+   // - rb_tree flush_all method -
+   if (TYPE_NUMBERS(0) & c_type_flushable) {
+RUST_RB_TREE_FLUSH_ALL(RUST_RB_TREE_GEN_VALUES);
+   }
+
 //   // - rb_tree swap method -
 //
 //   // - rb_tree operator[] method -
@@ -2883,56 +2083,56 @@ RUST_RB_TREE_SET_BUFFER(RUST_RB_TREE_GEN_VALUES);
 //   // - rb_tree unique_insert method -
 //
 //   // - rb_tree unique_swap_insert method -
-//
-//   // - rb_tree remove method -
-//RUST_RB_TREE_REMOVE(RUST_RB_TREE_GEN_VALUES);
-//
+
+   // - rb_tree remove method -
+RUST_RB_TREE_REMOVE(RUST_RB_TREE_GEN_VALUES);
+
    // - rb_tree copy_resize method -
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 RUST_RB_TREE_COPY_RESIZE(RUST_RB_TREE_GEN_VALUES);
    }
 
-//   // - rb_tree get_idx method -
-//RUST_RB_TREE_GET_IDX(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree get_idx_left method -
-//RUST_RB_TREE_GET_IDX_LEFT(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree get_gre_idx method -
-//RUST_RB_TREE_GET_GRE_IDX(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree get_lee_idx method -
-//RUST_RB_TREE_GET_LEE_IDX(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree get_idxs method -
-//RUST_RB_TREE_GET_IDXS(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree operator= method -
-//   if (TYPE_NUMBERS(0) & c_type_dynamic) {
-//      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
-//RUST_RB_TREE_OPERATOR_EQUAL(RUST_RB_TREE_GEN_VALUES);
-//      }
-//   }
-//
-//   // - rb_tree operator== method -
-//RUST_RB_TREE_OPERATOR_DOUBLE_EQUAL(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree to_string method -
-//RUST_RB_TREE_TO_STRING(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree to_string_separator method -
-//RUST_RB_TREE_TO_STRING_SEPARATOR(RUST_RB_TREE_GEN_VALUES);
-//
-//   // - rb_tree to_json method -
-//   if (STRUCT_NUMBER & c_type_option_to_json) {
-//RUST_RB_TREE_TO_JSON(RUST_RB_TREE_GEN_VALUES);
-//   }
-//
-//   // - rb_tree to_json_nice method -
-//   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
-//RUST_RB_TREE_TO_JSON_NICE(RUST_RB_TREE_GEN_VALUES);
-//   }
-//
+   // - rb_tree get_idx method -
+RUST_RB_TREE_GET_IDX(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree get_idx_left method -
+RUST_RB_TREE_GET_IDX_LEFT(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree get_gre_idx method -
+RUST_RB_TREE_GET_GRE_IDX(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree get_lee_idx method -
+RUST_RB_TREE_GET_LEE_IDX(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree get_idxs method -
+RUST_RB_TREE_GET_IDXS(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree operator= method -
+   if (TYPE_NUMBERS(0) & c_type_dynamic) {
+      if (!(STRUCT_NUMBER & c_type_option_nogen_copy)) {
+RUST_RB_TREE_OPERATOR_EQUAL(RUST_RB_TREE_GEN_VALUES);
+      }
+   }
+
+   // - rb_tree operator== method -
+RUST_RB_TREE_OPERATOR_DOUBLE_EQUAL(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree to_string method -
+RUST_RB_TREE_TO_STRING(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree to_string_separator method -
+RUST_RB_TREE_TO_STRING_SEPARATOR(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree to_json method -
+   if (STRUCT_NUMBER & c_type_option_to_json) {
+RUST_RB_TREE_TO_JSON(RUST_RB_TREE_GEN_VALUES);
+   }
+
+   // - rb_tree to_json_nice method -
+   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+RUST_RB_TREE_TO_JSON_NICE(RUST_RB_TREE_GEN_VALUES);
+   }
+
 //   // - rb_tree from_var method -
 //   if (STRUCT_NUMBER & c_type_option_from_var) {
 //RUST_RB_TREE_FROM_VAR(RUST_RB_TREE_GEN_VALUES);
@@ -2942,21 +2142,21 @@ RUST_RB_TREE_COPY_RESIZE(RUST_RB_TREE_GEN_VALUES);
 //   if (STRUCT_NUMBER & c_type_option_from_json) {
 //RUST_RB_TREE_FROM_JSON(RUST_RB_TREE_GEN_VALUES);
 //   }
-//
-//   // - rb_tree rehash_tree -
-//   if (STRUCT_NUMBER & c_type_option_rehash) {
-//RUST_RB_TREE_REHASH_TREE(RUST_RB_TREE_GEN_VALUES);
-//   }
-//
+
+   // - rb_tree rehash_tree -
+   if (STRUCT_NUMBER & c_type_option_rehash) {
+RUST_RB_TREE_REHASH_TREE(RUST_RB_TREE_GEN_VALUES);
+   }
+
 //   // - rb_tree print_dot_code -
 //   if (STRUCT_NUMBER & c_type_option_print_dot_code) {
 //RUST_RB_TREE_PRINT_DOT_CODE(RUST_RB_TREE_GEN_VALUES);
 //   }
-//
-//   // - rb_tree check_properties -
-//   if (STRUCT_NUMBER & c_type_option_check_properties) {
-//RUST_RB_TREE_CHECK_PROPERTIES(RUST_RB_TREE_GEN_VALUES);
-//   }
+
+   // - rb_tree check_properties -
+   if (STRUCT_NUMBER & c_type_option_check_properties) {
+RUST_RB_TREE_CHECK_PROPERTIES(RUST_RB_TREE_GEN_VALUES);
+   }
 
 fprintf(out_file,
 "}\n"
