@@ -1085,7 +1085,7 @@ void RUST_RB_TREE_TO_STRING(RUST_RB_TREE_GEN_PARAMS)
 {/*{{{*/
 fprintf(out_file,
 "#[cfg(OPTION_TO_STRING = \"ENABLED\")]\n"
-"fn __to_string(&self,a_trg:&mut bc_array_s)\n"
+"fn to_string(&self,a_trg:&mut bc_array_s)\n"
 "{/*{{{*/\n"
 "  unsafe{%s___to_string(self as *const Self,a_trg as *mut bc_array_s);}\n"
 "}/*}}}*/\n"
@@ -2117,21 +2117,8 @@ RUST_RB_TREE_OPERATOR_EQUAL(RUST_RB_TREE_GEN_VALUES);
    // - rb_tree operator== method -
 RUST_RB_TREE_OPERATOR_DOUBLE_EQUAL(RUST_RB_TREE_GEN_VALUES);
 
-   // - rb_tree to_string method -
-RUST_RB_TREE_TO_STRING(RUST_RB_TREE_GEN_VALUES);
-
    // - rb_tree to_string_separator method -
 RUST_RB_TREE_TO_STRING_SEPARATOR(RUST_RB_TREE_GEN_VALUES);
-
-   // - rb_tree to_json method -
-   if (STRUCT_NUMBER & c_type_option_to_json) {
-RUST_RB_TREE_TO_JSON(RUST_RB_TREE_GEN_VALUES);
-   }
-
-   // - rb_tree to_json_nice method -
-   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
-RUST_RB_TREE_TO_JSON_NICE(RUST_RB_TREE_GEN_VALUES);
-   }
 
 //   // - rb_tree from_var method -
 //   if (STRUCT_NUMBER & c_type_option_from_var) {
@@ -2197,6 +2184,19 @@ fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
 );
+
+   // - rb_tree to_string method -
+RUST_RB_TREE_TO_STRING(RUST_RB_TREE_GEN_VALUES);
+
+   // - rb_tree to_json method -
+   if (STRUCT_NUMBER & c_type_option_to_json) {
+RUST_RB_TREE_TO_JSON(RUST_RB_TREE_GEN_VALUES);
+   }
+
+   // - rb_tree to_json_nice method -
+   if (STRUCT_NUMBER & c_type_option_to_json_nice) {
+RUST_RB_TREE_TO_JSON_NICE(RUST_RB_TREE_GEN_VALUES);
+   }
 
 fprintf(out_file,
 "}\n"
