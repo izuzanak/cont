@@ -47,6 +47,10 @@ fprintf(out_file,
 "  }\n"
 );
    }
+   else {
+fprintf(out_file,
+"  (void)this;\n");
+   }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
@@ -108,6 +112,10 @@ fprintf(out_file,
 "      break;\n"
 "  }\n"
 );
+   }
+   else {
+fprintf(out_file,
+"  (void)this;\n");
    }
 fprintf(out_file,
 "}/*}}}*/\n"

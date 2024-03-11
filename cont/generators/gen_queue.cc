@@ -151,6 +151,10 @@ fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,STRUCT_NAME);
    }
+   else {
+fprintf(out_file,
+"  (void)this;\n");
+   }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
@@ -196,6 +200,12 @@ fprintf(out_file,
 "    %s_flush_all(ptr);\n"
 "  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+   else {
+     if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+fprintf(out_file,
+"  (void)this;\n");
+     }
    }
 fprintf(out_file,
 "}/*}}}*/\n"

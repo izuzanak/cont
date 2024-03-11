@@ -7715,6 +7715,10 @@ fprintf(out_file,
 "  %s_copy_resize(this,this->used);\n"
 ,STRUCT_NAME);
    }
+   else {
+fprintf(out_file,
+"  (void)this;\n");
+   }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
@@ -7760,6 +7764,12 @@ fprintf(out_file,
 "    %s_flush_all(ptr);\n"
 "  } while(++ptr < ptr_end);\n"
 ,TYPE_NAME,TYPE_NAME,TYPE_NAME);
+   }
+   else {
+     if (STRUCT_NUMBER & c_type_option_fixed_buffer) {
+fprintf(out_file,
+"  (void)this;\n");
+     }
    }
 fprintf(out_file,
 "}/*}}}*/\n"
@@ -11307,14 +11317,20 @@ fprintf(out_file,
 "static inline void %s_init(%s *this)\n"
 "{/*{{{*/\n"
 ,STRUCT_NAME,STRUCT_NAME);
+   unsigned count = 0;
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
 "  %s_init(&this->%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         ++count;
       }
    } while(++t_idx < TYPE_CNT);
+   if (count <= 0) {
+fprintf(out_file,
+"  (void)this;\n");
+   }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
@@ -11327,14 +11343,20 @@ fprintf(out_file,
 "static inline void %s_clear(%s *this)\n"
 "{/*{{{*/\n"
 ,STRUCT_NAME,STRUCT_NAME);
+   unsigned count = 0;
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_clear(&this->%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         ++count;
       }
    } while(++t_idx < TYPE_CNT);
+   if (count <= 0) {
+fprintf(out_file,
+"  (void)this;\n");
+   }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
@@ -11405,14 +11427,20 @@ fprintf(out_file,
 "static inline void %s_flush_all(%s *this)\n"
 "{/*{{{*/\n"
 ,STRUCT_NAME,STRUCT_NAME);
+   unsigned count = 0;
    unsigned t_idx = 0;
    do {
       if (TYPE_NUMBERS(t_idx) & c_type_flushable) {
 fprintf(out_file,
 "  %s_flush_all(&this->%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
+         ++count;
       }
    } while(++t_idx < TYPE_CNT);
+   if (count <= 0) {
+fprintf(out_file,
+"  (void)this;\n");
+   }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
@@ -12242,6 +12270,10 @@ fprintf(out_file,
 "  }\n"
 );
    }
+   else {
+fprintf(out_file,
+"  (void)this;\n");
+   }
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
@@ -12303,6 +12335,10 @@ fprintf(out_file,
 "      break;\n"
 "  }\n"
 );
+   }
+   else {
+fprintf(out_file,
+"  (void)this;\n");
    }
 fprintf(out_file,
 "}/*}}}*/\n"
