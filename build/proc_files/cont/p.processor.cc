@@ -1030,7 +1030,10 @@ inline void ui_array_s::push(unsigned a_value)
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++] = a_value;
@@ -1040,7 +1043,10 @@ inline void ui_array_s::push_blank()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -1050,7 +1056,10 @@ inline void ui_array_s::push_clear()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -1280,7 +1289,10 @@ inline unsigned mc_block_rb_tree_s::__get_new_index()
   {
     if (used >= size)
     {
-      copy_resize((size << 1) + c_array_add);
+      unsigned new_size = (size << 1) + c_array_add;
+      debug_assert(new_size != 0);
+
+      copy_resize(new_size);
     }
 
     new_idx = used++;
@@ -1493,6 +1505,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
     return *this;
   }
 
+  debug_assert(a_src.used != 0);
   copy_resize(a_src.used);
 
   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
@@ -2300,7 +2313,10 @@ inline void string_array_s::push(string_s &a_value)
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++] = a_value;
@@ -2310,7 +2326,10 @@ inline void string_array_s::push_blank()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -2320,7 +2339,10 @@ inline void string_array_s::push_clear()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++].clear();
@@ -3318,7 +3340,10 @@ inline unsigned string_tree_s::__get_new_index()
   {
     if (used >= size)
     {
-      copy_resize((size << 1) + c_array_add);
+      unsigned new_size = (size << 1) + c_array_add;
+      debug_assert(new_size != 0);
+
+      copy_resize(new_size);
     }
 
     new_idx = used++;
@@ -3623,7 +3648,10 @@ inline void data_type_array_s::push(data_type_s &a_value)
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++] = a_value;
@@ -3633,7 +3661,10 @@ inline void data_type_array_s::push_blank()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -3643,7 +3674,10 @@ inline void data_type_array_s::push_clear()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++].clear();
@@ -3767,7 +3801,10 @@ inline void abbreviation_array_s::push(abbreviation_s &a_value)
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++] = a_value;
@@ -3777,7 +3814,10 @@ inline void abbreviation_array_s::push_blank()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -3787,7 +3827,10 @@ inline void abbreviation_array_s::push_clear()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++].clear();
@@ -4437,7 +4480,10 @@ inline void lalr_stack_s::push(lalr_stack_element_s &a_value)
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++] = a_value;
@@ -4447,7 +4493,10 @@ inline void lalr_stack_s::push_blank()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -4457,7 +4506,10 @@ inline void lalr_stack_s::push_clear()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -5168,6 +5220,7 @@ void string_tree_s::copy_resize(unsigned a_size)
     {
       cfree(data);
     }
+
     data = nullptr;
   }
   else
@@ -5177,6 +5230,8 @@ void string_tree_s::copy_resize(unsigned a_size)
 
   if (a_size > size)
   {
+    debug_assert(memset(data + size,0,(a_size - size)*sizeof(string_tree_s_node)) == (data + size));
+
     string_tree_s_node *ptr = data + size;
     string_tree_s_node *ptr_end = data + a_size;
 
@@ -5370,6 +5425,7 @@ string_tree_s &string_tree_s::operator=(string_tree_s &a_src)
     return *this;
   }
 
+  debug_assert(a_src.used != 0);
   copy_resize(a_src.used);
 
   string_tree_s_node *ptr = data;
@@ -5559,6 +5615,7 @@ void data_type_array_s::copy_resize(unsigned a_size)
     {
       cfree(data);
     }
+
     data = nullptr;
   }
   else
@@ -5787,6 +5844,7 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
     {
       cfree(data);
     }
+
     data = nullptr;
   }
   else
@@ -6244,7 +6302,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -6271,7 +6332,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -6351,7 +6415,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -6495,6 +6562,7 @@ fprintf(out_file,
 "    {\n"
 "      cfree(data);\n"
 "    }\n"
+"\n"
 "    data = nullptr;\n"
 "  }\n"
 "  else\n"
@@ -7654,7 +7722,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -7688,7 +7759,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -7768,6 +7842,8 @@ fprintf(out_file,
 "\n"
 "    if (a_size > used)\n"
 "    {\n"
+"      debug_assert(memset(n_data + used,0,(a_size - used)*sizeof(%s)) == (n_data + used));\n"
+"\n"
 "      %s *ptr = n_data + used;\n"
 "      %s *ptr_end = n_data + a_size;\n"
 "\n"
@@ -7775,7 +7851,7 @@ fprintf(out_file,
 "        ptr->init();\n"
 "      } while(++ptr < ptr_end);\n"
 "    }\n"
-,TYPE_NAME,TYPE_NAME);
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "  }\n"
@@ -8943,7 +9019,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9023,7 +9102,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9116,7 +9198,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9210,7 +9295,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9282,7 +9370,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9351,7 +9442,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9433,7 +9527,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9516,7 +9613,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -9691,6 +9791,7 @@ fprintf(out_file,
 "    {\n"
 "      cfree(data);\n"
 "    }\n"
+"\n"
 "    data = nullptr;\n"
 "  }\n"
 "  else\n"
@@ -11559,7 +11660,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -12506,6 +12610,7 @@ fprintf(out_file,
 "    {\n"
 "      cfree(data);\n"
 "    }\n"
+"\n"
 "    data = nullptr;\n"
 "  }\n"
 "  else\n"
@@ -12518,6 +12623,8 @@ fprintf(out_file,
 "\n"
 "  if (a_size > size)\n"
 "  {\n"
+"    debug_assert(memset(data + size,0,(a_size - size)*sizeof(%s_node)) == (data + size));\n"
+"\n"
 "    %s_node *ptr = data + size;\n"
 "    %s_node *ptr_end = data + a_size;\n"
 "\n"
@@ -12525,7 +12632,7 @@ fprintf(out_file,
 "      ptr->object.init();\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
 fprintf(out_file,
 "\n"
@@ -12815,6 +12922,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
+"  debug_assert(a_src.used != 0);\n"
 "  copy_resize(a_src.used);\n"
 );
    }

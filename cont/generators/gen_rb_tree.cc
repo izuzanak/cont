@@ -376,7 +376,10 @@ fprintf(out_file,
 fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
-"      copy_resize((size << 1) + c_array_add);\n"
+"      unsigned new_size = (size << 1) + c_array_add;\n"
+"      debug_assert(new_size != 0);\n"
+"\n"
+"      copy_resize(new_size);\n"
 "    }\n"
 "\n"
 );
@@ -1323,6 +1326,7 @@ fprintf(out_file,
 "    {\n"
 "      cfree(data);\n"
 "    }\n"
+"\n"
 "    data = nullptr;\n"
 "  }\n"
 "  else\n"
@@ -1335,6 +1339,8 @@ fprintf(out_file,
 "\n"
 "  if (a_size > size)\n"
 "  {\n"
+"    debug_assert(memset(data + size,0,(a_size - size)*sizeof(%s_node)) == (data + size));\n"
+"\n"
 "    %s_node *ptr = data + size;\n"
 "    %s_node *ptr_end = data + a_size;\n"
 "\n"
@@ -1342,7 +1348,7 @@ fprintf(out_file,
 "      ptr->object.init();\n"
 "    } while(++ptr < ptr_end);\n"
 "  }\n"
-,IM_STRUCT_NAME,IM_STRUCT_NAME);
+,IM_STRUCT_NAME,IM_STRUCT_NAME,IM_STRUCT_NAME);
    }
 fprintf(out_file,
 "\n"
@@ -1632,6 +1638,7 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "\n"
+"  debug_assert(a_src.used != 0);\n"
 "  copy_resize(a_src.used);\n"
 );
    }

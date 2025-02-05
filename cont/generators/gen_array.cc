@@ -314,7 +314,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -341,7 +344,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -421,7 +427,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -565,6 +574,7 @@ fprintf(out_file,
 "    {\n"
 "      cfree(data);\n"
 "    }\n"
+"\n"
 "    data = nullptr;\n"
 "  }\n"
 "  else\n"

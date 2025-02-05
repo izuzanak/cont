@@ -247,7 +247,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -281,7 +284,10 @@ fprintf(out_file,
 fprintf(out_file,
 "  if (used >= size)\n"
 "  {\n"
-"    copy_resize((size << 1) + c_array_add);\n"
+"    unsigned new_size = (size << 1) + c_array_add;\n"
+"    debug_assert(new_size != 0);\n"
+"\n"
+"    copy_resize(new_size);\n"
 "  }\n"
 "\n"
 );
@@ -361,6 +367,8 @@ fprintf(out_file,
 "\n"
 "    if (a_size > used)\n"
 "    {\n"
+"      debug_assert(memset(n_data + used,0,(a_size - used)*sizeof(%s)) == (n_data + used));\n"
+"\n"
 "      %s *ptr = n_data + used;\n"
 "      %s *ptr_end = n_data + a_size;\n"
 "\n"
@@ -368,7 +376,7 @@ fprintf(out_file,
 "        ptr->init();\n"
 "      } while(++ptr < ptr_end);\n"
 "    }\n"
-,TYPE_NAME,TYPE_NAME);
+,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    }
 fprintf(out_file,
 "  }\n"
