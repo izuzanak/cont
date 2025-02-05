@@ -1121,6 +1121,7 @@ fprintf(out_file,
 "    {\n"
 "      cfree(this->data);\n"
 "    }\n"
+"\n"
 "    this->data = NULL;\n"
 "  }\n"
 "  else\n"

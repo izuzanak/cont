@@ -1022,7 +1022,10 @@ inline void ui_array_s::push(unsigned a_value)
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   data[used++] = a_value;
@@ -1032,7 +1035,10 @@ inline void ui_array_s::push_blank()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -1042,7 +1048,10 @@ inline void ui_array_s::push_clear()
 {/*{{{*/
   if (used >= size)
   {
-    copy_resize((size << 1) + c_array_add);
+    unsigned new_size = (size << 1) + c_array_add;
+    debug_assert(new_size != 0);
+
+    copy_resize(new_size);
   }
 
   used++;
@@ -1272,7 +1281,10 @@ inline unsigned mc_block_rb_tree_s::__get_new_index()
   {
     if (used >= size)
     {
-      copy_resize((size << 1) + c_array_add);
+      unsigned new_size = (size << 1) + c_array_add;
+      debug_assert(new_size != 0);
+
+      copy_resize(new_size);
     }
 
     new_idx = used++;
@@ -1485,6 +1497,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
     return *this;
   }
 
+  debug_assert(a_src.used != 0);
   copy_resize(a_src.used);
 
   memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
@@ -1772,6 +1785,7 @@ void ui_array_s::copy_resize(unsigned a_size)
     {
       cfree(data);
     }
+
     data = nullptr;
   }
   else
@@ -2273,6 +2287,7 @@ void mc_block_rb_tree_s::copy_resize(unsigned a_size)
     {
       cfree(data);
     }
+
     data = nullptr;
   }
   else
