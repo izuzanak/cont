@@ -42,14 +42,14 @@ void print_list(rec_list_s *rec_list,const char *name)
 
 int main(int argc, char **argv)
 {
-  record_s rec;
-  record_s_init(&rec);
+  CONT_INIT_CLEAR(record_s,rec);
   record_s_set(&rec,1,1);
 
-  rec_list_s list0;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_list_s,list0);
   rec_list_s_init_buffer(&list0,10,alloca(10*sizeof(rec_list_s_element)));
 #else
+  CONT_CLEAR(rec_list_s,list0);
   rec_list_s_init(&list0);
 #endif
 
@@ -105,11 +105,11 @@ int main(int argc, char **argv)
   print_list(&list0,"list0");
 
   printf("--- CREATE NEW EMPTY LIST ---\n");
-  rec_list_s list1;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_list_s,list1);
   rec_list_s_init_buffer(&list1,10,alloca(10*sizeof(rec_list_s_element)));
 #else
-  rec_list_s_init(&list1);
+  CONT_INIT_CLEAR(rec_list_s,list1);
 #endif
 
   print_list(&list0,"list0");
@@ -128,10 +128,6 @@ int main(int argc, char **argv)
   printf("--- COMPARE LIST CONTENT ---\n");
   printf("rec_list_s_compare(&list0,&list1): %s\n",rec_list_s_compare(&list0,&list1) ? "TRUE" : "FALSE");
   printf("\n");
-
-  rec_list_s_clear(&list1);
-  rec_list_s_clear(&list0);
-  record_s_clear(&rec);
 
   return 0;
 }

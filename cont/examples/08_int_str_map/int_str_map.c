@@ -31,11 +31,11 @@ const char c_string_terminating_char = '\0';
 
 int main(int argc, char **argv)
 {
-  int_string_map_s map;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(int_string_map_s,map);
   int_string_map_s_init_buffer(&map,1001,alloca(1001*sizeof(int_string_map_s_node)));
 #else
-  int_string_map_s_init(&map);
+  CONT_INIT_CLEAR(int_string_map_s,map);
 #endif
 
   unsigned buff_size = 64;
@@ -43,11 +43,8 @@ int main(int argc, char **argv)
 
   // ...
   {
-    string_s str;
-    string_s_init(&str);
-
-    int_string_s pair;
-    int_string_s_init(&pair);
+    CONT_INIT_CLEAR(string_s,str);
+    CONT_INIT_CLEAR(int_string_s,pair);
 
     int idx = 0;
     do {
@@ -67,8 +64,6 @@ int main(int argc, char **argv)
       }
     } while(++idx < 1000);
 
-    int_string_s_clear(&pair);
-    string_s_clear(&str);
   }
 
   // ...
@@ -87,8 +82,6 @@ int main(int argc, char **argv)
     }
     while(idx != c_idx_not_exist);
   }
-
-  int_string_map_s_clear(&map);
 
   return 0;
 }

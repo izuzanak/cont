@@ -59,5 +59,17 @@ typedef long double ld;
 
 int main(int argc, char **argv);
 
+// - macros for automatic resource management -
+#define CONT_INIT(TYPE,NAME) \
+  TYPE NAME;\
+  TYPE ## _init(&(NAME));
+
+#define CONT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;
+
+#define CONT_INIT_CLEAR(TYPE,NAME) \
+  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\
+  TYPE ## _init(&(NAME));
+
 #endif
 

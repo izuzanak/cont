@@ -41,15 +41,15 @@ void print_queue(rec_queue_s *rec_queue,const char *name)
 
 int main(int argc, char **argv)
 {
-  record_s rec;
-  record_s_init(&rec);
+  CONT_INIT_CLEAR(record_s,rec);
   record_s_set(&rec,1,1);
 
   printf("--- CREATE AND FILL RECORDS QUEUE ---\n");
-  rec_queue_s queue0;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_queue_s,queue0);
   rec_queue_s_init_buffer(&queue0,10,alloca(10*sizeof(record_s)));
 #else
+  CONT_CLEAR(rec_queue_s,queue0);
   rec_queue_s_init_size(&queue0,10);
 #endif
 
@@ -80,11 +80,11 @@ int main(int argc, char **argv)
   print_queue(&queue0,"queue0");
 
   printf("--- CREATE NEW EMPTY QUEUE ---\n");
-  rec_queue_s queue1;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_queue_s,queue1);
   rec_queue_s_init_buffer(&queue1,10,alloca(10*sizeof(record_s)));
 #else
-  rec_queue_s_init(&queue1);
+  CONT_INIT_CLEAR(rec_queue_s,queue1);
 #endif
 
   print_queue(&queue0,"queue0");
@@ -119,10 +119,6 @@ int main(int argc, char **argv)
   rec_queue_s_clear(&queue0);
 
   print_queue(&queue0,"queue0");
-
-  rec_queue_s_clear(&queue1);
-  rec_queue_s_clear(&queue0);
-  record_s_clear(&rec);
 
   return 0;
 }

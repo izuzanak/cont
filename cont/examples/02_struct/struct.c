@@ -18,10 +18,8 @@ methods record_s
 
 int main(int argc, char **argv)
 {
-  record_s rec0,rec1;
-
-  record_s_init(&rec0);
-  record_s_init(&rec1);
+  CONT_INIT_CLEAR(record_s,rec0);
+  CONT_INIT_CLEAR(record_s,rec1);
 
   record_s_set(&rec0,1,2);
   record_s_set(&rec1,3,4);
@@ -45,9 +43,6 @@ int main(int argc, char **argv)
 
   printf("record_s_get_index(&rec0): %u\n",record_s_get_index(&rec0));
   printf("record_s_get_value(&rec0): %u\n",record_s_get_value(&rec0));
-
-  record_s_clear(&rec0);
-  record_s_clear(&rec1);
 
   return 0;
 }

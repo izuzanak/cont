@@ -35,16 +35,15 @@ void print_array(rec_array_s *rec_array,const char *name)
 
 int main(int argc, char **argv)
 {
-  record_s rec;
-  record_s_init(&rec);
+  CONT_INIT_CLEAR(record_s,rec);
   record_s_set(&rec,1,2);
-
-  rec_array_s array0;
 
   printf("--- INITIALIZE AND FILL ARRAY ---\n");
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_array_s,array0);
   rec_array_s_init_buffer(&array0,10,alloca(10*sizeof(record_s)));
 #else
+  CONT_CLEAR(rec_array_s,array0);
   rec_array_s_init_size(&array0,5);
 #endif
   rec_array_s_fill(&array0,&rec);
@@ -78,11 +77,11 @@ int main(int argc, char **argv)
   print_array(&array0,"array0");
 
   printf("--- CREATE NEW EMPTY ARRAY ---\n");
-  rec_array_s array1;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_array_s,array1);
   rec_array_s_init_buffer(&array1,10,alloca(10*sizeof(record_s)));
 #else
-  rec_array_s_init(&array1);
+  CONT_INIT_CLEAR(rec_array_s,array1);
 #endif
 
   print_array(&array0,"array0");
@@ -103,10 +102,6 @@ int main(int argc, char **argv)
 
   printf("rec_array_s_compare(&array0,&array1): %s\n",rec_array_s_compare(&array0,&array1) ? "TRUE" : "FALSE");
   printf("\n");
-
-  rec_array_s_clear(&array1);
-  rec_array_s_clear(&array0);
-  record_s_clear(&rec);
 
   return 0;
 }

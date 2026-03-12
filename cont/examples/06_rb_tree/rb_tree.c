@@ -52,14 +52,14 @@ void print_tree(rec_rb_tree_s *rec_tree,const char *name)
 
 int main(int argc, char **argv)
 {
-  record_s rec;
-  record_s_init(&rec);
+  CONT_INIT_CLEAR(record_s,rec);
   record_s_set(&rec,1,1);
 
-  rec_rb_tree_s rb_tree0;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_rb_tree_s,rb_tree0);
   rec_rb_tree_s_init_buffer(&rb_tree0,10,alloca(10*sizeof(rec_rb_tree_s_node)));
 #else
+  CONT_CLEAR(rec_rb_tree_s,rb_tree0);
   rec_rb_tree_s_init(&rb_tree0);
 #endif
 
@@ -99,11 +99,11 @@ int main(int argc, char **argv)
   print_tree(&rb_tree0,"rb_tree0");
 
   printf("--- CREATE NEW EMPTY RB_TREE ---\n");
-  rec_rb_tree_s rb_tree1;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(rec_rb_tree_s,rb_tree1);
   rec_rb_tree_s_init_buffer(&rb_tree1,10,alloca(10*sizeof(rec_rb_tree_s_node)));
 #else
-  rec_rb_tree_s_init(&rb_tree1);
+  CONT_INIT_CLEAR(rec_rb_tree_s,rb_tree1);
 #endif
 
   print_tree(&rb_tree0,"rb_tree0");
@@ -122,10 +122,6 @@ int main(int argc, char **argv)
   printf("--- COMPARE RB_TREE CONTENT ---\n");
   printf("rec_rb_tree_s_compare(&rb_tree0,&rb_tree1): %s\n",rec_rb_tree_s_compare(&rb_tree0,&rb_tree1) ? "TRUE" : "FALSE");
   printf("\n");
-
-  rec_rb_tree_s_clear(&rb_tree1);
-  rec_rb_tree_s_clear(&rb_tree0);
-  record_s_clear(&rec);
 
   return 0;
 }

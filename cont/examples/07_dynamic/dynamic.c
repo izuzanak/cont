@@ -42,14 +42,14 @@ void print_array(string_array_s *str_array,const char *name)
 
 int main(int argc, char **argv)
 {
-  string_s string;
-  string_s_init(&string);
+  CONT_INIT_CLEAR(string_s,string);
   string_s_set(&string,strlen("String"),"String");
 
-  string_array_s array0;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(string_array_s,array0);
   string_array_s_init_buffer(&array0,10,alloca(10*sizeof(string_s)));
 #else
+  CONT_CLEAR(string_array_s,array0);
   string_array_s_init(&array0);
 #endif
 
@@ -87,11 +87,11 @@ int main(int argc, char **argv)
   print_array(&array0,"array0");
 
   printf("--- CREATE NEW EMPTY ARRAY ---\n");
-  string_array_s array1;
 #ifdef FIXED_BUFFER
+  CONT_CLEAR(string_array_s,array1);
   string_array_s_init_buffer(&array1,10,alloca(10*sizeof(string_s)));
 #else
-  string_array_s_init(&array1);
+  CONT_INIT_CLEAR(string_array_s,array1);
 #endif
 
   print_array(&array0,"array0");
@@ -112,10 +112,6 @@ int main(int argc, char **argv)
 
   printf("string_array_s_compare(&array0,&array1): %s\n",string_array_s_compare(&array0,&array1) ? "TRUE" : "FALSE");
   printf("\n");
-
-  string_array_s_clear(&array1);
-  string_array_s_clear(&array0);
-  string_s_clear(&string);
 
   return 0;
 }
