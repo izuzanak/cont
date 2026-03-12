@@ -4122,6 +4122,27 @@ int main(int argc,char **argv)
             ++argv;
             --argc;
           }
+          else if (strcmp(*ptr,"--help") == 0)
+          {
+            fprintf(stdout,
+              "Usage: cont [OPTIONS] <input-file> [include-dir ...]\n"
+              "\n"
+              "Preprocesses C++ source files with @" "begin/@" "end markup to generate\n"
+              "type-specific container implementations.\n"
+              "\n"
+              "Options:\n"
+              "  --output <file>   Write output to <file> instead of stdout\n"
+              "  --geninc          Generate include files\n"
+              "  --nogen           Do not generate code\n"
+              "  --deps            Generate dependency information\n"
+              "  --def=SYMBOL      Define a preprocessor symbol\n"
+              "  --help            Show this help message and exit\n"
+            );
+
+            define_tree.clear();
+            mc_clear();
+            return 0;
+          }
           else
           {
             break;
@@ -4132,6 +4153,8 @@ int main(int argc,char **argv)
       if (argc <= 0)
       {
         fprintf(stderr,"ERROR: Missing name of file to process.\n");
+        fprintf(stderr,"Usage: cont [OPTIONS] <input-file> [include-dir ...]\n");
+        fprintf(stderr,"Try 'cont --help' for more information.\n");
 
         define_tree.clear();
         mc_clear();
