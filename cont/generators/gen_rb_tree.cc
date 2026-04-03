@@ -818,14 +818,15 @@ fprintf(out_file,
 );
    }
    if (VAR_NAMES_CNT > 0) {
-      unsigned t_idx = 0;
+      unsigned t_idx = VAR_NAMES_CNT;
       do {
+         --t_idx;
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
 fprintf(out_file,
 "  %s.clear();\n"
 ,VAR_NAMES(t_idx));
          }
-      } while(++t_idx < VAR_NAMES_CNT);
+      } while(t_idx > 0);
 fprintf(out_file,
 "\n"
 );

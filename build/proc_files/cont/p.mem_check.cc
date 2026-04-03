@@ -1554,8 +1554,8 @@ inline void mc_struct_s::init()
 
 inline void mc_struct_s::clear()
 {/*{{{*/
-  mutex.clear();
   mc_block_set.clear();
+  mutex.clear();
 }/*}}}*/
 
 inline void mc_struct_s::set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size)

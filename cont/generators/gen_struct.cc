@@ -28,14 +28,15 @@ fprintf(out_file,
 "inline void %s::clear()\n"
 "{/*{{{*/\n"
 ,IM_STRUCT_NAME);
-   unsigned t_idx = 0;
+   unsigned t_idx = TYPE_CNT;
    do {
+      --t_idx;
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 fprintf(out_file,
 "  %s.clear();\n"
 ,VAR_NAMES(t_idx));
       }
-   } while(++t_idx < TYPE_CNT);
+   } while(t_idx > 0);
 fprintf(out_file,
 "}/*}}}*/\n"
 "\n"
