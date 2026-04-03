@@ -1554,8 +1554,8 @@ inline void mc_struct_s::init()
 
 inline void mc_struct_s::clear()
 {/*{{{*/
-  mutex.clear();
   mc_block_set.clear();
+  mutex.clear();
 }/*}}}*/
 
 inline void mc_struct_s::set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size)
@@ -3556,10 +3556,10 @@ inline void data_type_s::init()
 
 inline void data_type_s::clear()
 {/*{{{*/
-  name.clear();
-  real_name.clear();
-  types.clear();
   variables.clear();
+  types.clear();
+  real_name.clear();
+  name.clear();
 }/*}}}*/
 
 inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables)
@@ -3883,10 +3883,10 @@ inline void container_parameters_s::init()
 
 inline void container_parameters_s::clear()
 {/*{{{*/
-  types.clear();
-  variables.clear();
-  functions.clear();
   names.clear();
+  functions.clear();
+  variables.clear();
+  types.clear();
 }/*}}}*/
 
 inline void container_parameters_s::set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_functions,string_array_s &a_names)
@@ -3960,13 +3960,13 @@ inline void processor_s::init()
 
 inline void processor_s::clear()
 {/*{{{*/
-  include_dirs.clear();
-  include_names.clear();
-  data_types.clear();
-  abbreviations.clear();
-  cont_params.clear();
-  define_tree.clear();
   enable_stack.clear();
+  define_tree.clear();
+  cont_params.clear();
+  abbreviations.clear();
+  data_types.clear();
+  include_names.clear();
+  include_dirs.clear();
 }/*}}}*/
 
 inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params,string_tree_s &a_define_tree,ui_array_s &a_enable_stack)
@@ -4602,9 +4602,9 @@ inline void process_s::init()
 
 inline void process_s::clear()
 {/*{{{*/
-  source_string.clear();
-  code.clear();
   lalr_stack.clear();
+  code.clear();
+  source_string.clear();
 }/*}}}*/
 
 inline void process_s::set(processor_s_ptr a_processor_ptr,string_s &a_source_string,string_s &a_code,lalr_stack_s &a_lalr_stack)
@@ -11404,15 +11404,16 @@ fprintf(out_file,
 "{/*{{{*/\n"
 ,STRUCT_NAME,STRUCT_NAME);
    unsigned count = 0;
-   unsigned t_idx = 0;
+   unsigned t_idx = TYPE_CNT;
    do {
+      --t_idx;
       if (TYPE_NUMBERS(t_idx) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_clear(&this->%s);\n"
 ,TYPE_NAMES(t_idx),VAR_NAMES(t_idx));
          ++count;
       }
-   } while(++t_idx < TYPE_CNT);
+   } while(t_idx > 0);
    if (count <= 0) {
 fprintf(out_file,
 "  (void)this;\n");
@@ -14021,14 +14022,15 @@ fprintf(out_file,
 );
    }
    if (VAR_NAMES_CNT > 0) {
-      unsigned t_idx = 0;
+      unsigned t_idx = VAR_NAMES_CNT;
       do {
+         --t_idx;
          if (TYPE_NUMBERS(t_idx + 1) & c_type_dynamic) {
 fprintf(out_file,
 "  %s_clear(&this->%s);\n"
 ,TYPE_NAMES(t_idx + 1),VAR_NAMES(t_idx));
          }
-      } while(++t_idx < VAR_NAMES_CNT);
+      } while(t_idx > 0);
 fprintf(out_file,
 "\n"
 );
@@ -21327,14 +21329,14 @@ bool processor_s::run(const char *a_file_name,string_array_s &a_include_dirs,FIL
 ".leaf_idx = c_idx_not_exist\n"
 "\n"
 "#define CONT_INIT(TYPE,NAME) \\\n"
-"  TYPE NAME;\\\n"
+"  TYPE NAME = {0};\\\n"
 "  TYPE ## _init(&(NAME));\n"
 "\n"
 "#define CONT_CLEAR(TYPE,NAME) \\\n"
 "  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\n"
 "\n"
 "#define CONT_INIT_CLEAR(TYPE,NAME) \\\n"
-"  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME;\\\n"
+"  __attribute__((cleanup(TYPE ## _clear))) TYPE NAME = {0};\\\n"
 "  TYPE ## _init(&(NAME));\n"
 "\n"
       );

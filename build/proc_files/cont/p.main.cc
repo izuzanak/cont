@@ -1554,8 +1554,8 @@ inline void mc_struct_s::init()
 
 inline void mc_struct_s::clear()
 {/*{{{*/
-  mutex.clear();
   mc_block_set.clear();
+  mutex.clear();
 }/*}}}*/
 
 inline void mc_struct_s::set(mutex_s &a_mutex,mc_block_rb_tree_s &a_mc_block_set,unsigned a_alloc_size,unsigned a_max_alloc_size,unsigned a_act_alloc_size)
@@ -3560,10 +3560,10 @@ inline void data_type_s::init()
 
 inline void data_type_s::clear()
 {/*{{{*/
-  name.clear();
-  real_name.clear();
-  types.clear();
   variables.clear();
+  types.clear();
+  real_name.clear();
+  name.clear();
 }/*}}}*/
 
 inline void data_type_s::set(unsigned a_cont_idx,string_s &a_name,string_s &a_real_name,unsigned a_properties,string_array_s &a_types,string_array_s &a_variables)
@@ -3887,10 +3887,10 @@ inline void container_parameters_s::init()
 
 inline void container_parameters_s::clear()
 {/*{{{*/
-  types.clear();
-  variables.clear();
-  functions.clear();
   names.clear();
+  functions.clear();
+  variables.clear();
+  types.clear();
 }/*}}}*/
 
 inline void container_parameters_s::set(string_array_s &a_types,string_array_s &a_variables,string_array_s &a_functions,string_array_s &a_names)
@@ -3964,13 +3964,13 @@ inline void processor_s::init()
 
 inline void processor_s::clear()
 {/*{{{*/
-  include_dirs.clear();
-  include_names.clear();
-  data_types.clear();
-  abbreviations.clear();
-  cont_params.clear();
-  define_tree.clear();
   enable_stack.clear();
+  define_tree.clear();
+  cont_params.clear();
+  abbreviations.clear();
+  data_types.clear();
+  include_names.clear();
+  include_dirs.clear();
 }/*}}}*/
 
 inline void processor_s::set(FILE_ptr a_out_file,unsigned a_gen_options,unsigned a_include_level,string_array_s &a_include_dirs,string_array_s &a_include_names,data_type_array_s &a_data_types,abbreviation_array_s &a_abbreviations,unsigned a_type_settings,container_parameters_s &a_cont_params,string_tree_s &a_define_tree,ui_array_s &a_enable_stack)
