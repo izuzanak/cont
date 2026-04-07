@@ -602,6 +602,11 @@ struct ui_array_s
 
 };
 
+inline void ui_array_s_clear(ui_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 #if MEM_CHECK == ENABLE
@@ -659,6 +664,11 @@ struct mc_block_s
   inline bool operator==(mc_block_s &a_second);
 
 };
+
+inline void mc_block_s_clear(mc_block_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -862,6 +872,11 @@ struct mc_block_rb_tree_s
    
 };
 
+inline void mc_block_rb_tree_s_clear(mc_block_rb_tree_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- mc_struct_s --
@@ -942,6 +957,11 @@ struct mc_struct_s
       void check();
    
 };
+
+inline void mc_struct_s_clear(mc_struct_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -2072,6 +2092,11 @@ struct string_array_s
 
 };
 
+inline void string_array_s_clear(string_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 /*
@@ -2388,6 +2413,15 @@ inline string_s &string_array_s::last()
 #define VAR_NAMES_CNT (data_type.variables.used)
 #define VAR_NAMES(IDX) (data_type.variables[IDX].data)
 
+#define GENERATE_CLEAR_WRAPPER(OUT_FILE,STRUCT_NAME_STR) \
+fprintf(OUT_FILE, \
+"inline void %s_clear(%s *a_this)\n" \
+"{/*{{{*/\n" \
+"  a_this->clear();\n" \
+"}/*}}}*/\n" \
+"\n" \
+,STRUCT_NAME_STR,STRUCT_NAME_STR);
+
 // - constants describing begin and end of definition block -
 extern const char *c_begin_str;
 extern const char *c_end_str;
@@ -2656,6 +2690,11 @@ struct string_tree_s
 
 };
 
+inline void string_tree_s_clear(string_tree_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- data_type_s --
@@ -2715,6 +2754,11 @@ struct data_type_s
   inline bool operator==(data_type_s &a_second);
 
 };
+
+inline void data_type_s_clear(data_type_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -2857,6 +2901,11 @@ struct data_type_array_s
    
 };
 
+inline void data_type_array_s_clear(data_type_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- abbreviation_s --
@@ -2912,6 +2961,11 @@ struct abbreviation_s
   inline bool operator==(abbreviation_s &a_second);
 
 };
+
+inline void abbreviation_s_clear(abbreviation_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -3054,6 +3108,11 @@ struct abbreviation_array_s
    
 };
 
+inline void abbreviation_array_s_clear(abbreviation_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- container_parameters_s --
@@ -3114,6 +3173,11 @@ struct container_parameters_s
       inline void clean_out();
    
 };
+
+inline void container_parameters_s_clear(container_parameters_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -3209,6 +3273,11 @@ struct processor_s
 
    
 };
+
+inline void processor_s_clear(processor_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 

@@ -2650,7 +2650,15 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
-  }
+
+   // - rb_tree clear wrappers for all abbreviations -
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
+      unsigned idx = 0;
+      do {
+GENERATE_CLEAR_WRAPPER(out_file,abbs[idx].data);
+      } while(++idx < abbs.used);
+   }
+   }
 }/*}}}*/
 
 void processor_s::generate_rb_tree_inlines(unsigned abb_idx,unsigned a_dt_idx)

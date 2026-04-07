@@ -1047,6 +1047,14 @@ fprintf(out_file,
 "};\n"
 "\n"
 );
+
+   // - queue clear wrappers for all abbreviations -
+   if (!(STRUCT_NUMBER & c_type_option_nogen_clear)) {
+      unsigned idx = 0;
+      do {
+GENERATE_CLEAR_WRAPPER(out_file,abbs[idx].data);
+      } while(++idx < abbs.used);
+   }
    }
 }/*}}}*/
 

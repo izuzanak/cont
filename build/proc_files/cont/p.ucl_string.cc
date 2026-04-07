@@ -602,6 +602,11 @@ struct ui_array_s
 
 };
 
+inline void ui_array_s_clear(ui_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 #if MEM_CHECK == ENABLE
@@ -659,6 +664,11 @@ struct mc_block_s
   inline bool operator==(mc_block_s &a_second);
 
 };
+
+inline void mc_block_s_clear(mc_block_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -862,6 +872,11 @@ struct mc_block_rb_tree_s
    
 };
 
+inline void mc_block_rb_tree_s_clear(mc_block_rb_tree_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- mc_struct_s --
@@ -942,6 +957,11 @@ struct mc_struct_s
       void check();
    
 };
+
+inline void mc_struct_s_clear(mc_struct_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -2067,6 +2087,11 @@ struct string_array_s
   EXPORT bool operator==(string_array_s &a_second);
 
 };
+
+inline void string_array_s_clear(string_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 

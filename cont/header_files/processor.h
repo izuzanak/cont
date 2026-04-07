@@ -24,6 +24,15 @@
 #define VAR_NAMES_CNT (data_type.variables.used)
 #define VAR_NAMES(IDX) (data_type.variables[IDX].data)
 
+#define GENERATE_CLEAR_WRAPPER(OUT_FILE,STRUCT_NAME_STR) \
+fprintf(OUT_FILE, \
+"inline void %s_clear(%s *a_this)\n" \
+"{/*{{{*/\n" \
+"  a_this->clear();\n" \
+"}/*}}}*/\n" \
+"\n" \
+,STRUCT_NAME_STR,STRUCT_NAME_STR);
+
 // - constants describing begin and end of definition block -
 extern const char *c_begin_str;
 extern const char *c_end_str;
