@@ -1011,7 +1011,7 @@ inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 
   copy_resize(a_used);
 
-  memcpy(data,a_data,a_used*sizeof(unsigned));
+  memcpy((void *)data,a_data,a_used*sizeof(unsigned));
   used = a_used;
 }/*}}}*/
 
@@ -1108,7 +1108,7 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(unsigned));
 
   used = a_src.used;
   return *this;
@@ -1528,7 +1528,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   debug_assert(a_src.used != 0);
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
   used = a_src.used;
   count = a_src.count;

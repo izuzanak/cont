@@ -177,7 +177,7 @@ fprintf(out_file,
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
-"  memcpy(data,a_data,a_used*sizeof(%s));\n"
+"  memcpy((void *)data,a_data,a_used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {
@@ -728,7 +728,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(data,a_src.data,a_src.used*sizeof(%s));\n"
+"  memcpy((void *)data,a_src.data,a_src.used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {

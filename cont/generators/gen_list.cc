@@ -1192,7 +1192,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"
+"  memcpy((void *)data,a_src.data,a_src.used*sizeof(%s_element));\n"
 ,IM_STRUCT_NAME);
    }
    else {

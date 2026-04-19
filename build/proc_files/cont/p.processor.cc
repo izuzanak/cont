@@ -1011,7 +1011,7 @@ inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 
   copy_resize(a_used);
 
-  memcpy(data,a_data,a_used*sizeof(unsigned));
+  memcpy((void *)data,a_data,a_used*sizeof(unsigned));
   used = a_used;
 }/*}}}*/
 
@@ -1108,7 +1108,7 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(unsigned));
 
   used = a_src.used;
   return *this;
@@ -1528,7 +1528,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   debug_assert(a_src.used != 0);
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
   used = a_src.used;
   count = a_src.count;
@@ -4525,7 +4525,7 @@ inline void lalr_stack_s::set(unsigned a_used,lalr_stack_element_s *a_data)
 
   copy_resize(a_used);
 
-  memcpy(data,a_data,a_used*sizeof(lalr_stack_element_s));
+  memcpy((void *)data,a_data,a_used*sizeof(lalr_stack_element_s));
   used = a_used;
 }/*}}}*/
 
@@ -4622,7 +4622,7 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
 
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(lalr_stack_element_s));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(lalr_stack_element_s));
 
   used = a_src.used;
   return *this;
@@ -5314,7 +5314,7 @@ void string_tree_s::copy_resize(unsigned a_size)
 
   if (a_size > size)
   {
-    debug_assert(memset(data + size,0,(a_size - size)*sizeof(string_tree_s_node)) == (data + size));
+    debug_assert(memset((void *)(data + size),0,(a_size - size)*sizeof(string_tree_s_node)) == (data + size));
 
     string_tree_s_node *ptr = data + size;
     string_tree_s_node *ptr_end = data + a_size;
@@ -6249,7 +6249,7 @@ fprintf(out_file,
    }
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
-"  memcpy(data,a_data,a_used*sizeof(%s));\n"
+"  memcpy((void *)data,a_data,a_used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {
@@ -6800,7 +6800,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(data,a_src.data,a_src.used*sizeof(%s));\n"
+"  memcpy((void *)data,a_src.data,a_src.used*sizeof(%s));\n"
 ,TYPE_NAME);
    }
    else {
@@ -7934,7 +7934,7 @@ fprintf(out_file,
 "\n"
 "    if (a_size > used)\n"
 "    {\n"
-"      debug_assert(memset(n_data + used,0,(a_size - used)*sizeof(%s)) == (n_data + used));\n"
+"      debug_assert(memset((void *)(n_data + used),0,(a_size - used)*sizeof(%s)) == (n_data + used));\n"
 "\n"
 "      %s *ptr = n_data + used;\n"
 "      %s *ptr_end = n_data + a_size;\n"
@@ -7964,11 +7964,11 @@ fprintf(out_file,
 "      sec_cnt = 0;\n"
 "    }\n"
 "\n"
-"    memcpy(n_data,data + begin,fir_cnt*sizeof(%s));\n"
+"    memcpy((void *)n_data,data + begin,fir_cnt*sizeof(%s));\n"
 "\n"
 "    if (sec_cnt != 0)\n"
 "    {\n"
-"      memcpy(n_data + fir_cnt,data,sec_cnt*sizeof(%s));\n"
+"      memcpy((void *)(n_data + fir_cnt),data,sec_cnt*sizeof(%s));\n"
 "    }\n"
 "  }\n"
 "\n"
@@ -8078,11 +8078,11 @@ fprintf(out_file,
 "    sec_cnt = 0;\n"
 "  }\n"
 "\n"
-"  memcpy(data,a_src.data + a_src.begin,fir_cnt*sizeof(%s));\n"
+"  memcpy((void *)data,a_src.data + a_src.begin,fir_cnt*sizeof(%s));\n"
 "\n"
 "  if (sec_cnt != 0)\n"
 "  {\n"
-"    memcpy(data + fir_cnt,a_src.data,sec_cnt*sizeof(%s));\n"
+"    memcpy((void *)(data + fir_cnt),a_src.data,sec_cnt*sizeof(%s));\n"
 "  }\n"
 "\n"
 ,TYPE_NAME,TYPE_NAME);
@@ -9996,7 +9996,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBER & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(data,a_src.data,a_src.used*sizeof(%s_element));\n"
+"  memcpy((void *)data,a_src.data,a_src.used*sizeof(%s_element));\n"
 ,IM_STRUCT_NAME);
    }
    else {
@@ -12741,7 +12741,7 @@ fprintf(out_file,
 "\n"
 "  if (a_size > size)\n"
 "  {\n"
-"    debug_assert(memset(data + size,0,(a_size - size)*sizeof(%s_node)) == (data + size));\n"
+"    debug_assert(memset((void *)(data + size),0,(a_size - size)*sizeof(%s_node)) == (data + size));\n"
 "\n"
 "    %s_node *ptr = data + size;\n"
 "    %s_node *ptr_end = data + a_size;\n"
@@ -13047,7 +13047,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"
+"  memcpy((void *)data,a_src.data,a_src.used*sizeof(%s_node));\n"
 ,IM_STRUCT_NAME);
    }
    else {

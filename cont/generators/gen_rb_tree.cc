@@ -1340,7 +1340,7 @@ fprintf(out_file,
 "\n"
 "  if (a_size > size)\n"
 "  {\n"
-"    debug_assert(memset(data + size,0,(a_size - size)*sizeof(%s_node)) == (data + size));\n"
+"    debug_assert(memset((void *)(data + size),0,(a_size - size)*sizeof(%s_node)) == (data + size));\n"
 "\n"
 "    %s_node *ptr = data + size;\n"
 "    %s_node *ptr_end = data + a_size;\n"
@@ -1646,7 +1646,7 @@ fprintf(out_file,
    if (!(TYPE_NUMBERS(0) & c_type_dynamic)) {
 fprintf(out_file,
 "\n"
-"  memcpy(data,a_src.data,a_src.used*sizeof(%s_node));\n"
+"  memcpy((void *)data,a_src.data,a_src.used*sizeof(%s_node));\n"
 ,IM_STRUCT_NAME);
    }
    else {
