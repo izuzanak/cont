@@ -265,7 +265,7 @@ fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    unsigned new_size = (this->size << 1) + c_array_add;\n"
-"    debug_assert(new_size != 0);\n"
+"    cassert(new_size > this->size);\n"
 "\n"
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
@@ -318,7 +318,7 @@ fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    unsigned new_size = (this->size << 1) + c_array_add;\n"
-"    debug_assert(new_size != 0);\n"
+"    cassert(new_size > this->size);\n"
 "\n"
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
@@ -426,7 +426,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-"    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
+"    n_data = (%s *)cmalloc_array(a_size,sizeof(%s));\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,

@@ -454,10 +454,14 @@ inline unsigned mutex_s::unlock()
 
 //#define MEM_CHECK ENABLE
 
-// - declare cmalloc/cfree functions -
-inline void *cmalloc(unsigned a_size);
-inline void *crealloc(void *a_location,unsigned a_size);
+#include <stdint.h>
+
+inline void *cmalloc(size_t a_size);
+inline void *crealloc(void *a_location,size_t a_size);
 inline void cfree(void *a_location);
+
+inline void *cmalloc_array(size_t a_count,size_t a_size);
+inline void *crealloc_array(void *a_location,size_t a_count,size_t a_size);
 
 /*
  * definition of generated structures
@@ -598,6 +602,11 @@ struct ui_array_s
 
 };
 
+inline void ui_array_s_clear(ui_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 #if MEM_CHECK == ENABLE
@@ -655,6 +664,11 @@ struct mc_block_s
   inline bool operator==(mc_block_s &a_second);
 
 };
+
+inline void mc_block_s_clear(mc_block_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -843,13 +857,13 @@ struct mc_block_rb_tree_s
        * \brief cmalloc for mc_block_rb_tree_s structure overriding global
        *
        */
-      inline void *cmalloc(unsigned a_size);
+      inline void *cmalloc(size_t a_size);
 
       /*!
        * \brief crealloc for mc_block_rb_tree_s structure overriding global
        *
        */
-      inline void *crealloc(void *a_location,unsigned a_size);
+      inline void *crealloc(void *a_location,size_t a_size);
 
       /*!
        * \brief cfree for mc_block_rb_tree_s structure overriding global
@@ -857,6 +871,11 @@ struct mc_block_rb_tree_s
       inline void cfree(void *a_location);
    
 };
+
+inline void mc_block_rb_tree_s_clear(mc_block_rb_tree_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -920,12 +939,12 @@ struct mc_struct_s
       /*!
        * \brief return location of new allocated memory block of size a_size
        */
-      inline void *get_block(unsigned a_size);
+      inline void *get_block(size_t a_size);
 
       /*!
        * \brief reallocate memory block to size a_size
        */
-      inline void *reget_block(void *a_location,unsigned a_size);
+      inline void *reget_block(void *a_location,size_t a_size);
 
       /*!
        * \brief release block of memory by its location
@@ -938,6 +957,11 @@ struct mc_struct_s
       void check();
    
 };
+
+inline void mc_struct_s_clear(mc_struct_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -987,7 +1011,7 @@ inline void ui_array_s::set(unsigned a_used,unsigned *a_data)
 
   copy_resize(a_used);
 
-  memcpy(data,a_data,a_used*sizeof(unsigned));
+  memcpy((void *)data,a_data,a_used*sizeof(unsigned));
   used = a_used;
 }/*}}}*/
 
@@ -1027,7 +1051,7 @@ inline void ui_array_s::push(unsigned a_value)
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -1040,7 +1064,7 @@ inline void ui_array_s::push_blank()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -1053,7 +1077,7 @@ inline void ui_array_s::push_clear()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -1084,7 +1108,7 @@ inline ui_array_s &ui_array_s::operator=(ui_array_s &a_src)
 
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(unsigned));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(unsigned));
 
   used = a_src.used;
   return *this;
@@ -1286,7 +1310,7 @@ inline unsigned mc_block_rb_tree_s::__get_new_index()
     if (used >= size)
     {
       unsigned new_size = (size << 1) + c_array_add;
-      debug_assert(new_size != 0);
+      cassert(new_size > size);
 
       copy_resize(new_size);
     }
@@ -1504,7 +1528,7 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
   debug_assert(a_src.used != 0);
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(mc_block_rb_tree_s_node));
 
   used = a_src.used;
   count = a_src.count;
@@ -1519,12 +1543,12 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
 
 
 
-inline void *mc_block_rb_tree_s::cmalloc(unsigned a_size)
+inline void *mc_block_rb_tree_s::cmalloc(size_t a_size)
 {/*{{{*/
    return malloc(a_size);
 }/*}}}*/
 
-inline void *mc_block_rb_tree_s::crealloc(void *a_location,unsigned a_size)
+inline void *mc_block_rb_tree_s::crealloc(void *a_location,size_t a_size)
 {/*{{{*/
    return realloc(a_location,a_size);
 }/*}}}*/
@@ -1611,13 +1635,17 @@ inline bool mc_struct_s::operator==(mc_struct_s &a_second)
 
 
 
-inline void *mc_struct_s::get_block(unsigned a_size)
+inline void *mc_struct_s::get_block(size_t a_size)
 {/*{{{*/
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
    mutex.lock();
 
    void *location = malloc(a_size);
 
-   mc_block_s mc_block = {location,a_size};
+   mc_block_s mc_block = {location,(unsigned)a_size};
    mc_block_set.insert(mc_block);
 
    // - increase size of allocated memory -
@@ -1632,8 +1660,12 @@ inline void *mc_struct_s::get_block(unsigned a_size)
    return location;
 }/*}}}*/
 
-inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
+inline void *mc_struct_s::reget_block(void *a_location,size_t a_size)
 {/*{{{*/
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
    mutex.lock();
 
    if (a_location != NULL)
@@ -1651,7 +1683,7 @@ inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
    void *location = realloc(a_location,a_size);
 
    {
-     mc_block_s mc_block = {location,a_size};
+     mc_block_s mc_block = {location,(unsigned)a_size};
      mc_block_set.insert(mc_block);
 
      // - increase size of allocated memory -
@@ -1703,14 +1735,24 @@ inline void mc_clear()
    mc_struct.clear();
 }
 
-inline void *cmalloc(unsigned a_size)
+inline void *cmalloc(size_t a_size)
 {/*{{{*/
-   return mc_struct.get_block(a_size);
+   void *location = mc_struct.get_block(a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
-inline void *crealloc(void *a_location,unsigned a_size)
+inline void *crealloc(void *a_location,size_t a_size)
 {/*{{{*/
-  return mc_struct.reget_block(a_location,a_size);
+   void *location = mc_struct.reget_block(a_location,a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
 inline void cfree(void *a_location)
@@ -1721,14 +1763,32 @@ inline void cfree(void *a_location)
 inline void mc_init() {}
 inline void mc_clear() {}
 
-inline void *cmalloc(unsigned a_size)
+inline void *cmalloc(size_t a_size)
 {/*{{{*/
-   return malloc(a_size);
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
+   void *location = malloc(a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
-inline void *crealloc(void *a_location,unsigned a_size)
+inline void *crealloc(void *a_location,size_t a_size)
 {/*{{{*/
-   return realloc(a_location,a_size);
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
+   void *location = realloc(a_location,a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
 inline void cfree(void *a_location)
@@ -1736,6 +1796,24 @@ inline void cfree(void *a_location)
    free(a_location);
 }/*}}}*/
 #endif
+
+inline void *cmalloc_array(size_t a_count,size_t a_size)
+{/*{{{*/
+
+   // - ERROR -
+   cassert(a_size == 0 || a_count <= SIZE_MAX/a_size);
+
+   return cmalloc(a_count*a_size);
+}/*}}}*/
+
+inline void *crealloc_array(void *a_location,size_t a_count,size_t a_size)
+{/*{{{*/
+
+   // - ERROR -
+   cassert(a_size == 0 || a_count <= SIZE_MAX/a_size);
+
+   return crealloc(a_location,a_count*a_size);
+}/*}}}*/
 
 #endif
 
@@ -2068,6 +2146,11 @@ struct string_array_s
 
 };
 
+inline void string_array_s_clear(string_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 /*
@@ -2310,7 +2393,7 @@ inline void string_array_s::push(string_s &a_value)
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -2323,7 +2406,7 @@ inline void string_array_s::push_blank()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -2336,7 +2419,7 @@ inline void string_array_s::push_clear()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -2657,6 +2740,11 @@ struct string_tree_s
 
 };
 
+inline void string_tree_s_clear(string_tree_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- data_type_s --
@@ -2716,6 +2804,11 @@ struct data_type_s
   inline bool operator==(data_type_s &a_second);
 
 };
+
+inline void data_type_s_clear(data_type_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -2858,6 +2951,11 @@ struct data_type_array_s
    
 };
 
+inline void data_type_array_s_clear(data_type_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- abbreviation_s --
@@ -2913,6 +3011,11 @@ struct abbreviation_s
   inline bool operator==(abbreviation_s &a_second);
 
 };
+
+inline void abbreviation_s_clear(abbreviation_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -3055,6 +3158,11 @@ struct abbreviation_array_s
    
 };
 
+inline void abbreviation_array_s_clear(abbreviation_array_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- container_parameters_s --
@@ -3115,6 +3223,11 @@ struct container_parameters_s
       inline void clean_out();
    
 };
+
+inline void container_parameters_s_clear(container_parameters_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -3222,6 +3335,11 @@ struct processor_s
 
    
 };
+
+inline void processor_s_clear(processor_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -3358,7 +3476,7 @@ inline unsigned string_tree_s::__get_new_index()
     if (used >= size)
     {
       unsigned new_size = (size << 1) + c_array_add;
-      debug_assert(new_size != 0);
+      cassert(new_size > size);
 
       copy_resize(new_size);
     }
@@ -3666,7 +3784,7 @@ inline void data_type_array_s::push(data_type_s &a_value)
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -3679,7 +3797,7 @@ inline void data_type_array_s::push_blank()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -3692,7 +3810,7 @@ inline void data_type_array_s::push_clear()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -3819,7 +3937,7 @@ inline void abbreviation_array_s::push(abbreviation_s &a_value)
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -3832,7 +3950,7 @@ inline void abbreviation_array_s::push_blank()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -3845,7 +3963,7 @@ inline void abbreviation_array_s::push_clear()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -4121,6 +4239,11 @@ struct lalr_stack_element_s
 
 };
 
+inline void lalr_stack_element_s_clear(lalr_stack_element_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- lalr_stack_s --
@@ -4264,6 +4387,11 @@ struct lalr_stack_s
    
 };
 
+inline void lalr_stack_s_clear(lalr_stack_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
+
 
 
 // -- process_s --
@@ -4352,6 +4480,11 @@ struct process_s
 
    
 };
+
+inline void process_s_clear(process_s *a_this)
+{/*{{{*/
+  a_this->clear();
+}/*}}}*/
 
 
 
@@ -4458,7 +4591,7 @@ inline void lalr_stack_s::set(unsigned a_used,lalr_stack_element_s *a_data)
 
   copy_resize(a_used);
 
-  memcpy(data,a_data,a_used*sizeof(lalr_stack_element_s));
+  memcpy((void *)data,a_data,a_used*sizeof(lalr_stack_element_s));
   used = a_used;
 }/*}}}*/
 
@@ -4498,7 +4631,7 @@ inline void lalr_stack_s::push(lalr_stack_element_s &a_value)
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -4511,7 +4644,7 @@ inline void lalr_stack_s::push_blank()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -4524,7 +4657,7 @@ inline void lalr_stack_s::push_clear()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -4555,7 +4688,7 @@ inline lalr_stack_s &lalr_stack_s::operator=(lalr_stack_s &a_src)
 
   copy_resize(a_src.used);
 
-  memcpy(data,a_src.data,a_src.used*sizeof(lalr_stack_element_s));
+  memcpy((void *)data,a_src.data,a_src.used*sizeof(lalr_stack_element_s));
 
   used = a_src.used;
   return *this;
@@ -5246,12 +5379,12 @@ void string_tree_s::copy_resize(unsigned a_size)
   }
   else
   {
-    data = (string_tree_s_node *)crealloc(data,a_size*sizeof(string_tree_s_node));
+    data = (string_tree_s_node *)crealloc_array(data,a_size,sizeof(string_tree_s_node));
   }
 
   if (a_size > size)
   {
-    debug_assert(memset(data + size,0,(a_size - size)*sizeof(string_tree_s_node)) == (data + size));
+    debug_assert(memset((void *)(data + size),0,(a_size - size)*sizeof(string_tree_s_node)) == (data + size));
 
     string_tree_s_node *ptr = data + size;
     string_tree_s_node *ptr_end = data + a_size;
@@ -5589,11 +5722,14 @@ void data_type_array_s::flush_all()
 void data_type_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
+  cassert(required_cnt >= used);
   if (required_cnt > size)
   {
     unsigned r_size = size;
     do {
-      r_size = (r_size << 1) + c_array_add;
+      unsigned n_size = (r_size << 1) + c_array_add;
+      cassert(n_size > r_size);
+      r_size = n_size;
     } while(r_size < required_cnt);
 
     copy_resize(r_size);
@@ -5603,11 +5739,14 @@ void data_type_array_s::reserve(unsigned a_cnt)
 void data_type_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
+  cassert(required_cnt >= used);
   if (required_cnt > size)
   {
     unsigned r_size = size;
     do {
-      r_size = (r_size << 1) + c_array_add;
+      unsigned n_size = (r_size << 1) + c_array_add;
+      cassert(n_size > r_size);
+      r_size = n_size;
     } while(r_size < required_cnt);
 
     copy_resize(r_size);
@@ -5641,7 +5780,7 @@ void data_type_array_s::copy_resize(unsigned a_size)
   }
   else
   {
-    data = (data_type_s *)crealloc(data,a_size*sizeof(data_type_s));
+    data = (data_type_s *)crealloc_array(data,a_size,sizeof(data_type_s));
   }
 
   if (a_size > size)
@@ -5818,11 +5957,14 @@ void abbreviation_array_s::set(unsigned a_used,abbreviation_s *a_data)
 void abbreviation_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
+  cassert(required_cnt >= used);
   if (required_cnt > size)
   {
     unsigned r_size = size;
     do {
-      r_size = (r_size << 1) + c_array_add;
+      unsigned n_size = (r_size << 1) + c_array_add;
+      cassert(n_size > r_size);
+      r_size = n_size;
     } while(r_size < required_cnt);
 
     copy_resize(r_size);
@@ -5832,11 +5974,14 @@ void abbreviation_array_s::reserve(unsigned a_cnt)
 void abbreviation_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
+  cassert(required_cnt >= used);
   if (required_cnt > size)
   {
     unsigned r_size = size;
     do {
-      r_size = (r_size << 1) + c_array_add;
+      unsigned n_size = (r_size << 1) + c_array_add;
+      cassert(n_size > r_size);
+      r_size = n_size;
     } while(r_size < required_cnt);
 
     copy_resize(r_size);
@@ -5870,7 +6015,7 @@ void abbreviation_array_s::copy_resize(unsigned a_size)
   }
   else
   {
-    data = (abbreviation_s *)crealloc(data,a_size*sizeof(abbreviation_s));
+    data = (abbreviation_s *)crealloc_array(data,a_size,sizeof(abbreviation_s));
   }
 
   if (a_size > size)
@@ -6318,7 +6463,7 @@ fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    unsigned new_size = (this->size << 1) + c_array_add;\n"
-"    debug_assert(new_size != 0);\n"
+"    cassert(new_size > this->size);\n"
 "\n"
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
@@ -6362,7 +6507,7 @@ fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    unsigned new_size = (this->size << 1) + c_array_add;\n"
-"    debug_assert(new_size != 0);\n"
+"    cassert(new_size > this->size);\n"
 "\n"
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
@@ -6387,14 +6532,16 @@ fprintf(out_file,
 "static inline void %s_reserve(%s *this,unsigned a_cnt)\n"
 "{/*{{{*/\n"
 "  unsigned required_cnt = this->used + a_cnt;\n"
+"  cassert(required_cnt >= this->used);\n"
 "  if (required_cnt > this->size)\n"
 "  {\n"
 "    unsigned r_size = this->size;\n"
 "    do {\n"
-"      r_size = (r_size << 1) + c_array_add;\n"
+"      unsigned n_size = (r_size << 1) + c_array_add;\n"
+"      cassert(n_size > r_size);\n"
+"      r_size = n_size;\n"
 "    } while(r_size < required_cnt);\n"
 "\n"
-"    debug_assert(r_size != 0);\n"
 "    %s_copy_resize(this,r_size);\n"
 "  }\n"
 "}/*}}}*/\n"
@@ -6411,14 +6558,16 @@ fprintf(out_file,
    if (!(STRUCT_NUMBER & c_type_option_fixed_buffer)) {
 fprintf(out_file,
 "  unsigned required_cnt = this->used + a_cnt;\n"
+"  cassert(required_cnt >= this->used);\n"
 "  if (required_cnt > this->size)\n"
 "  {\n"
 "    unsigned r_size = this->size;\n"
 "    do {\n"
-"      r_size = (r_size << 1) + c_array_add;\n"
+"      unsigned n_size = (r_size << 1) + c_array_add;\n"
+"      cassert(n_size > r_size);\n"
+"      r_size = n_size;\n"
 "    } while(r_size < required_cnt);\n"
 "\n"
-"    debug_assert(r_size != 0);\n"
 "    %s_copy_resize(this,r_size);\n"
 "  }\n"
 "\n"
@@ -6447,7 +6596,7 @@ fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    unsigned new_size = (this->size << 1) + c_array_add;\n"
-"    debug_assert(new_size != 0);\n"
+"    cassert(new_size > this->size);\n"
 "\n"
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
@@ -6553,7 +6702,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-"    this->data = (%s *)crealloc(this->data,a_size*sizeof(%s));\n"
+"    this->data = (%s *)crealloc_array(this->data,a_size,sizeof(%s));\n"
 "  }\n"
 ,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
@@ -7888,7 +8037,7 @@ fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    unsigned new_size = (this->size << 1) + c_array_add;\n"
-"    debug_assert(new_size != 0);\n"
+"    cassert(new_size > this->size);\n"
 "\n"
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
@@ -7941,7 +8090,7 @@ fprintf(out_file,
 "  if (this->used >= this->size)\n"
 "  {\n"
 "    unsigned new_size = (this->size << 1) + c_array_add;\n"
-"    debug_assert(new_size != 0);\n"
+"    cassert(new_size > this->size);\n"
 "\n"
 "    %s_copy_resize(this,new_size);\n"
 "  }\n"
@@ -8049,7 +8198,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-"    n_data = (%s *)cmalloc(a_size*sizeof(%s));\n"
+"    n_data = (%s *)cmalloc_array(a_size,sizeof(%s));\n"
 ,STRUCT_NAME,STRUCT_NAME,TYPE_NAME,TYPE_NAME,TYPE_NAME);
    if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
 fprintf(out_file,
@@ -9503,7 +9652,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -9602,7 +9751,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -9714,7 +9863,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -9827,7 +9976,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -9918,7 +10067,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -9990,7 +10139,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -10075,7 +10224,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -10161,7 +10310,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 "    }\n"
@@ -10343,7 +10492,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-"    this->data = (%s_element *)crealloc(this->data,a_size*sizeof(%s_element));\n"
+"    this->data = (%s_element *)crealloc_array(this->data,a_size,sizeof(%s_element));\n"
 "  }\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBER & (c_type_dynamic | c_type_option_force_init)) {
@@ -13565,7 +13714,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 ,STRUCT_NAME);
@@ -14547,7 +14696,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-"    this->data = (%s_node *)crealloc(this->data,a_size*sizeof(%s_node));\n"
+"    this->data = (%s_node *)crealloc_array(this->data,a_size,sizeof(%s_node));\n"
 "  }\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
@@ -15436,7 +15585,7 @@ fprintf(out_file,
 "\n"
 "  this->root_idx = c_idx_not_exist;\n"
 "\n"
-"  char *processed = (char *)cmalloc(indexes.used);\n"
+"  char *processed = (char *)cmalloc_array(indexes.used,sizeof(char));\n"
 "  memset(processed,0,indexes.used*sizeof(char)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"

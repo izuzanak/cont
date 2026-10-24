@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <math.h>
 #include <limits.h>
+#include <stdint.h>
 
 // - basic data types -
 typedef char bc;
@@ -34,9 +35,65 @@ typedef long double ld;
 
 // - functions used by generated code of containers -
 #define debug_assert assert
-#define cmalloc malloc
-#define crealloc realloc
-#define cfree free
+#define cassert(A_COND)\
+{\
+  if (!(A_COND)) {\
+    fprintf(stderr,"CASSERT: %s, line: %d, function: %s\n",__FILE__,__LINE__,__FUNCTION__);\
+    fflush(stderr);\
+    abort();\
+  }\
+}
+
+static inline void *cmalloc(size_t a_size)
+{/*{{{*/
+
+  // - ERROR -
+  cassert(a_size <= UINT_MAX);
+
+  void *location = malloc(a_size);
+
+  // - ERROR -
+  cassert(location != NULL || a_size == 0);
+
+  return location;
+}/*}}}*/
+
+static inline void *crealloc(void *a_location,size_t a_size)
+{/*{{{*/
+
+  // - ERROR -
+  cassert(a_size <= UINT_MAX);
+
+  void *location = realloc(a_location,a_size);
+
+  // - ERROR -
+  cassert(location != NULL || a_size == 0);
+
+  return location;
+}/*}}}*/
+
+static inline void cfree(void *a_location)
+{/*{{{*/
+  free(a_location);
+}/*}}}*/
+
+static inline void *cmalloc_array(size_t a_count,size_t a_size)
+{/*{{{*/
+
+  // - ERROR -
+  cassert(a_size == 0 || a_count <= SIZE_MAX/a_size);
+
+  return cmalloc(a_count*a_size);
+}/*}}}*/
+
+static inline void *crealloc_array(void *a_location,size_t a_count,size_t a_size)
+{/*{{{*/
+
+  // - ERROR -
+  cassert(a_size == 0 || a_count <= SIZE_MAX/a_size);
+
+  return crealloc(a_location,a_count*a_size);
+}/*}}}*/
 
 // - basic constants -
 #define c_array_add 4

@@ -394,7 +394,7 @@ fprintf(out_file,
 "    if (this->used >= this->size)\n"
 "    {\n"
 "      unsigned new_size = (this->size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > this->size);\n"
 "\n"
 "      %s_copy_resize(this,new_size);\n"
 ,STRUCT_NAME);
@@ -1376,7 +1376,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-"    this->data = (%s_node *)crealloc(this->data,a_size*sizeof(%s_node));\n"
+"    this->data = (%s_node *)crealloc_array(this->data,a_size,sizeof(%s_node));\n"
 "  }\n"
 ,STRUCT_NAME,STRUCT_NAME);
    if (TYPE_NUMBERS(0) & (c_type_dynamic | c_type_option_force_init)) {
@@ -2265,7 +2265,7 @@ fprintf(out_file,
 "\n"
 "  this->root_idx = c_idx_not_exist;\n"
 "\n"
-"  char *processed = (char *)cmalloc(indexes.used);\n"
+"  char *processed = (char *)cmalloc_array(indexes.used,sizeof(char));\n"
 "  memset(processed,0,indexes.used*sizeof(char)); // NOLINT(clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling)\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"
