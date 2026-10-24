@@ -377,7 +377,7 @@ fprintf(out_file,
 "    if (used >= size)\n"
 "    {\n"
 "      unsigned new_size = (size << 1) + c_array_add;\n"
-"      debug_assert(new_size != 0);\n"
+"      cassert(new_size > size);\n"
 "\n"
 "      copy_resize(new_size);\n"
 "    }\n"
@@ -1332,7 +1332,7 @@ fprintf(out_file,
 "  }\n"
 "  else\n"
 "  {\n"
-"    data = (%s_node *)crealloc(data,a_size*sizeof(%s_node));\n"
+"    data = (%s_node *)crealloc_array(data,a_size,sizeof(%s_node));\n"
 "  }\n"
 ,IM_STRUCT_NAME,IM_STRUCT_NAME);
    if (TYPE_NUMBERS(0) & c_type_dynamic) {
@@ -1814,7 +1814,7 @@ fprintf(out_file,
 "\n"
 "  root_idx = c_idx_not_exist;\n"
 "\n"
-"  bool *processed = (bool *)cmalloc(indexes.used*sizeof(bool));\n"
+"  bool *processed = (bool *)cmalloc_array(indexes.used,sizeof(bool));\n"
 "  memset(processed,false,indexes.used*sizeof(bool));\n"
 "\n"
 "  unsigned step = indexes.used >> 1;\n"

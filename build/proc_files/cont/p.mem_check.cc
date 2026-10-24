@@ -454,10 +454,14 @@ inline unsigned mutex_s::unlock()
 
 //#define MEM_CHECK ENABLE
 
-// - declare cmalloc/cfree functions -
-inline void *cmalloc(unsigned a_size);
-inline void *crealloc(void *a_location,unsigned a_size);
+#include <stdint.h>
+
+inline void *cmalloc(size_t a_size);
+inline void *crealloc(void *a_location,size_t a_size);
 inline void cfree(void *a_location);
+
+inline void *cmalloc_array(size_t a_count,size_t a_size);
+inline void *crealloc_array(void *a_location,size_t a_count,size_t a_size);
 
 /*
  * definition of generated structures
@@ -853,13 +857,13 @@ struct mc_block_rb_tree_s
        * \brief cmalloc for mc_block_rb_tree_s structure overriding global
        *
        */
-      inline void *cmalloc(unsigned a_size);
+      inline void *cmalloc(size_t a_size);
 
       /*!
        * \brief crealloc for mc_block_rb_tree_s structure overriding global
        *
        */
-      inline void *crealloc(void *a_location,unsigned a_size);
+      inline void *crealloc(void *a_location,size_t a_size);
 
       /*!
        * \brief cfree for mc_block_rb_tree_s structure overriding global
@@ -935,12 +939,12 @@ struct mc_struct_s
       /*!
        * \brief return location of new allocated memory block of size a_size
        */
-      inline void *get_block(unsigned a_size);
+      inline void *get_block(size_t a_size);
 
       /*!
        * \brief reallocate memory block to size a_size
        */
-      inline void *reget_block(void *a_location,unsigned a_size);
+      inline void *reget_block(void *a_location,size_t a_size);
 
       /*!
        * \brief release block of memory by its location
@@ -1047,7 +1051,7 @@ inline void ui_array_s::push(unsigned a_value)
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -1060,7 +1064,7 @@ inline void ui_array_s::push_blank()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -1073,7 +1077,7 @@ inline void ui_array_s::push_clear()
   if (used >= size)
   {
     unsigned new_size = (size << 1) + c_array_add;
-    debug_assert(new_size != 0);
+    cassert(new_size > size);
 
     copy_resize(new_size);
   }
@@ -1306,7 +1310,7 @@ inline unsigned mc_block_rb_tree_s::__get_new_index()
     if (used >= size)
     {
       unsigned new_size = (size << 1) + c_array_add;
-      debug_assert(new_size != 0);
+      cassert(new_size > size);
 
       copy_resize(new_size);
     }
@@ -1539,12 +1543,12 @@ inline mc_block_rb_tree_s &mc_block_rb_tree_s::operator=(mc_block_rb_tree_s &a_s
 
 
 
-inline void *mc_block_rb_tree_s::cmalloc(unsigned a_size)
+inline void *mc_block_rb_tree_s::cmalloc(size_t a_size)
 {/*{{{*/
    return malloc(a_size);
 }/*}}}*/
 
-inline void *mc_block_rb_tree_s::crealloc(void *a_location,unsigned a_size)
+inline void *mc_block_rb_tree_s::crealloc(void *a_location,size_t a_size)
 {/*{{{*/
    return realloc(a_location,a_size);
 }/*}}}*/
@@ -1631,13 +1635,17 @@ inline bool mc_struct_s::operator==(mc_struct_s &a_second)
 
 
 
-inline void *mc_struct_s::get_block(unsigned a_size)
+inline void *mc_struct_s::get_block(size_t a_size)
 {/*{{{*/
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
    mutex.lock();
 
    void *location = malloc(a_size);
 
-   mc_block_s mc_block = {location,a_size};
+   mc_block_s mc_block = {location,(unsigned)a_size};
    mc_block_set.insert(mc_block);
 
    // - increase size of allocated memory -
@@ -1652,8 +1660,12 @@ inline void *mc_struct_s::get_block(unsigned a_size)
    return location;
 }/*}}}*/
 
-inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
+inline void *mc_struct_s::reget_block(void *a_location,size_t a_size)
 {/*{{{*/
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
    mutex.lock();
 
    if (a_location != nullptr)
@@ -1671,7 +1683,7 @@ inline void *mc_struct_s::reget_block(void *a_location,unsigned a_size)
    void *location = realloc(a_location,a_size);
 
    {
-     mc_block_s mc_block = {location,a_size};
+     mc_block_s mc_block = {location,(unsigned)a_size};
      mc_block_set.insert(mc_block);
 
      // - increase size of allocated memory -
@@ -1723,14 +1735,24 @@ inline void mc_clear()
    mc_struct.clear();
 }
 
-inline void *cmalloc(unsigned a_size)
+inline void *cmalloc(size_t a_size)
 {/*{{{*/
-   return mc_struct.get_block(a_size);
+   void *location = mc_struct.get_block(a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
-inline void *crealloc(void *a_location,unsigned a_size)
+inline void *crealloc(void *a_location,size_t a_size)
 {/*{{{*/
-  return mc_struct.reget_block(a_location,a_size);
+   void *location = mc_struct.reget_block(a_location,a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
 inline void cfree(void *a_location)
@@ -1741,14 +1763,32 @@ inline void cfree(void *a_location)
 inline void mc_init() {}
 inline void mc_clear() {}
 
-inline void *cmalloc(unsigned a_size)
+inline void *cmalloc(size_t a_size)
 {/*{{{*/
-   return malloc(a_size);
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
+   void *location = malloc(a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
-inline void *crealloc(void *a_location,unsigned a_size)
+inline void *crealloc(void *a_location,size_t a_size)
 {/*{{{*/
-   return realloc(a_location,a_size);
+
+   // - ERROR -
+   cassert(a_size <= UINT_MAX);
+
+   void *location = realloc(a_location,a_size);
+
+   // - ERROR -
+   cassert(location != nullptr || a_size == 0);
+
+   return location;
 }/*}}}*/
 
 inline void cfree(void *a_location)
@@ -1756,6 +1796,24 @@ inline void cfree(void *a_location)
    free(a_location);
 }/*}}}*/
 #endif
+
+inline void *cmalloc_array(size_t a_count,size_t a_size)
+{/*{{{*/
+
+   // - ERROR -
+   cassert(a_size == 0 || a_count <= SIZE_MAX/a_size);
+
+   return cmalloc(a_count*a_size);
+}/*}}}*/
+
+inline void *crealloc_array(void *a_location,size_t a_count,size_t a_size)
+{/*{{{*/
+
+   // - ERROR -
+   cassert(a_size == 0 || a_count <= SIZE_MAX/a_size);
+
+   return crealloc(a_location,a_count*a_size);
+}/*}}}*/
 
 #endif
 
@@ -1772,11 +1830,14 @@ inline void cfree(void *a_location)
 void ui_array_s::reserve(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
+  cassert(required_cnt >= used);
   if (required_cnt > size)
   {
     unsigned r_size = size;
     do {
-      r_size = (r_size << 1) + c_array_add;
+      unsigned n_size = (r_size << 1) + c_array_add;
+      cassert(n_size > r_size);
+      r_size = n_size;
     } while(r_size < required_cnt);
 
     copy_resize(r_size);
@@ -1786,11 +1847,14 @@ void ui_array_s::reserve(unsigned a_cnt)
 void ui_array_s::push_blanks(unsigned a_cnt)
 {/*{{{*/
   unsigned required_cnt = used + a_cnt;
+  cassert(required_cnt >= used);
   if (required_cnt > size)
   {
     unsigned r_size = size;
     do {
-      r_size = (r_size << 1) + c_array_add;
+      unsigned n_size = (r_size << 1) + c_array_add;
+      cassert(n_size > r_size);
+      r_size = n_size;
     } while(r_size < required_cnt);
 
     copy_resize(r_size);
@@ -1814,7 +1878,7 @@ void ui_array_s::copy_resize(unsigned a_size)
   }
   else
   {
-    data = (unsigned *)crealloc(data,a_size*sizeof(unsigned));
+    data = (unsigned *)crealloc_array(data,a_size,sizeof(unsigned));
   }
 
   size = a_size;
@@ -2316,7 +2380,7 @@ void mc_block_rb_tree_s::copy_resize(unsigned a_size)
   }
   else
   {
-    data = (mc_block_rb_tree_s_node *)crealloc(data,a_size*sizeof(mc_block_rb_tree_s_node));
+    data = (mc_block_rb_tree_s_node *)crealloc_array(data,a_size,sizeof(mc_block_rb_tree_s_node));
   }
 
   size = a_size;
